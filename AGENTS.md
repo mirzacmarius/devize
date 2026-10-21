@@ -13,6 +13,9 @@ Devize builds construction estimates (devize) for the Romanian market: manufactu
 - The interface is Romanian first. Every string lives in `apps/app/src/locales/ro.ts`, with the English in `en.ts` under the same keys (typecheck fails otherwise). Write Romanian with comma-below diacritics (ș, ț), not cedillas (ş, ţ).
 - Next.js 16: the proxy is `apps/app/src/proxy.ts`, `params` are promises, and translations come from `@/locales/server` in server components and `@/locales/client` in client components.
 - `packages/backend/convex/_generated` is committed. After changing Convex functions or the schema, regenerate it with `bunx convex dev` (or `bun run setup`) and commit the result.
+- Every Convex function that touches a firm's data checks membership first, with `requireMember` or `requireFirmDoc` from `convex/lib/access.ts`, and reports another firm's rows as not found. Errors people see are `ConvexError`s with a `code` from `convex/lib/errors.ts`, which the interface translates.
+- Convex functions are tested in memory with `convex-test` under `bun test`: start from `setup()` and `signIn()` in `convex/test.helper.ts`. Test files and helpers have two dots in their names, so Convex never deploys them.
+- The repository is public and producers' norms are copyrighted. Never commit a producer's norm documents or data extracted from them; they reach the database only through the super-admin import. Tests use made-up norms.
 - Bun installs one hoisted `node_modules` (see `bunfig.toml`). When something behaves differently than in CI, reinstall with `rm -rf node_modules && bun install`.
 
 <!-- convex-ai-start -->

@@ -9,6 +9,8 @@ export const aiTables = {
   aiJobs: defineTable({
     kind: aiJobKind,
     status: aiJobStatus,
+    // The firm whose work started the job; none for admin work.
+    organizationId: v.optional(v.id("organizations")),
     manufacturerId: v.optional(v.id("manufacturers")),
     normImportId: v.optional(v.id("normImports")),
     fileId: v.optional(v.id("_storage")),
@@ -23,6 +25,7 @@ export const aiTables = {
     finishedAt: v.optional(v.number()),
   })
     .index("by_status", ["status"])
+    .index("by_organizationId", ["organizationId"])
     .index("by_manufacturerId", ["manufacturerId"])
     .index("by_normImportId", ["normImportId"]),
 };

@@ -1,8 +1,12 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { accountTables } from "./accounts/tables";
 import { aiTables } from "./ai/tables";
+import { catalogTables } from "./catalog/tables";
+import { estimateTables } from "./estimates/tables";
 import { manufacturerTables } from "./manufacturers/tables";
+import { priceTables } from "./prices/tables";
 
 export default defineSchema({
   ...authTables,
@@ -22,6 +26,10 @@ export default defineSchema({
     // Devize staff. Granted with `bunx convex run admin:grantSuperAdmin`.
     role: v.optional(v.literal("superadmin")),
   }).index("email", ["email"]),
+  ...accountTables,
+  ...catalogTables,
+  ...priceTables,
+  ...estimateTables,
   ...aiTables,
   ...manufacturerTables,
 });
