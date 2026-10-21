@@ -4,7 +4,7 @@ import { internal } from "./_generated/api";
 const crons = cronJobs();
 
 // Reads the pages of store products firms chose again, a few at a time
-// (docs/adr/0009).
+// (docs/adr/0010).
 crons.interval(
   "refresh chosen store products",
   { minutes: 5 },

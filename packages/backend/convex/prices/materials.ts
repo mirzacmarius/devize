@@ -5,7 +5,7 @@ import { invalid, notFound } from "../lib/errors";
 import { unitsPerSale } from "./units";
 
 // A store product a firm chose is read from the store's page again after a
-// day, so its price stays fresh (docs/adr/0009).
+// day, so its price stays fresh (docs/adr/0010).
 export const REFRESH_MS = 24 * 60 * 60_000;
 
 /** A store's product page every firm may use, which Devize can read again. */

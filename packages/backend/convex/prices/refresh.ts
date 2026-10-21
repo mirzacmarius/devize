@@ -9,7 +9,7 @@ import { storeKeys } from "./stores";
 
 // Devize reads the page of every store product a firm chose again once a
 // day, so devize, the Coș and price alerts work with fresh prices
-// (docs/adr/0009). The job runs every few minutes and starts at most one read
+// (docs/adr/0010). The job runs every few minutes and starts at most one read
 // per store, only while the store isn't busy with firms' own reads.
 
 // Background reads stop for the day once a store had this many reads, so

@@ -43,7 +43,7 @@ export const priceTables = {
     status: listingStatus,
     checkedAt: v.number(),
     // When Devize reads the store's page again: set while a firm chose the
-    // product, so its price stays fresh (docs/adr/0009).
+    // product, so its price stays fresh (docs/adr/0010).
     refreshAfter: v.optional(v.number()),
   })
     .index("by_productId_and_status", ["productId", "status"])

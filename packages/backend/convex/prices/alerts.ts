@@ -12,7 +12,7 @@ import { isPercentUnit, normalizeText } from "../lib/text";
 import { alertPercentOf, priceSettingsOf, savePriceSettings } from "./settings";
 import type { priceChange } from "./validators";
 
-// Alerte de preț (docs/adr/0009): every morning Devize prices each sent or
+// Alerte de preț (docs/adr/0010): every morning Devize prices each sent or
 // accepted Deviz again at today's prices, the way `checkUpdates` does, and
 // tells the firm when its total would change by at least the firm's
 // threshold, with what that does to its costs and profit. The Deviz itself

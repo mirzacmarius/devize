@@ -29,7 +29,7 @@ import { readStatus, store } from "./validators";
 // A page read in the last hours answers without a new read; reads of one
 // store are spaced out and capped per day, and a firm's reads per day too.
 // While a firm uses the product, `refresh.ts` reads its page again daily
-// (docs/adr/0009).
+// (docs/adr/0010).
 
 const CACHE_MS = 12 * 60 * 60_000;
 export const READ_SPACING_MS = 4_000;
