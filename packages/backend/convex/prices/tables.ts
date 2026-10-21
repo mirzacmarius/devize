@@ -1,16 +1,24 @@
 import { defineTable } from "convex/server";
 import { v } from "convex/values";
-import { listingSource, listingStatus, matchMethod, store } from "./validators";
+import {
+  listingSource,
+  listingStatus,
+  matchMethod,
+  readStatus,
+  store,
+} from "./validators";
 
 export const priceTables = {
   // A Listare: one product's or resource's price at one source. Retailer and
   // supplier prices are seen by every firm; own prices and quotations only by
-  // the firm in `organizationId`.
+  // the firm in `organizationId`. A retailer price read from the store's page
+  // has no firm; one a firm typed itself, because the page couldn't be read,
+  // has that firm and only it sees it.
   listings: defineTable({
     source: listingSource,
     store: v.optional(store),
-    // The Furnizor whose price list it is, or the firm an own price or a
-    // quotation belongs to.
+    // The Furnizor whose price list it is, the firm an own price or a
+    // quotation belongs to, or the firm that typed a retailer price.
     organizationId: v.optional(v.id("organizations")),
     productId: v.optional(v.id("products")),
     resourceId: v.optional(v.id("resources")),
@@ -26,7 +34,8 @@ export const priceTables = {
     includedVat: v.number(),
     saleUnit: v.string(),
     // How many units of the product (or resource) one sale unit holds, e.g. 25
-    // for a 25 kg bag of a product norms count in kg.
+    // for a 25 kg bag of a product norms count in kg. A store product no
+    // catalog product matches counts in its own sale unit: 1.
     unitsPerSale: v.number(),
     inStock: v.optional(v.boolean()),
     matchMethod: v.optional(matchMethod),
@@ -36,7 +45,8 @@ export const priceTables = {
     .index("by_productId_and_status", ["productId", "status"])
     .index("by_organizationId_and_productId", ["organizationId", "productId"])
     .index("by_organizationId_and_resourceId", ["organizationId", "resourceId"])
-    .index("by_store_and_externalId", ["store", "externalId"]),
+    .index("by_store_and_externalId", ["store", "externalId"])
+    .index("by_url", ["url"]),
 
   // Every price a listing had, for charts, forecasts and price alerts.
   priceHistory: defineTable({
@@ -45,4 +55,67 @@ export const priceTables = {
     includedVat: v.number(),
     at: v.number(),
   }).index("by_listingId_and_at", ["listingId", "at"]),
+
+  // A Produs ales: the store product a firm buys for a catalog product or
+  // resource, at most one per store, with how many of the material's own
+  // units (kg, mp, l) one item sold holds.
+  storeChoices: defineTable({
+    organizationId: v.id("organizations"),
+    store: store,
+    productId: v.optional(v.id("products")),
+    resourceId: v.optional(v.id("resources")),
+    listingId: v.id("listings"),
+    unitsPerSale: v.number(),
+    // Whether a person set or confirmed `unitsPerSale`, rather than Devize
+    // reading it from the product's title.
+    unitsChecked: v.boolean(),
+    createdBy: v.id("users"),
+    updatedAt: v.number(),
+  })
+    .index("by_organizationId_and_productId", ["organizationId", "productId"])
+    .index("by_organizationId_and_resourceId", ["organizationId", "resourceId"])
+    .index("by_listingId", ["listingId"]),
+
+  // Citiri la cerere: each read of a store's product page, what asked for it
+  // and how it went. They also space the reads to one store and count a
+  // firm's reads in a day (docs/adr/0008).
+  storeReads: defineTable({
+    store: store,
+    url: v.string(),
+    // The firm that asked, and the material to link the product to; none for
+    // Devize's own refresh of prices in sent devize.
+    organizationId: v.optional(v.id("organizations")),
+    requestedBy: v.optional(v.id("users")),
+    productId: v.optional(v.id("products")),
+    resourceId: v.optional(v.id("resources")),
+    status: readStatus,
+    // Whether the page is read from the store's site; false when a recent
+    // read of it answered, or the read was refused before it started.
+    fromStore: v.boolean(),
+    listingId: v.optional(v.id("listings")),
+    requestedAt: v.number(),
+    // When the page is read, a few seconds after the store's previous read.
+    scheduledFor: v.number(),
+    finishedAt: v.optional(v.number()),
+  })
+    .index("by_organizationId_and_requestedAt", [
+      "organizationId",
+      "requestedAt",
+    ])
+    .index("by_requestedAt", ["requestedAt"]),
+
+  // One row per store: its robots.txt and how Devize paces reads of its site.
+  storeStates: defineTable({
+    store: store,
+    robotsTxt: v.optional(v.string()),
+    robotsCheckedAt: v.optional(v.number()),
+    // The next moment a read of this store may start.
+    nextReadAt: v.number(),
+    // Reads started on `day` (YYYY-MM-DD, Romanian time), against the
+    // store's daily limit.
+    day: v.string(),
+    readsOnDay: v.number(),
+    // After the store refused a read (403, 429, a captcha), none until then.
+    pausedUntil: v.optional(v.number()),
+  }).index("by_store", ["store"]),
 };

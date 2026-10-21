@@ -61,7 +61,9 @@ type FirmTable =
   | "lineItems"
   | "takeoffs"
   | "variants"
-  | "offers";
+  | "offers"
+  | "storeChoices"
+  | "storeReads";
 
 /**
  * Loads a firm's row and checks that the signed-in user belongs to that firm.
