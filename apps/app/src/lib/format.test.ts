@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import {
   estimateCode,
+  formatAmount,
   formatCalendarDate,
   formatConsumption,
+  formatCount,
   formatFileSize,
   formatMoney,
+  formatMonth,
   formatPercent,
   formatQuantity,
   parseDecimal,
@@ -38,6 +41,15 @@ describe("formatting", () => {
     expect(formatFileSize(20 * 1024 * 1024, "en")).toBe("20 MB");
     expect(formatFileSize(340 * 1024, "ro")).toBe("340 KB");
     expect(formatFileSize(12, "ro")).toBe("1 KB");
+  });
+
+  test("writes counts, totals and months", () => {
+    expect(formatCount(1284, "ro")).toBe("1.284");
+    expect(formatAmount(1250.25, "ro")).toBe("1.250,3");
+    expect(formatAmount(500, "en")).toBe("500");
+    expect(formatMonth("2026-10", "ro")).toBe("oct.");
+    expect(formatMonth("2026-10", "ro", true)).toBe("oct. 2026");
+    expect(formatMonth("2026-01", "en", true)).toBe("Jan 2026");
   });
 
   test("numbers a Deviz and its revisions", () => {

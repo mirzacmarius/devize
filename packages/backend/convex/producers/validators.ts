@@ -27,6 +27,9 @@ export const datasheetCondition = v.object({
   page: v.optional(v.number()),
 });
 
+// What a Deviz counts as in its producers' statistics, once each.
+export const countedKind = v.union(v.literal("sent"), v.literal("accepted"));
+
 export const removalStatus = v.union(
   v.literal("pending"),
   v.literal("removed"),

@@ -2433,6 +2433,11 @@ export default {
     searchPlaceholder: "Search manufacturers",
     noResults: "No manufacturer matches “{text}”.",
     breadcrumb: "You are here",
+    tabs: {
+      label: "The manufacturer's pages",
+      profile: "Profile",
+      stats: "Statistics",
+    },
     profile: {
       unclaimedLabel:
         "Unclaimed profile, created by Devize from the documents the manufacturer sent",
@@ -2592,6 +2597,84 @@ export default {
       messageRequired: "Write the reason.",
       submit: "Send the request",
       sent: "Your removal request was sent.",
+    },
+    stats: {
+      title: "Statistics",
+      period: "The last 12 months",
+      privacy:
+        "The figures are aggregated and anonymous: you never see which firms used your norms, and a county shows on its own only once {min} firms work there.",
+      denied:
+        "Usage statistics are only for the manufacturer's own firm and the Devize team.",
+      backToProfile: "Back to the profile",
+      sentAccepted: "Sent: {sent} · Accepted: {accepted}",
+      emptyTitle: "No data yet",
+      emptyDescription:
+        "Counting starts when a firm puts one of your norms or products in an estimate. You'll then see the months, norms, products and counties here.",
+      kpis: {
+        added: "Added to estimates",
+        addedHint: "Times firms put your norms in an estimate",
+        firms: "Firms",
+        firmsHint: "That used your norms or products",
+        sent: "Estimates sent",
+        sentHint: "To clients, with your norms or products",
+        accepted: "Estimates accepted",
+        acceptedHint: "By clients",
+        acceptedRate: "By clients: {rate} of those sent",
+      },
+      chart: {
+        title: "By month",
+        view: "How to show the months",
+        asChart: "Chart",
+        asTable: "Table",
+        measure: "What the chart counts",
+        measures: {
+          added: "Added",
+          sent: "Sent",
+          accepted: "Accepted",
+        },
+        month: "Month",
+        current: "{month}, this month so far",
+      },
+      norms: {
+        title: "Your norms in estimates",
+        empty:
+          "None of your norms has gone into an estimate in these 12 months yet.",
+        columns: {
+          norm: "Norm",
+          added: "Added",
+          sent: "Sent",
+          accepted: "Accepted",
+          quantity: "Quantity accepted",
+        },
+      },
+      products: {
+        title: "Demand for your products",
+        description:
+          "How much of each product the estimates sent and accepted hold. Accepted ones count the variant the client chose, without the optional works they left out.",
+        empty:
+          "None of your products has gone into an estimate in these 12 months yet.",
+        columns: {
+          product: "Product",
+          sent: "In estimates sent",
+          accepted: "In estimates accepted",
+          value: "Value accepted (lei)",
+          replaced: "Replaced",
+        },
+        inEstimates: "Estimates: {count}",
+        packages: "≈ {count} × {package}",
+        replacedCount: "Replaced: {count}",
+        replacedHint:
+          "Replaced: times a client accepted a variant with another manufacturer's product instead of yours.",
+      },
+      counties: {
+        title: "Counties",
+        description:
+          "Times your norms went into estimates, by the site's county.",
+        firms: "Firms: {count}",
+        others: "Other counties",
+        othersHint:
+          "Counties with fewer than {min} firms, and estimates without a county",
+      },
     },
   },
   claim: {

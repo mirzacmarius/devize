@@ -20,6 +20,7 @@ import {
 import { requireFirmDoc } from "../lib/access";
 import { appError, invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
+import { countNormAdded } from "../producers/usage";
 import {
   isPhotoType,
   MAX_PHOTO_BYTES,
@@ -890,16 +891,8 @@ async function applyBatch(ctx: MutationCtx, proposalId: Id<"proposals">) {
         createdBy: userId,
       });
     }
-    if (norm?.manufacturerId) {
-      await ctx.db.insert("usageEvents", {
-        kind: "norm_added",
-        organizationId: estimate.organizationId,
-        normId: norm._id,
-        manufacturerId: norm.manufacturerId,
-        quantity: fields.quantity,
-        unit: norm.unit,
-        county: estimate.county,
-      });
+    if (norm) {
+      await countNormAdded(ctx, estimate, norm, fields.quantity);
     }
   }
   await refreshTotals(ctx, estimate);

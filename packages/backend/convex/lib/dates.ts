@@ -21,6 +21,29 @@ export function romanianDate(timestamp: number): string {
     .slice(0, 10);
 }
 
+/** The month in Romania at a moment, as YYYY-MM. */
+export function romanianMonth(timestamp: number): string {
+  return romanianDate(timestamp).slice(0, 7);
+}
+
+/** A month as YYYY-MM. Throws `invalid` for anything else. */
+export function checkMonth(value: string): string {
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) {
+    throw invalid("month");
+  }
+  return value;
+}
+
+/** The `count` months that end with `until` (YYYY-MM), the earliest first. */
+export function monthsUntil(until: string, count: number): string[] {
+  const year = Number(until.slice(0, 4));
+  const month = Number(until.slice(5, 7));
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(Date.UTC(year, month - count + index, 1));
+    return date.toISOString().slice(0, 7);
+  });
+}
+
 /** A calendar date as YYYY-MM-DD. Throws `invalid` for anything else. */
 export function checkDate(value: string): string {
   const parsed = Date.parse(`${value}T00:00:00Z`);

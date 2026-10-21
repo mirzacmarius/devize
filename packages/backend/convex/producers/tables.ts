@@ -4,6 +4,7 @@ import {
   anafRecord,
   claimMethod,
   claimStatus,
+  countedKind,
   datasheetCondition,
   datasheetStatus,
   removalStatus,
@@ -122,4 +123,91 @@ export const producerTables = {
     .index("by_manufacturerId", ["manufacturerId"])
     .index("by_organizationId", ["organizationId"])
     .index("by_fileId", ["fileId"]),
+
+  // Usage statistics for the producer's own firm and Devize staff: how firms
+  // use a Producător's norms and products, a month (YYYY-MM, Romania's time)
+  // at a time. Counts and quantities only, never which firm; see
+  // docs/adr/0024. The county is the Deviz's, missing when it has none.
+  producerUsage: defineTable({
+    manufacturerId: v.id("manufacturers"),
+    month: v.string(),
+    county: v.optional(v.string()),
+    // Times its norms were added to a Deviz.
+    added: v.number(),
+    // Devize sent to clients, and accepted, that hold its norms or products,
+    // each counted once whatever its revisions.
+    sent: v.number(),
+    accepted: v.number(),
+  }).index("by_manufacturerId_and_month_and_county", [
+    "manufacturerId",
+    "month",
+    "county",
+  ]),
+
+  // The same for each of the producer's norms, across its versions.
+  normUsage: defineTable({
+    manufacturerId: v.id("manufacturers"),
+    month: v.string(),
+    lineageId: v.id("norms"),
+    added: v.number(),
+    sent: v.number(),
+    accepted: v.number(),
+    // In the norm's unit, over the accepted devize.
+    acceptedQuantity: v.number(),
+  }).index("by_manufacturerId_and_month_and_lineageId", [
+    "manufacturerId",
+    "month",
+    "lineageId",
+  ]),
+
+  // How much of each of the producer's products the devize sent and accepted
+  // hold, in the product's unit. An accepted one counts with the Variantă the
+  // client chose and without the optional works they left out.
+  productUsage: defineTable({
+    manufacturerId: v.id("manufacturers"),
+    month: v.string(),
+    productId: v.id("products"),
+    sent: v.number(),
+    sentQuantity: v.number(),
+    accepted: v.number(),
+    acceptedQuantity: v.number(),
+    // Lei without VAT, at the devize's own prices.
+    acceptedValue: v.number(),
+    // Accepted devize whose chosen Variantă put another producer's product,
+    // or a generic one, in its place.
+    replaced: v.number(),
+  }).index("by_manufacturerId_and_month_and_productId", [
+    "manufacturerId",
+    "month",
+    "productId",
+  ]),
+
+  // The firms that used a producer's norms or products, and in which
+  // counties, so the statistics can count firms and leave out a county with
+  // too few of them. Never shown; deleted with the firm.
+  usageFirms: defineTable({
+    manufacturerId: v.id("manufacturers"),
+    organizationId: v.id("organizations"),
+    county: v.optional(v.string()),
+    lastMonth: v.string(),
+  })
+    .index("by_manufacturerId_and_organizationId_and_county", [
+      "manufacturerId",
+      "organizationId",
+      "county",
+    ])
+    .index("by_manufacturerId_and_lastMonth", ["manufacturerId", "lastMonth"])
+    .index("by_organizationId", ["organizationId"]),
+
+  // The devize already counted as sent or accepted, by the firm's number for
+  // them, so a revision or a second click doesn't count them again.
+  countedEstimates: defineTable({
+    organizationId: v.id("organizations"),
+    number: v.number(),
+    kind: countedKind,
+  }).index("by_organizationId_and_number_and_kind", [
+    "organizationId",
+    "number",
+    "kind",
+  ]),
 };

@@ -9,6 +9,7 @@ import { romanianDate } from "../lib/dates";
 import { invalid, notFound } from "../lib/errors";
 import { normalizeUnit } from "../lib/text";
 import { resourceKind } from "../manufacturers/validators";
+import { countNormAdded } from "../producers/usage";
 import {
   checkQuantity,
   checkSection,
@@ -86,17 +87,7 @@ export const addFromNorm = mutation({
       updatedAt: Date.now(),
     });
     await refreshTotals(ctx, estimate);
-    if (norm.manufacturerId) {
-      await ctx.db.insert("usageEvents", {
-        kind: "norm_added",
-        organizationId: estimate.organizationId,
-        normId: norm._id,
-        manufacturerId: norm.manufacturerId,
-        quantity: args.quantity,
-        unit: norm.unit,
-        county: estimate.county,
-      });
-    }
+    await countNormAdded(ctx, estimate, norm, args.quantity);
     return lineItemId;
   },
 });

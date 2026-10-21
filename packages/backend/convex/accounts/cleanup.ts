@@ -5,6 +5,7 @@ import type { MutationCtx } from "../_generated/server";
 import { internalMutation } from "../_generated/server";
 import { deleteFirmDatasheets } from "../producers/datasheets";
 import { deleteDetails } from "../producers/details";
+import { deleteFirmUsage } from "../producers/usage";
 import { deleteProposals } from "../proposals/proposals";
 
 const BATCH = 200;
@@ -193,6 +194,10 @@ async function deleteSome(
   }
   if (events.length > 0) {
     return events.length;
+  }
+  const usage = await deleteFirmUsage(ctx, organizationId, limit);
+  if (usage > 0) {
+    return usage;
   }
   const jobs = await ctx.db
     .query("aiJobs")
