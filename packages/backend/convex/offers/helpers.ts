@@ -1,10 +1,19 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Doc, Id } from "../_generated/dataModel";
-import type { QueryCtx } from "../_generated/server";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { getMembership } from "../lib/access";
+import { appError } from "../lib/errors";
 
 // A page opened again within half an hour is the same visit.
 export const VISIT_GAP_MS = 30 * 60_000;
+
+/** A Deviz's code as its pages show it: DVZ-0142, or DVZ-0142-R2. */
+export function estimateCode(
+  estimate: Pick<Doc<"estimates">, "number" | "revision">,
+) {
+  const code = `DVZ-${String(estimate.number).padStart(4, "0")}`;
+  return estimate.revision > 1 ? `${code}-R${estimate.revision}` : code;
+}
 
 const TOKEN_ALPHABET =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -67,4 +76,22 @@ export async function isFirmMember(
     userId !== null &&
     (await getMembership(ctx, organizationId, userId)) !== null
   );
+}
+
+/**
+ * The open Ofertă behind a link, for the client's answers and questions. A
+ * closed one can't be answered.
+ */
+export async function requireOpen(ctx: MutationCtx, token: string) {
+  const offer = await offerByToken(ctx, token);
+  const estimate = offer
+    ? await ctx.db.get("estimates", offer.estimateId)
+    : null;
+  if (!offer || !estimate) {
+    throw appError("not_found", "offer");
+  }
+  if (!isOpen(offer, estimate, Date.now())) {
+    throw appError("locked", "offer");
+  }
+  return { offer, estimate };
 }

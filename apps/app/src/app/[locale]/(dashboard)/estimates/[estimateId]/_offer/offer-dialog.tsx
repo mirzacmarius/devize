@@ -88,6 +88,7 @@ function OfferForm({
   const [deposit, setDeposit] = useState("");
   const [depositError, setDepositError] = useState<string>();
   const [optional, setOptional] = useState<Optional[]>([]);
+  const [assistant, setAssistant] = useState(true);
   const [busy, setBusy] = useState(false);
   const chosen = new Set(optional.map((entry) => entry.lineItemId));
   const titles = new Map(
@@ -136,6 +137,7 @@ function OfferForm({
         validDays,
         depositPercent,
         optionalItems: optional,
+        assistant,
       });
       const copied = await copyText(offerUrl(window.location.origin, token));
       toast.success(
@@ -284,6 +286,25 @@ function OfferForm({
           </Select>
         )}
       </fieldset>
+      <div className="flex items-start gap-3">
+        <Switch
+          id="offer-assistant"
+          checked={assistant}
+          className="mt-0.5"
+          onCheckedChange={setAssistant}
+        />
+        <label
+          htmlFor="offer-assistant"
+          className="grid cursor-pointer gap-0.5"
+        >
+          <span className="text-body font-medium text-ink">
+            {t("dialog.assistant")}
+          </span>
+          <span className="text-meta text-ink-3">
+            {t("dialog.assistantHint")}
+          </span>
+        </label>
+      </div>
       {estimate.status === "draft" && (
         <p className="m-0 rounded-md border border-border bg-sunken px-3 py-2 text-meta text-ink-2">
           {t("dialog.lockNote")}

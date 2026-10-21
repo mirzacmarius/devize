@@ -1,7 +1,7 @@
 import { defineTable } from "convex/server";
 import { v } from "convex/values";
 import { recap } from "../estimates/validators";
-import { offerStatus, optionalItem } from "./validators";
+import { offerStatus, optionalItem, questionStatus } from "./validators";
 
 export const offerTables = {
   // Oferte: the secure link a client opens, without an account, to read a
@@ -58,4 +58,29 @@ export const offerTables = {
   })
     .index("by_token", ["token"])
     .index("by_estimateId", ["estimateId"]),
+
+  // What the client asks on the link, with the assistant's answer from the
+  // Ofertă and the firm's own reply. See docs/adr/0018.
+  offerQuestions: defineTable({
+    organizationId: v.id("organizations"),
+    estimateId: v.id("estimates"),
+    offerId: v.id("offers"),
+    question: v.string(),
+    // What the client was looking at when they asked, which the answer
+    // talks about.
+    choice: v.object({
+      variantId: v.optional(v.id("variants")),
+      excludedItemIds: v.array(v.id("lineItems")),
+    }),
+    status: questionStatus,
+    answer: v.optional(v.string()),
+    answeredAt: v.optional(v.number()),
+    aiJobId: v.optional(v.id("aiJobs")),
+    reply: v.optional(v.string()),
+    repliedBy: v.optional(v.id("users")),
+    repliedAt: v.optional(v.number()),
+  })
+    .index("by_offerId", ["offerId"])
+    .index("by_estimateId", ["estimateId"])
+    .index("by_organizationId", ["organizationId"]),
 };

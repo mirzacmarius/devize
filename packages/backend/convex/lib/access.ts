@@ -62,6 +62,7 @@ type FirmTable =
   | "takeoffs"
   | "variants"
   | "offers"
+  | "offerQuestions"
   | "storeChoices"
   | "storeReads"
   | "priceAlerts"

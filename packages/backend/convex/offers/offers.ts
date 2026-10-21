@@ -208,6 +208,23 @@ export const withdraw = mutation({
   },
 });
 
+/**
+ * Turns the assistant on or off on a live link. Off, the client's questions
+ * go straight to the firm.
+ */
+export const setAssistant = mutation({
+  args: { offerId: v.id("offers"), assistant: v.boolean() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { doc: offer } = await requireFirmDoc(ctx, "offers", args.offerId);
+    if (!isLive(offer)) {
+      throw appError("locked", "offer");
+    }
+    await ctx.db.patch("offers", offer._id, { assistant: args.assistant });
+    return null;
+  },
+});
+
 /** Marks a link expired once its last day is over, unless the client answered. */
 export const expire = internalMutation({
   args: { offerId: v.id("offers") },

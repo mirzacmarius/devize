@@ -11,6 +11,8 @@ const codeKeys: Record<string, ErrorKey> = {
   locked: "locked",
   not_found: "notFound",
   forbidden: "preview",
+  in_use: "busy",
+  rate_limited: "tooMany",
 };
 
 const invalidKeys: Record<string, ErrorKey> = {
@@ -18,6 +20,7 @@ const invalidKeys: Record<string, ErrorKey> = {
   signature: "signature",
   reason: "reason",
   excludedItemIds: "empty",
+  question: "question",
 };
 
 /**

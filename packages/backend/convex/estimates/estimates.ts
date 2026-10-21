@@ -529,7 +529,7 @@ export const deleteRows = internalMutation({
       }
       deleted += rows.length;
     }
-    for (const table of ["takeoffs", "offers"] as const) {
+    for (const table of ["takeoffs", "offers", "offerQuestions"] as const) {
       const rows = await ctx.db
         .query(table)
         .withIndex("by_estimateId", (q) => q.eq("estimateId", args.estimateId))

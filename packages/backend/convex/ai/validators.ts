@@ -7,6 +7,7 @@ export const aiJobKind = v.union(
   v.literal("norm_import"),
   v.literal("estimate_proposal"),
   v.literal("tender_import"),
+  v.literal("offer_question"),
 );
 
 // needs_review is for jobs whose result waits in `result` for a person to

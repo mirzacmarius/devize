@@ -18,3 +18,19 @@ export const optionalItem = v.object({
   lineItemId: v.id("lineItems"),
   included: v.boolean(),
 });
+
+// Where a client's question stands: the assistant is answering it, it has
+// an answer, or it waits for the firm, because the assistant is off or
+// couldn't answer it from the Ofertă.
+export const questionStatus = v.union(
+  v.literal("answering"),
+  v.literal("answered"),
+  v.literal("waiting"),
+);
+
+// The client's choice as the page sends it: a Variantă, and the optional
+// works left out.
+export const choiceArgs = {
+  variantId: v.optional(v.id("variants")),
+  excludedItemIds: v.optional(v.array(v.id("lineItems"))),
+};
