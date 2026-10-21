@@ -1,0 +1,10 @@
+{
+  "extends": "@devize/typescript/base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["bun"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
