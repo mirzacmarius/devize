@@ -18,6 +18,7 @@ import { useFirm } from "@/components/firm-provider";
 import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { OfferCard } from "../_offer/offer-card";
+import { OmissionsSheet } from "../_proposal/omissions-sheet";
 import { ProposalBanner } from "../_proposal/proposal-banner";
 import { ProposalSheet } from "../_proposal/proposal-sheet";
 import { AddNormSheet } from "./add-norm-sheet";
@@ -49,6 +50,7 @@ export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
   const updates = useQuery(api.estimates.estimates.checkUpdates, {
     estimateId,
   });
+  const omissions = useQuery(api.proposals.omissions.latest, { estimateId });
   const details = useQuery(
     api.accounts.organizations.get,
     estimate ? { organizationId: estimate.organizationId } : "skip",
@@ -77,6 +79,8 @@ export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
   const code = estimateCode(estimate.number, estimate.revision);
   const checks = runChecks({
     lineItems: estimate.lineItems,
+    tender: estimate.kind === "tender",
+    omissions,
     client: estimate.client,
     vat: estimate.markups.vat,
     vatPayer: details?.vatPayer,
@@ -167,6 +171,11 @@ export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
       <ProposalSheet
         estimate={estimate}
         open={panel?.kind === "proposal"}
+        onClose={close}
+      />
+      <OmissionsSheet
+        estimate={estimate}
+        open={panel?.kind === "omissions"}
         onClose={close}
       />
       <AddNormSheet

@@ -2,10 +2,12 @@ import { v } from "convex/values";
 import { resourceKind } from "../manufacturers/validators";
 
 // What a proposal was made from: a description of the work, typed or
-// dictated, with photos; or a Licitație's quantity lists.
+// dictated, with photos; a Licitație's quantity lists; or the Deviz itself,
+// read for the works it misses (the Detector de omisiuni).
 export const proposalSource = v.union(
   v.literal("description"),
   v.literal("tender"),
+  v.literal("omissions"),
 );
 
 // working: the AI is reading; ready: it waits for a person to review it;

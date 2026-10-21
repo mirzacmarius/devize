@@ -45,6 +45,9 @@ const takeoffRow = z.object({
     .describe("true pentru un gol sau o parte care se scade din total."),
 });
 
+/** An Antemăsurătoare row as the model writes it. */
+export type ModelTakeoffRow = z.infer<typeof takeoffRow>;
+
 export const draftSchema = z.object({
   summary: z
     .string()
@@ -277,3 +280,73 @@ export const tenderMatchSchema = z.object({
 });
 
 export type TenderMatchOutput = z.infer<typeof tenderMatchSchema>;
+
+// Reading a Deviz for the works it misses: the Detector de omisiuni.
+export const omissionsSchema = z.object({
+  summary: z
+    .string()
+    .describe(
+      "Ce lucrare acoperă devizul și ce îi lipsește în mare, în una sau două propoziții.",
+    ),
+  missing: z
+    .array(
+      z.object({
+        chapter: z
+          .string()
+          .describe(
+            "Capitolul în care intră: unul al devizului, scris la fel, când lucrarea îi aparține; altfel unul nou, de exemplu „Hidroizolații”.",
+          ),
+        title: z
+          .string()
+          .describe("Denumirea lucrării, cum apare într-un deviz."),
+        unit: z
+          .string()
+          .describe("U.M. a lucrării: mp, m, mc, buc, kg, t sau set."),
+        basis: z
+          .array(z.string())
+          .describe(
+            "Cheile articolelor din deviz care cer lucrarea, de exemplu L3 și L7.",
+          ),
+        reason: z
+          .string()
+          .describe(
+            "De ce trebuie, într-o propoziție pentru constructor, de exemplu „Faianța din duș se pune peste hidroizolație, cu bandă la colțuri și manșoane la țevi.”",
+          ),
+        takeoff: z
+          .array(takeoffRow)
+          .describe(
+            "Cum reiese cantitatea: din cantitățile articolelor pe care se bazează, câte un rând fără dimensiuni cu count egal cu cantitatea luată și cu eticheta articolului, sau din cote. Cantitatea e suma rândurilor; o calculează aplicația.",
+          ),
+        confidence: z
+          .enum(["high", "medium", "low"])
+          .describe(
+            "high: articolele devizului o cer sigur, de exemplu faianță în duș fără hidroizolație sau demolări fără evacuarea molozului; medium: e necesară de obicei la o astfel de lucrare, dar depinde de șantier; low: de verificat la fața locului.",
+          ),
+        searchTerms: z
+          .array(z.string())
+          .describe(
+            "2–3 formulări scurte ale lucrării pentru căutarea în catalogul de norme, fără diacritice, de exemplu „hidroizolatie sub placari ceramice”.",
+          ),
+        resources: z
+          .array(resource)
+          .describe(
+            "Rețeta lucrării pe unitate: materialele, manopera pe meserii și utilajele, fără prețuri.",
+          ),
+      }),
+    )
+    .describe(
+      "Lucrările care lipsesc, în ordinea execuției. La un deviz de licitație, o listă goală.",
+    ),
+  remarks: z
+    .array(z.string())
+    .describe(
+      "Cel mult 8 observații despre articolele care sunt deja în deviz: cantități care nu se potrivesc între ele, U.M. nepotrivite, lucrări puse de două ori. Numești articolele după denumire, nu după cheie.",
+    ),
+  questions: z
+    .array(z.string())
+    .describe(
+      "La un deviz privat, cel mult 5 întrebări pentru client, ale căror răspunsuri ar schimba devizul. La un deviz de licitație, cel mult 10 clarificări de cerut autorității contractante pentru lucrările care lipsesc din liste, fiecare cu pozițiile pe care le privește.",
+    ),
+});
+
+export type OmissionsOutput = z.infer<typeof omissionsSchema>;

@@ -92,11 +92,14 @@ export const recap = v.object({
   laborHours: v.number(),
 });
 
+// derived: worked out from the Deviz's other articles, by the Detector de
+// omisiuni.
 export const takeoffMethod = v.union(
   v.literal("manual"),
   v.literal("photo"),
   v.literal("plan"),
   v.literal("voice"),
+  v.literal("derived"),
 );
 
 /** One row of an Antemăsurătoare: count × length × width × height. */

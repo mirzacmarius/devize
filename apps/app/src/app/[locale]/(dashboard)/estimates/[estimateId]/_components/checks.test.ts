@@ -7,6 +7,14 @@ const ready: CheckInput = {
     { resources: [{ name: "Manoperă", priceSource: "own" }] },
   ],
   client: { name: "Maria Ionescu" },
+  tender: false,
+  omissions: {
+    status: "applied",
+    found: 2,
+    questions: [],
+    remarks: [],
+    appliedCount: 1,
+  },
   vat: 21,
   vatPayer: true,
   updates: {
@@ -22,7 +30,7 @@ const states = (input: CheckInput) =>
 
 describe("runChecks", () => {
   test("passes a priced Deviz with a client and the firm's VAT", () => {
-    expect(Object.values(states(ready))).toEqual(Array(7).fill("passed"));
+    expect(Object.values(states(ready))).toEqual(Array(8).fill("passed"));
   });
 
   test("names each resource without a price once", () => {
@@ -81,5 +89,51 @@ describe("runChecks", () => {
       lineItems: [{ confidence: "high", resources: [] }],
     });
     expect(proposed.ai).toBe("warning");
+  });
+
+  test("follows the omissions check from its start to its review", () => {
+    const omissions = (value: CheckInput["omissions"], tender = false) => {
+      const check = runChecks({ ...ready, omissions: value, tender }).find(
+        (found) => found.id === "omissions",
+      );
+      return check?.id === "omissions" ? check : undefined;
+    };
+    const check = {
+      status: "ready" as const,
+      found: 3,
+      questions: ["Dușul are rigolă?"],
+      remarks: [],
+      appliedCount: 0,
+    };
+    expect(omissions(undefined)?.status).toBe("loading");
+    expect(omissions(null)).toMatchObject({ state: "pending", status: "none" });
+    expect(omissions({ ...check, status: "working" })?.state).toBe("pending");
+    expect(omissions({ ...check, status: "failed" })?.state).toBe("warning");
+    expect(omissions(check)).toEqual({
+      id: "omissions",
+      state: "warning",
+      status: "found",
+      works: 3,
+      questions: 1,
+      remarks: 0,
+      tender: false,
+    });
+    // A tender's clarifications wait for review too.
+    expect(
+      omissions({ ...check, found: 0, questions: ["Lipsește molozul."] }, true),
+    ).toMatchObject({ state: "warning", works: 0, questions: 1, tender: true });
+    expect(omissions({ ...check, found: 0, questions: [] })?.status).toBe(
+      "clear",
+    );
+    expect(
+      omissions({ ...check, status: "applied", appliedCount: 2 }),
+    ).toMatchObject({ state: "passed", status: "applied", works: 2 });
+    // Set aside after review, or stopped before it found anything.
+    expect(omissions({ ...check, status: "dismissed" })?.status).toBe(
+      "reviewed",
+    );
+    expect(
+      omissions({ ...check, status: "dismissed", found: 0, questions: [] }),
+    ).toMatchObject({ state: "pending", status: "none" });
   });
 });

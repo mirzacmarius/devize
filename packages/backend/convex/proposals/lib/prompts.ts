@@ -262,3 +262,121 @@ export function tenderMatchRequest(articles: readonly TenderArticle[]): string {
   );
   return `Pozițiile listei, fiecare cu normele găsite pentru ea:\n\n${blocks.join("\n\n")}`;
 }
+
+// Reading a Deviz for the works it misses: the Detector de omisiuni.
+
+export const omissionsSystemPrompt = `Ești verificatorul de devize al aplicației Devize: un inginer constructor din România cu mulți ani de execuție și de devize. Primești un deviz făcut de un constructor și îl citești ca un diriginte de șantier atent: cauți lucrările care lipsesc, deși articolele devizului le cer, și cantitățile care nu se potrivesc între ele. Constructorul verifică fiecare propunere înainte să intre în deviz.
+
+CUM LUCREZI
+1. Înțelege lucrarea din titlu, din descriere și din articole: ce se demontează, ce se construiește, ce finisaje se pun și unde (baie, bucătărie, fațadă, acoperiș).
+2. Pentru fiecare articol, gândește-te ce lucrări îl preced, îl însoțesc sau îl urmează pe șantier și verifică dacă sunt în deviz. Un articol poate cuprinde deja o lucrare: citește ce include norma lui și materialele lui înainte să spui că lipsește ceva.
+3. Propui doar ce lipsește cu adevărat. Nu repeți un articol existent sub alt nume, nu propui îmbunătățiri opționale (le pui ca întrebări pentru client) și nu propui ce descrierea exclude.
+4. Cantitatea o scoți din articolele pe care se bazează: hidroizolația din suprafața placată în zona umedă și din pardoseala băii, amorsa din suprafața tencuită sau zugrăvită, molozul din ce se demolează, cu masa obișnuită a materialelor, schela din suprafața fațadei. Când trebuie să presupui ceva, o spui în motiv, iar încrederea e medium.
+
+CE SE UITĂ DES
+- Pregătirea: protejarea pardoselilor, a mobilierului și a tâmplăriei, demontările, golirea spațiului.
+- Demolările: încărcarea și evacuarea molozului, transportul la un depozit autorizat sau containerul.
+- Zidăria: buiandrugii la goluri, ancorarea de pereții existenți, tencuiala sau gletul pe pereții noi.
+- Tencuielile și gleturile: amorsa, profilele de colț, plasa la îmbinarea materialelor diferite, șlefuirea.
+- Zugrăvelile și vopsitoriile: amorsa sau grundul, reparațiile locale, protejarea suprafețelor.
+- Băile și zonele umede: hidroizolația sub placări la duș, la cadă și pe pardoseala băii, cu bandă la colțuri și manșoane la trecerile țevilor; panta și rigola sau sifonul de pardoseală la dușul fără cădiță; siliconul sanitar.
+- Placările ceramice: amorsa, profilele de colț și de capăt, chituirea rosturilor, plinta.
+- Pardoselile: șapa sau autonivelantul, amorsa, folia de separare, plinta, profilele de trecere.
+- Instalațiile: racordurile, robinetele de trecere, montajul obiectelor sanitare, proba de presiune; la cele electrice dozele, tabloul, împământarea și măsurătorile PRAM.
+- Termoizolația fațadei: schela, amorsa, diblurile, masa de șpaclu armată cu plasă, profilele de soclu, de colț și cu lăcrimar, glafurile, tencuiala decorativă, demontarea și remontarea burlanelor și a aparatelor de pe fațadă.
+- Acoperișul: folia anticondens, șipcile și contrașipcile, coamele, doliile, jgheaburile și burlanele, parazăpezile.
+- Tâmplăria: demontarea celei vechi, spuma și benzile de etanșare, glafurile, refacerea șpaleților.
+- La final: curățenia, transportul materialelor, schela la lucrările de la înălțime.
+
+LUCRĂRI ȘI RESURSE
+- Denumirile sunt cele din devizele românești de azi, clare și complete. U.M.: mp, m, mc, buc, kg, t sau set.
+- Rețeta pe unitate: materialele cu consumul obișnuit, cu pierderi, manopera pe meserii în ore pe unitate (Faianțar, Instalator, Electrician, Zugrav, Zidar, Tencuitor, Izolator, Muncitor necalificat) și utilajele, cu denumiri generice, fără mărci și fără prețuri.
+- Capitolul: unul al devizului, scris la fel, când lucrarea îi aparține; altfel un capitol nou, în stilul celorlalte.
+- Cel mult 15 lucrări, cele mai importante.
+
+LICITAȚII
+La un deviz de licitație publică, articolele sunt pozițiile din listele autorității contractante, iar ofertantul nu le poate completa cu poziții noi. Acolo nu scrii lucrări lipsă: le scrii ca clarificări de cerut autorității, fiecare cu pozițiile pe care le privește, de exemplu „Lista nu cuprinde evacuarea molozului rezultat din desfacerea pardoselii (poz. 3). Vă rugăm să precizați dacă se include în poziția 3 sau se adaugă o poziție nouă.”
+
+Scrii în română, cu diacritice corecte (ș și ț cu virgulă dedesubt).`;
+
+/** One article of the Deviz, as the omissions check reads it. */
+export type DevizLine = {
+  key: string;
+  // Its Obiect and Capitol, "Obiectul 1 / Placări ceramice".
+  section?: string;
+  code?: string;
+  // A tender position's number, when the article is one.
+  position?: string;
+  title: string;
+  unit: string;
+  quantity: number;
+  // What its norm says it includes and doesn't.
+  includes?: string;
+  excludes?: string;
+  materials: string[];
+};
+
+export type OmissionsInput = {
+  title: string;
+  kind: "private" | "tender";
+  description?: string;
+  county?: string;
+  lines: DevizLine[];
+  // Articles left out of the request, past its limit.
+  more: number;
+};
+
+function lineText(line: DevizLine) {
+  const code = line.code && line.code !== "—" ? `${line.code} ` : "";
+  const head = line.position
+    ? `${line.key}. Poz. ${line.position}${line.code && line.code !== "—" ? `, cod ${line.code}` : ""}: ${line.title}`
+    : `${line.key}. ${code}${line.title}`;
+  return [
+    `${head} — ${decimal(line.quantity)} ${line.unit}`,
+    line.includes || line.excludes
+      ? `   ${[
+          line.includes ? `Include: ${line.includes}` : "",
+          line.excludes ? `nu include: ${line.excludes}` : "",
+        ]
+          .filter(Boolean)
+          .join("; ")}`
+      : "",
+    line.materials.length > 0
+      ? `   Materiale: ${line.materials.join(", ")}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+/** The Deviz to check: what it is, then its articles by section. */
+export function omissionsRequest(input: OmissionsInput): string {
+  const groups: { section: string; lines: DevizLine[] }[] = [];
+  for (const line of input.lines) {
+    const section = line.section ?? "Fără capitol";
+    const last = groups.at(-1);
+    if (last?.section === section) {
+      last.lines.push(line);
+    } else {
+      groups.push({ section, lines: [line] });
+    }
+  }
+  return [
+    `Devizul: ${input.title} (${input.kind === "tender" ? "licitație publică: articolele sunt pozițiile din listele autorității contractante" : "lucrare privată"})`,
+    input.description ? `Descrierea devizului: ${input.description}` : "",
+    input.county ? `Județul: ${input.county}` : "",
+    "",
+    "Articolele devizului, pe capitole, fiecare cu cheia lui:",
+    ...groups.flatMap((group) => [
+      "",
+      group.section,
+      ...group.lines.map(lineText),
+    ]),
+    input.more > 0
+      ? `\nDevizul mai are ${input.more} articole, care nu încap aici.`
+      : "",
+  ]
+    .filter((line, index, lines) => line !== "" || lines[index - 1] !== "")
+    .join("\n")
+    .trim();
+}

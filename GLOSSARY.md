@@ -60,6 +60,10 @@ _Avoid_: Measurement, survey
 What Devize AI suggests for a Deviz, from a description of the work and photos of it, or from a Licitație's Liste de cantități: Articole with their quantities and Norme, which a person checks before any of them goes into the Deviz. In code: `proposals`.
 _Avoid_: Ofertă (what the client receives), draft
 
+**Detector de omisiuni** (omissions check):
+Devize AI reading a Deviz as an experienced site engineer would, for the works its Articole call for but it doesn't have, such as the waterproofing under a shower's tiles or the removal of a demolition's rubble. Each missing work comes with its reason, the Articole it is for and a quantity worked out from them, as a Propunere AI the Firmă reviews; the ones the Deviz has after all start left out. For a Licitație, whose lists can't take new positions, the missing works are clarifications to request from the contracting authority. In code: `proposals/omissions.ts`, proposals with source `omissions`. See `docs/adr/0026`.
+_Avoid_: Audit, validator, AI review
+
 **Variantă** (variant):
 An alternative version of the same Deviz, such as economy, standard and premium, that the client chooses between. It puts other materials in some of the Deviz's works; the works and their quantities stay the same. In code: `variants`, made in `offers/variants.ts`. See `docs/adr/0021`.
 _Avoid_: Option, version (a Normă has versions)

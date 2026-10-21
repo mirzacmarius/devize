@@ -60,19 +60,32 @@ const tenderReasons = {
   incomplete: "tenderIncomplete",
 } as const;
 
+// An omissions check reads only the Deviz, which the person doesn't split.
+const omissionsReasons = {
+  timeout: "checkTimeout",
+  incomplete: "checkIncomplete",
+} as const;
+
 export type FailureReason =
   | (typeof failureReasons)[keyof typeof failureReasons]
   | (typeof tenderReasons)[keyof typeof tenderReasons]
+  | (typeof omissionsReasons)[keyof typeof omissionsReasons]
   | "unknown";
 
 export function failureReason(
   code: string | undefined,
-  source: "description" | "tender" = "description",
+  source: "description" | "tender" | "omissions" = "description",
 ): FailureReason {
   const reason =
     (code && failureReasons[code as keyof typeof failureReasons]) || "unknown";
-  if (source === "tender" && reason in tenderReasons) {
-    return tenderReasons[reason as keyof typeof tenderReasons];
+  const special =
+    source === "tender"
+      ? tenderReasons
+      : source === "omissions"
+        ? omissionsReasons
+        : undefined;
+  if (special && reason in special) {
+    return special[reason as keyof typeof special];
   }
   return reason;
 }

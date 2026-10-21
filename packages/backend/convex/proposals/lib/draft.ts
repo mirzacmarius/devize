@@ -1,5 +1,5 @@
 import { normalizeUnit } from "../../lib/text";
-import type { DraftOutput } from "./schemas";
+import type { DraftOutput, ModelTakeoffRow } from "./schemas";
 
 // What the model wrote, checked and trimmed before it is saved: lengths and
 // counts are capped, units spelled the way Devize stores them, and each
@@ -46,7 +46,7 @@ export type Draft = {
   articles: DraftArticle[];
 };
 
-function text(value: string | null | undefined, max: number) {
+export function text(value: string | null | undefined, max: number) {
   const result = value?.replace(/\s+/g, " ").trim().slice(0, max);
   return result ? result : undefined;
 }
@@ -79,9 +79,7 @@ export function takeoffTotal(rows: readonly TakeoffRow[]): number {
   return round(total, 2);
 }
 
-function cleanRows(
-  rows: DraftOutput["chapters"][number]["articles"][number]["takeoff"],
-): TakeoffRow[] {
+export function cleanRows(rows: readonly ModelTakeoffRow[]): TakeoffRow[] {
   const result: TakeoffRow[] = [];
   for (const row of rows.slice(0, MAX_ROWS)) {
     const count = positive(row.count, 1e6);
@@ -129,7 +127,7 @@ export function cleanResources(
   return result;
 }
 
-function unique(values: readonly string[], max: number, length: number) {
+export function unique(values: readonly string[], max: number, length: number) {
   const seen = new Set<string>();
   const result: string[] = [];
   for (const value of values) {

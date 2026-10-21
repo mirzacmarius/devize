@@ -10,3 +10,6 @@ export type ItemDetails = FunctionReturnType<
   typeof api.proposals.proposals.itemDetails
 >;
 export type TenderIssue = NonNullable<Proposal["progress"]>["issues"][number];
+export type OmissionsCheck = NonNullable<
+  FunctionReturnType<typeof api.proposals.omissions.latest>
+>;

@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@devize/ui/select";
+import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
@@ -30,6 +31,7 @@ import {
   formatUnit,
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { copyText } from "../_offer/offer-link";
 import type {
   ItemDetails,
   Proposal,
@@ -88,15 +90,20 @@ function byObjectAndChapter(items: readonly ProposalItem[]) {
 /**
  * What the AI proposes, for a person to check: what it understood and
  * assumed, or what it couldn't read in a tender's lists, then each article
- * with its quantity and norm. Only the items kept go into the Deviz, and
- * only with the last click.
+ * with its quantity and norm. An omissions check proposes the missing works,
+ * each with the articles it is for, with its remarks on the Deviz and its
+ * questions, which for a tender (`forTender`) go to the contracting
+ * authority. Only the items kept go into the Deviz, and only with the last
+ * click.
  */
 export function ProposalReview({
   proposal,
+  forTender = false,
   onApplied,
   onNew,
 }: {
   proposal: Proposal;
+  forTender?: boolean;
   onApplied: () => void;
   onNew: () => void;
 }) {
@@ -107,13 +114,23 @@ export function ProposalReview({
   const run = useRun();
   const [applying, setApplying] = useState(false);
   const tender = proposal.source === "tender";
+  const omissions = proposal.source === "omissions";
   const selected = proposal.items.filter((item) => item.selected).length;
+  // A check that found nothing stays, so the Deviz shows it was checked.
+  const foundNothing =
+    omissions &&
+    proposal.items.length +
+      proposal.questions.length +
+      proposal.remarks.length ===
+      0;
 
   const applySelected = async () => {
     setApplying(true);
     const result = await run(
       () => apply({ proposalId: proposal._id }),
-      t("review.applied", { count: selected }),
+      omissions
+        ? t("omissions.review.applied", { count: selected })
+        : t("review.applied", { count: selected }),
     );
     setApplying(false);
     if (result.ok) {
@@ -121,18 +138,55 @@ export function ProposalReview({
     }
   };
 
+  const noItems = omissions
+    ? !forTender
+      ? t("omissions.review.noItems")
+      : proposal.questions.length > 0
+        ? t("omissions.review.tenderNoItems")
+        : t("omissions.review.tenderClear")
+    : tender
+      ? t("tender.noItems")
+      : t("review.noItems");
+
   return (
     <div className="grid gap-5">
       {proposal.summary && (
-        <AISuggestion title={t("review.understood")}>
+        <AISuggestion
+          title={
+            omissions
+              ? t("omissions.review.understood")
+              : t("review.understood")
+          }
+        >
           {proposal.summary}
         </AISuggestion>
       )}
-      {(proposal.assumptions.length > 0 || proposal.questions.length > 0) && (
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Notes title={t("review.assumptions")} notes={proposal.assumptions} />
-          <Notes title={t("review.questions")} notes={proposal.questions} />
-        </div>
+      {omissions ? (
+        <>
+          <Notes
+            title={
+              forTender
+                ? t("omissions.review.clarifications")
+                : t("review.questions")
+            }
+            notes={proposal.questions}
+            copyable
+          />
+          <Notes
+            title={t("omissions.review.remarks")}
+            notes={proposal.remarks}
+          />
+        </>
+      ) : (
+        (proposal.assumptions.length > 0 || proposal.questions.length > 0) && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Notes
+              title={t("review.assumptions")}
+              notes={proposal.assumptions}
+            />
+            <Notes title={t("review.questions")} notes={proposal.questions} />
+          </div>
+        )
       )}
       {tender && <Issues issues={proposal.progress?.issues ?? []} />}
       {proposal.matchError && (
@@ -142,9 +196,7 @@ export function ProposalReview({
       )}
 
       {proposal.items.length === 0 ? (
-        <p className="m-0 text-body text-ink-2">
-          {tender ? t("tender.noItems") : t("review.noItems")}
-        </p>
+        <p className="m-0 text-body text-ink-2">{noItems}</p>
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -225,19 +277,27 @@ export function ProposalReview({
       )}
 
       <div className="sticky -bottom-6 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-2 border-t border-border bg-panel px-6 py-3">
-        <Button
-          variant="ghost"
-          onClick={() =>
-            run(
-              () => dismiss({ proposalId: proposal._id }),
-              t("review.dismissed"),
-            )
-          }
-        >
-          {t("review.dismiss")}
-        </Button>
+        {!foundNothing && (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              run(
+                () => dismiss({ proposalId: proposal._id }),
+                omissions
+                  ? t("omissions.review.dismissed")
+                  : t("review.dismissed"),
+              )
+            }
+          >
+            {omissions ? t("omissions.review.dismiss") : t("review.dismiss")}
+          </Button>
+        )}
         <Button variant="outline" onClick={onNew}>
-          {tender ? t("tender.again") : t("review.again")}
+          {omissions
+            ? t("omissions.again")
+            : tender
+              ? t("tender.again")
+              : t("review.again")}
         </Button>
         {proposal.items.length > 0 && (
           <Button
@@ -250,7 +310,9 @@ export function ProposalReview({
             ) : (
               <Icons.AI aria-hidden />
             )}
-            {t("review.apply", { count: selected })}
+            {omissions
+              ? t("omissions.review.apply", { count: selected })
+              : t("review.apply", { count: selected })}
           </Button>
         )}
       </div>
@@ -258,13 +320,44 @@ export function ProposalReview({
   );
 }
 
-function Notes({ title, notes }: { title: string; notes: string[] }) {
+function Notes({
+  title,
+  notes,
+  copyable = false,
+}: {
+  title: string;
+  notes: string[];
+  // Whether the list copies, numbered, to send on.
+  copyable?: boolean;
+}) {
+  const t = useScopedI18n("proposal");
   if (notes.length === 0) {
     return null;
   }
+  const copy = async () => {
+    const text = notes.map((note, index) => `${index + 1}. ${note}`).join("\n");
+    if (await copyText(text)) {
+      toast.success(t("omissions.review.copied"));
+    } else {
+      toast.error(text);
+    }
+  };
   return (
     <div className="grid content-start gap-1.5">
-      <p className="m-0 text-label uppercase text-ink-3">{title}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="m-0 text-label uppercase text-ink-3">{title}</p>
+        {copyable && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-my-1"
+            onClick={() => void copy()}
+          >
+            <Icons.Copy aria-hidden />
+            {t("omissions.review.copy")}
+          </Button>
+        )}
+      </div>
       <ul className="m-0 grid list-disc gap-1 pl-5 text-body text-ink-2">
         {notes.map((note) => (
           <li key={note}>{note}</li>
@@ -447,6 +540,18 @@ function ReviewItem({ item }: { item: ProposalItem }) {
           </p>
         )}
         {item.note && <p className="m-0 text-meta text-ink-2">{item.note}</p>}
+        {item.basis.length > 0 && (
+          <p className="m-0 line-clamp-2 text-meta text-ink-3">
+            {t("omissions.review.basis", {
+              titles: item.basis.map((line) => line.title).join(", "),
+            })}
+          </p>
+        )}
+        {item.duplicateOf && (
+          <p className="m-0 text-meta text-warning">
+            {t("omissions.review.duplicate", { title: item.duplicateOf })}
+          </p>
+        )}
         <Button
           variant="link"
           size="sm"
