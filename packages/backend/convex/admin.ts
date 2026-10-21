@@ -27,7 +27,7 @@ async function findUserByEmail(ctx: MutationCtx, email: string) {
     .first();
   if (!lower) {
     throw new Error(
-      `No user signed in with ${trimmed} yet. Sign in once with Google, then run this again.`,
+      `No user signed in with ${trimmed} yet. Sign in once, then run this again.`,
     );
   }
   return lower;

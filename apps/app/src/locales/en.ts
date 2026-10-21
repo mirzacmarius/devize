@@ -33,6 +33,24 @@ export default {
     description:
       "Build estimates with manufacturers' norms and up-to-date prices.",
     google: "Continue with Google",
+    or: "or",
+    email: "Email",
+    emailPlaceholder: "name@company.com",
+    emailInvalid: "Enter a valid email address.",
+    sendCode: "Email me a code",
+    sendFailed:
+      "We couldn't send the code. Check the address or try again in a minute.",
+    tooManyCodes:
+      "You've asked for too many codes. Try again in a few minutes.",
+    codeSent: "We sent an 8-digit code to {email}. It expires in 15 minutes.",
+    code: "Code from the email",
+    codeLength: "The code has 8 digits.",
+    verify: "Sign in",
+    codeWrong:
+      "That code is wrong or has expired. Check it or ask for another.",
+    otherEmail: "Use another address",
+    resend: "Send another code",
+    resendIn: "Another code in {seconds} s",
   },
   username: {
     label: "Username",

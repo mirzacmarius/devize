@@ -26,6 +26,12 @@ export default defineSchema({
     // Devize staff. Granted with `bunx convex run admin:grantSuperAdmin`.
     role: v.optional(v.literal("superadmin")),
   }).index("email", ["email"]),
+  // When sign-in codes were emailed, so one address can't be flooded with
+  // them (see emailSignIn.ts).
+  emailCodeSends: defineTable({
+    email: v.string(),
+    sentAt: v.number(),
+  }).index("by_email_and_sentAt", ["email", "sentAt"]),
   ...accountTables,
   ...catalogTables,
   ...priceTables,
