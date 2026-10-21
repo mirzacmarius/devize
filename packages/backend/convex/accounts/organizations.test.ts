@@ -25,6 +25,31 @@ describe("organizations", () => {
     });
   });
 
+  test("of two firms used in the same millisecond, the one joined later comes first", async () => {
+    const t = setup();
+    const ana = await signIn(t, { name: "Ana" });
+    await ana.as.mutation(api.accounts.organizations.create, {
+      name: "Prima SRL",
+    });
+    await ana.as.mutation(api.accounts.organizations.create, {
+      name: "A doua SRL",
+    });
+    // As when a firm is created and another one joined right after.
+    await t.run(async (ctx) => {
+      const memberships = await ctx.db
+        .query("memberships")
+        .withIndex("by_userId", (q) => q.eq("userId", ana.userId))
+        .collect();
+      for (const membership of memberships) {
+        await ctx.db.patch("memberships", membership._id, {
+          lastActiveAt: Date.UTC(2026, 9, 21, 12),
+        });
+      }
+    });
+    const firms = await ana.as.query(api.accounts.organizations.listMine, {});
+    expect(firms.map((firm) => firm.name)).toEqual(["A doua SRL", "Prima SRL"]);
+  });
+
   test("a firm that doesn't charge VAT starts with a VAT rate of 0, and gets 21% once it does", async () => {
     const t = setup();
     const ana = await signIn(t, { name: "Ana" });

@@ -97,16 +97,24 @@ export const listMine = query({
     for (const membership of memberships) {
       const firm = await ctx.db.get("organizations", membership.organizationId);
       if (firm) {
-        firms.push({
-          _id: firm._id,
-          name: firm.name,
-          kind: firm.kind,
-          role: membership.role,
-          lastActiveAt: membership.lastActiveAt,
-        });
+        firms.push({ firm, membership });
       }
     }
-    return firms.sort((a, b) => b.lastActiveAt - a.lastActiveAt);
+    // The firm used last comes first. Two can be used in the same millisecond,
+    // such as a firm created and another joined right after: the membership
+    // made later wins.
+    firms.sort(
+      (a, b) =>
+        b.membership.lastActiveAt - a.membership.lastActiveAt ||
+        b.membership._creationTime - a.membership._creationTime,
+    );
+    return firms.map(({ firm, membership }) => ({
+      _id: firm._id,
+      name: firm.name,
+      kind: firm.kind,
+      role: membership.role,
+      lastActiveAt: membership.lastActiveAt,
+    }));
   },
 });
 
