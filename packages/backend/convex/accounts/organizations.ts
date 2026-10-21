@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Infer } from "convex/values";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
-import type { MutationCtx } from "../_generated/server";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { mutation, query } from "../_generated/server";
 import { markups } from "../estimates/validators";
 import { getMembership, requireMember, requireUserId } from "../lib/access";
@@ -80,9 +80,28 @@ export async function insertFirm(
     organizationId,
     userId,
     role: "owner",
-    lastActiveAt: Date.now(),
+    lastActiveAt: await nextActiveAt(ctx, userId),
   });
   return organizationId;
+}
+
+/**
+ * When the firm a user picks, joins or creates now was last used: now, or
+ * just after the firm they used before if that was in the same millisecond,
+ * so the one picked last always comes first.
+ */
+export async function nextActiveAt(
+  ctx: QueryCtx,
+  userId: Id<"users">,
+): Promise<number> {
+  const memberships = await ctx.db
+    .query("memberships")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .take(MAX_FIRMS_PER_USER);
+  return Math.max(
+    Date.now(),
+    ...memberships.map((membership) => membership.lastActiveAt + 1),
+  );
 }
 
 /** Creates a firm with the signed-in user as its owner. */
@@ -120,9 +139,8 @@ export const listMine = query({
         firms.push({ firm, membership });
       }
     }
-    // The firm used last comes first. Two can be used in the same millisecond,
-    // such as a firm created and another joined right after: the membership
-    // made later wins.
+    // The firm used last comes first. nextActiveAt keeps their times apart;
+    // a tie left from before goes to the membership made later.
     firms.sort(
       (a, b) =>
         b.membership.lastActiveAt - a.membership.lastActiveAt ||
@@ -163,7 +181,7 @@ export const setActive = mutation({
   handler: async (ctx, args) => {
     const { membership } = await requireMember(ctx, args.organizationId);
     await ctx.db.patch("memberships", membership._id, {
-      lastActiveAt: Date.now(),
+      lastActiveAt: await nextActiveAt(ctx, membership.userId),
     });
     return null;
   },
