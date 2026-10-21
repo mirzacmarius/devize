@@ -3,8 +3,9 @@ import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
-import { internalMutation, query } from "../_generated/server";
+import { env, internalMutation, query } from "../_generated/server";
 import { requireSuperAdmin } from "../lib/roles";
+import { aiModel } from "./models";
 import { type AiUsage, addUsage, costUsd, emptyUsage } from "./pricing";
 import { type aiConfidence, type aiJobKind, aiUsage } from "./validators";
 
@@ -187,6 +188,19 @@ export const costSummary = query({
       jobs: jobs.length,
       failed: jobs.filter((job) => job.status === "failed").length,
       costUsd: jobs.reduce((sum, job) => sum + (job.costUsd ?? 0), 0),
+    };
+  },
+});
+
+/** Whether the Claude API key is set, and the model new jobs use. */
+export const apiStatus = query({
+  args: {},
+  returns: v.object({ hasApiKey: v.boolean(), model: v.string() }),
+  handler: async (ctx) => {
+    await requireSuperAdmin(ctx);
+    return {
+      hasApiKey: Boolean(env.ANTHROPIC_API_KEY?.trim()),
+      model: aiModel(),
     };
   },
 });
