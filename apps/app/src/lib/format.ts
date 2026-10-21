@@ -32,6 +32,14 @@ export function formatPercent(value: number, locale: Locale): string {
   return `${decimalFormat(locale, 0, 2).format(value)}%`;
 }
 
+/** A number to put back in a text field: no thousands separators, up to four decimals. */
+export function formatInputNumber(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(intlLocale(locale), {
+    useGrouping: false,
+    maximumFractionDigits: 4,
+  }).format(value);
+}
+
 /** Hours of work: 26,4. */
 export function formatHours(value: number, locale: Locale): string {
   return decimalFormat(locale, 0, 1).format(value);
@@ -73,6 +81,19 @@ export function formatTime(timestamp: number, locale: Locale): string {
     minute: "2-digit",
     hourCycle: "h23",
   }).format(new Date(timestamp));
+}
+
+const unitLabels: Record<Locale, Record<string, string>> = {
+  ro: { ora: "oră" },
+  en: { ora: "h", zi: "day", buc: "pcs" },
+};
+
+/**
+ * A unit as people read it. Units are stored in their canonical spelling
+ * (convex/lib/text.ts), which writes "ora" without its diacritic.
+ */
+export function formatUnit(unit: string, locale: Locale): string {
+  return unitLabels[locale][unit] ?? unit;
 }
 
 /** Today's date as YYYY-MM-DD in the browser's time zone, for date inputs. */

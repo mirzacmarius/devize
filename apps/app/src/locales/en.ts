@@ -5,6 +5,14 @@ export default {
     appName: "Devize",
     appDescription:
       "Construction estimates with manufacturers' norms and up-to-date store prices.",
+    save: "Save",
+    cancel: "Cancel",
+    close: "Close",
+    confirmDelete: "Sure? Click again",
+    loading: "Loading…",
+    notSet: "Not set",
+    actions: "Actions",
+    loadMore: "Load more",
   },
   navigation: {
     main: "Main navigation",
@@ -63,18 +71,106 @@ export default {
   },
   clients: {
     title: "Clients",
-    description: "Your clients and the offers sent to each of them.",
-    emptyTitle: "The client list is coming soon",
+    description:
+      "Your clients, with the details shown on estimates and offers.",
+    new: "New client",
+    searchPlaceholder: "Search clients by name",
+    emptyTitle: "No clients yet",
     emptyDescription:
-      "You'll keep your clients' details here and see which offers they received and which they accepted.",
+      "Add each client once, with their details, then pick them on every estimate.",
+    emptyAction: "Add your first client",
+    noResults: "No client matches “{text}”.",
+    columns: {
+      name: "Name",
+      contact: "Contact",
+      address: "Address",
+    },
+    kinds: {
+      person: "Individual",
+      company: "Company",
+    },
+    newTitle: "New client",
+    editTitle: "Edit client",
+    sheetDescription:
+      "These details appear on the client's estimates and offers.",
+    fields: {
+      kind: "Type",
+      namePerson: "Full name",
+      nameCompany: "Company name",
+      cui: "Tax ID (CUI)",
+      phone: "Phone",
+      email: "Email",
+      address: "Address",
+      notes: "Notes",
+      notesHint: "Only for your company; the client never sees them.",
+    },
+    nameRequired: "Enter the client's name.",
+    cuiInvalid: "This CUI fails the control digit check.",
+    create: "Add client",
+    saved: "Client saved",
+    created: "Client added",
+    delete: "Delete client",
+    deleted: "Client deleted",
   },
   rates: {
     title: "Rates",
     description:
-      "Your company's labour and equipment rates and the percentages in the summary.",
-    emptyTitle: "Rates are coming soon",
-    emptyDescription:
-      "You'll set hourly rates per trade, equipment rates and the default percentages: CAM, indirect costs and profit.",
+      "What the company pays for labour, equipment and transport, and the markups its estimates add.",
+    new: "New rate",
+    ratesTitle: "Labour, equipment and transport",
+    ratesDescription:
+      "New line items use these rates instead of the norms' reference prices. A rate only applies to resources counted in its unit.",
+    columns: {
+      rate: "Rate",
+      unit: "Unit",
+      price: "Price (lei)",
+    },
+    kinds: {
+      labor: "Labour",
+      equipment: "Equipment",
+      transport: "Transport",
+    },
+    noRates: "No rates: norms use their reference prices.",
+    forAll: "For every resource counted in {unit}",
+    forResource: "For one resource",
+    edit: "Edit {name}",
+    remove: "Delete {name}",
+    removed: "Rate deleted",
+    markupsTitle: "Default markups",
+    markupsDescription:
+      "Every new estimate copies them; you can change them on the estimate.",
+    markupsInvalid: "Each markup must be a number from 0 to 100.",
+    markupsSaved: "Markups saved",
+    notVatPayer:
+      "The company isn't registered for VAT, so new estimates have 0% VAT.",
+    newTitle: "New rate",
+    editTitle: "Edit rate",
+    dialogDescription:
+      "The rate replaces the norms' reference price for resources counted in the same unit.",
+    fields: {
+      kind: "Type",
+      scope: "Applies to",
+      resource: "Resource",
+      name: "Name",
+      unit: "Unit",
+      price: "Price",
+    },
+    scopeAll: "Every resource",
+    scopeResource: "One resource",
+    scopeAllHint:
+      "For example, 45 lei an hour for any labour without its own rate.",
+    scopeResourceHint:
+      "For example, a rate for tilers only. It wins over the general rate.",
+    changeResource: "Choose another resource",
+    namePlaceholders: {
+      labor: "e.g. General labour",
+      equipment: "e.g. Equipment",
+      transport: "e.g. Material transport",
+    },
+    perUnit: "lei/{unit}",
+    resourceRequired: "Choose the resource.",
+    priceInvalid: "Enter a positive price, such as 45 or 45.50.",
+    saved: "Rate saved",
   },
   settings: {
     title: "Settings",
@@ -497,6 +593,7 @@ export default {
     invalidLength: "The text is too long.",
     invalidResources:
       "Check the resources: each needs a name, a unit and a quantity.",
+    invalidMarkup: "Each markup must be between 0% and 100%.",
     invalidResourceRate: "The rate must use the same unit as the resource.",
     inUseCode: "Another norm in the catalog already uses this code.",
     inUseEstimates: "This client has estimates, so it can't be deleted.",
@@ -507,5 +604,33 @@ export default {
       "The estimate was sent and is locked. Create a revision to change it.",
     lockedOffer: "The offer was already sent to the client.",
     lockedNorm: "The norm is published. Create a new version to change it.",
+  },
+  markups: {
+    cam: {
+      label: "CAM",
+      hint: "The employer's work insurance contribution, on labour.",
+    },
+    indirect: {
+      label: "Indirect costs",
+      hint: "On the direct costs.",
+    },
+    profit: {
+      label: "Profit",
+      hint: "On the direct and indirect costs.",
+    },
+    vat: {
+      label: "VAT",
+      hint: "On the total without VAT; 0% if the company isn't registered.",
+    },
+  },
+  resources: {
+    searchPlaceholder: "Search resources by name",
+    noResults: "No resource matches.",
+    kinds: {
+      material: "Material",
+      labor: "Labour",
+      equipment: "Equipment",
+      transport: "Transport",
+    },
   },
 } as const satisfies Dictionary;

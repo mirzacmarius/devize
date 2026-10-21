@@ -3,6 +3,14 @@ export default {
     appName: "Devize",
     appDescription:
       "Devize de construcții cu norme de la producători și prețuri la zi din magazine.",
+    save: "Salvează",
+    cancel: "Renunță",
+    close: "Închide",
+    confirmDelete: "Sigur? Apasă din nou",
+    loading: "Se încarcă…",
+    notSet: "Necompletat",
+    actions: "Acțiuni",
+    loadMore: "Încarcă mai multe",
   },
   navigation: {
     main: "Navigație principală",
@@ -61,18 +69,103 @@ export default {
   },
   clients: {
     title: "Clienți",
-    description: "Clienții tăi și ofertele trimise fiecăruia.",
-    emptyTitle: "Lista de clienți vine în curând",
+    description: "Clienții tăi, cu datele care apar pe devize și oferte.",
+    new: "Client nou",
+    searchPlaceholder: "Caută un client după nume",
+    emptyTitle: "Încă nu ai clienți",
     emptyDescription:
-      "Vei păstra aici datele clienților și vei vedea ce oferte au primit și pe care le-au acceptat.",
+      "Adaugă-i o singură dată, cu datele lor, și alege-i apoi pe fiecare deviz.",
+    emptyAction: "Adaugă primul client",
+    noResults: "Niciun client nu se potrivește cu „{text}”.",
+    columns: {
+      name: "Nume",
+      contact: "Contact",
+      address: "Adresă",
+    },
+    kinds: {
+      person: "Persoană fizică",
+      company: "Firmă",
+    },
+    newTitle: "Client nou",
+    editTitle: "Editează clientul",
+    sheetDescription: "Datele apar pe devizele și ofertele clientului.",
+    fields: {
+      kind: "Tip",
+      namePerson: "Nume și prenume",
+      nameCompany: "Denumirea firmei",
+      cui: "CUI",
+      phone: "Telefon",
+      email: "Email",
+      address: "Adresă",
+      notes: "Note",
+      notesHint: "Doar pentru firma ta; clientul nu le vede.",
+    },
+    nameRequired: "Scrie numele clientului.",
+    cuiInvalid: "CUI-ul nu trece verificarea cifrei de control.",
+    create: "Adaugă clientul",
+    saved: "Clientul a fost salvat",
+    created: "Clientul a fost adăugat",
+    delete: "Șterge clientul",
+    deleted: "Clientul a fost șters",
   },
   rates: {
     title: "Tarife",
     description:
-      "Tarifele firmei pentru manoperă și utilaje și procentele din recapitulație.",
-    emptyTitle: "Tarifele vin în curând",
-    emptyDescription:
-      "Vei seta tariful orar pe meserii, tarifele utilajelor și procentele implicite: CAM, cheltuieli indirecte și profit.",
+      "Cât plătește firma pentru manoperă, utilaje și transport și ce cote adaugă devizele.",
+    new: "Tarif nou",
+    ratesTitle: "Manoperă, utilaje și transport",
+    ratesDescription:
+      "Articolele noi folosesc aceste tarife în locul prețurilor de referință din norme. Un tarif se aplică doar resurselor socotite în unitatea lui.",
+    columns: {
+      rate: "Tarif",
+      unit: "U.M.",
+      price: "Preț (lei)",
+    },
+    kinds: {
+      labor: "Manoperă",
+      equipment: "Utilaje",
+      transport: "Transport",
+    },
+    noRates: "Niciun tarif: normele folosesc prețurile lor de referință.",
+    forAll: "Pentru toate resursele socotite în {unit}",
+    forResource: "Pentru o singură resursă",
+    edit: "Editează {name}",
+    remove: "Șterge {name}",
+    removed: "Tariful a fost șters",
+    markupsTitle: "Cote implicite",
+    markupsDescription:
+      "Fiecare deviz nou le copiază; le poți schimba apoi pe deviz.",
+    markupsInvalid: "Fiecare cotă trebuie să fie un număr între 0 și 100.",
+    markupsSaved: "Cotele au fost salvate",
+    notVatPayer: "Firma nu e plătitoare de TVA, așa că devizele noi au TVA 0%.",
+    newTitle: "Tarif nou",
+    editTitle: "Editează tariful",
+    dialogDescription:
+      "Tariful înlocuiește prețul de referință din norme pentru resursele socotite în aceeași unitate.",
+    fields: {
+      kind: "Tip",
+      scope: "Se aplică",
+      resource: "Resursa",
+      name: "Denumire",
+      unit: "U.M.",
+      price: "Preț",
+    },
+    scopeAll: "Tuturor resurselor",
+    scopeResource: "Unei resurse",
+    scopeAllHint:
+      "De exemplu, 45 lei pe oră pentru orice manoperă fără tarif propriu.",
+    scopeResourceHint:
+      "De exemplu, un tarif doar pentru faianțar. Are întâietate față de tariful general.",
+    changeResource: "Alege altă resursă",
+    namePlaceholders: {
+      labor: "ex. Manoperă generală",
+      equipment: "ex. Utilaje",
+      transport: "ex. Transport materiale",
+    },
+    perUnit: "lei/{unit}",
+    resourceRequired: "Alege resursa.",
+    priceInvalid: "Scrie un preț pozitiv, de exemplu 45 sau 45,50.",
+    saved: "Tariful a fost salvat",
   },
   settings: {
     title: "Setări",
@@ -496,6 +589,7 @@ export default {
     invalidLength: "Textul e prea lung.",
     invalidResources:
       "Verifică resursele: fiecare are nevoie de nume, unitate și cantitate.",
+    invalidMarkup: "Fiecare cotă trebuie să fie între 0% și 100%.",
     invalidResourceRate: "Tariful trebuie să aibă aceeași unitate ca resursa.",
     inUseCode: "Codul e folosit deja de altă normă din catalog.",
     inUseEstimates: "Clientul are devize, așa că nu poate fi șters.",
@@ -505,5 +599,33 @@ export default {
       "Devizul e trimis și blocat. Creează o revizie ca să-l modifici.",
     lockedOffer: "Oferta a fost deja trimisă clientului.",
     lockedNorm: "Norma e publicată. Creează o versiune nouă ca s-o modifici.",
+  },
+  markups: {
+    cam: {
+      label: "CAM",
+      hint: "Contribuția asiguratorie pentru muncă, din manoperă.",
+    },
+    indirect: {
+      label: "Cheltuieli indirecte",
+      hint: "Din costurile directe.",
+    },
+    profit: {
+      label: "Profit",
+      hint: "Din costurile directe și cele indirecte.",
+    },
+    vat: {
+      label: "TVA",
+      hint: "Din totalul fără TVA; 0% dacă firma nu e plătitoare.",
+    },
+  },
+  resources: {
+    searchPlaceholder: "Caută o resursă după nume",
+    noResults: "Nicio resursă nu se potrivește.",
+    kinds: {
+      material: "Material",
+      labor: "Manoperă",
+      equipment: "Utilaj",
+      transport: "Transport",
+    },
   },
 } as const;

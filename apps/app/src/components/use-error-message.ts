@@ -59,6 +59,9 @@ export function useErrorMessage() {
       if (!appError) {
         return t("unknown");
       }
+      if (appError.detail?.startsWith("markups.")) {
+        return t("invalidMarkup");
+      }
       const key =
         (appError.detail && detailKeys[appError.code]?.[appError.detail]) ||
         codeKeys[appError.code];
