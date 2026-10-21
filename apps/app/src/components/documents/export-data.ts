@@ -55,13 +55,17 @@ export function exportData(
   };
 }
 
-/** A PDF's name: the Deviz's code and a title, without what file systems refuse. */
-export function fileName(code: string, title: string): string {
+/** A file's name: the Deviz's code and a title, without what file systems refuse. */
+export function fileName(
+  code: string,
+  title: string,
+  extension = "pdf",
+): string {
   const clean = title
     .replace(/[\\/:*?"<>|]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 80)
     .trim();
-  return clean ? `${code} ${clean}.pdf` : `${code}.pdf`;
+  return clean ? `${code} ${clean}.${extension}` : `${code}.${extension}`;
 }

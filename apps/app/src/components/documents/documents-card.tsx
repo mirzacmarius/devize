@@ -14,16 +14,20 @@ import { useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./export-data";
 import { FormsSheet } from "./forms-sheet";
 import { TenderListSheet } from "./tender-list-sheet";
-import { useDownloadDocuments } from "./use-download-documents";
+import {
+  type DocumentsFormat,
+  useDownloadDocuments,
+} from "./use-download-documents";
 
 /**
- * A Deviz as documents: the PDF for its client, a tender's official forms
- * and the authority's own list filled in.
+ * A Deviz as documents: the PDF or the Excel for its client, a tender's
+ * official forms and the authority's own list filled in.
  */
 export function DocumentsCard({ estimate }: { estimate: Estimate }) {
   const t = useScopedI18n("documents");
   const download = useDownloadDocuments(estimate);
-  const [downloading, setDownloading] = useState(false);
+  // The client's Deviz being made, as a PDF or in Excel.
+  const [downloading, setDownloading] = useState<DocumentsFormat>();
   const [formsOpen, setFormsOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const empty = estimate.lineItems.length === 0;
@@ -31,10 +35,10 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
   // back priced in its own file.
   const tender = estimate.lineItems.some((item) => item.tenderRef);
 
-  const downloadDeviz = async () => {
-    setDownloading(true);
-    await download(["DEVIZ"], { withValues: true }, estimate.title);
-    setDownloading(false);
+  const downloadDeviz = async (format: DocumentsFormat) => {
+    setDownloading(format);
+    await download(["DEVIZ"], { withValues: true }, estimate.title, format);
+    setDownloading(undefined);
   };
 
   return (
@@ -50,18 +54,24 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
             title={t("deviz.title")}
             hint={t("deviz.hint")}
           >
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={empty || downloading}
-              onClick={downloadDeviz}
-            >
-              {downloading && (
-                <Icons.Loader className="animate-spin" aria-hidden />
-              )}
-              {t("deviz.download")}
-            </Button>
+            <div className="flex shrink-0 gap-2">
+              {(["pdf", "xlsx"] as const).map((format) => (
+                <Button
+                  key={format}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-label={t(`deviz.download.${format}`)}
+                  disabled={empty || downloading !== undefined}
+                  onClick={() => downloadDeviz(format)}
+                >
+                  {downloading === format && (
+                    <Icons.Loader className="animate-spin" aria-hidden />
+                  )}
+                  {t(`deviz.formats.${format}`)}
+                </Button>
+              ))}
+            </div>
           </DocumentRow>
           <DocumentRow
             icon={<Icons.OfficialForms aria-hidden />}
