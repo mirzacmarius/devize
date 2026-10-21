@@ -15,6 +15,7 @@ import { estimateKind, takeoffRow } from "../estimates/validators";
 import { requireFirmDoc } from "../lib/access";
 import { appError, invalid } from "../lib/errors";
 import { normalizeText } from "../lib/text";
+import { compatibilityFindings } from "../systems/check";
 import { MAX_LINES } from "./lib/omissions";
 import {
   checkQuota,
@@ -37,6 +38,10 @@ import { proposedResource } from "./validators";
 // What the request shows of an article's norm and materials.
 const MAX_NOTE = 200;
 const MAX_MATERIALS = 8;
+
+// What it shows of the compatibility check's findings.
+const MAX_FLAGGED = 40;
+const MAX_SENTENCE = 400;
 
 /**
  * Asks Devize AI which works the Deviz misses. It works in the background;
@@ -209,6 +214,9 @@ export const begin = internalMutation({
       }),
       lines: v.array(devizLine),
       more: v.number(),
+      flagged: v.array(
+        v.object({ keys: v.array(v.string()), sentence: v.string() }),
+      ),
     }),
   ),
   handler: async (ctx, args) => {
@@ -262,6 +270,16 @@ export const begin = internalMutation({
         ].slice(0, MAX_MATERIALS),
       });
     }
+    // What the compatibility check already found about these articles, so
+    // the model doesn't propose it again (docs/adr/0028).
+    const keys = new Map(lines.map((line) => [line.lineItemId, line.key]));
+    const flagged = (await compatibilityFindings(ctx, estimate))
+      .map((finding) => ({
+        keys: finding.lineItemIds.flatMap((id) => keys.get(id) ?? []),
+        sentence: finding.sentence.slice(0, MAX_SENTENCE),
+      }))
+      .filter((finding) => finding.keys.length > 0)
+      .slice(0, MAX_FLAGGED);
     return {
       jobId: job._id,
       model: job.model ?? defaultModel,
@@ -274,6 +292,7 @@ export const begin = internalMutation({
       },
       lines,
       more: Math.max(0, sorted.length - lines.length),
+      flagged,
     };
   },
 });

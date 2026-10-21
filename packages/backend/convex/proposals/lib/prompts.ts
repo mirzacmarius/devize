@@ -270,7 +270,7 @@ export const omissionsSystemPrompt = `Ești verificatorul de devize al aplicați
 CUM LUCREZI
 1. Înțelege lucrarea din titlu, din descriere și din articole: ce se demontează, ce se construiește, ce finisaje se pun și unde (baie, bucătărie, fațadă, acoperiș).
 2. Pentru fiecare articol, gândește-te ce lucrări îl preced, îl însoțesc sau îl urmează pe șantier și verifică dacă sunt în deviz. Un articol poate cuprinde deja o lucrare: citește ce include norma lui și materialele lui înainte să spui că lipsește ceva.
-3. Propui doar ce lipsește cu adevărat. Nu repeți un articol existent sub alt nume, nu propui îmbunătățiri opționale (le pui ca întrebări pentru client) și nu propui ce descrierea exclude.
+3. Propui doar ce lipsește cu adevărat. Nu repeți un articol existent sub alt nume, nu propui îmbunătățiri opționale (le pui ca întrebări pentru client) și nu propui ce descrierea exclude. Nu propui din nou și nu repeți în observații ce a semnalat deja verificarea de compatibilitate a devizului (lista de la finalul cererii, când există): constructorul vede acolo și remedierea.
 4. Cantitatea o scoți din articolele pe care se bazează: hidroizolația din suprafața placată în zona umedă și din pardoseala băii, amorsa din suprafața tencuită sau zugrăvită, molozul din ce se demolează, cu masa obișnuită a materialelor, schela din suprafața fațadei. Când trebuie să presupui ceva, o spui în motiv, iar încrederea e medium.
 
 CE SE UITĂ DES
@@ -295,7 +295,7 @@ LUCRĂRI ȘI RESURSE
 - Cel mult 15 lucrări, cele mai importante.
 
 LICITAȚII
-La un deviz de licitație publică, articolele sunt pozițiile din listele autorității contractante, iar ofertantul nu le poate completa cu poziții noi. Acolo nu scrii lucrări lipsă: le scrii ca clarificări de cerut autorității, fiecare cu pozițiile pe care le privește, de exemplu „Lista nu cuprinde evacuarea molozului rezultat din desfacerea pardoselii (poz. 3). Vă rugăm să precizați dacă se include în poziția 3 sau se adaugă o poziție nouă.”
+La un deviz de licitație publică, articolele sunt pozițiile din listele autorității contractante, iar ofertantul nu le poate completa cu poziții noi. Acolo nu scrii lucrări lipsă: le scrii ca clarificări de cerut autorității, fiecare cu pozițiile pe care le privește, de exemplu „Lista nu cuprinde evacuarea molozului rezultat din desfacerea pardoselii (poz. 3). Vă rugăm să precizați dacă se include în poziția 3 sau se adaugă o poziție nouă.” Ceri totuși așa și lucrările lipsă pe care le-a semnalat verificarea de compatibilitate, fiindcă ofertantul nu le poate adăuga singur.
 
 Scrii în română, cu diacritice corecte (ș și ț cu virgulă dedesubt).`;
 
@@ -316,6 +316,12 @@ export type DevizLine = {
   materials: string[];
 };
 
+/** What the compatibility check found, by the keys of its articles. */
+export type FlaggedFinding = {
+  keys: string[];
+  sentence: string;
+};
+
 export type OmissionsInput = {
   title: string;
   kind: "private" | "tender";
@@ -324,6 +330,7 @@ export type OmissionsInput = {
   lines: DevizLine[];
   // Articles left out of the request, past its limit.
   more: number;
+  flagged?: FlaggedFinding[];
 };
 
 function lineText(line: DevizLine) {
@@ -375,6 +382,15 @@ export function omissionsRequest(input: OmissionsInput): string {
     input.more > 0
       ? `\nDevizul mai are ${input.more} articole, care nu încap aici.`
       : "",
+    ...(input.flagged && input.flagged.length > 0
+      ? [
+          "",
+          "Semnalate deja de verificarea de compatibilitate (constructorul le vede acolo, cu remedierea):",
+          ...input.flagged.map(
+            (finding) => `- ${finding.keys.join(", ")}: ${finding.sentence}`,
+          ),
+        ]
+      : []),
   ]
     .filter((line, index, lines) => line !== "" || lines[index - 1] !== "")
     .join("\n")

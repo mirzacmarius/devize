@@ -57,6 +57,7 @@ export const check = internalAction({
                 ...state.estimate,
                 lines: state.lines,
                 more: state.more,
+                flagged: state.flagged,
               }),
             },
           ],

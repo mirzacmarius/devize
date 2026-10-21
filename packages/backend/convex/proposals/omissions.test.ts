@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { api, internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import { defaultModel } from "../ai/models";
+import { compatibilityFindings } from "../systems/check";
 import {
   firmOwner,
   setup,
@@ -386,6 +387,93 @@ describe("omissions", () => {
       unit: "100 mp",
       quantity: 0.2432,
     });
+  });
+
+  test("tell the model what the compatibility check flagged", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    // Made-up Norme de bază, with the codes of the check's systems.
+    const baseNorm = async (code: string, title: string, material: string) => {
+      const normId = await admin.as.mutation(api.catalog.norms.create, {
+        source: "base",
+        code,
+        title,
+        unit: "mp",
+        category: "Pardoseli",
+        resources: [
+          {
+            kind: "material",
+            name: material,
+            unit: "mp",
+            quantity: 1.05,
+            referencePrice: 50,
+          },
+          {
+            kind: "labor",
+            name: "Faianțar",
+            unit: "ora",
+            quantity: 0.5,
+            referencePrice: 40,
+          },
+        ],
+      });
+      await admin.as.mutation(api.catalog.norms.publish, { normId });
+      return normId;
+    };
+    const tilesNormId = await baseNorm(
+      "DV-PRD-03",
+      "Pardoseală din gresie de test",
+      "Gresie porțelanată",
+    );
+    await baseNorm(
+      "DV-HDR-03",
+      "Hidroizolație de test sub placaje",
+      "Mortar hidroizolant elastic",
+    );
+    const laminateNormId = await baseNorm(
+      "DV-PRD-05",
+      "Parchet laminat de test",
+      "Parchet laminat, 8 mm",
+    );
+    const firm = await firmOwner(t, "Ana");
+    const estimateId = await firm.as.mutation(api.estimates.estimates.create, {
+      organizationId: firm.organizationId,
+      title: "Renovare baie",
+    });
+    const add = async (normId: Id<"norms">) =>
+      await firm.as.mutation(api.estimates.lineItems.addFromNorm, {
+        estimateId,
+        normId,
+        quantity: 6,
+      });
+    const tilesId = await add(tilesNormId);
+    const laminateId = await add(laminateNormId);
+
+    const proposalId = await queuedProposal(t, firm, estimateId);
+    const state = await t.mutation(internal.proposals.omissions.begin, {
+      proposalId,
+    });
+    // The laminate in a bathroom, and the waterproofing its tiles lack.
+    const found = await t.run(async (ctx) => {
+      const estimate = await ctx.db.get("estimates", estimateId);
+      return estimate ? await compatibilityFindings(ctx, estimate) : [];
+    });
+    expect(found).toHaveLength(2);
+    const keys = new Map<string, string>([
+      [tilesId, "L1"],
+      [laminateId, "L2"],
+    ]);
+    expect(state?.flagged).toEqual(
+      found.map((finding) => ({
+        keys: finding.lineItemIds.flatMap((id) => keys.get(id) ?? []),
+        sentence: finding.sentence,
+      })),
+    );
+    const sentences = state?.flagged.map((finding) => finding.sentence);
+    expect(sentences?.join("\n")).toContain("Parchet laminat de test");
+    expect(sentences?.join("\n")).toContain(
+      "Hidroizolație de test sub placaje",
+    );
   });
 
   test("find the missing works, leaving out those the Deviz has", async () => {
