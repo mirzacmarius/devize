@@ -83,7 +83,7 @@ A public procurement on SEAP whose documentation includes the lists of work quan
 _Avoid_: Auction, bid (for the procedure itself)
 
 **Listă de cantități** (bill of quantities):
-A Licitație's list of the works to price, formularul F3: for each position its number, often an old indicator code, the work's text, the U.M. and the contracting authority's quantity. Devize imports it into a Deviz without changing the authority's U.M. or quantities, which each Articol keeps in `tenderRef`.
+A Licitație's list of the works to price, formularul F3: for each position its number, often an old indicator code, the work's text, the U.M. and the contracting authority's quantity. Devize imports it into a Deviz without changing the authority's U.M. or quantities, which each Articol keeps in `tenderRef`, and writes the Deviz's prices back into the authority's own .xlsx of the lists, in its layout. See `docs/adr/0023`.
 _Avoid_: Antemăsurătoare (the Constructor's own measuring)
 
 **Formulare oficiale** (official forms):

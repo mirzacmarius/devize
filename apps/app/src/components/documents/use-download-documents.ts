@@ -21,17 +21,20 @@ export async function fontFile(path: string) {
   return response.arrayBuffer();
 }
 
-/** Hands a PDF made in the browser to the person as a download. */
-export function savePdf(bytes: Uint8Array, name: string) {
-  const url = URL.createObjectURL(
-    new Blob([bytes.slice()], { type: "application/pdf" }),
-  );
+/** Hands a file made in the browser to the person as a download. */
+export function saveFile(bytes: Uint8Array, name: string, type: string) {
+  const url = URL.createObjectURL(new Blob([bytes.slice()], { type }));
   const link = document.createElement("a");
   link.href = url;
   link.download = name;
   link.click();
   // The browser has the file once the click is handled.
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
+/** Hands a PDF made in the browser to the person as a download. */
+export function savePdf(bytes: Uint8Array, name: string) {
+  saveFile(bytes, name, "application/pdf");
 }
 
 /**
