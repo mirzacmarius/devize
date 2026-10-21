@@ -18,6 +18,7 @@ import {
   importTone,
   Pill,
   type Tone,
+  useFormat,
   useRun,
 } from "../../../../_components/ui";
 
@@ -57,6 +58,7 @@ export default function NormImportPage() {
   }
   const count = (status: Norm["status"]) =>
     norms.filter((norm) => norm.status === status).length;
+  const published = norms.filter((norm) => norm.publishedAt !== null).length;
 
   return (
     <div className="flex w-full flex-col gap-6">
@@ -89,11 +91,15 @@ export default function NormImportPage() {
               total: norms.length,
             })}
           </span>
+          {published > 0 && (
+            <span>{t("inCatalogCount", { count: published })}</span>
+          )}
           {fileUrl && (
             <ExternalLink href={fileUrl}>{t("openPdf")}</ExternalLink>
           )}
         </div>
         <p className="text-sm text-primary/50">{t("catalogNote")}</p>
+        <Publish normImportId={normImport._id} norms={norms} />
       </div>
 
       <div className="grid w-full gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]">
@@ -123,6 +129,63 @@ export default function NormImportPage() {
   );
 }
 
+/**
+ * Publishes the approved rows that aren't in the catalog yet, one article per
+ * call so a long document stays within a mutation's limits.
+ */
+function Publish({
+  normImportId,
+  norms,
+}: {
+  normImportId: Id<"normImports">;
+  norms: Norm[];
+}) {
+  const t = useScopedI18n("admin.import.publish");
+  const publish = useMutation(api.catalog.publishing.publishImportedNorms);
+  const { run, error, pending } = useRun();
+  const [result, setResult] = useState<{
+    published: number;
+    skipped: number;
+  } | null>(null);
+  const waiting = norms.filter(
+    (norm) => norm.status === "approved" && norm.publishedAt === null,
+  );
+  const articles = [...new Set(waiting.map((norm) => norm.baseCode))];
+
+  const publishAll = () =>
+    run(async () => {
+      const total = { published: 0, skipped: 0 };
+      setResult(null);
+      for (const baseCode of articles) {
+        const done = await publish({ normImportId, baseCode });
+        total.published += done.published;
+        total.skipped += done.skipped;
+        setResult({ ...total });
+      }
+    });
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-3">
+        <Button
+          size="sm"
+          className="w-fit"
+          disabled={pending || articles.length === 0}
+          onClick={publishAll}
+        >
+          {t("button", { count: waiting.length })}
+        </Button>
+        {result && (
+          <span className="text-sm text-primary/60" role="status">
+            {t("result", result)}
+          </span>
+        )}
+      </div>
+      <ErrorText error={error} />
+    </div>
+  );
+}
+
 function Article({
   normImportId,
   article,
@@ -137,6 +200,7 @@ function Article({
   const t = useScopedI18n("admin.import");
   const tAdmin = useScopedI18n("admin");
   const review = useMutation(api.manufacturers.normImports.review);
+  const format = useFormat();
   const { run, error, pending } = useRun();
   const blocked = norms.some((norm) =>
     norm.checks.some((check) => check.level === "error"),
@@ -232,6 +296,11 @@ function Article({
               <Pill tone={normTone[norm.status]}>
                 {tAdmin(`status.norm.${norm.status}`)}
               </Pill>
+              {norm.publishedAt !== null && (
+                <span title={format.date(norm.publishedAt)}>
+                  <Pill tone="info">{t("inCatalog")}</Pill>
+                </span>
+              )}
               <span className="text-sm text-primary/70">{norm.title}</span>
             </div>
             <div className="-mx-2 overflow-x-auto">

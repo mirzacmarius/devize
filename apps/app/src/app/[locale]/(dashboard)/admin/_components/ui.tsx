@@ -186,9 +186,13 @@ function isErrorCode(code: string): code is ErrorCode {
 /** Explains an error code from a mutation or a failed job. */
 export function useErrorText() {
   const t = useScopedI18n("admin.errors");
-  return (code: string | undefined) => {
+  return (code: string | undefined, detail?: string) => {
     if (!code) {
       return t("unknown");
+    }
+    // Publishing names the imported row it couldn't publish.
+    if (code === "invalid" && detail?.startsWith("importedNorm.")) {
+      return t("invalidNorm", { code: detail.slice("importedNorm.".length) });
     }
     return isErrorCode(code) ? t(code) : code;
   };
@@ -214,7 +218,11 @@ export function useRun() {
         data && typeof data === "object" && "code" in data
           ? String(data.code)
           : undefined;
-      setError(errorText(code));
+      const detail =
+        data && typeof data === "object" && "detail" in data
+          ? String(data.detail)
+          : undefined;
+      setError(errorText(code, detail));
       return false;
     } finally {
       setPending(false);
