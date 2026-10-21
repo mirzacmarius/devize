@@ -14,6 +14,7 @@ import {
 import { getMembership, requireMember, requireUserId } from "../lib/access";
 import { emailHtml, escapeHtml, sendEmail } from "../lib/email";
 import { appError, invalid, notFound } from "../lib/errors";
+import { newToken } from "../lib/tokens";
 import { MAX_FIRMS_PER_USER } from "./organizations";
 import { invitedRole } from "./validators";
 
@@ -33,21 +34,13 @@ export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
-function cleanEmail(email: string): string {
+/** A typed address, normalized. Throws `invalid` for one that isn't an address. */
+export function cleanEmail(email: string): string {
   const result = normalizeEmail(email);
   if (result.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(result)) {
     throw invalid("email");
   }
   return result;
-}
-
-/** 24 random bytes in hex: the secret part of an invitation's link. */
-function newToken(): string {
-  const bytes = new Uint8Array(24);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(
-    "",
-  );
 }
 
 async function signInEmail(ctx: QueryCtx, userId: Id<"users">) {

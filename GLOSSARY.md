@@ -112,6 +112,14 @@ _Avoid_: Builder, user (when meaning a contractor)
 A company that makes construction products and publishes Norme de producător for them. ROCKWOOL is the first pilot.
 _Avoid_: Brand, vendor
 
+**Profil de producător** (manufacturer profile):
+A Producător's page in Devize: the Norme de producător and products it publishes, nothing else. Devize makes it from the documents the Producător sends; it shows once the first Normă is published, and goes away if the Producător asks and a super admin agrees. In code: `producers/profiles.ts`, at `/producers/<id>`.
+_Avoid_: Brand page, storefront
+
+**Revendicare** (claim):
+How someone who works for a Producător takes its Profil over for a Firmă: with the link Devize emails to the address that sent the norms, at once with a verified address on one of the Producător's domains, or by a request a super admin checks, with the CUI looked up at ANAF. A Profil belongs to one Firmă. In code: `manufacturerClaims`, `claimLinks` and `manufacturerDomains`. See `docs/adr/0018`.
+_Avoid_: Verification, ownership request
+
 **Furnizor** (supplier):
 A company that sells construction products and publishes price lists or answers requests for quotation.
 _Avoid_: Distributor (unless it only distributes), vendor
