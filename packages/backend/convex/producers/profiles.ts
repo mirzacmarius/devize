@@ -133,6 +133,8 @@ export const get = query({
         title: norm.title,
         status: norm.status,
         reviewNote: norm.reviewNote,
+        // Drafted by Devize AI from a data sheet, still to be checked.
+        fromDatasheet: norm.datasheetImportId !== undefined,
         updatedAt: norm.updatedAt,
       })),
       // What the producer wrote about itself, once it claimed the profile.

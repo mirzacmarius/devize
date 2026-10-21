@@ -28,6 +28,10 @@ _Avoid_: Cost, wage
 A Normă tied to a Producător's actual products, with consumptions taken from their technical data sheets. Example: thermal insulation system X, with its own adhesive and mesh.
 _Avoid_: Branded norm, product recipe
 
+**Fișă tehnică** (technical data sheet):
+A Producător's document for one product: what it is, how much of it a unit of work takes, how it's packed and how to apply it. The Firmă that holds a Profil de producător uploads one as a PDF for Devize AI to write a draft Normă de producător from, with the sheet's page for every figure; the Producător corrects the draft and sends it for review. In code: `datasheetImports`, `producers/datasheets.ts`. See `docs/adr/0022`.
+_Avoid_: Spec sheet, product sheet
+
 **Normă de bază** (base norm):
 A generic Normă with no brand, from Devize's own catalog, written from scratch with current terms and materials. Devize does not use the 1981 norm indicators. The catalog ships with the code, in editions that a super admin publishes from Admin → Catalog de bază; its codes are DV-, the category and a number. Example: DV-ZID-03, 25 cm AAC block masonry. In code: `catalog/baseNorms.ts`. See `docs/adr/0012`.
 _Avoid_: Standard norm, indicator norm
@@ -117,7 +121,7 @@ A company that makes construction products and publishes Norme de producător fo
 _Avoid_: Brand, vendor
 
 **Profil de producător** (manufacturer profile):
-A Producător's page in Devize: the Norme de producător and products it publishes and, once it is claimed, what the Producător writes about itself: a few lines, its site and a technical contact. Devize makes it from the documents the Producător sends; it shows once the first Normă is published, and goes away if the Producător asks and a super admin agrees. The Firmă that claimed it also writes new Norme de producător from it, which the Devize team checks before they reach the catalog, publishing them or sending them back with a note. In code: `producers/profiles.ts` and `producerDetails`, at `/producers/<id>`.
+A Producător's page in Devize: the Norme de producător and products it publishes and, once it is claimed, what the Producător writes about itself: a few lines, its site and a technical contact. Devize makes it from the documents the Producător sends; it shows once the first Normă is published, and goes away if the Producător asks and a super admin agrees. The Firmă that claimed it also writes new Norme de producător from it, by hand or from a Fișă tehnică, which the Devize team checks before they reach the catalog, publishing them or sending them back with a note. In code: `producers/profiles.ts` and `producerDetails`, at `/producers/<id>`.
 _Avoid_: Brand page, storefront
 
 **Revendicare** (claim):

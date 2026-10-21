@@ -4,6 +4,8 @@ import {
   anafRecord,
   claimMethod,
   claimStatus,
+  datasheetCondition,
+  datasheetStatus,
   removalStatus,
 } from "./validators";
 
@@ -92,4 +94,32 @@ export const producerTables = {
     updatedBy: v.id("users"),
     updatedAt: v.number(),
   }).index("by_manufacturerId", ["manufacturerId"]),
+
+  // A technical data sheet the producer's firm uploaded for Devize AI to read
+  // into a draft Normă de producător, each figure with the page it comes
+  // from. The draft is the producer's to check, correct and send for review;
+  // the row keeps what the norm's page shows about where it came from.
+  datasheetImports: defineTable({
+    manufacturerId: v.id("manufacturers"),
+    // The producer's firm, which owns the file and pays for the reading.
+    organizationId: v.id("organizations"),
+    fileId: v.id("files"),
+    // The work the norm should describe, as the producer put it.
+    work: v.optional(v.string()),
+    aiJobId: v.id("aiJobs"),
+    // While reading, the job's own status says whether it failed.
+    status: datasheetStatus,
+    error: v.optional(v.string()),
+    normId: v.optional(v.id("norms")),
+    product: v.optional(
+      v.object({ name: v.string(), packaging: v.optional(v.string()) }),
+    ),
+    conditions: v.optional(v.array(datasheetCondition)),
+    // What the AI says the producer should check before sending the norm.
+    checks: v.optional(v.array(v.string())),
+    createdBy: v.id("users"),
+  })
+    .index("by_manufacturerId", ["manufacturerId"])
+    .index("by_organizationId", ["organizationId"])
+    .index("by_fileId", ["fileId"]),
 };

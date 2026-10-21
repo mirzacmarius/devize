@@ -1335,6 +1335,21 @@ export default {
       notVerified: "Neverificată",
       copiedFrom: "Copiată din",
     },
+    datasheet: {
+      title: "Fișa tehnică",
+      badge: "Citită de Devize AI",
+      description:
+        "Devize AI a scris ciorna din fișa tehnică a produsului. Fiecare cifră are în notă pagina din care vine.",
+      file: "Fișier",
+      deleted: "Fișierul a fost șters",
+      product: "Produs",
+      pages: "Pagini folosite",
+      page: "p. {page}",
+      conditions: "Condiții de aplicare",
+      checks: "De verificat înainte să trimiți norma",
+      estimates:
+        "Cifrele fără pagină sunt estimări Devize AI: corectează-le după datele voastre.",
+    },
     versions: {
       title: "Versiuni",
       name: "Versiunea {version}",
@@ -1715,6 +1730,7 @@ export default {
     jobKind: {
       manufacturer_research: "Cercetare",
       norm_import: "Import norme",
+      datasheet_norm: "Normă din fișa tehnică",
       estimate_proposal: "Propunere deviz",
       tender_import: "Import liste de cantități",
       offer_question: "Întrebare la o ofertă",
@@ -2253,7 +2269,10 @@ export default {
         "Aici sunt primele 500 de norme; le găsești pe toate în catalog.",
       products: "Produse",
       newNorm: "Normă nouă",
+      fromDatasheet: "Din fișa tehnică",
       editDetails: "Editează profilul",
+      noDetails:
+        "Spune-le constructorilor cine sunteți, unde vă găsesc și pe cine pot întreba despre produsele voastre.",
       drafts: "Norme în lucru",
       draftsHint:
         "Le vedeți doar voi și echipa Devize. Trimite-le la verificare din pagina fiecăreia; după verificare apar în catalog.",
@@ -2324,6 +2343,65 @@ export default {
       contactPhone: "Telefon",
       contactPhonePlaceholder: "ex. 0721 000 000",
       saved: "Profilul a fost salvat.",
+    },
+    datasheet: {
+      title: "Normă din fișa tehnică",
+      description:
+        "Încarcă fișa tehnică a unui produs. Devize AI citește consumurile, ambalajul și condițiile de aplicare și scrie o normă ciornă, cu pagina din fișă pentru fiecare cifră. O verifici, o corectezi și o trimiți la verificare.",
+      file: "Fișa tehnică",
+      choose: "Alege PDF-ul fișei tehnice",
+      chooseHint: "sau trage-l aici. Cel mult {max} MB.",
+      remove: "Scoate {name}",
+      notPdf: "{name} nu e un PDF. Încarcă fișa tehnică în format PDF.",
+      tooBig: "PDF-ul e prea mare: cel mult {max} MB.",
+      required: "Alege PDF-ul fișei tehnice.",
+      work: "Lucrarea (opțional)",
+      workPlaceholder:
+        "ex. Lipirea și diblarea plăcilor de vată minerală pe fațadă, cu plasă și masă de șpaclu",
+      workHint:
+        "Dacă produsul are mai multe utilizări, spune pentru care scrie AI-ul norma. Altfel o alege pe cea principală.",
+      privacy:
+        "Fișa merge la Claude, modelul AI al Anthropic, doar pentru această normă, și rămâne în fișierele firmei tale.",
+      submit: "Scrie norma",
+      uploading: "Se încarcă fișa…",
+      starting: "Pornește citirea…",
+      uploadFailed: "Fișa {name} nu s-a încărcat. Încearcă din nou.",
+      started:
+        "Devize AI citește fișa. Ciorna apare la Norme în lucru în câteva minute.",
+      reading:
+        "Devize AI citește fișa și scrie norma. Durează de obicei între unul și trei minute.",
+      deletedFile: "Fișier șters",
+      retry: "Încearcă din nou",
+      retried: "Devize AI citește fișa din nou.",
+      dismiss: "Renunță",
+      statuses: {
+        reading: "Se citește",
+        done: "Gata",
+        failed: "Eșuată",
+      },
+      reasons: {
+        notDatasheet:
+          "Documentul nu pare fișa tehnică a unui produs de construcții.",
+        notPdf: "Fișierul nu e un PDF care se poate citi.",
+        tooManyPages:
+          "PDF-ul are peste {max} de pagini. Încarcă doar fișa tehnică a produsului.",
+        deleted: "Fișierul a fost șters înainte să fie citit.",
+        forbidden: "Firma ta nu mai administrează profilul producătorului.",
+        incomplete:
+          "Din fișă nu a ieșit o normă completă. Încearcă din nou sau spune mai exact lucrarea.",
+        missingKey: "AI-ul nu e configurat încă pe acest server.",
+        keyRejected: "Cheia pentru AI nu mai e valabilă.",
+        noCredit: "Contul de AI nu mai are credit.",
+        timeout: "A durat prea mult. Încearcă din nou.",
+        busy: "Serviciul AI e ocupat acum. Încearcă din nou peste un minut.",
+        refusal: "AI-ul nu a putut lucra cu această fișă.",
+        unknown: "Ceva nu a mers. Încearcă din nou.",
+      },
+      errors: {
+        rateLimited:
+          "Ai trimis multe fișe în ultima oră. Încearcă din nou mai târziu.",
+        notProducer: "Doar firma unui producător scrie norme din fișe tehnice.",
+      },
     },
     removalDialog: {
       title: "Solicită eliminarea profilului {name}",

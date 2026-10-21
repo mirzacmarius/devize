@@ -15,9 +15,10 @@ import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { File as FileIcon, FileUp, X } from "lucide-react";
 import { type DragEvent, type FormEvent, useRef, useState } from "react";
+import { uploadBlob } from "@/lib/upload";
 import { useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
-import { shrinkPhoto, uploadBlob } from "./photos";
+import { shrinkPhoto } from "./photos";
 import { useProposalError } from "./use-proposal-error";
 
 type ListFile = {

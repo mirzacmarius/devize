@@ -110,6 +110,8 @@ export const catalogTables = {
     // Where the norm came from: the imported row and the document's edition
     // and pages.
     importedNormId: v.optional(v.id("importedNorms")),
+    // Or the technical data sheet Devize AI read it from, for the producer.
+    datasheetImportId: v.optional(v.id("datasheetImports")),
     edition: v.optional(v.string()),
     sourcePages: v.optional(v.array(v.number())),
     // The norm a firm copied this one from, to adjust it to its own work.

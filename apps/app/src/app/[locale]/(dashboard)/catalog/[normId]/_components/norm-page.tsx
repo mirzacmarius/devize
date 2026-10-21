@@ -17,6 +17,7 @@ import { NormStatusPill } from "@/components/norm-status";
 import { formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { AboutCard } from "./about-card";
+import { DatasheetCard } from "./datasheet-card";
 import { NormActions } from "./norm-actions";
 import { ResourcesCard } from "./resources-card";
 import { ScopeCard } from "./scope-card";
@@ -77,6 +78,12 @@ export function NormPage({ normId }: { normId: Id<"norms"> }) {
           <ScopeCard norm={norm} />
         </div>
         <div className="grid min-w-0 gap-6">
+          {norm.datasheet && (
+            <DatasheetCard
+              datasheet={norm.datasheet}
+              sourcePages={norm.sourcePages ?? []}
+            />
+          )}
           <AboutCard norm={norm} />
           <VersionsCard norm={norm} />
         </div>
