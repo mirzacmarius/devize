@@ -6,6 +6,7 @@ import { aiTables } from "./ai/tables";
 import { catalogTables } from "./catalog/tables";
 import { estimateTables } from "./estimates/tables";
 import { manufacturerTables } from "./manufacturers/tables";
+import { offerTables } from "./offers/tables";
 import { priceTables } from "./prices/tables";
 import { proposalTables } from "./proposals/tables";
 
@@ -37,6 +38,7 @@ export default defineSchema({
   ...catalogTables,
   ...priceTables,
   ...estimateTables,
+  ...offerTables,
   ...aiTables,
   ...manufacturerTables,
   ...proposalTables,

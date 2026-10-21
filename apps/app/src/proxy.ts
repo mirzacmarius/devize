@@ -27,6 +27,8 @@ const inEveryLanguage = (paths: string[]) =>
   ]);
 
 const isSignInPage = createRouteMatcher(inEveryLanguage(["/login"]));
+// An Ofertă's link, which the firm's client opens without an account.
+const isPublicPage = createRouteMatcher(inEveryLanguage(["/o/:token"]));
 
 export const proxy = convexAuthNextjsMiddleware(
   async (request, { convexAuth }) => {
@@ -38,7 +40,7 @@ export const proxy = convexAuthNextjsMiddleware(
       const next = returnPath(request.nextUrl.searchParams.get("next"));
       return nextjsMiddlewareRedirect(request, next ?? "/");
     }
-    if (!isSignIn && !isAuthenticated) {
+    if (!isSignIn && !isAuthenticated && !isPublicPage(request)) {
       const { pathname, search } = request.nextUrl;
       return nextjsMiddlewareRedirect(request, signInPath(pathname + search));
     }

@@ -115,13 +115,3 @@ export const variantTier = v.union(
   v.literal("standard"),
   v.literal("premium"),
 );
-
-export const offerStatus = v.union(
-  v.literal("draft"),
-  v.literal("sent"),
-  v.literal("viewed"),
-  v.literal("accepted"),
-  v.literal("declined"),
-  v.literal("expired"),
-  v.literal("withdrawn"),
-);

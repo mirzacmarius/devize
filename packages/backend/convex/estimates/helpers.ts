@@ -21,6 +21,47 @@ export async function requireEditableEstimate(
   return { estimate, userId };
 }
 
+/**
+ * Moves a Deviz to `status`, for the firm's buttons and for the client's
+ * answer on an Ofertă's link. Leaving draft locks the Deviz, so what the
+ * client saw can't change; going back to draft unlocks it, unless an Ofertă
+ * is still out or was accepted.
+ */
+export async function changeStatus(
+  ctx: MutationCtx,
+  estimate: Doc<"estimates">,
+  status: Doc<"estimates">["status"],
+) {
+  const now = Date.now();
+  if (status === "draft") {
+    const offers = await ctx.db
+      .query("offers")
+      .withIndex("by_estimateId", (q) => q.eq("estimateId", estimate._id))
+      .take(100);
+    if (
+      offers.some(
+        (offer) =>
+          offer.status === "sent" ||
+          offer.status === "viewed" ||
+          offer.status === "accepted",
+      )
+    ) {
+      throw appError("locked", "offer");
+    }
+    await ctx.db.patch("estimates", estimate._id, {
+      status: "draft",
+      lockedAt: undefined,
+      updatedAt: now,
+    });
+    return;
+  }
+  await ctx.db.patch("estimates", estimate._id, {
+    status,
+    lockedAt: estimate.lockedAt ?? now,
+    updatedAt: now,
+  });
+}
+
 /** A line item and its Deviz, checked like `requireEditableEstimate`. */
 export async function requireEditableLineItem(
   ctx: MutationCtx,

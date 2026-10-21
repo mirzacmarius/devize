@@ -61,8 +61,12 @@ An alternative version of the same Deviz, such as economy, standard and premium,
 _Avoid_: Option, version (a Normă has versions)
 
 **Ofertă** (offer):
-What the client receives: a secure link to a Deviz and its Variante, where they can ask questions, accept and sign. In code: `offers`.
+What the client receives: a secret link to a Deviz and its Variante, which they open without an account to choose, ask questions, then accept with their signature or decline. Sending it locks the Deviz. In code: `offers`, opened at `/o/<token>`. See `docs/adr/0016`.
 _Avoid_: Deviz (for what the client sees), proposal
+
+**Lucrare opțională** (optional work):
+An Articol of an Ofertă that the client may include or leave out; the Firmă says whether it starts included. Every total the client sees is the server's, for what they chose. In code: `offers.optionalItems`.
+_Avoid_: Extra, add-on
 
 ### Public tenders
 
