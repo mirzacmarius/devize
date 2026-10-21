@@ -16,7 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@devize/ui/dropdown-menu";
-import { useMutation } from "convex/react";
+import { Icons } from "@devize/ui/icons";
+import { useMutation, useQuery } from "convex/react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -26,10 +27,15 @@ import { useRun } from "@/components/use-run";
 import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
 
-/** The Firmă the user works in, raised on the shell, with the others and "Firmă nouă" in its menu. */
+/**
+ * The Firmă the user works in, raised on the shell, with the others, the
+ * invitations from other firms and "Firmă nouă" in its menu.
+ */
 export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
   const t = useScopedI18n("firm");
+  const tInvite = useScopedI18n("invite");
   const { firm, firms } = useFirm();
+  const invitations = useQuery(api.accounts.invitations.listMine) ?? [];
   const setActive = useMutation(api.accounts.organizations.setActive);
   const run = useRun();
   const router = useRouter();
@@ -53,9 +59,13 @@ export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
         <DropdownMenuTrigger className="grid w-full grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-3 rounded-md bg-selected px-2 py-2 text-left shadow-raised transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <span
             aria-hidden
-            className="grid size-8 place-items-center rounded-sm bg-muted text-[12px] font-semibold tracking-[0.02em] text-ink-2"
+            className="relative grid size-8 place-items-center rounded-sm bg-muted text-[12px] font-semibold tracking-[0.02em] text-ink-2"
           >
             {initials(firm.name)}
+            {invitations.length > 0 && (
+              // An invitation waits in the menu.
+              <span className="absolute -right-1 -top-1 size-2.5 rounded-full bg-brand ring-2 ring-selected" />
+            )}
           </span>
           <span className="grid min-w-0">
             <span className="truncate text-body font-medium text-ink">
@@ -66,7 +76,11 @@ export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
             </span>
           </span>
           <ChevronsUpDown className="size-4 text-ink-3" aria-hidden />
-          <span className="sr-only">{t("switch")}</span>
+          <span className="sr-only">
+            {t("switch")}
+            {invitations.length > 0 &&
+              ` · ${tInvite("menuLabel")}: ${invitations.length}`}
+          </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" sideOffset={6} className="w-60">
           <DropdownMenuLabel className="text-label uppercase text-ink-3">
@@ -80,6 +94,28 @@ export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
               )}
             </DropdownMenuItem>
           ))}
+          {invitations.length > 0 && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-label uppercase text-ink-3">
+                {tInvite("menuLabel")}
+              </DropdownMenuLabel>
+              {invitations.map((invitation) => (
+                <DropdownMenuItem
+                  key={invitation._id}
+                  onSelect={() => {
+                    router.push(`/invite/${invitation.token}`);
+                    onNavigate?.();
+                  }}
+                >
+                  <Icons.Assign className="size-4" aria-hidden />
+                  <span className="min-w-0 flex-1 truncate">
+                    {invitation.organizationName}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => setCreating(true)}>
             <Plus className="size-4" aria-hidden />

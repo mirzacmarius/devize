@@ -15,6 +15,17 @@ export const memberRole = v.union(
   v.literal("member"),
 );
 
+// The roles someone can be invited with; an owner makes another owner later.
+export const invitedRole = v.union(v.literal("admin"), v.literal("member"));
+
+// Whether an invitation's email went out. Without Resend set up, or when
+// Resend refuses it, the admin shares the invitation's link another way.
+export const invitationEmailStatus = v.union(
+  v.literal("sending"),
+  v.literal("sent"),
+  v.literal("not_sent"),
+);
+
 export const clientKind = v.union(v.literal("person"), v.literal("company"));
 
 export const filePurpose = v.union(

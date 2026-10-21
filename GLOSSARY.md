@@ -76,6 +76,10 @@ _Avoid_: Reports, templates (for the forms themselves)
 The account that owns devize, clients, rates and prices. Every record belongs to one Firmă, and only its members can see it. In code: `organizations`.
 _Avoid_: Tenant, team, workspace
 
+**Invitație** (invitation):
+How a Firmă's owners and admins ask a colleague to join it, as a member or an admin: a link for one email address, which only someone signed in with that address can accept, within a week. In code: `invitations`.
+_Avoid_: Invite code, join request
+
 **Constructor** (contractor):
 A Firmă or tradesperson who builds devize for their jobs.
 _Avoid_: Builder, user (when meaning a contractor)

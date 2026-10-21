@@ -19,7 +19,10 @@ export const standardMarkups: Infer<typeof markups> = {
   vat: 21,
 };
 
-const MAX_FIRMS_PER_USER = 20;
+export const MAX_FIRMS_PER_USER = 20;
+// A logo goes on offers and forms: a picture those can show, and not a big one.
+const LOGO_TYPES = ["image/png", "image/jpeg", "image/webp"];
+const MAX_LOGO_BYTES = 5 * 1024 * 1024;
 
 function cleanName(name: string): string {
   const result = name.trim();
@@ -152,6 +155,10 @@ export const update = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     await requireMember(ctx, args.organizationId, "admin");
+    const firm = await ctx.db.get("organizations", args.organizationId);
+    if (!firm) {
+      throw notFound("organization");
+    }
     const patch: Partial<Doc<"organizations">> = {};
     if (args.name !== undefined) {
       patch.name = cleanName(args.name);
@@ -181,12 +188,27 @@ export const update = mutation({
     if (args.defaultMarkups) {
       checkMarkups(args.defaultMarkups);
       patch.defaultMarkups = args.defaultMarkups;
+    } else if (
+      args.vatPayer &&
+      !firm.vatPayer &&
+      firm.defaultMarkups.vat === 0
+    ) {
+      // A firm that starts charging VAT charges it on its new devize too.
+      patch.defaultMarkups = {
+        ...firm.defaultMarkups,
+        vat: standardMarkups.vat,
+      };
     }
-    await ctx.db.patch("organizations", args.organizationId, patch);
+    await ctx.db.patch("organizations", firm._id, patch);
     return null;
   },
 });
 
+/**
+ * Sets the firm's logo to an uploaded PNG, JPEG or WebP picture, or removes
+ * it, deleting the logo it replaces. A file registered as one of the firm's
+ * documents can't become the logo, since replacing the logo deletes it.
+ */
 export const setLogo = mutation({
   args: {
     organizationId: v.id("organizations"),
@@ -198,6 +220,26 @@ export const setLogo = mutation({
     const firm = await ctx.db.get("organizations", args.organizationId);
     if (!firm) {
       throw notFound("organization");
+    }
+    const storageId = args.storageId;
+    if (storageId && storageId !== firm.logoId) {
+      const stored = await ctx.db.system.get("_storage", storageId);
+      if (!stored) {
+        throw notFound("file");
+      }
+      const registered = await ctx.db
+        .query("files")
+        .withIndex("by_storageId", (q) => q.eq("storageId", storageId))
+        .first();
+      if (registered) {
+        throw appError("in_use", "file");
+      }
+      if (
+        !LOGO_TYPES.includes(stored.contentType ?? "") ||
+        stored.size > MAX_LOGO_BYTES
+      ) {
+        throw invalid("logo");
+      }
     }
     if (firm.logoId && firm.logoId !== args.storageId) {
       await ctx.storage.delete(firm.logoId);

@@ -1,7 +1,7 @@
 import { Email } from "@convex-dev/auth/providers/Email";
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
-import { env } from "./_generated/server";
+import { emailHtml, sendEmail } from "./lib/email";
 import { appError } from "./lib/errors";
 
 // Sign-in with a code sent by email. The person types the code into the page
@@ -11,10 +11,6 @@ import { appError } from "./lib/errors";
 export const EMAIL_CODE_PROVIDER = "email-code";
 export const CODE_LENGTH = 8;
 export const CODE_MINUTES = 15;
-
-// Resend's test sender, which only delivers to the Resend account's own
-// address. Set AUTH_EMAIL_FROM to a sender on a domain verified in Resend.
-const DEFAULT_FROM = "Devize <onboarding@resend.dev>";
 
 // At most one code every 30 seconds and five an hour per address, so nobody
 // can flood an inbox from the sign-in page.
@@ -51,59 +47,11 @@ export function codeEmail(code: string) {
       "",
       `Your Devize sign-in code: ${code}. It expires in ${CODE_MINUTES} minutes.`,
     ].join("\n"),
-    html: `<!doctype html>
-<html lang="ro">
-  <body style="margin:0;padding:32px 16px;background:#f6f6f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1a1a18">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background:#ffffff;border:1px solid #e4e4e0;border-radius:14px">
-            <tr>
-              <td style="padding:28px">
-                <p style="margin:0 0 20px;font-size:17px;font-weight:600">Devize</p>
-                <p style="margin:0 0 8px;font-size:15px">Codul tău pentru intrarea în Devize:</p>
+    html: emailHtml(`                <p style="margin:0 0 8px;font-size:15px">Codul tău pentru intrarea în Devize:</p>
                 <p style="margin:0 0 20px;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:32px;letter-spacing:6px">${code}</p>
                 <p style="margin:0 0 8px;font-size:14px;color:#55554f">Scrie-l în pagina de intrare. Expiră în ${CODE_MINUTES} minute. Dacă nu l-ai cerut tu, ignoră acest email.</p>
-                <p style="margin:16px 0 0;font-size:13px;color:#8a8a82">Your Devize sign-in code. It expires in ${CODE_MINUTES} minutes.</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`,
+                <p style="margin:16px 0 0;font-size:13px;color:#8a8a82">Your Devize sign-in code. It expires in ${CODE_MINUTES} minutes.</p>`),
   };
-}
-
-async function sendWithResend(
-  to: string,
-  message: { subject: string; text: string; html: string },
-) {
-  const apiKey = env.AUTH_RESEND_KEY?.trim();
-  if (!apiKey) {
-    throw new Error(
-      "Missing environment variable `AUTH_RESEND_KEY`: set it to a Resend API key to send sign-in codes.",
-    );
-  }
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: env.AUTH_EMAIL_FROM?.trim() || DEFAULT_FROM,
-      to: [to],
-      ...message,
-    }),
-  });
-  if (!response.ok) {
-    // Resend says why, such as a sender whose domain isn't verified.
-    throw new Error(
-      `Resend did not send the sign-in code (${response.status}): ${await response.text()}`,
-    );
-  }
 }
 
 /**
@@ -204,6 +152,6 @@ export const EmailCode = Email({
     return randomDigits(CODE_LENGTH);
   },
   async sendVerificationRequest({ identifier, token }) {
-    await sendWithResend(identifier, codeEmail(token));
+    await sendEmail(identifier, codeEmail(token));
   },
 });
