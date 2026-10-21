@@ -1,4 +1,5 @@
 import { buttonVariants } from "@devize/ui/button";
+import { Logo } from "@devize/ui/logo";
 import { cn } from "@devize/ui/utils";
 import { ClipboardList, Factory, ShoppingCart } from "lucide-react";
 import { env } from "@/env";
@@ -28,7 +29,8 @@ export default function Page() {
   return (
     <main className="flex min-h-screen flex-col items-center px-6 py-24">
       <div className="flex w-full max-w-3xl flex-col items-center gap-6 text-center">
-        <span className="text-lg font-semibold tracking-tight text-primary">
+        <span className="inline-flex items-center gap-2 text-lg font-semibold tracking-[-0.01em] text-ink">
+          <Logo aria-hidden />
           Devize
         </span>
         <h1 className="text-4xl font-medium tracking-tight text-primary md:text-6xl">

@@ -1,69 +1,177 @@
 @tailwind base;
+
+/*
+ * Devize design tokens, from the Devize Design System
+ * (https://claude.ai/artifact/3UD97oGp7kdDGMSYvQiGtV). Colors are HSL channel
+ * triplets so Tailwind opacity modifiers keep working: hsl(var(--panel) / 0.5).
+ * Light is the default theme; next-themes adds `.dark` to <html>.
+ * The tokens are plain CSS, outside @layer, so Tailwind never purges them.
+ */
+:root {
+  /* Surfaces */
+  --shell: 40 11.1% 94.7%; /* #f3f2f0 */
+  --panel: 0 0% 100%; /* #ffffff */
+  --card: 0 0% 100%; /* #ffffff */
+  --card-border: var(--border);
+  --sunken: 60 12.5% 96.9%; /* #f8f8f6 */
+  --muted: 72 14.3% 93.1%; /* #eff0eb */
+  --field: var(--muted);
+  --selected: 0 0% 100%; /* #ffffff */
+  --tile: 60 12.5% 96.9%; /* #f8f8f6 */
+  --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
+
+  /* Lines */
+  --border: 60 4.2% 90.6%; /* #e8e8e6 */
+  --border-control: var(--border);
+  --tick: 60 3.4% 82.9%; /* #d5d5d2 */
+
+  /* Text */
+  --ink: 60 3.8% 10.2%; /* #1b1b19 */
+  --ink-2: 60 1.3% 31%; /* #50504e */
+  --ink-3: 60 1.4% 41.4%; /* #6b6b68 */
+
+  /* Action */
+  --action: 60 3.3% 11.8%; /* #1f1f1d */
+  --on-action: 0 0% 100%; /* #ffffff */
+  --action-tonal: var(--muted);
+
+  /* Brand: the mark and marketing only, never UI states */
+  --brand: 68.9 100% 47.8%; /* #d0f400 */
+  --on-brand: 60 3.8% 10.2%; /* #1b1b19 */
+
+  /* Status */
+  --success: 151.2 48.3% 29.6%; /* #27704d */
+  --success-soft: 138.5 35.1% 92.7%; /* #e6f3ea */
+  --success-dot: 149.7 47.9% 42.9%; /* #39a26d */
+  --warning: 38.4 69.8% 31.2%; /* #875f18 */
+  --warning-soft: 37.5 88.9% 92.9%; /* #fdf1dd */
+  --warning-dot: 35.5 79.6% 55.9%; /* #e89f35 */
+  --danger: 2.7 64.4% 40.8%; /* #ab2b25 */
+  --danger-soft: 10 75% 95.3%; /* #fcedea */
+  --danger-solid: 3 73% 56.5%; /* #e1473f */
+  --on-danger-solid: 0 0% 100%; /* #ffffff */
+  --danger-border: 8.2 63% 84.1%; /* #f0c4bd */
+  --neutral-dot: 70 3.2% 63.1%; /* #a3a49e */
+
+  /* AI: everything the assistant produces, nothing else */
+  --ai: 224.3 58.6% 43.5%; /* #2e50b0 */
+  --ai-soft: 222 90.9% 95.7%; /* #eaf0fe */
+  --ai-border: 224 46.9% 87.5%; /* #d0d8ee */
+
+  --shadow-raised: 0 0 0 1px #e7e7e5, 0 1px 3px #1b1b1912;
+  --shadow-card: none;
+  --shadow-panel: 0 0 0 1px #e9e9e9, 0 1px 2px #1b1b190a;
+
+  --radius: 14px;
+
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+}
+
+.dark {
+  --shell: 220 4.1% 14.3%; /* #232426 */
+  --panel: 220 7.7% 7.6%; /* #121315 */
+  --card: 220 3.7% 15.9%; /* #27282a */
+  --card-border: 220 3.4% 17.1%; /* #2a2b2d */
+  --sunken: 220 9.1% 6.5%; /* #0f1012 */
+  --muted: 217.5 6.7% 23.5%; /* #383b40 */
+  --field: var(--sunken);
+  --selected: 228 4.1% 23.7%; /* #3a3b3f */
+  --tile: 228 5.3% 18.6%; /* #2d2e32 */
+  --backdrop: 212.7 8.9% 24.1%; /* #383d43 */
+
+  --border: 220 3.1% 19%; /* #2f3032 */
+  --border-control: 220 2.6% 22.5%; /* #38393b */
+  --tick: 220 4.9% 23.9%; /* #3a3c40 */
+
+  --ink: 220 42.9% 98.6%; /* #fafbfd */
+  --ink-2: 228 3.1% 68.8%; /* #adaeb2 */
+  --ink-3: 228 2.5% 60.2%; /* #97989c */
+
+  --action: 220 13% 95.5%; /* #f2f3f5 */
+  --on-action: 220 7.7% 7.6%; /* #121315 */
+  --action-tonal: 228 3.4% 28.8%; /* #47484c */
+
+  --success: 111.7 88.7% 79.2%; /* #a8f99b */
+  --success-soft: 130 14.6% 16.1%; /* #232f25 */
+  --success-dot: 113.1 94.1% 80.2%; /* #a8fc9d */
+  --warning: 52.1 71.2% 76.9%; /* #eee39a */
+  --warning-soft: 60 12.8% 15.3%; /* #2c2c22 */
+  --warning-dot: 50.6 98% 80.8%; /* #feef9e */
+  --danger: 2.1 76.4% 78.4%; /* #f2a19e */
+  --danger-soft: 0 14.6% 16.1%; /* #2f2323 */
+  --danger-solid: 1.2 94.5% 78.4%; /* #fc9694 */
+  --on-danger-solid: 2.9 53.8% 7.6%; /* #1e0a09 */
+  --danger-border: 354.1 21.2% 37.8%; /* #754c50 */
+  --neutral-dot: 228 2% 52%; /* #828387 */
+
+  --ai: 207.3 91.7% 81.2%; /* #a3d3fb */
+  --ai-soft: 212.7 9.9% 21.8%; /* #32373d */
+  --ai-border: 216 13.3% 29.4%; /* #414955 */
+
+  --shadow-raised: inset 0 1px 0 #ffffff14, 0 1px 2px #0000005c;
+  --shadow-card: inset 0 1px 0 #ffffff0f, 0 1px 3px #00000066;
+  --shadow-panel: none;
+
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+/* shadcn/ui names, mapped onto the Devize tokens */
+:root,
+.dark {
+  --background: var(--panel);
+  --foreground: var(--ink);
+  --card-foreground: var(--ink);
+  --popover: var(--card);
+  --popover-foreground: var(--ink);
+  --primary: var(--action);
+  --primary-foreground: var(--on-action);
+  --secondary: var(--action-tonal);
+  --secondary-foreground: var(--ink);
+  --muted-foreground: var(--ink-3);
+  --accent: var(--tile);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--on-action);
+  --input: var(--border-control);
+  --ring: var(--ink);
+}
+
+/* Every Lucide icon is drawn at 1.5px, the Devize stroke. Before the
+   utilities, so a `stroke-[…]` class still wins. */
+.lucide {
+  stroke-width: 1.5px;
+}
+
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-  }
-
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 3%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 70%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 100% 30%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 80%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
-}
 
 @layer base {
   * {
     @apply border-border;
   }
+  /* The layouts set the Geist variables on <body>, so the font goes there:
+     on <html>, Tailwind's preflight can't see them. */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
+  }
+}
+
+@layer components {
+  /* The tick motif: progress is made of ticks, not bars. */
+  .tick-rule {
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      hsl(var(--tick)) 0 1px,
+      transparent 1px 4px
+    );
   }
 }
