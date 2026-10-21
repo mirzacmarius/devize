@@ -477,6 +477,106 @@ export default {
       added: "Articolul a fost adăugat.",
     },
   },
+  proposal: {
+    open: "Propune cu AI",
+    emptyAction: "Descrie lucrarea",
+    title: "Propune cu AI",
+    description:
+      "Descrie lucrarea sau dictează-o și adaugă poze. Devize AI scrie articolele cu antemăsurătoarea, iar tu le verifici înainte să intre în deviz.",
+    describe: {
+      label: "Lucrarea",
+      placeholder:
+        "ex. Baie 2 × 3 m, înălțimea 2,60 m. Scot faianța și gresia vechi, pun faianță până la tavan și gresie nouă, cada se înlocuiește cu duș walk-in.",
+      hint: "Cotele ajută cel mai mult: lungimi, înălțimi, câte bucăți.",
+      dictate: "Dictează",
+      stopDictation: "Oprește dictarea",
+      listening: "Te ascult. Spune lucrarea cu cotele ei.",
+      dictationFailed:
+        "Dictarea nu a pornit. Verifică dacă browserul are voie să folosească microfonul.",
+      photos: "Poze",
+      photosHint:
+        "Până la {max} poze. O ușă sau o placă de faianță în poză ajută la măsurare.",
+      addPhotos: "Adaugă poze",
+      removePhoto: "Scoate poza {name}",
+      uploading: "Se încarcă pozele…",
+      uploadFailed: "Poza {name} nu s-a încărcat.",
+      unreadable: "Poza {name} nu se poate citi. Încearcă o poză JPEG sau PNG.",
+      tooManyPhotos: "Cel mult {max} poze.",
+      required: "Descrie lucrarea sau adaugă o poză.",
+      tooLong: "Descrierea e prea lungă: cel mult {max} de caractere.",
+      submit: "Propune articolele",
+      back: "Înapoi la propunere",
+      privacy:
+        "Descrierea și pozele merg la Claude, modelul AI al Anthropic, doar pentru această propunere. Pozele rămân în fișierele devizului.",
+    },
+    working: {
+      title: "Devize AI scrie devizul",
+      reading: "Citesc descrierea și pozele și măsor lucrările…",
+      matching: "Articole scrise: {count}. Caut normele potrivite în catalog…",
+      hint: "Durează de obicei între unul și trei minute. Poți închide fereastra: propunerea te așteaptă în deviz.",
+      cancel: "Renunță la propunere",
+    },
+    failed: {
+      title: "Propunerea nu a reușit",
+      retry: "Încearcă din nou",
+      edit: "Modifică descrierea",
+      reasons: {
+        missingKey: "AI-ul nu e configurat încă pe acest server.",
+        keyRejected: "Cheia pentru AI nu mai e valabilă.",
+        noCredit: "Contul de AI nu mai are credit.",
+        timeout:
+          "A durat prea mult. Încearcă din nou, eventual cu mai puține poze.",
+        busy: "Serviciul AI e ocupat acum. Încearcă din nou peste un minut.",
+        refusal: "AI-ul nu a putut lucra cu această cerere.",
+        incomplete:
+          "Răspunsul a ieșit incomplet. Încearcă să împarți lucrarea în părți mai mici.",
+        unknown: "Ceva nu a mers. Încearcă din nou.",
+      },
+    },
+    review: {
+      title: "Verifică propunerea",
+      understood: "Ce am înțeles",
+      assumptions: "Am presupus",
+      questions: "De întrebat clientul",
+      noItems: "Nu am găsit o lucrare de construcții în descriere sau în poze.",
+      matchFailed:
+        "Nu am putut căuta normele în catalog, așa că articolele au rețetele propuse de AI.",
+      all: "Toate",
+      none: "Niciunul",
+      selectedCount: "Alese: {selected} din {total}",
+      keep: "Păstrează: {title}",
+      assumed: "Cu presupunere",
+      estimated: "Estimat, de verificat",
+      quantityOf: "Cantitatea pentru {title}",
+      norm: "Norma",
+      ownRecipe: "Rețeta AI, fără normă",
+      noNorm: "Nicio normă potrivită în catalog; intră cu rețeta AI.",
+      unitMismatch: "Norma are altă U.M. decât articolul; verifică cantitatea.",
+      details: "Detalii",
+      hideDetails: "Ascunde detaliile",
+      recipe: "Rețeta AI pe {unit}",
+      takeoff: "Antemăsurătoare",
+      total: "Total",
+      apply: "Adaugă în deviz ({count})",
+      applied:
+        "Articole adăugate în deviz: {count}. Rămân „Propus de AI” până le confirmi.",
+      dismiss: "Renunță la propunere",
+      dismissed: "Propunerea a fost pusă deoparte.",
+      again: "Propunere nouă",
+    },
+    banner: {
+      working: "Devize AI scrie articolele din descrierea ta.",
+      ready: "Propunerea AI e gata. Articole de verificat: {count}.",
+      failed: "Propunerea AI nu a reușit.",
+      open: "Vezi",
+      review: "Verifică propunerea",
+    },
+    errors: {
+      rateLimited:
+        "Ai cerut multe propuneri în ultima oră. Încearcă din nou mai târziu.",
+      inUse: "AI-ul lucrează deja la o propunere pentru acest deviz.",
+    },
+  },
   catalog: {
     title: "Catalog",
     description:
@@ -857,6 +957,7 @@ export default {
     jobKind: {
       manufacturer_research: "Cercetare",
       norm_import: "Import norme",
+      estimate_proposal: "Propunere deviz",
     },
     confidence: {
       high: "Încredere mare",
