@@ -3,7 +3,6 @@ import {
   batchArticles,
   checkNorm,
   type ExtractedArticle,
-  normalizeUnit,
   normsFromArticle,
 } from "./norms";
 
@@ -77,21 +76,6 @@ const article: ExtractedArticle = {
   ],
 };
 
-describe("normalizeUnit", () => {
-  test("maps deviz units to the catalog's", () => {
-    expect(normalizeUnit("mp")).toEqual({ unit: "m²", known: true });
-    expect(normalizeUnit("ORE")).toEqual({ unit: "h", known: true });
-    expect(normalizeUnit("oră")).toEqual({ unit: "h", known: true });
-    expect(normalizeUnit("ml")).toEqual({ unit: "m", known: true });
-    expect(normalizeUnit("buc.")).toEqual({ unit: "buc", known: true });
-    expect(normalizeUnit("10 buc")).toEqual({ unit: "10 buc", known: true });
-  });
-
-  test("keeps a unit it doesn't know, flagged", () => {
-    expect(normalizeUnit("pachet")).toEqual({ unit: "pachet", known: false });
-  });
-});
-
 describe("normsFromArticle", () => {
   const [first, second] = normsFromArticle(article, { laborRate: 20 });
 
@@ -102,7 +86,7 @@ describe("normsFromArticle", () => {
     expect(first.title).toBe(
       "Placare de test cu plăci minerale, plăci de 50 mm",
     );
-    expect(first.unit).toBe("m²");
+    expect(first.unit).toBe("mp");
     expect(first.unitRaw).toBe("mp");
     expect(first.pages).toEqual([3, 4]);
     expect(first.includes).toBe("Montajul plăcilor și al plasei.");
@@ -113,11 +97,12 @@ describe("normsFromArticle", () => {
     expect(first.resources[0]).toEqual({
       kind: "material",
       name: "Placă minerală 50 mm",
-      unit: "m²",
+      unit: "mp",
       unitRaw: "mp",
       quantity: 1.05,
       unitPrice: 40,
     });
+    expect(first.resources[2]).toMatchObject({ unit: "ora", unitRaw: "ore" });
     expect(second.resources[1].unitPrice).toBeUndefined();
     expect(first.totalLaborHours).toBe(1);
     expect(second.totalPrice).toBeUndefined();
