@@ -13,6 +13,7 @@ import {
   formLabel,
   kindLabels,
   money,
+  objectName,
   partyFields,
   quantity,
 } from "./common";
@@ -115,7 +116,7 @@ function f3(
     orientation: "portrait",
     footer: footerOf(data, name),
     blocks: [
-      partyFields(data, options, { object: object.name }),
+      partyFields(data, options, { object: objectName(object) }),
       {
         type: "title",
         lines: [
@@ -252,7 +253,7 @@ function c5(
     orientation: "landscape",
     footer: footerOf(data, name),
     blocks: [
-      partyFields(data, options, { object: object.name }),
+      partyFields(data, options, { object: objectName(object) }),
       {
         type: "title",
         lines: [

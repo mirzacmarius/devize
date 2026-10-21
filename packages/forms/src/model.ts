@@ -42,6 +42,8 @@ export type Row = {
   cells: Cell[];
   // Keeps this row on the same page as the next one.
   keepWithNext?: boolean;
+  // Points, for room to write in by hand.
+  minHeight?: number;
 };
 
 export type Column = {

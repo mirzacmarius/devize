@@ -17,6 +17,7 @@ import {
   footerOf,
   formLabel,
   money,
+  objectName,
   partyFields,
   price,
   quantity,
@@ -87,13 +88,13 @@ function scopesOf(data: ExportData, options: ExportOptions): Scope[] {
     }
     case "object":
       return tree.map((object) => ({
-        object: object.name,
+        object: objectName(object),
         items: object.categories.flatMap((category) => category.items),
       }));
     case "category":
       return tree.flatMap((object) =>
         object.categories.map((category) => ({
-          object: object.name,
+          object: objectName(object),
           category: categoryName(category),
           items: category.items,
         })),

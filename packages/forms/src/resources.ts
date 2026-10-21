@@ -43,6 +43,11 @@ const storeNames: Record<string, string> = {
   brico_depot: "BRICO",
 };
 
+/** A retailer as the forms name it: "Leroy Merlin" for `leroy_merlin`. */
+export function storeName(store: string): string {
+  return storeNames[store] ?? store;
+}
+
 const percentOf: Record<ResourceKind, string> = {
   material: "din materiale",
   labor: "din manoperă",
@@ -150,10 +155,7 @@ export function resourceList(
         quantity,
         unitPrice: entry.unitPrice,
         value: roundLei(quantity * entry.unitPrice),
-        store:
-          store && others.length === 0
-            ? (storeNames[store] ?? store)
-            : undefined,
+        store: store && others.length === 0 ? storeName(store) : undefined,
       };
     });
 

@@ -78,6 +78,10 @@ _Avoid_: Antemăsurătoare (the Constructor's own measuring)
 The forms a Licitație requires: the F series (F1–F6, DG, DO, used with HG 907/2016) and the C series of Ordinul 1014/2001 (C4–C5 quantity lists, C6–C9 resource lists). Numbering differs between contracting authorities, so each form is a configurable template.
 _Avoid_: Reports, templates (for the forms themselves)
 
+**Deviz general** (general estimate) and **Devizul obiectului** (object estimate):
+The Deviz general totals an investment's costs in the chapters 1–7 of HG 907/2016, each split into subchapters such as 4.1.3 Arhitectură; the Devizul obiectului totals one Obiect's chapter 4. Devize places each Capitol under a subchapter, guessing from its name, and F1, F2 and F4 total the works the same way. C+M, the construction and installation works, are subchapters 1.2, 1.3, 1.4, 2, 4.1, 4.2 and 5.1.1. In code: `DG`, `DO` and `Subchapter`.
+_Avoid_: Recapitulație (that closes one list of quantities), summary
+
 ### People and companies
 
 **Firmă** (company):
