@@ -95,11 +95,12 @@ export type WorksData = Pick<ExportData, "estimate" | "sections" | "lineItems">;
 
 /**
  * The documents a Deviz can be exported as, in the order they print: the
- * client's Deviz, the Deviz general and the objects' Devize, then the forms
- * of a tender's financial offer.
+ * client's Deviz, the offer form that opens a tender's financial offer, the
+ * Deviz general and the objects' Devize, then the offer's other forms.
  */
 export const documentKinds = [
   "DEVIZ",
+  "OF",
   "DG",
   "DO",
   "F1",
@@ -122,6 +123,8 @@ export function defaultLabel(kind: DocumentKind): string {
   switch (kind) {
     case "DEVIZ":
       return "Deviz";
+    case "OF":
+      return "Formularul de ofertă";
     case "DG":
       return "Devizul general";
     case "DO":
@@ -186,6 +189,9 @@ export type ExportOptions = {
     months?: number;
     windows?: Readonly<Record<string, ScheduleWindow>>;
   };
+  // The offer form: the days the offer stays valid, as the tender asks, and
+  // who signs it for the bidder.
+  offer?: { validity?: number; signer?: string; role?: string };
   // Today, as YYYY-MM-DD, printed by the signatures.
   date: string;
 };

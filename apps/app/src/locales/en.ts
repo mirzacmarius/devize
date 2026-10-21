@@ -666,13 +666,17 @@ export default {
     },
     forms: {
       title: "Official forms",
-      hint: "The general and object estimates, F1–F6, C5 and the C6–C9 resource lists, for tenders.",
+      hint: "The offer form, the general and object estimates, F1–F6, C5 and the C6–C9 resource lists, for tenders.",
       open: "Choose",
       sheetTitle: "Official forms",
       sheetDescription:
         "The lists the tender documentation asks for, in one PDF, each form on a new page. Forms are in Romanian, as tenders require.",
       choose: "Forms",
       kinds: {
+        OF: {
+          title: "Offer form",
+          hint: "The letter to the authority, with F1's value and the VAT in figures and in words, the duration and how long the offer stays valid.",
+        },
         DG: {
           title: "DG · General estimate",
           hint: "The objective's chapters 1–7, with VAT (HG 907/2016, Annex 7).",
@@ -729,6 +733,7 @@ export default {
       rename: "Rename the forms",
       renameDone: "Done renaming",
       label: "The name of form {form} in the tender documentation",
+      labelOffer: "The name of the offer form in the tender documentation",
       withValues: "With prices and amounts",
       withValuesHint:
         "Without them, the lists look as the designer publishes them in the tender documentation.",
@@ -750,6 +755,22 @@ export default {
       windowStart: "First month",
       windowEnd: "Last month",
       month: "Month {month}",
+      offer: {
+        title: "Offer form",
+        validity: "Offer validity (days)",
+        validityHint:
+          "The days the tender documentation asks for, from the submission deadline: {deadline}.",
+        validityUntil:
+          "The offer stays valid until {date}, from the submission deadline: {deadline}.",
+        validityNoDeadline:
+          "The days the tender documentation asks for. The estimate has no submission deadline, so the date the offer stays valid until is left to write by hand; you can add the deadline in the estimate's details.",
+        validityInvalid: "Enter a whole number of days, from 1 to {max}.",
+        signer: "Signed by",
+        role: "As",
+        rolePlaceholder: "administrator",
+        signerHint:
+          "Who is authorised to sign the offer for the firm. We remember them on this device for the firm's next estimates.",
+      },
       subchapters: {
         site: "Site preparation",
         environment: "Environmental protection",
@@ -800,7 +821,7 @@ export default {
           vat: "VAT {rate}",
           lei: "{amount} lei",
           total: "Total with VAT",
-          hint: "F1, F2, the F3 lists and the general estimate give the same value; copy it into the offer form.",
+          hint: "F1, F2, the F3 lists, the general estimate and the offer form give the same value. Copy it wherever else the tender asks for it, such as SEAP.",
           difference:
             "It differs from the estimate's summary by {difference} lei, from rounding by category of works and by unit price.",
           copySubtotal: "Copy the value without VAT, in figures and in words",
@@ -867,15 +888,34 @@ export default {
           fix: "Add F4 and F5",
         },
         duration: {
-          title: "Duration of the works (F6)",
+          title: "Duration of the works",
           passed: "Duration chosen, in months: {months}",
-          warningTitle: "F6's duration is our suggestion",
+          warningTitle: "The duration is our suggestion",
           warning:
             "We worked it out from the estimate's labour hours, for a crew of ten. Use the duration in the tender documentation.",
           warningNoHours:
-            "The estimate has no labour hours, so F6 runs one month. Use the duration in the tender documentation.",
+            "The estimate has no labour hours, so the works run one month. Use the duration in the tender documentation.",
           fix: "Choose the duration",
           keep: "The duration is right",
+        },
+        validity: {
+          title: "Offer validity",
+          passed: "Days of validity: {days}, until {date}.",
+          warningTitle: "No offer validity",
+          warning:
+            "The offer form would leave its validity blank. Enter the days the tender documentation asks for.",
+          noDeadlineTitle: "No date of validity",
+          noDeadline:
+            "Days of validity: {days}. The estimate has no submission deadline, so the date the offer stays valid until is left to write by hand; you can add the deadline in the estimate's details.",
+          fix: "Enter the validity",
+        },
+        signer: {
+          title: "Who signs the offer",
+          passed: "{name}, as {role}",
+          warningTitle: "No signatory",
+          warning:
+            "The offer form would leave blank the name and role of whoever signs it.",
+          fix: "Enter who signs",
         },
         beneficiary: {
           title: "Beneficiary",

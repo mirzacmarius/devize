@@ -2,6 +2,7 @@ import { resourceDocuments } from "./forms/consumption";
 import { devizDocument } from "./forms/deviz";
 import { f4Documents, f5Documents } from "./forms/equipment";
 import { generalDocuments, objectDocuments } from "./forms/general";
+import { offerFormDocuments } from "./forms/offerForm";
 import { c5Documents, f3Documents } from "./forms/quantities";
 import { f6Documents } from "./forms/schedule";
 import { f1Documents, f2Documents } from "./forms/summaries";
@@ -42,6 +43,7 @@ const builders: Record<
   ) => FormDocument[]
 > = {
   DEVIZ: (data, options) => [devizDocument(data, options)],
+  OF: offerFormDocuments,
   DG: generalDocuments,
   DO: objectDocuments,
   F1: f1Documents,

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  countInFiguresAndWords,
   countOf,
   leiInFiguresAndWords,
   leiInWords,
@@ -79,4 +80,16 @@ test("countOf puts de where Romanian does", () => {
   expect(countOf(19, "lună", "luni")).toBe("19 luni");
   expect(countOf(20, "lună", "luni")).toBe("20 de luni");
   expect(countOf(36, "lună", "luni")).toBe("36 de luni");
+});
+
+test("countInFiguresAndWords writes a duration as an offer form does", () => {
+  const months = (n: number) =>
+    countInFiguresAndWords(n, "feminine", "lună", "luni");
+  expect(months(1)).toBe("1 (una) lună");
+  expect(months(2)).toBe("2 (două) luni");
+  expect(months(12)).toBe("12 (douăsprezece) luni");
+  expect(months(21)).toBe("21 (douăzeci și una) de luni");
+  expect(countInFiguresAndWords(90, "feminine", "zi", "zile")).toBe(
+    "90 (nouăzeci) de zile",
+  );
 });

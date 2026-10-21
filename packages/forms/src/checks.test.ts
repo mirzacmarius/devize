@@ -324,6 +324,63 @@ describe("checkForms", () => {
     ).toBe("passed");
   });
 
+  test("asks for what the offer form leaves blank", () => {
+    const data = schoolData();
+    const blank = checkForms(data, {
+      ...options,
+      kinds: ["OF"],
+      monthsChosen: false,
+    });
+    expect(blank.map((check) => [check.id, check.state])).toEqual([
+      ["unpriced", "passed"],
+      ["duration", "warning"],
+      ["validity", "warning"],
+      ["signer", "warning"],
+      ["beneficiary", "passed"],
+    ]);
+    const deadline = {
+      ...data,
+      estimate: {
+        ...data.estimate,
+        tender: { ...data.estimate.tender, deadline: "2026-11-10" },
+      },
+    };
+    const filled = checkForms(deadline, {
+      ...options,
+      kinds: ["OF"],
+      offer: { validity: 90, signer: " Ion Popescu ", role: "administrator" },
+    });
+    expect(find(filled, "validity")).toEqual({
+      id: "validity",
+      state: "passed",
+      days: 90,
+      until: "2027-02-08",
+    });
+    expect(find(filled, "signer")).toEqual({
+      id: "signer",
+      state: "passed",
+      name: "Ion Popescu",
+      role: "administrator",
+    });
+    // Without the tender's deadline, the last day is left to write by hand.
+    expect(
+      find(
+        checkForms(data, {
+          ...options,
+          kinds: ["OF"],
+          offer: { validity: 90 },
+        }),
+        "validity",
+      ),
+    ).toEqual({ id: "validity", state: "warning", days: 90, until: undefined });
+    // The blank offer form has nothing to fill in.
+    expect(
+      checkForms(data, { ...options, kinds: ["OF"], withValues: false }).map(
+        (check) => check.id,
+      ),
+    ).toEqual(["beneficiary"]);
+  });
+
   test("asks for a beneficiary when the forms would print none", () => {
     expect(
       find(
