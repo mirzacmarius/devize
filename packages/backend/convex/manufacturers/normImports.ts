@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Doc } from "../_generated/dataModel";
-import type { MutationCtx } from "../_generated/server";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { internalMutation, mutation, query } from "../_generated/server";
 import { createJob, failJob, finishJob, startJob } from "../ai/jobs";
 import { aiModel, defaultModel } from "../ai/models";
@@ -165,11 +165,28 @@ export const get = query({
     );
     return {
       normImport,
-      norms,
+      norms: await Promise.all(
+        norms.map(async (norm) => ({
+          ...norm,
+          publishedAt: await publishedAt(ctx, norm),
+        })),
+      ),
       fileUrl: await ctx.storage.getUrl(normImport.fileId),
     };
   },
 });
+
+/** When a reviewed row went into the catalog, or null if it hasn't. */
+async function publishedAt(ctx: QueryCtx, norm: Doc<"importedNorms">) {
+  if (norm.status === "review") {
+    return null;
+  }
+  const published = await ctx.db
+    .query("norms")
+    .withIndex("by_importedNormId", (q) => q.eq("importedNormId", norm._id))
+    .first();
+  return published?.publishedAt ?? null;
+}
 
 /**
  * Approves or rejects every Normă of one article. An article with an error

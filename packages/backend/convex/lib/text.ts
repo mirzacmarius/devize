@@ -18,11 +18,16 @@ const unitAliases: Record<string, string[]> = {
   m: ["m", "ml", "m l", "metru", "metri", "metru liniar", "metri liniari"],
   km: ["km"],
   kg: ["kg", "kilogram", "kilograme"],
+  g: ["g", "gr", "gram", "grame"],
   t: ["t", "to", "tona", "tone"],
+  tkm: ["tkm", "t km"],
   l: ["l", "litru", "litri"],
   buc: ["buc", "bucata", "bucati"],
   set: ["set", "seturi"],
-  ora: ["ora", "ore", "h"],
+  sac: ["sac", "saci"],
+  rola: ["rola", "role"],
+  pereche: ["pereche", "perechi"],
+  ora: ["ora", "ore", "h", "om ora", "om ore"],
   zi: ["zi", "zile"],
   "%": ["%", "procent"],
 };
@@ -39,11 +44,23 @@ const unitByAlias = new Map(
 
 /**
  * The canonical spelling of a unit of measure ("m2" and "mp." are both "mp").
- * Units it does not know come back normalized, so they still compare equal.
+ * A count in front stays ("100 m²" is "100 mp", "1 buc" is "buc"). Units it
+ * does not know come back normalized, so they still compare equal.
  */
 export function normalizeUnit(value: string): string {
+  const counted = /^\s*(\d+(?:[.,]\d+)?)\s*([^\d\s.,].*)$/.exec(value);
+  if (counted?.[1] && counted[2]) {
+    const count = Number(counted[1].replace(",", "."));
+    const unit = normalizeUnit(counted[2]);
+    return count === 1 ? unit : `${count} ${unit}`;
+  }
   const key = unitKey(value);
   return unitByAlias.get(key) ?? key;
+}
+
+/** Whether the unit is one Devize knows, with or without a count in front. */
+export function isKnownUnit(value: string): boolean {
+  return unitByAlias.has(normalizeUnit(value).replace(/^[\d.]+ /, ""));
 }
 
 /** A consumption written as a percentage of the norm's materials, such as "Material mărunt 3 %". */

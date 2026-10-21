@@ -1,6 +1,8 @@
 // Turning a norms document's articles into one Normă per variant, and the
 // checks that tell a reviewer whether the extraction read the tables right.
 
+import { isHourUnit, isKnownUnit, normalizeUnit } from "../../lib/text";
+
 export type ResourceKind = "material" | "labor" | "equipment" | "transport";
 
 export type ExtractedResource = {
@@ -63,66 +65,6 @@ export type NormRow = {
   checks: NormIssue[];
 };
 
-const unitAliases: Record<string, string> = {
-  mp: "m²",
-  m2: "m²",
-  "m²": "m²",
-  mc: "m³",
-  m3: "m³",
-  "m³": "m³",
-  ml: "m",
-  m: "m",
-  "m.l": "m",
-  km: "km",
-  buc: "buc",
-  bucata: "buc",
-  bucati: "buc",
-  kg: "kg",
-  g: "g",
-  t: "t",
-  to: "t",
-  tona: "t",
-  tone: "t",
-  l: "l",
-  litru: "l",
-  litri: "l",
-  ore: "h",
-  ora: "h",
-  h: "h",
-  "om-ora": "h",
-  "om-ore": "h",
-  set: "set",
-  seturi: "set",
-  rola: "rolă",
-  role: "rolă",
-  sac: "sac",
-  saci: "sac",
-  pereche: "pereche",
-  perechi: "pereche",
-  tkm: "t·km",
-};
-
-/**
- * Maps the units deviz documents use to the catalog's ("mp" to "m²", "ore" to
- * "h"). A count in front stays: "10 buc" is ten pieces.
- */
-export function normalizeUnit(raw: string): { unit: string; known: boolean } {
-  const cleaned = raw
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/\.$/, "")
-    .replace(/\s+/g, " ")
-    .trim();
-  const counted = /^(\d+(?:[.,]\d+)?)\s*(.+)$/.exec(cleaned);
-  const count = counted?.[1]?.replace(",", ".");
-  const unit = unitAliases[counted?.[2] ?? cleaned];
-  if (!unit) {
-    return { unit: raw.trim(), known: false };
-  }
-  return { unit: count ? `${count} ${unit}` : unit, known: true };
-}
-
 function round(value: number, digits = 4) {
   const factor = 10 ** digits;
   return Math.round(value * factor) / factor;
@@ -154,7 +96,7 @@ export function checkNorm(
   }
   const unknownUnits = new Set(
     norm.resources
-      .filter((resource) => !normalizeUnit(resource.unitRaw).known)
+      .filter((resource) => !isKnownUnit(resource.unitRaw))
       .map((resource) => resource.unitRaw),
   );
   for (const unit of unknownUnits) {
@@ -167,7 +109,7 @@ export function checkNorm(
   }
   if (norm.totalLaborHours !== undefined) {
     const sum = labor
-      .filter((resource) => resource.unit === "h")
+      .filter((resource) => isHourUnit(resource.unit))
       .reduce((total, resource) => total + resource.quantity, 0);
     const difference = Math.abs(sum - norm.totalLaborHours);
     const tolerance = Math.max(0.0005, norm.totalLaborHours * 0.001);
@@ -188,7 +130,7 @@ export function checkNorm(
     for (const resource of norm.resources) {
       const price =
         resource.unitPrice ??
-        (resource.kind === "labor" && resource.unit === "h"
+        (resource.kind === "labor" && isHourUnit(resource.unit)
           ? options.laborRate
           : undefined);
       if (price === undefined) {
@@ -234,19 +176,14 @@ export function normsFromArticle(
     }
     seen.add(code);
     const description = variant.description.trim().replace(/[;,.\s]+$/, "");
-    const resources = variant.resources.map((resource) => {
-      const normalized = normalizeUnit(resource.unit);
-      return {
-        kind: resource.kind,
-        name: resource.name.replace(/\s+/g, " ").trim(),
-        unit: normalized.unit,
-        unitRaw: resource.unit.trim(),
-        quantity: resource.quantity,
-        ...(resource.unitPrice === null
-          ? {}
-          : { unitPrice: resource.unitPrice }),
-      };
-    });
+    const resources = variant.resources.map((resource) => ({
+      kind: resource.kind,
+      name: resource.name.replace(/\s+/g, " ").trim(),
+      unit: normalizeUnit(resource.unit),
+      unitRaw: resource.unit.trim(),
+      quantity: resource.quantity,
+      ...(resource.unitPrice === null ? {} : { unitPrice: resource.unitPrice }),
+    }));
     const totals = {
       ...(variant.totalLaborHours === null
         ? {}
@@ -259,7 +196,7 @@ export function normsFromArticle(
       baseCode,
       code,
       title: description ? `${articleTitle}, ${description}` : articleTitle,
-      unit: unit.unit,
+      unit,
       unitRaw: article.unit.trim(),
       pages: article.pages,
       ...(article.includes ? { includes: article.includes } : {}),

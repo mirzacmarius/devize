@@ -19,6 +19,28 @@ const rows = [
   },
 ];
 
+async function manufacturer(t: TestConvex, adminId: Id<"users">) {
+  return await t.run(
+    async (ctx) =>
+      await ctx.db.insert("manufacturers", {
+        name: "Termo Test SA",
+        nameKey: "termo test",
+        wave: 1,
+        status: "norms_received",
+        normsStatus: "received",
+        claimStatus: "unclaimed",
+        brands: [],
+        categories: [],
+        mainProducts: [],
+        retailers: [],
+        existingNorms: [],
+        technicalDocs: [],
+        declaredConsumption: [],
+        createdBy: adminId,
+      }),
+  );
+}
+
 async function importWith(
   t: TestConvex,
   adminId: Id<"users">,
@@ -78,25 +100,7 @@ describe("publishImportedNorms", () => {
   test("publishes approved rows once, then new versions when they change", async () => {
     const t = setup();
     const admin = await signIn(t, { name: "Admin", superadmin: true });
-    const manufacturerId = await t.run(
-      async (ctx) =>
-        await ctx.db.insert("manufacturers", {
-          name: "Termo Test SA",
-          nameKey: "termo test",
-          wave: 1,
-          status: "norms_received",
-          normsStatus: "received",
-          claimStatus: "unclaimed",
-          brands: [],
-          categories: [],
-          mainProducts: [],
-          retailers: [],
-          existingNorms: [],
-          technicalDocs: [],
-          declaredConsumption: [],
-          createdBy: admin.userId,
-        }),
-    );
+    const manufacturerId = await manufacturer(t, admin.userId);
     const firstImport = await importWith(t, admin.userId, manufacturerId, rows);
     expect(
       await admin.as.mutation(api.catalog.publishing.publishImportedNorms, {
@@ -150,29 +154,52 @@ describe("publishImportedNorms", () => {
     ]);
   });
 
+  test("marks the imported rows that went into the catalog", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    const manufacturerId = await manufacturer(t, admin.userId);
+    const normImportId = await importWith(
+      t,
+      admin.userId,
+      manufacturerId,
+      rows,
+    );
+    await t.run(async (ctx) => {
+      const rejected = await ctx.db
+        .query("importedNorms")
+        .withIndex("by_manufacturerId_and_code", (q) =>
+          q.eq("manufacturerId", manufacturerId).eq("code", "TT-01B01"),
+        )
+        .unique();
+      if (rejected) {
+        await ctx.db.patch("importedNorms", rejected._id, {
+          status: "rejected",
+        });
+      }
+    });
+    expect(
+      await admin.as.mutation(api.catalog.publishing.publishImportedNorms, {
+        normImportId,
+        baseCode: "TT-01",
+      }),
+    ).toEqual({ published: 1, skipped: 0 });
+
+    const data = await admin.as.query(api.manufacturers.normImports.get, {
+      normImportId,
+    });
+    expect(
+      data?.norms.map((norm) => [norm.code, norm.publishedAt !== null]),
+    ).toEqual([
+      ["TT-01A01", true],
+      ["TT-01B01", false],
+    ]);
+  });
+
   test("is for super admins only", async () => {
     const t = setup();
     const admin = await signIn(t, { name: "Admin", superadmin: true });
     const someone = await signIn(t, { name: "Ana" });
-    const manufacturerId = await t.run(
-      async (ctx) =>
-        await ctx.db.insert("manufacturers", {
-          name: "Termo Test SA",
-          nameKey: "termo test",
-          wave: 1,
-          status: "norms_received",
-          normsStatus: "received",
-          claimStatus: "unclaimed",
-          brands: [],
-          categories: [],
-          mainProducts: [],
-          retailers: [],
-          existingNorms: [],
-          technicalDocs: [],
-          declaredConsumption: [],
-          createdBy: admin.userId,
-        }),
-    );
+    const manufacturerId = await manufacturer(t, admin.userId);
     const normImportId = await importWith(
       t,
       admin.userId,

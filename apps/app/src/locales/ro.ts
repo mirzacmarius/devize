@@ -196,6 +196,8 @@ export default {
       not_editable: "Nu se mai poate modifica.",
       not_approved: "Emailul trebuie aprobat întâi.",
       invalid: "Valoarea nu e validă.",
+      invalidNorm:
+        "Norma {code} nu se poate publica: nu are unitate de măsură sau resurse.",
       not_pdf: "Fișierul trebuie să fie PDF.",
       file_too_large: "PDF-ul are peste 20 MB.",
       missing_api_key: "Lipsește cheia Claude din variabilele de mediu Convex.",
@@ -388,6 +390,8 @@ export default {
       edition: "Ediția {edition}",
       laborRate: "Manoperă {rate} lei/oră",
       summary: "{approved} aprobate și {rejected} respinse din {total} norme",
+      inCatalogCount: "În catalog: {count}",
+      inCatalog: "În catalog",
       approve: "Aprobă articolul",
       reject: "Respinge articolul",
       pages: "Pagina {pages}",
@@ -404,7 +408,11 @@ export default {
         unitPrice: "Preț unitar",
       },
       catalogNote:
-        "Aprobarea confirmă că transcrierea corespunde PDF-ului. Articolele aprobate se publică apoi în catalog, cu sursa, ediția și paginile lor.",
+        "Aprobarea confirmă că transcrierea corespunde PDF-ului. Apoi „Publică în catalog” pune articolele aprobate în catalog, cu sursa, ediția și paginile lor. O normă deja publicată și neschimbată e sărită, iar una schimbată devine o versiune nouă.",
+      publish: {
+        button: "Publică în catalog ({count})",
+        result: "Publicate: {published}. Sărite, deja în catalog: {skipped}.",
+      },
     },
     outreach: {
       title: "Emailuri de aprobat",

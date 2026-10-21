@@ -199,6 +199,8 @@ export default {
       not_editable: "It can no longer be changed.",
       not_approved: "The email has to be approved first.",
       invalid: "That value isn't valid.",
+      invalidNorm:
+        "Norm {code} can't be published: it has no unit of measure or no resources.",
       not_pdf: "The file has to be a PDF.",
       file_too_large: "The PDF is over 20 MB.",
       missing_api_key:
@@ -391,6 +393,8 @@ export default {
       edition: "Edition {edition}",
       laborRate: "Labour {rate} lei/hour",
       summary: "{approved} approved and {rejected} rejected of {total} norms",
+      inCatalogCount: "In the catalog: {count}",
+      inCatalog: "In the catalog",
       approve: "Approve article",
       reject: "Reject article",
       pages: "Page {pages}",
@@ -407,7 +411,12 @@ export default {
         unitPrice: "Unit price",
       },
       catalogNote:
-        "Approving confirms that the transcription matches the PDF. Approved articles are then published to the catalog, with their source, edition and pages.",
+        "Approving confirms that the transcription matches the PDF. Then “Publish to the catalog” puts the approved articles in the catalog, with their source, edition and pages. A norm already published and unchanged is skipped, and a changed one becomes a new version.",
+      publish: {
+        button: "Publish to the catalog ({count})",
+        result:
+          "Published: {published}. Skipped, already in the catalog: {skipped}.",
+      },
     },
     outreach: {
       title: "Emails to approve",
