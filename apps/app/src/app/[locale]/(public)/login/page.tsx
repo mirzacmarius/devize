@@ -3,6 +3,7 @@ import { EmailSignIn } from "@/components/email-sign-in";
 import { GoogleSignin } from "@/components/google-signin";
 import { Wordmark } from "@/components/wordmark";
 import { env } from "@/env.mjs";
+import { returnPath } from "@/lib/return-path";
 import { getScopedI18n } from "@/locales/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -10,8 +11,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string | string[] }>;
+}) {
   const t = await getScopedI18n("login");
+  // The page that sent people here to sign in, such as an invitation.
+  const next = returnPath((await searchParams).next);
   // Google sends people back to one fixed address, so on preview deployments,
   // each with its own address and backend, only the emailed code works.
   const withGoogle = env.VERCEL_ENV !== "preview";
@@ -24,7 +31,7 @@ export default async function Page() {
           <p className="m-0 text-body text-ink-2">{t("description")}</p>
         </div>
         <div className="grid w-full gap-4">
-          <EmailSignIn />
+          <EmailSignIn next={next} />
           {withGoogle && (
             <>
               <div className="flex items-center gap-3 text-meta text-ink-3">
@@ -32,7 +39,7 @@ export default async function Page() {
                 {t("or")}
                 <span aria-hidden className="h-px flex-1 bg-border" />
               </div>
-              <GoogleSignin label={t("google")} />
+              <GoogleSignin label={t("google")} next={next} />
             </>
           )}
         </div>

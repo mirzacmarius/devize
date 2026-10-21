@@ -15,6 +15,7 @@
     "@auth/core": "0.41.3",
     "@convex-dev/auth": "^0.0.96",
     "@devize/backend": "workspace:*",
+    "@devize/forms": "workspace:*",
     "@devize/ui": "workspace:*",
     "@sentry/nextjs": "^11.6.0",
     "@t3-oss/env-nextjs": "^0.13.11",

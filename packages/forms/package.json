@@ -1,0 +1,27 @@
+{
+  "name": "@devize/forms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Deviz as documents: the client's PDF and the official tender forms",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./pdf": "./src/pdf/index.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "biome lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@devize/backend": "workspace:*",
+    "@pdf-lib/fontkit": "1.1.1",
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.3",
+    "geist": "^1.3.1",
+    "typescript": "^5.9.3"
+  }
+}

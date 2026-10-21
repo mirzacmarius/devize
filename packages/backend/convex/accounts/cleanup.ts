@@ -125,6 +125,18 @@ async function deleteSome(
   if (priceSettings.length > 0) {
     return priceSettings.length;
   }
+  const priceAlerts = await ctx.db
+    .query("priceAlerts")
+    .withIndex("by_organizationId_and_checkedAt", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of priceAlerts) {
+    await ctx.db.delete("priceAlerts", row._id);
+  }
+  if (priceAlerts.length > 0) {
+    return priceAlerts.length;
+  }
   for (const status of [
     "draft",
     "review",
@@ -187,6 +199,18 @@ async function deleteSome(
   }
   if (jobs.length > 0) {
     return jobs.length;
+  }
+  const invitations = await ctx.db
+    .query("invitations")
+    .withIndex("by_organizationId_and_email", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of invitations) {
+    await ctx.db.delete("invitations", row._id);
+  }
+  if (invitations.length > 0) {
+    return invitations.length;
   }
   const proposals = await deleteProposals(ctx, { organizationId }, limit);
   if (proposals > 0) {

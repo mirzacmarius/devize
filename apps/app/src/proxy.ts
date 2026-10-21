@@ -4,6 +4,7 @@ import {
   nextjsMiddlewareRedirect,
 } from "@convex-dev/auth/nextjs/server";
 import { createI18nMiddleware } from "next-international/middleware";
+import { returnPath, signInPath } from "./lib/return-path";
 import { defaultLocale, locales } from "./locales/locale";
 
 /**
@@ -31,11 +32,15 @@ export const proxy = convexAuthNextjsMiddleware(
   async (request, { convexAuth }) => {
     const isAuthenticated = await convexAuth.isAuthenticated();
     const isSignIn = isSignInPage(request);
+    // Signing in leads back to the page that asked for it, such as an
+    // invitation's link.
     if (isSignIn && isAuthenticated) {
-      return nextjsMiddlewareRedirect(request, "/");
+      const next = returnPath(request.nextUrl.searchParams.get("next"));
+      return nextjsMiddlewareRedirect(request, next ?? "/");
     }
     if (!isSignIn && !isAuthenticated) {
-      return nextjsMiddlewareRedirect(request, "/login");
+      const { pathname, search } = request.nextUrl;
+      return nextjsMiddlewareRedirect(request, signInPath(pathname + search));
     }
     return I18nMiddleware(request);
   },

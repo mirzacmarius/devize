@@ -76,6 +76,10 @@ _Avoid_: Reports, templates (for the forms themselves)
 The account that owns devize, clients, rates and prices. Every record belongs to one Firmă, and only its members can see it. In code: `organizations`.
 _Avoid_: Tenant, team, workspace
 
+**Invitație** (invitation):
+How a Firmă's owners and admins ask a colleague to join it, as a member or an admin: a link for one email address, which only someone signed in with that address can accept, within a week. In code: `invitations`.
+_Avoid_: Invite code, join request
+
 **Constructor** (contractor):
 A Firmă or tradesperson who builds devize for their jobs.
 _Avoid_: Builder, user (when meaning a contractor)
@@ -95,7 +99,7 @@ One product's price at one source on one date: a retailer, a Furnizor's price li
 _Avoid_: Offer, price (for the record itself)
 
 **Citire la cerere** (on-demand reading):
-Reading a retailer's public price for a single product only when a Deviz needs it, cached and rate-limited, until a partnership gives Devize that retailer's feed. Devize never scrapes retailers' catalogs in bulk: it reads only the page a Constructor links to, and only its structured data. In code: `storeReads`. See `docs/adr/0003` and `docs/adr/0008`.
+Reading a retailer's public price for a single product only when a Deviz needs it, cached and rate-limited, until a partnership gives Devize that retailer's feed. Devize never scrapes retailers' catalogs in bulk: it reads only the page a Constructor links to, and only its structured data, then again once a day while a Firmă has it as a Produs ales. In code: `storeReads`. See `docs/adr/0003`, `docs/adr/0008` and `docs/adr/0010`.
 _Avoid_: Scraping, crawling
 
 **Produs ales** (chosen store product):
@@ -105,3 +109,7 @@ _Avoid_: Match, mapping
 **Coș** (shopping basket):
 A Deviz's materials split between the stores at the lowest total: each material is bought at one store, in whole items, and every store used adds its delivery, or the trip there, unless the order reaches its free-delivery threshold. In code: `prices/basket.ts` and `prices/basketPlan.ts`, with each Firmă's store fees in `priceSettings`.
 _Avoid_: Cart, shopping list
+
+**Alertă de preț** (price alert):
+A sent or accepted Deviz whose total would change by at least the Firmă's threshold (5 % unless it chose another) if it were priced today. It shows the total, the direct costs and the profit left if the client pays the price sent, with the resources that moved most. The Deviz itself never changes. In code: `priceAlerts`, checked every morning by `prices/alerts.ts`. See `docs/adr/0010`.
+_Avoid_: Notification, price watch

@@ -9,7 +9,11 @@ import { useScopedI18n } from "@/locales/client";
 export function SettingsTabs() {
   const t = useScopedI18n("settings");
   const pathname = usePathname();
-  const tabs = [{ href: "/settings", label: t("general") }];
+  const tabs = [
+    { href: "/settings", label: t("tabs.account") },
+    { href: "/settings/firm", label: t("tabs.firm") },
+    { href: "/settings/members", label: t("tabs.members") },
+  ];
   return (
     <TabsNav aria-label={t("sections")}>
       {tabs.map((tab) => (

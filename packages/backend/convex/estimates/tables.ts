@@ -63,6 +63,8 @@ export const estimateTables = {
       "status",
       "updatedAt",
     ])
+    // For the daily price check of sent devize, across firms.
+    .index("by_status_and_updatedAt", ["status", "updatedAt"])
     .index("by_clientId", ["clientId"])
     .searchIndex("search_searchText", {
       searchField: "searchText",

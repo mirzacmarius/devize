@@ -20,6 +20,8 @@ export default {
     catalog: "Catalog",
     clients: "Clienți",
     rates: "Tarife",
+    prices: "Prețuri",
+    priceAlerts: "Alerte de preț: {count}",
     settings: "Setări",
     admin: "Administrare",
     openMenu: "Deschide meniul",
@@ -577,6 +579,72 @@ export default {
       inUse: "AI-ul lucrează deja la o propunere pentru acest deviz.",
     },
   },
+  documents: {
+    title: "Documente",
+    empty: "Adaugă articole ca să poți descărca documente.",
+    failed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
+    deviz: {
+      title: "Devizul pentru client",
+      hint: "PDF cu antetul firmei, articolele și Recapitulația, gata de trimis.",
+      download: "Descarcă PDF",
+    },
+    forms: {
+      title: "Formulare oficiale",
+      hint: "F3, C5 și listele de resurse C6–C9, pentru licitații.",
+      open: "Alege",
+      sheetTitle: "Formulare oficiale",
+      sheetDescription:
+        "Listele pe care le cere documentația de atribuire, într-un singur PDF. Fiecare formular începe pe o pagină nouă.",
+      choose: "Formulare",
+      kinds: {
+        F3: {
+          title: "F3 · Lista cu cantități de lucrări",
+          hint: "Câte una pentru fiecare categorie de lucrări (HG 907/2016).",
+        },
+        C5: {
+          title: "C5 · Lista cantităților de lucrări, detaliată",
+          hint: "Prețuri și valori pe materiale, manoperă, utilaj și transport (Ordinul 1014/2001).",
+        },
+        C6: {
+          title: "C6 · Consumurile de resurse materiale",
+          hint: "Cu magazinul din care vine fiecare preț.",
+        },
+        C7: {
+          title: "C7 · Consumurile cu mâna de lucru",
+          hint: "Orele fiecărei meserii.",
+        },
+        C8: {
+          title: "C8 · Orele de funcționare a utilajelor",
+          hint: "Utilajele și tarifele lor.",
+        },
+        C9: {
+          title: "C9 · Consumurile privind transporturile",
+          hint: "Transporturile și tarifele lor.",
+        },
+      },
+      rename: "Redenumește formularele",
+      renameDone: "Gata cu denumirile",
+      label: "Numele formularului {form} în documentația de atribuire",
+      withValues: "Cu prețuri și valori",
+      withValuesHint:
+        "Fără ele, listele arată ca în documentația publicată de proiectant.",
+      scope: "Listele de resurse",
+      scopeHint:
+        "Pentru tot devizul, pentru fiecare obiect sau pentru fiecare categorie de lucrări.",
+      scopes: {
+        estimate: "Pe deviz",
+        object: "Pe obiect",
+        category: "Pe categorie",
+      },
+      beneficiary: "Beneficiar",
+      beneficiaryHint: "Autoritatea contractantă sau clientul.",
+      designer: "Proiectant",
+      designerHint: "Opțional, când proiectul nu este al firmei tale.",
+      none: "Alege cel puțin un formular.",
+      download: "Descarcă PDF",
+      fileTitle: "Formulare oficiale",
+    },
+  },
   catalog: {
     title: "Catalog",
     description:
@@ -880,9 +948,13 @@ export default {
   },
   settings: {
     title: "Setări",
-    description: "Gestionează-ți contul.",
+    description: "Contul tău, firma și colegii cu care lucrezi.",
     sections: "Secțiunile setărilor",
-    general: "General",
+    tabs: {
+      account: "Cont",
+      firm: "Firmă",
+      members: "Membri",
+    },
     avatar: {
       title: "Fotografia ta",
       description: "Apare în meniul contului tău.",
@@ -902,6 +974,87 @@ export default {
       warning: "Acțiunea nu poate fi anulată.",
       button: "Șterge contul",
       confirm: "Sigur? Apasă din nou",
+    },
+    firm: {
+      logoTitle: "Logo",
+      logoDescription: "Apare pe oferte, devize și formularele oficiale.",
+      logoAlt: "Logo-ul firmei {firm}",
+      uploadLogo: "Încarcă logo",
+      changeLogo: "Schimbă logo-ul",
+      removeLogo: "Elimină",
+      logoHint: "PNG, JPG sau WebP, de cel mult 5 MB.",
+      logoSaved: "Logo-ul a fost salvat.",
+      logoRemoved: "Logo-ul a fost eliminat.",
+      logoTooBig: "Alege o imagine PNG, JPG sau WebP de cel mult 5 MB.",
+      detailsTitle: "Datele firmei",
+      detailsDescription:
+        "Apar pe devize, oferte și formularele oficiale de licitație.",
+      readOnly: "Doar proprietarii și administratorii modifică datele firmei.",
+      tradeRegister: "Nr. Reg. Com.",
+      tradeRegisterPlaceholder: "ex. J40/1234/2020",
+      address: "Adresa sediului",
+      addressPlaceholder: "ex. Str. Fabricii nr. 12, Cluj-Napoca",
+      email: "Email",
+      emailPlaceholder: "ex. office@firma.ro",
+      emailInvalid: "Adresa de email nu pare corectă.",
+      phone: "Telefon",
+      phonePlaceholder: "ex. 0722 123 456",
+      saved: "Datele firmei au fost salvate.",
+    },
+    members: {
+      title: "Membri",
+      description: "Cine lucrează în {firm} și ce poate face fiecare.",
+      you: "tu",
+      roleOf: "Rolul lui {name}",
+      roleHints: {
+        owner: "Are grijă de firmă, de membri și de ceilalți proprietari.",
+        admin: "Schimbă datele firmei și tarifele, și invită colegi.",
+        member: "Lucrează la devize, clienți și normele firmei.",
+      },
+      roleChanged: "Rolul lui {name} a fost schimbat.",
+      remove: "Elimină din firmă",
+      leave: "Părăsește firma",
+      removeTitle: "Elimini pe {name} din firmă?",
+      removeDescription:
+        "Nu va mai vedea devizele, clienții și tarifele firmei. Îl poți invita din nou oricând.",
+      leaveTitle: "Părăsești {firm}?",
+      leaveDescription:
+        "Nu vei mai vedea devizele, clienții și tarifele firmei, până te invită cineva din nou.",
+      removed: "{name} nu mai face parte din firmă.",
+      left: "Ai părăsit {firm}.",
+      invitationsTitle: "Invitații",
+      invitationsDescription:
+        "Un coleg invitat intră în Devize cu adresa la care l-ai invitat și acceptă invitația. Invitațiile expiră după 7 zile.",
+      invite: "Invită un coleg",
+      invitedBy: "invitat de {name}",
+      expires: "expiră pe {date}",
+      emailStatus: {
+        sending: "Se trimite emailul",
+        sent: "Email trimis",
+        not_sent: "Email netrimis",
+      },
+      copyLink: "Copiază linkul",
+      linkCopied: "Linkul invitației a fost copiat.",
+      revoke: "Anulează invitația",
+      revoked: "Invitația pentru {email} a fost anulată.",
+      inviteTitle: "Invită un coleg",
+      inviteDescription:
+        "Colegul primește un link ca să intre în {firm}. Invitația expiră după 7 zile.",
+      inviteEmail: "Adresa de email",
+      inviteEmailPlaceholder: "ex. ana@firma.ro",
+      inviteEmailInvalid: "Scrie o adresă de email corectă.",
+      inviteRole: "Rol",
+      sendInvite: "Invită",
+      invitedTitle: "Invitația e gata",
+      invitedDescription:
+        "Trimite-i linkul lui {email}, pe email sau pe WhatsApp. Când intră în Devize cu adresa aceasta, vede invitația și în aplicație.",
+      inviteLink: "Linkul invitației",
+      inviteEmailHint: {
+        sending: "Îi trimitem linkul și pe email.",
+        sent: "I-am trimis linkul și pe email.",
+        not_sent: "Emailul n-a putut fi trimis, așa că trimite-i tu linkul.",
+      },
+      done: "Gata",
     },
   },
   admin: {
@@ -1320,6 +1473,39 @@ export default {
       member: "Membru",
     },
   },
+  invite: {
+    title: "Invitație",
+    loading: "Se încarcă invitația…",
+    heading: "{name} te invită în {firm}",
+    headingNoName: "Ai o invitație în {firm}",
+    description: "Vei lucra în firmă ca {role}.",
+    roles: {
+      admin: "administrator",
+      member: "membru",
+    },
+    accept: "Acceptă invitația",
+    decline: "Refuză",
+    accepted: "Bine ai venit în {firm}!",
+    declined: "Ai refuzat invitația în {firm}.",
+    goneTitle: "Invitația nu mai e valabilă",
+    goneDescription:
+      "A fost folosită, anulată sau a expirat. Cere-i celui care te-a invitat una nouă.",
+    goHome: "Mergi la Devize",
+    memberTitle: "Faci deja parte din {firm}",
+    openFirm: "Deschide firma",
+    otherEmailTitle: "Invitația e pentru altă adresă",
+    otherEmailDescription:
+      "E pentru {email}, iar tu ești conectat ca {signedInAs}. Intră în cont cu adresa invitată ca s-o accepți.",
+    otherEmailNoAddress:
+      "E pentru {email}. Intră în cont cu adresa aceasta ca s-o accepți.",
+    switchAccount: "Intră cu altă adresă",
+    pendingTitle: "Te așteaptă o invitație",
+    pendingDescription: "Intră într-o firmă care te-a invitat:",
+    pendingItem: "{firm}, ca {role}",
+    pendingFrom: "invitat de {name}",
+    orCreate: "Sau creează-ți propria firmă",
+    menuLabel: "Invitații",
+  },
   errors: {
     unknown: "Ceva n-a mers. Încearcă din nou.",
     unauthenticated: "Sesiunea a expirat. Intră din nou în cont.",
@@ -1344,6 +1530,15 @@ export default {
     inUseCode: "Codul e folosit deja de altă normă din catalog.",
     inUseEstimates: "Clientul are devize, așa că nu poate fi șters.",
     inUseLastOwner: "Firma trebuie să rămână cu cel puțin un proprietar.",
+    inUseMember: "Persoana face deja parte din firmă.",
+    invalidEmail: "Adresa de email nu e validă.",
+    invalidLogo:
+      "Logo-ul trebuie să fie o imagine PNG, JPG sau WebP de cel mult 5 MB.",
+    invalidOrganizations: "Poți face parte din cel mult 20 de firme.",
+    invalidInvitations:
+      "Firma are deja 50 de invitații în așteptare. Anulează câteva întâi.",
+    notFoundInvitation:
+      "Invitația nu mai e valabilă: a fost folosită, anulată sau a expirat.",
     inUseSections: "Capitolul nu e gol. Mută sau șterge întâi ce conține.",
     lockedEstimate:
       "Devizul e trimis și blocat. Creează o revizie ca să-l modifici.",
@@ -1392,6 +1587,74 @@ export default {
     archived: "Arhivat",
   },
   prices: {
+    title: "Prețuri",
+    description:
+      "Produsele din magazine pe care le cumpără firma, cu prețul la zi, și devizele trimise pe care prețurile le schimbă.",
+    alerts: {
+      title: "Alerte de preț",
+      description:
+        "Devizele trimise sau acceptate al căror total s-ar schimba cu cel puțin {percent} la prețurile de azi. Le verificăm în fiecare dimineață.",
+      off: "Alertele sunt oprite. Alege un prag ca să afli când prețurile schimbă un deviz trimis.",
+      checkNow: "Verifică acum",
+      checking:
+        "Verific devizele trimise ({count}). Alertele apar aici în câteva secunde.",
+      checkedRecently: "Devizele au fost verificate acum câteva minute.",
+      noneTitle: "Nicio alertă",
+      noneDescription:
+        "La prețurile de azi, niciun deviz trimis nu se schimbă peste prag.",
+      dismissedCount:
+        "Alerte ignorate: {count}. Revin dacă prețurile se mai schimbă cu {percent}.",
+      up: "Mai scump cu {percent}",
+      down: "Mai ieftin cu {percent}",
+      total: "Total cu TVA",
+      direct: "Costuri directe",
+      profit: "Profit",
+      profitHint: "Dacă clientul plătește prețul trimis.",
+      fromTo: "{from} → {to}\u00a0lei",
+      changes: "Cele mai mari schimbări",
+      change: "{from} → {to}\u00a0lei/{unit}",
+      impact: "{impact}\u00a0lei",
+      more: "Și încă {count} resurse cu prețul schimbat.",
+      checked: "Verificat {date}",
+      open: "Deschide devizul",
+      dismiss: "Ignoră",
+      dismissed: "Alerta e ascunsă până când prețurile se mai schimbă.",
+    },
+    threshold: {
+      title: "Prag de alertă",
+      description:
+        "Te anunțăm când totalul unui deviz trimis s-ar schimba cel puțin cu atât la prețurile de azi.",
+      label: "Pragul de alertă",
+      off: "Oprite",
+      adminOnly: "Doar administratorii firmei pot schimba pragul.",
+      saved: "Pragul e salvat. Devizele trimise se verifică din nou.",
+    },
+    products: {
+      title: "Produse alese",
+      description:
+        "Produsele din magazine pe care le cumpără firma. Prețurile citite din paginile magazinelor se actualizează zilnic.",
+      product: "Produs",
+      price: "Preț cu TVA (lei)",
+      change: "Schimbare",
+      checked: "Verificat",
+      forMaterial: "{store} · pentru {material}",
+      unknownMaterial: "un material șters",
+      perUnit: "{price}\u00a0lei/{unit} fără TVA",
+      typed: "Preț introdus de firmă",
+      unavailable: "Nu mai e pe site",
+      before: "Înainte: {price}\u00a0lei",
+      emptyTitle: "Niciun produs ales",
+      emptyDescription:
+        "Alege produse în coșul unui deviz. Le găsești apoi aici, cu prețul la zi.",
+    },
+    how: {
+      title: "Cum țin prețurile la zi",
+      read: "Citim zilnic pagina fiecărui produs ales, câte o pagină o dată și doar unde magazinul permite.",
+      check:
+        "În fiecare dimineață calculăm devizele trimise și acceptate la prețurile de azi.",
+      never:
+        "Un deviz trimis nu se schimbă singur. Alerta îți arată impactul, iar tu decizi dacă faci o revizie.",
+    },
     basket: {
       title: "Coș de cumpărături",
       open: "Coș de cumpărături",
@@ -1490,7 +1753,7 @@ export default {
         checkedAt: "Preț citit la {date}",
         typedAt: "Preț scris la {date}",
         price: "{price} lei cu TVA pentru o bucată",
-        perUnit: "{price} lei/{unit} fără TVA",
+        perUnit: "{price}\u00a0lei/{unit} fără TVA",
         units: "O bucată conține",
         unitsInvalid: "Scrie un număr mai mare ca 0.",
         save: "Salvează",

@@ -22,6 +22,8 @@ export default {
     catalog: "Catalog",
     clients: "Clients",
     rates: "Rates",
+    prices: "Prices",
+    priceAlerts: "Price alerts: {count}",
     settings: "Settings",
     admin: "Admin",
     openMenu: "Open menu",
@@ -582,6 +584,72 @@ export default {
       inUse: "The AI is already working on a proposal for this estimate.",
     },
   },
+  documents: {
+    title: "Documents",
+    empty: "Add line items to download documents.",
+    failed: "The PDF couldn't be made. Try again.",
+    deviz: {
+      title: "Estimate for the client",
+      hint: "A PDF with your letterhead, the line items and the summary, ready to send.",
+      download: "Download PDF",
+    },
+    forms: {
+      title: "Official forms",
+      hint: "F3, C5 and the C6–C9 resource lists, for tenders.",
+      open: "Choose",
+      sheetTitle: "Official forms",
+      sheetDescription:
+        "The lists the tender documentation asks for, in one PDF, each form on a new page. Forms are in Romanian, as tenders require.",
+      choose: "Forms",
+      kinds: {
+        F3: {
+          title: "F3 · Bill of quantities",
+          hint: "One for each category of works (HG 907/2016).",
+        },
+        C5: {
+          title: "C5 · Detailed bill of quantities",
+          hint: "Prices and amounts for materials, labour, equipment and transport (Order 1014/2001).",
+        },
+        C6: {
+          title: "C6 · Materials consumed",
+          hint: "With the store each price comes from.",
+        },
+        C7: {
+          title: "C7 · Labour consumed",
+          hint: "The hours of each trade.",
+        },
+        C8: {
+          title: "C8 · Equipment hours",
+          hint: "The equipment and its rates.",
+        },
+        C9: {
+          title: "C9 · Transport consumed",
+          hint: "The transport and its rates.",
+        },
+      },
+      rename: "Rename the forms",
+      renameDone: "Done renaming",
+      label: "The name of form {form} in the tender documentation",
+      withValues: "With prices and amounts",
+      withValuesHint:
+        "Without them, the lists look as the designer publishes them in the tender documentation.",
+      scope: "Resource lists",
+      scopeHint:
+        "For the whole estimate, for each object or for each category of works.",
+      scopes: {
+        estimate: "Per estimate",
+        object: "Per object",
+        category: "Per category",
+      },
+      beneficiary: "Beneficiary",
+      beneficiaryHint: "The contracting authority or the client.",
+      designer: "Designer",
+      designerHint: "Optional, when the design isn't your firm's.",
+      none: "Choose at least one form.",
+      download: "Download PDF",
+      fileTitle: "Official forms",
+    },
+  },
   catalog: {
     title: "Catalog",
     description:
@@ -886,9 +954,13 @@ export default {
   },
   settings: {
     title: "Settings",
-    description: "Manage your account.",
+    description: "Your account, your company and the colleagues you work with.",
     sections: "Settings sections",
-    general: "General",
+    tabs: {
+      account: "Account",
+      firm: "Company",
+      members: "Members",
+    },
     avatar: {
       title: "Your photo",
       description: "It's shown in your account menu.",
@@ -908,6 +980,89 @@ export default {
       warning: "This can't be undone.",
       button: "Delete account",
       confirm: "Are you sure? Click again",
+    },
+    firm: {
+      logoTitle: "Logo",
+      logoDescription:
+        "It's shown on offers, estimates and the official forms.",
+      logoAlt: "{firm}'s logo",
+      uploadLogo: "Upload logo",
+      changeLogo: "Change logo",
+      removeLogo: "Remove",
+      logoHint: "PNG, JPG or WebP, up to 5 MB.",
+      logoSaved: "The logo was saved.",
+      logoRemoved: "The logo was removed.",
+      logoTooBig: "Choose a PNG, JPG or WebP image of up to 5 MB.",
+      detailsTitle: "Company details",
+      detailsDescription:
+        "They're shown on estimates, offers and the official tender forms.",
+      readOnly: "Only owners and admins change the company's details.",
+      tradeRegister: "Trade Register no.",
+      tradeRegisterPlaceholder: "e.g. J40/1234/2020",
+      address: "Registered address",
+      addressPlaceholder: "e.g. 12 Fabricii St, Cluj-Napoca",
+      email: "Email",
+      emailPlaceholder: "e.g. office@company.ro",
+      emailInvalid: "That email address doesn't look right.",
+      phone: "Phone",
+      phonePlaceholder: "e.g. 0722 123 456",
+      saved: "The company details were saved.",
+    },
+    members: {
+      title: "Members",
+      description: "Who works at {firm} and what each of them can do.",
+      you: "you",
+      roleOf: "{name}'s role",
+      roleHints: {
+        owner: "Looks after the company, its members and the other owners.",
+        admin:
+          "Changes the company's details and rates, and invites colleagues.",
+        member: "Works on estimates, clients and the company's own norms.",
+      },
+      roleChanged: "{name}'s role was changed.",
+      remove: "Remove from company",
+      leave: "Leave company",
+      removeTitle: "Remove {name} from the company?",
+      removeDescription:
+        "They won't see the company's estimates, clients and rates anymore. You can invite them again at any time.",
+      leaveTitle: "Leave {firm}?",
+      leaveDescription:
+        "You won't see the company's estimates, clients and rates anymore, until someone invites you again.",
+      removed: "{name} is no longer a member of the company.",
+      left: "You left {firm}.",
+      invitationsTitle: "Invitations",
+      invitationsDescription:
+        "An invited colleague signs in to Devize with the address you invited and accepts the invitation. Invitations expire after 7 days.",
+      invite: "Invite a colleague",
+      invitedBy: "invited by {name}",
+      expires: "expires on {date}",
+      emailStatus: {
+        sending: "Sending email",
+        sent: "Email sent",
+        not_sent: "Email not sent",
+      },
+      copyLink: "Copy link",
+      linkCopied: "The invitation link was copied.",
+      revoke: "Cancel invitation",
+      revoked: "The invitation for {email} was cancelled.",
+      inviteTitle: "Invite a colleague",
+      inviteDescription:
+        "Your colleague gets a link to join {firm}. The invitation expires after 7 days.",
+      inviteEmail: "Email address",
+      inviteEmailPlaceholder: "e.g. ana@company.ro",
+      inviteEmailInvalid: "Enter a valid email address.",
+      inviteRole: "Role",
+      sendInvite: "Invite",
+      invitedTitle: "The invitation is ready",
+      invitedDescription:
+        "Send the link to {email}, by email or WhatsApp. Once they sign in to Devize with that address, they also see the invitation in the app.",
+      inviteLink: "Invitation link",
+      inviteEmailHint: {
+        sending: "We're also emailing them the link.",
+        sent: "We also emailed them the link.",
+        not_sent: "The email couldn't be sent, so send them the link yourself.",
+      },
+      done: "Done",
     },
   },
   admin: {
@@ -1326,6 +1481,39 @@ export default {
       member: "Member",
     },
   },
+  invite: {
+    title: "Invitation",
+    loading: "Loading the invitation…",
+    heading: "{name} invites you to {firm}",
+    headingNoName: "You have an invitation to {firm}",
+    description: "You'll work at the company as {role}.",
+    roles: {
+      admin: "an admin",
+      member: "a member",
+    },
+    accept: "Accept invitation",
+    decline: "Decline",
+    accepted: "Welcome to {firm}!",
+    declined: "You declined the invitation to {firm}.",
+    goneTitle: "This invitation is no longer valid",
+    goneDescription:
+      "It was used, cancelled or has expired. Ask whoever invited you for a new one.",
+    goHome: "Go to Devize",
+    memberTitle: "You're already a member of {firm}",
+    openFirm: "Open the company",
+    otherEmailTitle: "This invitation is for another address",
+    otherEmailDescription:
+      "It's for {email}, and you're signed in as {signedInAs}. Sign in with the invited address to accept it.",
+    otherEmailNoAddress:
+      "It's for {email}. Sign in with that address to accept it.",
+    switchAccount: "Sign in with another address",
+    pendingTitle: "An invitation is waiting for you",
+    pendingDescription: "Join a company that invited you:",
+    pendingItem: "{firm}, as {role}",
+    pendingFrom: "invited by {name}",
+    orCreate: "Or create your own company",
+    menuLabel: "Invitations",
+  },
   errors: {
     unknown: "Something went wrong. Try again.",
     unauthenticated: "Your session has expired. Sign in again.",
@@ -1350,6 +1538,14 @@ export default {
     inUseCode: "Another norm in the catalog already uses this code.",
     inUseEstimates: "This client has estimates, so it can't be deleted.",
     inUseLastOwner: "The company must keep at least one owner.",
+    inUseMember: "This person is already a member of the company.",
+    invalidEmail: "That email address isn't valid.",
+    invalidLogo: "The logo must be a PNG, JPG or WebP image of up to 5 MB.",
+    invalidOrganizations: "You can be a member of at most 20 companies.",
+    invalidInvitations:
+      "The company already has 50 invitations waiting. Cancel some first.",
+    notFoundInvitation:
+      "This invitation is no longer valid: it was used, cancelled or has expired.",
     inUseSections:
       "The chapter isn't empty. Move or delete what's in it first.",
     lockedEstimate:
@@ -1399,6 +1595,74 @@ export default {
     archived: "Archived",
   },
   prices: {
+    title: "Prices",
+    description:
+      "The store products your firm buys, at today's prices, and the sent estimates those prices change.",
+    alerts: {
+      title: "Price alerts",
+      description:
+        "Sent or accepted estimates whose total would change by at least {percent} at today's prices. We check them every morning.",
+      off: "Alerts are off. Choose a threshold to learn when prices change a sent estimate.",
+      checkNow: "Check now",
+      checking:
+        "Checking the sent estimates ({count}). Alerts show up here in a few seconds.",
+      checkedRecently: "The estimates were checked a few minutes ago.",
+      noneTitle: "No alerts",
+      noneDescription:
+        "At today's prices, no sent estimate changes beyond the threshold.",
+      dismissedCount:
+        "Dismissed alerts: {count}. They come back if prices move by another {percent}.",
+      up: "Dearer by {percent}",
+      down: "Cheaper by {percent}",
+      total: "Total with VAT",
+      direct: "Direct costs",
+      profit: "Profit",
+      profitHint: "If the client pays the price you sent.",
+      fromTo: "{from} → {to}\u00a0lei",
+      changes: "Biggest changes",
+      change: "{from} → {to}\u00a0lei/{unit}",
+      impact: "{impact}\u00a0lei",
+      more: "And {count} more resources with a new price.",
+      checked: "Checked {date}",
+      open: "Open the estimate",
+      dismiss: "Dismiss",
+      dismissed: "The alert is hidden until prices move again.",
+    },
+    threshold: {
+      title: "Alert threshold",
+      description:
+        "We tell you when a sent estimate's total would change by at least this much at today's prices.",
+      label: "Alert threshold",
+      off: "Off",
+      adminOnly: "Only the firm's admins can change the threshold.",
+      saved: "Threshold saved. The sent estimates are checked again.",
+    },
+    products: {
+      title: "Chosen products",
+      description:
+        "The store products your firm buys. Prices read from the stores' pages are updated daily.",
+      product: "Product",
+      price: "Price with VAT (lei)",
+      change: "Change",
+      checked: "Checked",
+      forMaterial: "{store} · for {material}",
+      unknownMaterial: "a deleted material",
+      perUnit: "{price}\u00a0lei/{unit} without VAT",
+      typed: "Price typed by the firm",
+      unavailable: "No longer on the site",
+      before: "Before: {price}\u00a0lei",
+      emptyTitle: "No chosen products",
+      emptyDescription:
+        "Choose products in an estimate's shopping basket. You'll find them here, at today's prices.",
+    },
+    how: {
+      title: "How prices stay current",
+      read: "We read each chosen product's page daily, one page at a time and only where the store allows it.",
+      check:
+        "Every morning we price the sent and accepted estimates at today's prices.",
+      never:
+        "A sent estimate never changes by itself. The alert shows you the impact, and you decide whether to make a revision.",
+    },
     basket: {
       title: "Shopping basket",
       open: "Shopping basket",
@@ -1497,7 +1761,7 @@ export default {
         checkedAt: "Price read on {date}",
         typedAt: "Price typed on {date}",
         price: "{price} lei with VAT for one item",
-        perUnit: "{price} lei/{unit} without VAT",
+        perUnit: "{price}\u00a0lei/{unit} without VAT",
         units: "One item holds",
         unitsInvalid: "Type a number above 0.",
         save: "Save",
