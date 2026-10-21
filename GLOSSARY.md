@@ -82,6 +82,10 @@ _Avoid_: Reports, templates (for the forms themselves)
 The Deviz general totals an investment's costs in the chapters 1–7 of HG 907/2016, each split into subchapters such as 4.1.3 Arhitectură; the Devizul obiectului totals one Obiect's chapter 4. Devize places each Capitol under a subchapter, guessing from its name, and F1, F2 and F4 total the works the same way. C+M, the construction and installation works, are subchapters 1.2, 1.3, 1.4, 2, 4.1, 4.2 and 5.1.1. In code: `DG`, `DO` and `Subchapter`.
 _Avoid_: Recapitulație (that closes one list of quantities), summary
 
+**Graficul general** (general schedule):
+Form F6: an investment's works over the months of its duration, as bars and as the value of each month. Devize plans it from the Deviz's labour hours and its subchapters, and the person sets the tender's duration. In code: `F6` and `schedule`.
+_Avoid_: Timeline, Gantt chart (for the form)
+
 ### People and companies
 
 **Firmă** (company):

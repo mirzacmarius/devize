@@ -1,7 +1,9 @@
 import {
   type DocumentKind,
   documentKinds,
+  maxMonths,
   type ResourceScope,
+  type ScheduleWindow,
   type Subchapter,
   subchapters,
 } from "@devize/forms/sheet";
@@ -18,6 +20,8 @@ export type StoredChoices = {
   subchapters?: Record<string, Subchapter>;
   beneficiary?: string;
   designer?: string;
+  months?: number;
+  windows?: Record<string, ScheduleWindow>;
 };
 
 const scopes: readonly ResourceScope[] = ["estimate", "object", "category"];
@@ -30,6 +34,12 @@ function isOneOf<T extends string>(
 ): value is T {
   return (
     typeof value === "string" && (list as readonly string[]).includes(value)
+  );
+}
+
+function isMonth(value: unknown): value is number {
+  return (
+    Number.isInteger(value) && Number(value) >= 1 && Number(value) <= maxMonths
   );
 }
 
@@ -66,6 +76,20 @@ export function parseChoices(value: unknown): StoredChoices {
   );
   if (placed.length > 0) {
     choices.subchapters = Object.fromEntries(placed);
+  }
+  if (isMonth(stored.months)) {
+    choices.months = stored.months;
+  }
+  const windows = Object.entries(record(stored.windows)).flatMap(
+    ([key, value]): [string, ScheduleWindow][] => {
+      const { start, end } = record(value);
+      return isMonth(start) && isMonth(end) && start <= end
+        ? [[key, { start, end }]]
+        : [];
+    },
+  );
+  if (windows.length > 0) {
+    choices.windows = Object.fromEntries(windows);
   }
   for (const key of ["beneficiary", "designer"] as const) {
     const text = stored[key];

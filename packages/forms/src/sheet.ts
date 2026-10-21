@@ -6,6 +6,7 @@ export type {
   DocumentKind,
   ExportOptions,
   ResourceScope,
+  ScheduleWindow,
   Subchapter,
   WorksData,
 } from "./input";
@@ -15,3 +16,10 @@ export {
   type SheetCategory,
   sheetCategories,
 } from "./subchapters";
+export {
+  clampMonths,
+  clampWindow,
+  maxMonths,
+  plannedWindow,
+  suggestedMonths,
+} from "./schedule";

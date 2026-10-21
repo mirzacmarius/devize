@@ -23,6 +23,7 @@ describe("buildDocuments", () => {
       // No equipment: one F4 saying so, and a blank technical sheet.
       "F4",
       "F5",
+      "F6",
       ...Array(3).fill("C6"),
       ...Array(3).fill("C7"),
       ...Array(3).fill("C8"),
