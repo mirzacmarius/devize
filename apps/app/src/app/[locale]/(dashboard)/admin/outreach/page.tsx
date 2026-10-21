@@ -99,6 +99,7 @@ function MessageRow({ message }: { message: QueuedMessage }) {
           >
             {message.manufacturerName}
           </Link>
+          {message.step === "thanks" && <Pill>{t("thanks")}</Pill>}
           <Pill tone={messageTone[message.status]}>
             {tAdmin(`status.message.${message.status}`)}
           </Pill>

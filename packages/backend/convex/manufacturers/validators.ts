@@ -57,10 +57,12 @@ export const personalization = v.object({
   sourceUrl: v.optional(v.string()),
 });
 
+// "thanks" answers the norms a manufacturer sent, with a claim link.
 export const messageStep = v.union(
   v.literal("initial"),
   v.literal("followup_1"),
   v.literal("followup_2"),
+  v.literal("thanks"),
 );
 
 export const messageStatus = v.union(
@@ -73,6 +75,20 @@ export const messageStatus = v.union(
 // A: the manufacturer already has norms. B: we found none.
 export const emailVariant = v.union(v.literal("A"), v.literal("B"));
 
+// What the thank-you email adds once a manufacturer sent its norms: the claim
+// link for the address they came from, and the latest document we extracted.
+export const thanksVars = v.object({
+  claimEmail: v.string(),
+  // Missing when the app's SITE_URL isn't set; the placeholder left in the
+  // email then blocks approval.
+  claimUrl: v.optional(v.string()),
+  claimExpiresAt: v.optional(v.number()),
+  articles: v.optional(v.number()),
+  variants: v.optional(v.number()),
+  // Their written agreement to publish is already recorded on the document.
+  consentRecorded: v.boolean(),
+});
+
 // What the email template is rendered from. Kept on the message so a draft can
 // be rendered again after the sender's details change.
 export const templateVars = v.object({
@@ -81,6 +97,7 @@ export const templateVars = v.object({
   mainProducts: v.optional(v.string()),
   address: v.optional(v.string()),
   addressSourceUrl: v.optional(v.string()),
+  thanks: v.optional(thanksVars),
 });
 
 // Problems found in a draft or an extracted norm. The interface translates

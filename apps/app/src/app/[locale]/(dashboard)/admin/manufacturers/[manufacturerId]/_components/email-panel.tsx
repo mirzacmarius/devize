@@ -4,7 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import { Button, buttonVariants } from "@devize/ui/button";
 import { Input } from "@devize/ui/input";
 import { useMutation } from "convex/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import { gmailComposeUrl, mailtoUrl } from "../../../_components/email-links";
 import {
@@ -31,7 +31,6 @@ export function EmailPanel({
 }) {
   const t = useScopedI18n("admin.manufacturer.email");
   const tAdmin = useScopedI18n("admin");
-  const format = useFormat();
 
   return (
     <Panel
@@ -40,7 +39,9 @@ export function EmailPanel({
       actions={
         message && (
           <>
-            <Pill>{t("variant", { variant: message.variant })}</Pill>
+            {message.variant && (
+              <Pill>{t("variant", { variant: message.variant })}</Pill>
+            )}
             {message.edited && <Pill>{t("edited")}</Pill>}
             <Pill tone={messageTone[message.status]}>
               {tAdmin(`status.message.${message.status}`)}
@@ -59,31 +60,43 @@ export function EmailPanel({
       ) : (
         <p className="text-sm text-primary/60">{t("none")}</p>
       )}
-      {history.length > 0 && (
-        <details className="text-sm">
-          <summary className="cursor-pointer font-medium text-primary/80">
-            {t("history")}
-          </summary>
-          <ul className="mt-2 flex flex-col gap-2">
-            {history.map((old) => (
-              <li key={old._id} className="flex flex-wrap items-center gap-2">
-                <Pill tone={messageTone[old.status]}>
-                  {tAdmin(`status.message.${old.status}`)}
-                </Pill>
-                <span className="text-primary/70">{old.to}</span>
-                <span className="text-primary/50">
-                  {format.date(old.sentAt ?? old.updatedAt)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
+      <MessageHistory history={history} />
     </Panel>
   );
 }
 
-function EmailEditor({
+/** Earlier emails of one kind: who they went to, and when. */
+export function MessageHistory({ history }: { history: Message[] }) {
+  const t = useScopedI18n("admin.manufacturer.email");
+  const tAdmin = useScopedI18n("admin");
+  const format = useFormat();
+  if (history.length === 0) {
+    return null;
+  }
+  return (
+    <details className="text-sm">
+      <summary className="cursor-pointer font-medium text-primary/80">
+        {t("history")}
+      </summary>
+      <ul className="mt-2 flex flex-col gap-2">
+        {history.map((old) => (
+          <li key={old._id} className="flex flex-wrap items-center gap-2">
+            <Pill tone={messageTone[old.status]}>
+              {tAdmin(`status.message.${old.status}`)}
+            </Pill>
+            <span className="text-primary/70">{old.to}</span>
+            <span className="text-primary/50">
+              {format.date(old.sentAt ?? old.updatedAt)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+/** Edits, approves and records the sending of one email. */
+export function EmailEditor({
   message,
   contacts,
 }: {
@@ -92,6 +105,7 @@ function EmailEditor({
 }) {
   const t = useScopedI18n("admin.manufacturer.email");
   const format = useFormat();
+  const id = useId();
   const updateMessage = useMutation(api.manufacturers.outreach.updateMessage);
   const rerender = useMutation(api.manufacturers.outreach.rerender);
   const approve = useMutation(api.manufacturers.outreach.approve);
@@ -113,16 +127,16 @@ function EmailEditor({
 
   return (
     <div className="flex flex-col gap-4">
-      <Field label={t("to")} htmlFor="email_to">
+      <Field label={t("to")} htmlFor={`${id}-to`}>
         <Input
-          id="email_to"
+          id={`${id}-to`}
           type="email"
-          list="email_contacts"
+          list={`${id}-contacts`}
           value={to}
           disabled={!editable}
           onChange={(event) => setTo(event.target.value)}
         />
-        <datalist id="email_contacts">
+        <datalist id={`${id}-contacts`}>
           {contacts.map(
             (contact) =>
               contact.email && (
@@ -131,17 +145,17 @@ function EmailEditor({
           )}
         </datalist>
       </Field>
-      <Field label={t("subject")} htmlFor="email_subject">
+      <Field label={t("subject")} htmlFor={`${id}-subject`}>
         <Input
-          id="email_subject"
+          id={`${id}-subject`}
           value={subject}
           disabled={!editable}
           onChange={(event) => setSubject(event.target.value)}
         />
       </Field>
-      <Field label={t("body")} htmlFor="email_body">
+      <Field label={t("body")} htmlFor={`${id}-body`}>
         <Textarea
-          id="email_body"
+          id={`${id}-body`}
           rows={18}
           value={body}
           disabled={!editable}
