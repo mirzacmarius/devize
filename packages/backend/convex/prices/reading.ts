@@ -16,6 +16,7 @@ import {
   choose,
   guessUnits,
   materialOf,
+  REFRESH_MS,
   requireMaterial,
 } from "./materials";
 import type { Store } from "./resolve";
@@ -27,6 +28,8 @@ import { readStatus, store } from "./validators";
 // store when a firm links the product to a material, never a whole catalog.
 // A page read in the last hours answers without a new read; reads of one
 // store are spaced out and capped per day, and a firm's reads per day too.
+// While a firm uses the product, `refresh.ts` reads its page again daily
+// (docs/adr/0009).
 
 const CACHE_MS = 12 * 60 * 60_000;
 export const READ_SPACING_MS = 4_000;
@@ -105,7 +108,7 @@ async function firmReadsToday(
   return count;
 }
 
-async function deleteOldReads(ctx: MutationCtx, now: number) {
+export async function deleteOldReads(ctx: MutationCtx, now: number) {
   const old = await ctx.db
     .query("storeReads")
     .withIndex("by_requestedAt", (q) =>
@@ -115,6 +118,57 @@ async function deleteOldReads(ctx: MutationCtx, now: number) {
   for (const read of old) {
     await ctx.db.delete("storeReads", read._id);
   }
+}
+
+/** The store's next free moment for a read, and how busy its day is. */
+export async function nextTurn(ctx: MutationCtx, store: Store, now: number) {
+  const state = await storeState(ctx, store, now);
+  const day = romanianDate(now);
+  return {
+    stateId: state._id,
+    day,
+    readsOnDay: state.day === day ? state.readsOnDay : 0,
+    scheduledFor: Math.max(now, state.nextReadAt),
+    paused: state.pausedUntil !== undefined && state.pausedUntil > now,
+  };
+}
+
+export type Turn = Awaited<ReturnType<typeof nextTurn>>;
+
+/**
+ * Gives a read the store's turn: the store's next read waits a few seconds
+ * after it, and the read is logged and scheduled.
+ */
+export async function queueRead(
+  ctx: MutationCtx,
+  turn: Turn,
+  read: {
+    store: Store;
+    url: string;
+    organizationId?: Id<"organizations">;
+    requestedBy?: Id<"users">;
+    productId?: Id<"products">;
+    resourceId?: Id<"resources">;
+    requestedAt: number;
+  },
+): Promise<Id<"storeReads">> {
+  await ctx.db.patch("storeStates", turn.stateId, {
+    nextReadAt: turn.scheduledFor + READ_SPACING_MS,
+    day: turn.day,
+    readsOnDay: turn.readsOnDay + 1,
+  });
+  const readId = await ctx.db.insert("storeReads", {
+    ...read,
+    status: "pending",
+    fromStore: true,
+    scheduledFor: turn.scheduledFor,
+  });
+  await ctx.scheduler.runAfter(
+    turn.scheduledFor - read.requestedAt,
+    internal.prices.readPage.run,
+    { readId },
+  );
+  return readId;
 }
 
 /**
@@ -149,7 +203,6 @@ export const request = mutation({
       productId: material.productId,
       resourceId: material.resourceId,
       requestedAt: now,
-      scheduledFor: now,
     };
 
     const cached = await cachedListing(ctx, page.url, now);
@@ -167,20 +220,18 @@ export const request = mutation({
         status: "done",
         fromStore: false,
         listingId: cached._id,
+        scheduledFor: now,
         finishedAt: now,
       });
     }
 
-    const state = await storeState(ctx, page.store, now);
-    const day = romanianDate(now);
-    const readsOnDay = state.day === day ? state.readsOnDay : 0;
-    const scheduledFor = Math.max(now, state.nextReadAt);
+    const turn = await nextTurn(ctx, page.store, now);
     let refused: Doc<"storeReads">["status"] | null = null;
-    if (state.pausedUntil !== undefined && state.pausedUntil > now) {
+    if (turn.paused) {
       refused = "blocked";
     } else if (
-      readsOnDay >= STORE_READS_PER_DAY ||
-      scheduledFor - now > MAX_WAIT_MS ||
+      turn.readsOnDay >= STORE_READS_PER_DAY ||
+      turn.scheduledFor - now > MAX_WAIT_MS ||
       (await firmReadsToday(ctx, args.organizationId, now)) >=
         FIRM_READS_PER_DAY
     ) {
@@ -191,26 +242,11 @@ export const request = mutation({
         ...base,
         status: refused,
         fromStore: false,
+        scheduledFor: now,
         finishedAt: now,
       });
     }
-    await ctx.db.patch("storeStates", state._id, {
-      nextReadAt: scheduledFor + READ_SPACING_MS,
-      day,
-      readsOnDay: readsOnDay + 1,
-    });
-    const readId = await ctx.db.insert("storeReads", {
-      ...base,
-      status: "pending",
-      fromStore: true,
-      scheduledFor,
-    });
-    await ctx.scheduler.runAfter(
-      scheduledFor - now,
-      internal.prices.readPage.run,
-      { readId },
-    );
-    return readId;
+    return await queueRead(ctx, turn, base);
   },
 });
 
@@ -394,6 +430,7 @@ export const finish = internalMutation({
           await ctx.db.patch("listings", gone._id, {
             status: "unavailable",
             checkedAt: now,
+            refreshAfter: undefined,
           });
         }
       }
@@ -478,6 +515,14 @@ export const finish = internalMutation({
         });
       }
     }
+    // A product a firm chose is read again in a day; one nobody chose isn't.
+    const chosen = await ctx.db
+      .query("storeChoices")
+      .withIndex("by_listingId", (q) => q.eq("listingId", listingId))
+      .first();
+    await ctx.db.patch("listings", listingId, {
+      refreshAfter: chosen ? now + REFRESH_MS : undefined,
+    });
     await ctx.db.patch("storeReads", read._id, {
       status: "done",
       listingId,

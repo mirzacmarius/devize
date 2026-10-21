@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { api } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
+import { romanianDate } from "../lib/dates";
 import {
   firmOwner,
   publishedBaseNorm,
@@ -8,7 +9,9 @@ import {
   signIn,
   type TestConvex,
 } from "../test.helper";
+import { REFRESH_MS } from "./materials";
 import { FIRM_READS_PER_DAY, READ_SPACING_MS } from "./reading";
+import { REFRESH_READS_PER_DAY } from "./refresh";
 
 // Made-up store pages: nothing here copies a real store's markup or prices.
 
@@ -514,5 +517,172 @@ describe("deleting a firm", () => {
     expect(left.listings.map((l) => [l.store, l.organizationId])).toEqual([
       ["dedeman", undefined],
     ]);
+  });
+});
+
+describe("refreshing chosen store products", () => {
+  /** Reads Ana chose a product from, with its page and robots.txt set up. */
+  async function chosenProduct(t: TestConvex) {
+    const { resourceId } = await adhesive(t);
+    const ana = await firmOwner(t, "Ana");
+    pages["https://www.dedeman.ro/robots.txt"] = { status: 200, body: "" };
+    pages[adhesivePage] = {
+      status: 200,
+      body: productHtml({ name: "Adeziv 25 kg", price: 45.9 }),
+    };
+    const read = await readAndWait(t, ana.as, {
+      organizationId: ana.organizationId,
+      url: adhesivePage,
+      resourceId,
+    });
+    return {
+      ana,
+      resourceId,
+      listingId: read.listing?._id as Id<"listings">,
+    };
+  }
+
+  /** Makes the listing due and the store free, then runs the job. */
+  async function refreshNow(t: TestConvex, listingId: Id<"listings">) {
+    await t.run(async (ctx) => {
+      await ctx.db.patch("listings", listingId, {
+        refreshAfter: Date.now() - 1,
+      });
+      for (const state of await ctx.db.query("storeStates").collect()) {
+        await ctx.db.patch("storeStates", state._id, {
+          nextReadAt: Date.now() - 1,
+        });
+      }
+    });
+    requests = [];
+    await t.mutation(internal.prices.refresh.refreshDue, {});
+    await t.finishAllScheduledFunctions(() => {});
+  }
+
+  test("reads a chosen product's page again after a day", async () => {
+    const t = setup();
+    const { listingId } = await chosenProduct(t);
+    const listing = await t.run(
+      async (ctx) => await ctx.db.get("listings", listingId),
+    );
+    expect(listing?.refreshAfter).toBe((listing?.checkedAt ?? 0) + REFRESH_MS);
+
+    // Not due yet: nothing is read.
+    requests = [];
+    await t.mutation(internal.prices.refresh.refreshDue, {});
+    await t.finishAllScheduledFunctions(() => {});
+    expect(requests).toEqual([]);
+
+    pages[adhesivePage] = {
+      status: 200,
+      body: productHtml({ name: "Adeziv 25 kg", price: 49.9 }),
+    };
+    await refreshNow(t, listingId);
+    expect(requests.map((r) => r.url)).toEqual([adhesivePage]);
+    const after = await t.run(async (ctx) => ({
+      listing: await ctx.db.get("listings", listingId),
+      history: await ctx.db
+        .query("priceHistory")
+        .withIndex("by_listingId_and_at", (q) => q.eq("listingId", listingId))
+        .collect(),
+      reads: await ctx.db.query("storeReads").collect(),
+    }));
+    expect(after.listing?.price).toBe(49.9);
+    expect(after.listing?.refreshAfter).toBe(
+      (after.listing?.checkedAt ?? 0) + REFRESH_MS,
+    );
+    expect(after.history.map((row) => row.price)).toEqual([45.9, 49.9]);
+    // Devize's own read: no firm asked for it, so none pays for it.
+    expect(
+      after.reads.filter((read) => read.organizationId === undefined),
+    ).toMatchObject([{ status: "done", fromStore: true, url: adhesivePage }]);
+  });
+
+  test("stops for a product no firm chose anymore", async () => {
+    const t = setup();
+    const { ana, resourceId, listingId } = await chosenProduct(t);
+    const [choice] = await ana.as.query(api.prices.choices.forMaterial, {
+      organizationId: ana.organizationId,
+      resourceId,
+    });
+    await ana.as.mutation(api.prices.choices.remove, {
+      choiceId: choice?._id as Id<"storeChoices">,
+    });
+    await refreshNow(t, listingId);
+    expect(requests).toEqual([]);
+    const listing = await t.run(
+      async (ctx) => await ctx.db.get("listings", listingId),
+    );
+    expect(listing?.refreshAfter).toBeUndefined();
+  });
+
+  test("schedules a product chosen from an older read", async () => {
+    const t = setup();
+    const { resourceId } = await adhesive(t);
+    const ana = await firmOwner(t, "Ana");
+    const checkedAt = Date.now() - 3 * REFRESH_MS;
+    const listingId = await t.run(
+      async (ctx) =>
+        await ctx.db.insert("listings", {
+          source: "retailer",
+          store: "hornbach",
+          resourceId,
+          title: "Adeziv flexibil 25 kg",
+          url: "https://www.hornbach.ro/p/adeziv-flexibil/42/",
+          price: 52,
+          includedVat: 21,
+          saleUnit: "buc",
+          unitsPerSale: 1,
+          status: "active",
+          checkedAt,
+        }),
+    );
+    await ana.as.mutation(api.prices.choices.pick, {
+      organizationId: ana.organizationId,
+      listingId,
+      resourceId,
+      unitsPerSale: 25,
+    });
+    const listing = await t.run(
+      async (ctx) => await ctx.db.get("listings", listingId),
+    );
+    // Already due: the next run reads it.
+    expect(listing?.refreshAfter).toBe(checkedAt + REFRESH_MS);
+  });
+
+  test("leaves a paused store alone and keeps reads for the firms", async () => {
+    const t = setup();
+    const { listingId } = await chosenProduct(t);
+    const setState = async (fields: {
+      pausedUntil?: number;
+      readsOnDay?: number;
+    }) =>
+      await t.run(async (ctx) => {
+        const state = await ctx.db
+          .query("storeStates")
+          .withIndex("by_store", (q) => q.eq("store", "dedeman"))
+          .unique();
+        if (state) {
+          await ctx.db.patch("storeStates", state._id, {
+            day: romanianDate(Date.now()),
+            ...fields,
+          });
+        }
+      });
+
+    await setState({ pausedUntil: Date.now() + 60 * 60_000 });
+    await refreshNow(t, listingId);
+    expect(requests).toEqual([]);
+
+    await setState({
+      pausedUntil: undefined,
+      readsOnDay: REFRESH_READS_PER_DAY,
+    });
+    await refreshNow(t, listingId);
+    expect(requests).toEqual([]);
+
+    await setState({ readsOnDay: 0 });
+    await refreshNow(t, listingId);
+    expect(requests.map((r) => r.url)).toEqual([adhesivePage]);
   });
 });

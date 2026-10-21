@@ -44,3 +44,14 @@ export const readStatus = v.union(
   v.literal("no_price"),
   v.literal("failed"),
 );
+
+// One resource of a Deviz whose price changed: lei without VAT per unit, its
+// quantity in the whole Deviz, and what the change adds to the direct costs.
+export const priceChange = v.object({
+  name: v.string(),
+  unit: v.string(),
+  oldPrice: v.number(),
+  newPrice: v.number(),
+  quantity: v.number(),
+  impact: v.number(),
+});

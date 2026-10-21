@@ -64,6 +64,7 @@ type FirmTable =
   | "offers"
   | "storeChoices"
   | "storeReads"
+  | "priceAlerts"
   | "proposals"
   | "proposalItems";
 

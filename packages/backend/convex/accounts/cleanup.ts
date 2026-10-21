@@ -125,6 +125,18 @@ async function deleteSome(
   if (priceSettings.length > 0) {
     return priceSettings.length;
   }
+  const priceAlerts = await ctx.db
+    .query("priceAlerts")
+    .withIndex("by_organizationId_and_checkedAt", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of priceAlerts) {
+    await ctx.db.delete("priceAlerts", row._id);
+  }
+  if (priceAlerts.length > 0) {
+    return priceAlerts.length;
+  }
   for (const status of [
     "draft",
     "review",

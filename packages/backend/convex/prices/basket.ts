@@ -8,6 +8,7 @@ import { invalid } from "../lib/errors";
 import { isPercentUnit, normalizeText } from "../lib/text";
 import { choicesFor, type Material } from "./materials";
 import { isPublicListing, type Store } from "./resolve";
+import { priceSettingsOf, savePriceSettings } from "./settings";
 import { store } from "./validators";
 
 // The Coș's data: a Deviz's materials with what each store sells them for,
@@ -201,12 +202,7 @@ export const forEstimate = query({
           : [],
       });
     }
-    const settings = await ctx.db
-      .query("priceSettings")
-      .withIndex("by_organizationId", (q) =>
-        q.eq("organizationId", estimate.organizationId),
-      )
-      .unique();
+    const settings = await priceSettingsOf(ctx, estimate.organizationId);
     return {
       estimate: {
         _id: estimate._id,
@@ -259,28 +255,15 @@ export const setStoreFee = mutation({
           ? undefined
           : Math.round(args.freeFrom * 100) / 100,
     };
-    const settings = await ctx.db
-      .query("priceSettings")
-      .withIndex("by_organizationId", (q) =>
-        q.eq("organizationId", args.organizationId),
-      )
-      .unique();
-    const now = Date.now();
-    if (settings) {
-      await ctx.db.patch("priceSettings", settings._id, {
-        storeFees: [
-          ...settings.storeFees.filter((fee) => fee.store !== args.store),
-          entry,
-        ],
-        updatedAt: now,
-      });
-    } else {
-      await ctx.db.insert("priceSettings", {
-        organizationId: args.organizationId,
-        storeFees: [entry],
-        updatedAt: now,
-      });
-    }
+    const settings = await priceSettingsOf(ctx, args.organizationId);
+    await savePriceSettings(ctx, args.organizationId, {
+      storeFees: [
+        ...(settings?.storeFees ?? []).filter(
+          (fee) => fee.store !== args.store,
+        ),
+        entry,
+      ],
+    });
     return null;
   },
 });

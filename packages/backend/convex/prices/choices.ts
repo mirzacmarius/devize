@@ -1,3 +1,4 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
@@ -78,6 +79,56 @@ export const forMaterial = query({
       }
     }
     return result;
+  },
+});
+
+/**
+ * The store products the firm chose, latest first, with the material each is
+ * for and the price it had before its last change.
+ */
+export const listForFirm = query({
+  args: {
+    organizationId: v.id("organizations"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    await requireMember(ctx, args.organizationId);
+    const result = await ctx.db
+      .query("storeChoices")
+      .withIndex("by_organizationId_and_updatedAt", (q) =>
+        q.eq("organizationId", args.organizationId),
+      )
+      .order("desc")
+      .paginate(args.paginationOpts);
+    const page = [];
+    for (const choice of result.page) {
+      const item = await withListing(ctx, choice);
+      if (!item) {
+        continue;
+      }
+      const material = choice.productId
+        ? await ctx.db.get("products", choice.productId)
+        : choice.resourceId
+          ? await ctx.db.get("resources", choice.resourceId)
+          : null;
+      const [latest, previous] = await ctx.db
+        .query("priceHistory")
+        .withIndex("by_listingId_and_at", (q) =>
+          q.eq("listingId", choice.listingId),
+        )
+        .order("desc")
+        .take(2);
+      page.push({
+        ...item,
+        material: material && { name: material.name, unit: material.unit },
+        // Lei with VAT for one item, before the last change.
+        previous:
+          latest && previous
+            ? { price: previous.price, changedAt: latest.at }
+            : null,
+      });
+    }
+    return { ...result, page };
   },
 });
 
