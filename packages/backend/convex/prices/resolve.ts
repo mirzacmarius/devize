@@ -34,9 +34,12 @@ export function listingUnitPrice(
   return Number((withoutVat / listing.unitsPerSale).toFixed(4));
 }
 
-function fromListing(listing: Doc<"listings">): ResolvedPrice {
+function fromListing(
+  listing: Doc<"listings">,
+  unitsPerSale = listing.unitsPerSale,
+): ResolvedPrice {
   return {
-    unitPrice: listingUnitPrice(listing),
+    unitPrice: listingUnitPrice({ ...listing, unitsPerSale }),
     priceSource: listing.source === "own" ? "own" : "listing",
     listingId: listing._id,
     store: listing.store,
@@ -45,16 +48,32 @@ function fromListing(listing: Doc<"listings">): ResolvedPrice {
 }
 
 /**
+ * Whether every firm may use a listing's price: a store's price read from its
+ * page, or a Furnizor's price list. Own prices, quotations and store prices a
+ * firm typed belong to that firm.
+ */
+export function isPublicListing(listing: Doc<"listings">): boolean {
+  return (
+    listing.status === "active" &&
+    ((listing.source === "retailer" && listing.organizationId === undefined) ||
+      listing.source === "supplier")
+  );
+}
+
+/**
  * Finds the price a firm pays for each resource of a norm, in this order:
  *
  * - labour, equipment and transport: the firm's rate for the resource, then its
  *   default rate for that kind;
  * - a product: the firm's own price or a quotation it received, then the
- *   preferred retailer, then the cheapest public listing;
- * - a generic material: the firm's own price for it;
+ *   store product the firm chose for it, then a public listing;
+ * - a generic material: the firm's own price for it, then the store product
+ *   the firm chose for it, then a public store listing for it;
  *
  * and for all of them, the norm's reference price, then the resource's.
- * Prices are cached for one call, since a Deviz repeats the same resources.
+ * Among store prices the preferred store's comes first, else the cheapest
+ * (docs/adr/0008). Prices are cached for one call, since a Deviz repeats the
+ * same resources.
  */
 export function createPriceResolver(
   ctx: QueryCtx,
@@ -117,31 +136,80 @@ export function createPriceResolver(
     return null;
   }
 
-  async function publicListing(
-    productId: Id<"products">,
-  ): Promise<ResolvedPrice | null> {
-    const listings = await ctx.db
-      .query("listings")
-      .withIndex("by_productId_and_status", (q) =>
-        q.eq("productId", productId).eq("status", "active"),
-      )
-      .take(50);
-    // Own prices and quotations belong to one firm; never use another's.
-    const candidates = listings.filter(
-      (listing) =>
-        listing.source === "retailer" || listing.source === "supplier",
-    );
+  /** The preferred store's price if there is one, else the cheapest. */
+  function pick(prices: ResolvedPrice[]): ResolvedPrice | null {
     const preferred = preferredStore
-      ? candidates.filter((listing) => listing.store === preferredStore)
+      ? prices.filter((price) => price.store === preferredStore)
       : [];
-    const pool = preferred.length > 0 ? preferred : candidates;
-    let cheapest: Doc<"listings"> | null = null;
-    for (const listing of pool) {
-      if (!cheapest || listingUnitPrice(listing) < listingUnitPrice(cheapest)) {
-        cheapest = listing;
+    const pool = preferred.length > 0 ? preferred : prices;
+    let best: ResolvedPrice | null = null;
+    for (const price of pool) {
+      if (!best || price.unitPrice < best.unitPrice) {
+        best = price;
       }
     }
-    return cheapest ? fromListing(cheapest) : null;
+    return best;
+  }
+
+  async function storeChoice(
+    field: "productId" | "resourceId",
+    id: Id<"products"> | Id<"resources">,
+  ): Promise<ResolvedPrice | null> {
+    const choices =
+      field === "productId"
+        ? ctx.db
+            .query("storeChoices")
+            .withIndex("by_organizationId_and_productId", (q) =>
+              q
+                .eq("organizationId", organizationId)
+                .eq("productId", id as Id<"products">),
+            )
+        : ctx.db
+            .query("storeChoices")
+            .withIndex("by_organizationId_and_resourceId", (q) =>
+              q
+                .eq("organizationId", organizationId)
+                .eq("resourceId", id as Id<"resources">),
+            );
+    const prices: ResolvedPrice[] = [];
+    for (const choice of await choices.take(20)) {
+      const listing = await ctx.db.get("listings", choice.listingId);
+      if (
+        listing &&
+        listing.status === "active" &&
+        (isPublicListing(listing) || listing.organizationId === organizationId)
+      ) {
+        prices.push(fromListing(listing, choice.unitsPerSale));
+      }
+    }
+    return pick(prices);
+  }
+
+  async function publicListing(
+    field: "productId" | "resourceId",
+    id: Id<"products"> | Id<"resources">,
+  ): Promise<ResolvedPrice | null> {
+    // A product's listings by product; a generic material's are store
+    // products linked to it for everyone, which have no firm.
+    const listings =
+      field === "productId"
+        ? await ctx.db
+            .query("listings")
+            .withIndex("by_productId_and_status", (q) =>
+              q.eq("productId", id as Id<"products">).eq("status", "active"),
+            )
+            .take(50)
+        : await ctx.db
+            .query("listings")
+            .withIndex("by_organizationId_and_resourceId", (q) =>
+              q
+                .eq("organizationId", undefined)
+                .eq("resourceId", id as Id<"resources">),
+            )
+            .take(50);
+    // Own prices, quotations and typed store prices belong to one firm;
+    // never use another's.
+    return pick(listings.filter(isPublicListing).map((l) => fromListing(l)));
   }
 
   async function reference(request: PriceRequest): Promise<ResolvedPrice> {
@@ -164,13 +232,17 @@ export function createPriceResolver(
     if (request.productId) {
       const price =
         (await firmListing("productId", request.productId)) ??
-        (await publicListing(request.productId));
+        (await storeChoice("productId", request.productId)) ??
+        (await publicListing("productId", request.productId));
       if (price) {
         return price;
       }
     }
     if (request.resourceId) {
-      const price = await firmListing("resourceId", request.resourceId);
+      const price =
+        (await firmListing("resourceId", request.resourceId)) ??
+        (await storeChoice("resourceId", request.resourceId)) ??
+        (await publicListing("resourceId", request.resourceId));
       if (price) {
         return price;
       }

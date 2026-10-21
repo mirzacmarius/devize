@@ -1266,6 +1266,6 @@ export default {
     dedeman: "Dedeman",
     leroy_merlin: "Leroy Merlin",
     hornbach: "Hornbach",
-    brico_depot: "Brico Dépôt",
+    brico_depot: "BRICO",
   },
 } as const;
