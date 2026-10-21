@@ -83,7 +83,11 @@ export function MonthlyChart({
                   (point.value === highest &&
                     values.indexOf(highest) === index));
               return (
-                <li key={point.month} className="flex h-full justify-center">
+                // The padding keeps a gap between columns on a phone.
+                <li
+                  key={point.month}
+                  className="flex h-full justify-center px-0.5"
+                >
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button

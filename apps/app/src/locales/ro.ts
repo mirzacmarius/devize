@@ -2595,6 +2595,7 @@ export default {
       denied:
         "Statisticile de utilizare sunt doar pentru firma producătorului și echipa Devize.",
       backToProfile: "Înapoi la profil",
+      sentAccepted: "Trimise: {sent} · Acceptate: {accepted}",
       emptyTitle: "Încă nu sunt date",
       emptyDescription:
         "Numărăm din momentul în care o firmă pune o normă sau un produs al vostru într-un deviz. Aici vedeți apoi lunile, normele, produsele și județele.",
@@ -2650,6 +2651,7 @@ export default {
         },
         inEstimates: "Devize: {count}",
         packages: "≈ {count} × {package}",
+        replacedCount: "Înlocuit: {count}",
         replacedHint:
           "Înlocuit: de câte ori clientul a acceptat o variantă cu produsul altui producător în locul vostru.",
       },
@@ -2657,7 +2659,6 @@ export default {
         title: "Județe",
         description: "Adăugări în devize, după județul șantierului.",
         firms: "Firme: {count}",
-        sentAccepted: "Trimise: {sent} · Acceptate: {accepted}",
         others: "Celelalte județe",
         othersHint:
           "Județele cu mai puțin de {min} firme și devizele fără județ",

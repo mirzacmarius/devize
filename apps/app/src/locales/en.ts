@@ -2606,6 +2606,7 @@ export default {
       denied:
         "Usage statistics are only for the manufacturer's own firm and the Devize team.",
       backToProfile: "Back to the profile",
+      sentAccepted: "Sent: {sent} · Accepted: {accepted}",
       emptyTitle: "No data yet",
       emptyDescription:
         "Counting starts when a firm puts one of your norms or products in an estimate. You'll then see the months, norms, products and counties here.",
@@ -2661,6 +2662,7 @@ export default {
         },
         inEstimates: "Estimates: {count}",
         packages: "≈ {count} × {package}",
+        replacedCount: "Replaced: {count}",
         replacedHint:
           "Replaced: times a client accepted a variant with another manufacturer's product instead of yours.",
       },
@@ -2669,7 +2671,6 @@ export default {
         description:
           "Times your norms went into estimates, by the site's county.",
         firms: "Firms: {count}",
-        sentAccepted: "Sent: {sent} · Accepted: {accepted}",
         others: "Other counties",
         othersHint:
           "Counties with fewer than {min} firms, and estimates without a county",

@@ -219,6 +219,7 @@ function MonthsCard({ stats }: { stats: Stats }) {
               label={t("measure")}
               value={measure}
               onChange={setMeasure}
+              className="justify-self-start"
               options={measures.map((value) => ({
                 value,
                 label: t(`measures.${value}`),
@@ -269,9 +270,21 @@ function MonthsCard({ stats }: { stats: Stats }) {
   );
 }
 
+/** "Trimise: 239 · Acceptate: 98", for a row of counts. */
+function useSentAccepted() {
+  const t = useScopedI18n("producers.stats");
+  const locale = useCurrentLocale();
+  return (row: { sent: number; accepted: number }) =>
+    t("sentAccepted", {
+      sent: formatCount(row.sent, locale),
+      accepted: formatCount(row.accepted, locale),
+    });
+}
+
 function NormsCard({ stats }: { stats: Stats }) {
   const t = useScopedI18n("producers.stats.norms");
   const locale = useCurrentLocale();
+  const sentAccepted = useSentAccepted();
   return (
     <Card className="min-w-0">
       <CardHeader>
@@ -292,7 +305,7 @@ function NormsCard({ stats }: { stats: Stats }) {
                 <TableHead className="hidden text-right sm:table-cell">
                   {t("columns.sent")}
                 </TableHead>
-                <TableHead className="text-right">
+                <TableHead className="hidden text-right sm:table-cell">
                   {t("columns.accepted")}
                 </TableHead>
                 <TableHead className="hidden text-right md:table-cell">
@@ -314,6 +327,9 @@ function NormsCard({ stats }: { stats: Stats }) {
                       <span className="text-body font-medium text-ink group-hover:underline">
                         {norm.title}
                       </span>
+                      <span className="text-meta tabular-nums text-ink-3 sm:hidden">
+                        {sentAccepted(norm)}
+                      </span>
                     </Link>
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
@@ -322,7 +338,7 @@ function NormsCard({ stats }: { stats: Stats }) {
                   <TableCell className="hidden text-right tabular-nums sm:table-cell">
                     {formatCount(norm.sent, locale)}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  <TableCell className="hidden text-right tabular-nums sm:table-cell">
                     {formatCount(norm.accepted, locale)}
                   </TableCell>
                   <TableCell className="hidden whitespace-nowrap text-right tabular-nums text-ink-2 md:table-cell">
@@ -345,6 +361,7 @@ function CountiesCard({ stats }: { stats: Stats }) {
   const t = useScopedI18n("producers.stats.counties");
   const tMeasures = useScopedI18n("producers.stats.chart.measures");
   const locale = useCurrentLocale();
+  const sentAccepted = useSentAccepted();
   const others = stats.otherCounties;
   const max = Math.max(
     1,
@@ -355,13 +372,8 @@ function CountiesCard({ stats }: { stats: Stats }) {
     ...stats.counties.map((county) => ({
       key: county.county,
       name: county.county,
-      detail: `${t("firms", { count: formatCount(county.firms, locale) })} · ${t(
-        "sentAccepted",
-        {
-          sent: formatCount(county.sent, locale),
-          accepted: formatCount(county.accepted, locale),
-        },
-      )}`,
+      detail: `${t("firms", { count: formatCount(county.firms, locale) })} · ${sentAccepted(county)}`,
+      hint: undefined,
       ...county,
     })),
     ...(others
@@ -369,13 +381,8 @@ function CountiesCard({ stats }: { stats: Stats }) {
           {
             key: "others",
             name: t("others"),
-            detail: `${t("othersHint", { min: MIN_FIRMS_PER_COUNTY })} · ${t(
-              "sentAccepted",
-              {
-                sent: formatCount(others.sent, locale),
-                accepted: formatCount(others.accepted, locale),
-              },
-            )}`,
+            detail: sentAccepted(others),
+            hint: t("othersHint", { min: MIN_FIRMS_PER_COUNTY }),
             ...others,
           },
         ]
@@ -406,7 +413,12 @@ function CountiesCard({ stats }: { stats: Stats }) {
                 value={(row.added / max) * 100}
                 label={`${row.name}: ${tMeasures("added")} ${formatCount(row.added, locale)}`}
               />
-              <span className="text-meta text-ink-3">{row.detail}</span>
+              <span className="text-meta tabular-nums text-ink-3">
+                {row.detail}
+              </span>
+              {row.hint && (
+                <span className="text-meta text-ink-3">{row.hint}</span>
+              )}
             </li>
           ))}
         </ul>
@@ -450,7 +462,7 @@ function ProductsCard({ stats }: { stats: Stats }) {
                   <TableHead className="hidden text-right md:table-cell">
                     {t("columns.value")}
                   </TableHead>
-                  <TableHead className="text-right">
+                  <TableHead className="hidden text-right sm:table-cell">
                     {t("columns.replaced")}
                   </TableHead>
                 </TableRow>
@@ -466,6 +478,13 @@ function ProductsCard({ stats }: { stats: Stats }) {
                         {product.packageLabel && (
                           <span className="text-meta text-ink-3">
                             {product.packageLabel}
+                          </span>
+                        )}
+                        {product.replaced > 0 && (
+                          <span className="text-meta tabular-nums text-ink-3 sm:hidden">
+                            {t("replacedCount", {
+                              count: formatCount(product.replaced, locale),
+                            })}
                           </span>
                         )}
                       </div>
@@ -510,7 +529,7 @@ function ProductsCard({ stats }: { stats: Stats }) {
                     <TableCell className="hidden text-right tabular-nums md:table-cell">
                       {formatMoney(product.acceptedValue, locale)}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums">
+                    <TableCell className="hidden text-right tabular-nums sm:table-cell">
                       {formatCount(product.replaced, locale)}
                     </TableCell>
                   </TableRow>

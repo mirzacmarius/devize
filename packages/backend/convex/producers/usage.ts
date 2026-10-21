@@ -14,7 +14,7 @@ import { countedKind } from "./validators";
 // A Producător's usage statistics: its norms added to devize, the devize sent
 // and accepted with its norms and products, and the products they hold.
 // Counted as it happens, a month at a time, so reading them never walks the
-// devize. Only counts and quantities: never which firm. See docs/adr/0023.
+// devize. Only counts and quantities: never which firm. See docs/adr/0024.
 
 // What a producer's statistics read, at most. A year of a producer with many
 // norms stays well under it.

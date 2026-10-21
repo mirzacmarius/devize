@@ -127,7 +127,7 @@ export const producerTables = {
   // Usage statistics for the producer's own firm and Devize staff: how firms
   // use a Producător's norms and products, a month (YYYY-MM, Romania's time)
   // at a time. Counts and quantities only, never which firm; see
-  // docs/adr/0023. The county is the Deviz's, missing when it has none.
+  // docs/adr/0024. The county is the Deviz's, missing when it has none.
   producerUsage: defineTable({
     manufacturerId: v.id("manufacturers"),
     month: v.string(),
