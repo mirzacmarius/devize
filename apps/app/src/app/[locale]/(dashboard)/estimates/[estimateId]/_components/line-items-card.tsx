@@ -244,7 +244,9 @@ export function LineItemsCard({
                     onClick={() => open({ kind: "proposal" })}
                   >
                     <Icons.AI aria-hidden />
-                    {tProposal("emptyAction")}
+                    {estimate.kind === "tender"
+                      ? tProposal("emptyTenderAction")
+                      : tProposal("emptyAction")}
                   </Button>
                   <Button onClick={() => open({ kind: "addNorm" })}>
                     <Plus aria-hidden />
@@ -559,6 +561,14 @@ function ItemRows({
               })}
             </span>
             <span className="col-start-2 text-meta text-ink-3">
+              {item.tenderRef && (
+                <>
+                  {t("tenderRef.position", {
+                    position: item.tenderRef.position,
+                  })}
+                  {" · "}
+                </>
+              )}
               {code && (
                 <>
                   <span className="font-mono text-code">{code}</span>
@@ -628,6 +638,7 @@ function ItemRows({
             {/* No width of its own, so the wide resource table scrolls
                 inside the row instead of widening the whole table. */}
             <div className="grid w-0 min-w-full gap-2 pl-6">
+              {item.tenderRef && <TenderRef item={item} />}
               {item.notes && (
                 <p className="m-0 whitespace-pre-line text-body text-ink-2">
                   {item.notes}
@@ -639,6 +650,41 @@ function ItemRows({
         </TableRow>
       )}
     </>
+  );
+}
+
+/**
+ * The tender's own position for a line item imported from its lists: the
+ * number, code and text, and the authority's unit and quantity, which the
+ * forms print whatever the Deviz counts in.
+ */
+function TenderRef({ item }: { item: LineItem }) {
+  const t = useScopedI18n("estimate");
+  const locale = useCurrentLocale();
+  const ref = item.tenderRef;
+  if (!ref) {
+    return null;
+  }
+  return (
+    <div className="grid gap-0.5 rounded-md bg-sunken px-3 py-2 text-meta">
+      <p className="m-0 text-label uppercase text-ink-3">
+        {t("tenderRef.title")}
+      </p>
+      <p className="m-0 text-ink-2">
+        {[
+          t("tenderRef.position", { position: ref.position }),
+          ref.code,
+          ref.quantity !== undefined && ref.unit
+            ? `${formatQuantity(ref.quantity, locale)} ${formatUnit(ref.unit, locale)}`
+            : undefined,
+        ]
+          .filter(Boolean)
+          .join(" · ")}
+      </p>
+      {ref.text && (
+        <p className="m-0 whitespace-pre-line text-ink-2">{ref.text}</p>
+      )}
+    </div>
   );
 }
 

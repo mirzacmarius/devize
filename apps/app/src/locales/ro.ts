@@ -246,6 +246,10 @@ export default {
       copy: "copiat",
       deletedNorm: "normă ștearsă",
     },
+    tenderRef: {
+      title: "Din lista de cantități",
+      position: "Poz. {position}",
+    },
     sources: {
       own: "Prețul firmei",
       listing: "Magazin",
@@ -482,9 +486,15 @@ export default {
   proposal: {
     open: "Propune cu AI",
     emptyAction: "Descrie lucrarea",
+    emptyTenderAction: "Importă lista de cantități",
     title: "Propune cu AI",
     description:
       "Descrie lucrarea sau dictează-o și adaugă poze. Devize AI scrie articolele cu antemăsurătoarea, iar tu le verifici înainte să intre în deviz.",
+    modes: {
+      label: "De unde pornește propunerea",
+      describe: "Din descriere",
+      tender: "Din licitație",
+    },
     describe: {
       label: "Lucrarea",
       placeholder:
@@ -532,8 +542,63 @@ export default {
         refusal: "AI-ul nu a putut lucra cu această cerere.",
         incomplete:
           "Răspunsul a ieșit incomplet. Încearcă să împarți lucrarea în părți mai mici.",
+        tenderTimeout:
+          "Importul a durat prea mult. Încearcă din nou, eventual cu listele împărțite în fișiere mai mici.",
+        tenderIncomplete:
+          "Un răspuns a ieșit incomplet. Încearcă din nou, eventual cu listele împărțite în fișiere mai mici.",
         unknown: "Ceva nu a mers. Încearcă din nou.",
       },
+    },
+    applying: "Articolele intră în deviz: {applied} din {total}…",
+    tender: {
+      description:
+        "Încarcă listele de cantități ale licitației (formularul F3). Devize AI citește pozițiile cu U.M. și cantitățile autorității, caută normele potrivite în catalog și scrie rețete pentru celelalte. Le verifici înainte să intre în deviz.",
+      label: "Listele de cantități",
+      hint: "Excel (.xlsx), PDF sau poze ale paginilor, până la {max} fișiere.",
+      add: "Adaugă fișiere",
+      remove: "Scoate {name}",
+      uploading: "Se încarcă fișierele…",
+      uploadFailed: "Fișierul {name} nu s-a încărcat.",
+      unreadablePhoto:
+        "Poza {name} nu se poate citi. Încearcă o poză JPEG sau PNG.",
+      xls: "{name} e în formatul vechi .xls. Deschide-l în Excel, salvează-l ca .xlsx și încarcă-l din nou.",
+      unsupported:
+        "{name} nu e o listă pe care o pot citi: încarcă .xlsx, PDF sau poze.",
+      tooBig:
+        "{name} e prea mare: cel mult {max} MB pentru acest fel de fișier.",
+      tooMany: "Cel mult {max} fișiere.",
+      required: "Adaugă cel puțin o listă de cantități.",
+      submit: "Importă listele",
+      privacy:
+        "Listele merg la Claude, modelul AI al Anthropic, doar pentru acest import, și rămân în fișierele devizului. U.M. și cantitățile autorității intră neschimbate.",
+      working: {
+        title: "Devize AI citește listele de cantități",
+        reading: "Poziții citite: {count}. Citesc fișierul {file} din {files}…",
+        matching:
+          "Poziții citite: {count}. Caut normele potrivite: {matched} din {count}…",
+        hint: "O listă mare durează câteva minute. Poți închide fereastra: importul continuă și te așteaptă în deviz.",
+      },
+      issues: {
+        title: "De verificat în liste",
+        unreadable:
+          "„{file}” nu s-a putut citi. Salvează-l ca .xlsx sau ca PDF și importă-l din nou.",
+        deleted: "Un fișier a fost șters înainte să fie citit.",
+        noQuantity:
+          "„{file}”: pozițiile {positions} nu au cantitate sau U.M., așa că nu au intrat.",
+        tooMany:
+          "„{file}”: un import ia cel mult {max} de poziții, așa că restul listei nu a intrat.",
+      },
+      matchFailed:
+        "Căutarea normelor nu a mers pentru o parte din poziții: acestea au rămas fără normă și fără rețetă.",
+      noItems: "Nu am găsit în liste poziții cu U.M. și cantitate.",
+      position: "Poz. {position}",
+      listQuantityOf: "Cantitatea din listă pentru {title}",
+      inEstimate: "În deviz:",
+      estimateQuantityOf: "Cantitatea din deviz pentru {title}",
+      noRecipe: "Fără normă și fără rețetă",
+      fullText: "Textul din listă",
+      edit: "Schimbă fișierele",
+      again: "Import nou",
     },
     review: {
       title: "Verifică propunerea",
@@ -568,7 +633,10 @@ export default {
     },
     banner: {
       working: "Devize AI scrie articolele din descrierea ta.",
+      tenderWorking: "Devize AI citește listele de cantități ale licitației.",
       ready: "Propunerea AI e gata. Articole de verificat: {count}.",
+      tenderReady: "Importul e gata. Poziții de verificat: {count}.",
+      applying: "Articolele intră în deviz: {applied} din {total}.",
       failed: "Propunerea AI nu a reușit.",
       open: "Vezi",
       review: "Verifică propunerea",
@@ -577,6 +645,10 @@ export default {
       rateLimited:
         "Ai cerut multe propuneri în ultima oră. Încearcă din nou mai târziu.",
       inUse: "AI-ul lucrează deja la o propunere pentru acest deviz.",
+      xls: "Formatul vechi .xls nu se citește. Salvează lista ca .xlsx sau PDF.",
+      fileType: "Încarcă liste .xlsx, PDF sau poze.",
+      files: "Alege între 1 și {max} fișiere diferite.",
+      size: "Fișierele sunt prea mari pentru un import.",
     },
   },
   documents: {
@@ -1112,6 +1184,7 @@ export default {
       manufacturer_research: "Cercetare",
       norm_import: "Import norme",
       estimate_proposal: "Propunere deviz",
+      tender_import: "Import liste de cantități",
     },
     confidence: {
       high: "Încredere mare",

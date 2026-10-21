@@ -5,4 +5,8 @@ export type Proposal = NonNullable<
   FunctionReturnType<typeof api.proposals.proposals.latest>
 >;
 export type ProposalItem = Proposal["items"][number];
-export type ProposalNorm = ProposalItem["candidates"][number];
+export type ProposalNorm = NonNullable<ProposalItem["norm"]>;
+export type ItemDetails = FunctionReturnType<
+  typeof api.proposals.proposals.itemDetails
+>;
+export type TenderIssue = NonNullable<Proposal["progress"]>["issues"][number];

@@ -215,10 +215,20 @@ describe("proposals", () => {
     expect(tiling?.norm?.code).toBe("DV-FAI-01");
     expect(tiling?.unitMismatch).toBe(false);
     expect(removal?.norm).toBeNull();
-    expect(removal?.candidates.map((norm) => norm._id)).toEqual([normId]);
+    expect(removal?.recipe).toBe(true);
     if (!removal || !tiling || !rubble) {
       throw new Error("missing items");
     }
+    // Opened, an item shows the norms it could use and the AI's measuring.
+    const details = await firm.as.query(api.proposals.proposals.itemDetails, {
+      itemId: removal._id,
+    });
+    expect(details.candidates.map((norm) => norm._id)).toEqual([normId]);
+    expect(details.matchNote).toBe(
+      "Norma e pentru placare, nu pentru demontare.",
+    );
+    expect(details.takeoff).toHaveLength(3);
+    expect(details.text).toBe("Demontare faianță existentă");
 
     await firm.as.mutation(api.proposals.proposals.updateItem, {
       itemId: rubble._id,
@@ -372,7 +382,10 @@ describe("proposals", () => {
       estimateId,
     });
     expect(updated?.items[1]?.quantity).toBe(0.2432);
-    expect(updated?.items[1]?.candidates.map((norm) => norm.code)).toEqual([
+    const details = await firm.as.query(api.proposals.proposals.itemDetails, {
+      itemId: tiling._id,
+    });
+    expect(details.candidates.map((norm) => norm.code)).toEqual([
       "DV-FAI-01",
       "DV-FAI-100",
     ]);
@@ -388,9 +401,15 @@ describe("proposals", () => {
       estimateId,
     });
     const tiling = proposal?.items[1];
-    expect(tiling?.norm).toBeNull();
-    expect(tiling?.candidates).toEqual([]);
-    expect(tiling?.quantity).toBe(24.32);
+    if (!tiling) {
+      throw new Error("missing item");
+    }
+    expect(tiling.norm).toBeNull();
+    expect(tiling.quantity).toBe(24.32);
+    const details = await firm.as.query(api.proposals.proposals.itemDetails, {
+      itemId: tiling._id,
+    });
+    expect(details.candidates).toEqual([]);
 
     await firm.as.mutation(api.proposals.proposals.apply, { proposalId });
     const estimate = await firm.as.query(api.estimates.estimates.get, {
@@ -527,10 +546,20 @@ describe("proposals", () => {
 
   test("another firm can't see or change them", async () => {
     const t = setup();
-    const { estimateId, proposalId } = await draftedProposal(t);
+    const { firm, estimateId, proposalId } = await draftedProposal(t);
     const bogdan = await firmOwner(t, "Bogdan");
     await expect(
       bogdan.as.query(api.proposals.proposals.latest, { estimateId }),
+    ).rejects.toThrow(/not_found/);
+    const proposal = await firm.as.query(api.proposals.proposals.latest, {
+      estimateId,
+    });
+    const itemId = proposal?.items[0]?._id;
+    if (!itemId) {
+      throw new Error("missing item");
+    }
+    await expect(
+      bogdan.as.query(api.proposals.proposals.itemDetails, { itemId }),
     ).rejects.toThrow(/not_found/);
     await expect(
       bogdan.as.mutation(api.proposals.proposals.apply, { proposalId }),

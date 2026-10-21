@@ -1,6 +1,7 @@
 import type { Id } from "../../_generated/dataModel";
 import { normalizeUnit } from "../../lib/text";
-import type { MatchOutput } from "./schemas";
+import { cleanResources, type DraftResource } from "./draft";
+import type { MatchOutput, TenderMatchOutput } from "./schemas";
 
 // Matching proposed articles with catalog norms: the model picks among the
 // norms the search found for each article, by short keys (A1, N1) rather
@@ -84,11 +85,17 @@ export function convertQuantity(
   return Math.round(((quantity * source.count) / target.count) * 1e4) / 1e4;
 }
 
-/** Gives the articles that have candidates, and their candidates, keys. */
-export function keyArticles(articles: readonly MatchArticle[]): KeyedArticle[] {
+/**
+ * Gives the articles that have candidates, and their candidates, keys; with
+ * `all`, every article, for the model to write a recipe where no norm fits.
+ */
+export function keyArticles<T extends MatchArticle>(
+  articles: readonly T[],
+  options: { all?: boolean } = {},
+): (T & Omit<KeyedArticle, keyof MatchArticle>)[] {
   let normCount = 0;
   return articles
-    .filter((article) => article.candidates.length > 0)
+    .filter((article) => options.all || article.candidates.length > 0)
     .map((article, index) => ({
       ...article,
       key: `A${index + 1}`,
@@ -145,6 +152,33 @@ export function resolveMatches(
       normId: chosen._id,
       quantity,
       matchNote,
+    };
+  });
+}
+
+export type TenderMatchResult = MatchResult & {
+  confidence: "high" | "medium" | "low";
+  // The model's recipe, for a position without a norm.
+  resources: DraftResource[];
+};
+
+/**
+ * What the model chose for each of a tender's positions, checked like
+ * `resolveMatches`, with how sure it is and, where no norm fits, its recipe.
+ */
+export function resolveTenderMatches(
+  articles: readonly KeyedArticle[],
+  output: TenderMatchOutput,
+): TenderMatchResult[] {
+  const answers = new Map(
+    output.matches.map((match) => [match.article.trim(), match]),
+  );
+  return resolveMatches(articles, output).map((match, index) => {
+    const answer = answers.get(articles[index]?.key ?? "");
+    return {
+      ...match,
+      confidence: answer?.confidence ?? "low",
+      resources: match.normId ? [] : cleanResources(answer?.resources ?? []),
     };
   });
 }

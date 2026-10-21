@@ -250,6 +250,10 @@ export default {
       copy: "copied",
       deletedNorm: "deleted norm",
     },
+    tenderRef: {
+      title: "From the bill of quantities",
+      position: "Item {position}",
+    },
     sources: {
       own: "Company price",
       listing: "Store",
@@ -486,9 +490,15 @@ export default {
   proposal: {
     open: "Propose with AI",
     emptyAction: "Describe the work",
+    emptyTenderAction: "Import the bill of quantities",
     title: "Propose with AI",
     description:
       "Describe the work or dictate it, and add photos. Devize AI writes the line items with their take-off, and you check them before they go into the estimate.",
+    modes: {
+      label: "What the proposal starts from",
+      describe: "From a description",
+      tender: "From a tender",
+    },
     describe: {
       label: "The work",
       placeholder:
@@ -536,8 +546,61 @@ export default {
         refusal: "The AI couldn't work on this request.",
         incomplete:
           "The answer came out incomplete. Try splitting the work into smaller parts.",
+        tenderTimeout:
+          "The import took too long. Try again, perhaps with the lists split into smaller files.",
+        tenderIncomplete:
+          "An answer came out incomplete. Try again, perhaps with the lists split into smaller files.",
         unknown: "Something went wrong. Try again.",
       },
+    },
+    applying: "Adding the line items to the estimate: {applied} of {total}…",
+    tender: {
+      description:
+        "Upload the tender's bills of quantities (form F3). Devize AI reads the items with the contracting authority's units and quantities, finds matching norms in the catalog and writes recipes for the rest. You check them before they go into the estimate.",
+      label: "Bills of quantities",
+      hint: "Excel (.xlsx), PDF or photos of the pages, up to {max} files.",
+      add: "Add files",
+      remove: "Remove {name}",
+      uploading: "Uploading the files…",
+      uploadFailed: "File {name} didn't upload.",
+      unreadablePhoto: "Photo {name} can't be read. Try a JPEG or PNG photo.",
+      xls: "{name} is in the old .xls format. Open it in Excel, save it as .xlsx and upload it again.",
+      unsupported:
+        "{name} isn't a list I can read: upload .xlsx, PDF or photos.",
+      tooBig: "{name} is too large: {max} MB at most for this kind of file.",
+      tooMany: "At most {max} files.",
+      required: "Add at least one bill of quantities.",
+      submit: "Import the lists",
+      privacy:
+        "The lists go to Claude, Anthropic's AI model, for this import only, and stay in the estimate's files. The authority's units and quantities go in unchanged.",
+      working: {
+        title: "Devize AI is reading the bills of quantities",
+        reading: "Items read: {count}. Reading file {file} of {files}…",
+        matching:
+          "Items read: {count}. Looking for matching norms: {matched} of {count}…",
+        hint: "A long list takes a few minutes. You can close this panel: the import carries on and waits for you in the estimate.",
+      },
+      issues: {
+        title: "To check in the lists",
+        unreadable:
+          "“{file}” couldn't be read. Save it as .xlsx or PDF and import it again.",
+        deleted: "A file was deleted before it was read.",
+        noQuantity:
+          "“{file}”: items {positions} have no quantity or unit, so they were left out.",
+        tooMany:
+          "“{file}”: an import takes at most {max} items, so the rest of the list was left out.",
+      },
+      matchFailed:
+        "The norm search failed for some items: they have no norm and no recipe.",
+      noItems: "I found no items with a unit and quantity in the lists.",
+      position: "Item {position}",
+      listQuantityOf: "Quantity in the list for {title}",
+      inEstimate: "In the estimate:",
+      estimateQuantityOf: "Quantity in the estimate for {title}",
+      noRecipe: "No norm and no recipe",
+      fullText: "The text in the list",
+      edit: "Change the files",
+      again: "New import",
     },
     review: {
       title: "Check the proposal",
@@ -573,7 +636,10 @@ export default {
     },
     banner: {
       working: "Devize AI is writing line items from your description.",
+      tenderWorking: "Devize AI is reading the tender's bills of quantities.",
       ready: "The AI proposal is ready. Line items to check: {count}.",
+      tenderReady: "The import is ready. Items to check: {count}.",
+      applying: "Adding the line items to the estimate: {applied} of {total}.",
       failed: "The AI proposal didn't work.",
       open: "View",
       review: "Check the proposal",
@@ -582,6 +648,10 @@ export default {
       rateLimited:
         "You asked for many proposals in the last hour. Try again later.",
       inUse: "The AI is already working on a proposal for this estimate.",
+      xls: "The old .xls format can't be read. Save the list as .xlsx or PDF.",
+      fileType: "Upload .xlsx lists, PDFs or photos.",
+      files: "Choose between 1 and {max} different files.",
+      size: "The files are too large for one import.",
     },
   },
   documents: {
@@ -1120,6 +1190,7 @@ export default {
       manufacturer_research: "Research",
       norm_import: "Norms import",
       estimate_proposal: "Estimate proposal",
+      tender_import: "Quantity lists import",
     },
     confidence: {
       high: "High confidence",

@@ -2,7 +2,13 @@ import { defineTable } from "convex/server";
 import { v } from "convex/values";
 import { aiConfidence } from "../ai/validators";
 import { takeoffRow } from "../estimates/validators";
-import { proposalSource, proposalStatus, proposedResource } from "./validators";
+import {
+  proposalSource,
+  proposalStatus,
+  proposedResource,
+  tenderPosition,
+  tenderProgress,
+} from "./validators";
 
 export const proposalTables = {
   // What the AI proposes for a Deviz. Nothing reaches the Deviz until a
@@ -13,7 +19,8 @@ export const proposalTables = {
     aiJobId: v.id("aiJobs"),
     source: proposalSource,
     status: proposalStatus,
-    // What the person gave: a description and photos (files of the firm).
+    // What the person gave: a description and photos, or a tender's lists
+    // (files of the firm).
     text: v.optional(v.string()),
     fileIds: v.array(v.id("files")),
     // What the AI understood, what it had to assume and what it would ask
@@ -24,23 +31,34 @@ export const proposalTables = {
     // Why the items have no catalog norms, when matching them failed: the
     // proposal is still usable with the AI's own recipes.
     matchError: v.optional(v.string()),
+    // A tender import's progress through its files.
+    progress: v.optional(tenderProgress),
     createdBy: v.id("users"),
+    // Who applied it, how many items go in and how many already did: the
+    // items go into the Deviz in position order, a batch at a time.
+    appliedBy: v.optional(v.id("users")),
+    applyTotal: v.optional(v.number()),
+    applied: v.optional(v.number()),
+    appliedThrough: v.optional(v.number()),
     appliedAt: v.optional(v.number()),
     updatedAt: v.number(),
   })
     .index("by_estimateId", ["estimateId"])
     .index("by_organizationId", ["organizationId"]),
 
-  // One proposed Articol de deviz, in the order the AI wrote them.
+  // One proposed Articol de deviz, in the order the AI wrote them or the
+  // tender's lists have them.
   proposalItems: defineTable({
     organizationId: v.id("organizations"),
     proposalId: v.id("proposals"),
     position: v.number(),
-    // The Capitol it goes in, by name.
+    // The Capitol it goes in, by name; empty for a tender position outside
+    // any chapter.
     chapter: v.string(),
     title: v.string(),
-    // The quantity the AI measured, in the article's own unit: the total of
-    // its Antemăsurătoare, whose rows say how it was measured.
+    // The quantity measured, in the article's own unit: the total of its
+    // Antemăsurătoare, whose rows say how it was measured, or the quantity
+    // a tender's list gives.
     unit: v.string(),
     measured: v.number(),
     takeoff: v.array(takeoffRow),
@@ -56,6 +74,8 @@ export const proposalTables = {
     quantity: v.number(),
     // The AI's own resources per unit, for an article no norm fits.
     resources: v.array(proposedResource),
+    // For a tender's position: how the list writes it.
+    tender: v.optional(tenderPosition),
     selected: v.boolean(),
   }).index("by_proposalId_and_position", ["proposalId", "position"]),
 };
