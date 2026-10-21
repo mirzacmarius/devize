@@ -9,11 +9,12 @@ import { checkMarkups } from "../accounts/organizations";
 import { latestPublishedVersion } from "../catalog/norms";
 import { requireFirmDoc, requireMember } from "../lib/access";
 import { checkDate, romanianDate } from "../lib/dates";
-import { appError, invalid, notFound } from "../lib/errors";
+import { invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import { store } from "../prices/validators";
 import { deleteProposals } from "../proposals/proposals";
 import {
+  changeStatus,
   pricedFields,
   readLineItems,
   readSections,
@@ -369,34 +370,7 @@ export const setStatus = mutation({
       "estimates",
       args.estimateId,
     );
-    const now = Date.now();
-    if (args.status === "draft") {
-      const offers = await ctx.db
-        .query("offers")
-        .withIndex("by_estimateId", (q) => q.eq("estimateId", estimate._id))
-        .take(100);
-      if (
-        offers.some(
-          (offer) =>
-            offer.status === "sent" ||
-            offer.status === "viewed" ||
-            offer.status === "accepted",
-        )
-      ) {
-        throw appError("locked", "offer");
-      }
-      await ctx.db.patch("estimates", estimate._id, {
-        status: "draft",
-        lockedAt: undefined,
-        updatedAt: now,
-      });
-      return null;
-    }
-    await ctx.db.patch("estimates", estimate._id, {
-      status: args.status,
-      lockedAt: estimate.lockedAt ?? now,
-      updatedAt: now,
-    });
+    await changeStatus(ctx, estimate, args.status);
     return null;
   },
 });

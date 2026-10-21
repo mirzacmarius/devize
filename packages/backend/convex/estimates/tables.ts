@@ -9,7 +9,6 @@ import {
   lineItemOrigin,
   lineItemResource,
   markups,
-  offerStatus,
   priceSource,
   recap,
   sectionKind,
@@ -165,32 +164,4 @@ export const estimateTables = {
     ),
     totals: recap,
   }).index("by_estimateId_and_position", ["estimateId", "position"]),
-
-  // Oferte: the secure link a client opens to read, accept and sign a Deviz.
-  offers: defineTable({
-    organizationId: v.id("organizations"),
-    estimateId: v.id("estimates"),
-    // The secret in the client's link.
-    token: v.string(),
-    status: offerStatus,
-    message: v.optional(v.string()),
-    variantIds: v.array(v.id("variants")),
-    expiresAt: v.optional(v.number()),
-    sentAt: v.optional(v.number()),
-    viewedAt: v.optional(v.number()),
-    decidedAt: v.optional(v.number()),
-    acceptedVariantId: v.optional(v.id("variants")),
-    signature: v.optional(
-      v.object({
-        name: v.string(),
-        signedAt: v.number(),
-        imageId: v.optional(v.id("_storage")),
-      }),
-    ),
-    depositPercent: v.optional(v.number()),
-    depositPaidAt: v.optional(v.number()),
-    createdBy: v.id("users"),
-  })
-    .index("by_token", ["token"])
-    .index("by_estimateId", ["estimateId"]),
 };

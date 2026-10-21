@@ -12,7 +12,8 @@ import { estimateCode, todayInput } from "@/lib/format";
 import { useScopedI18n } from "@/locales/client";
 import { type Estimate, exportData, fileName } from "./export-data";
 
-async function fontFile(path: string) {
+/** A font for the PDF, from the app's public files. */
+export async function fontFile(path: string) {
   const response = await fetch(path);
   if (!response.ok) {
     throw new Error(`Font ${path}: ${response.status}`);
@@ -20,7 +21,8 @@ async function fontFile(path: string) {
   return response.arrayBuffer();
 }
 
-function save(bytes: Uint8Array, name: string) {
+/** Hands a PDF made in the browser to the person as a download. */
+export function savePdf(bytes: Uint8Array, name: string) {
   const url = URL.createObjectURL(
     new Blob([bytes.slice()], { type: "application/pdf" }),
   );
@@ -73,7 +75,7 @@ export function useDownloadDocuments(estimate: Estimate) {
           title: `${code} · ${title}`,
           author: firm.name,
         });
-        save(bytes, fileName(code, title));
+        savePdf(bytes, fileName(code, title));
         return true;
       } catch (error) {
         if (appErrorOf(error)) {
