@@ -662,7 +662,7 @@ export default {
     },
     forms: {
       title: "Formulare oficiale",
-      hint: "Devizul general și ale obiectelor, F1–F5, C5 și listele de resurse C6–C9, pentru licitații.",
+      hint: "Devizul general și ale obiectelor, F1–F6, C5 și listele de resurse C6–C9, pentru licitații.",
       open: "Alege",
       sheetTitle: "Formulare oficiale",
       sheetDescription:
@@ -701,6 +701,10 @@ export default {
           title: "F5 · Fișele tehnice",
           hint: "Câte una pentru fiecare utilaj din F4, de completat cu specificațiile.",
         },
+        F6: {
+          title: "F6 · Graficul general de realizare a investiției",
+          hint: "Lucrările pe luni, fizic și valoric, cu valoarea cumulată.",
+        },
         C6: {
           title: "C6 · Consumurile de resurse materiale",
           hint: "Cu magazinul din care vine fiecare preț.",
@@ -728,6 +732,18 @@ export default {
       placementHint:
         "Fiecare categorie de lucrări intră la un subcapitol al devizului general. Le-am încadrat după nume; schimbă-le unde documentația le încadrează altfel.",
       placementReset: "Încadrează din nou după nume",
+      schedule: "Graficul general (F6)",
+      months: "Durata de execuție (luni)",
+      monthsHint:
+        "Pune durata din documentația de atribuire. Am propus una din cele {hours} ore de manoperă ale devizului, pentru o echipă de 10 oameni.",
+      windows: "Alege lunile fiecărei categorii",
+      windowsDone: "Gata cu lunile",
+      windowsHint:
+        "Le-am așezat în ordinea obișnuită a lucrărilor: organizarea de șantier și terasamentele întâi, apoi structura, instalațiile și finisajele, iar utilajele și branșamentele la sfârșit.",
+      windowsReset: "Planifică din nou lunile",
+      windowStart: "Prima lună",
+      windowEnd: "Ultima lună",
+      month: "Luna {month}",
       subchapters: {
         site: "Amenajarea terenului",
         environment: "Protecția mediului",

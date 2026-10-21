@@ -22,6 +22,8 @@ export const colors = {
   // The rules between the rows of the client's Deviz.
   faint: rgb(0.82, 0.82, 0.82),
   shade: rgb(0.94, 0.94, 0.94),
+  // A schedule's bars.
+  bar: rgb(0.8, 0.8, 0.8),
 };
 
 // A4, in points.

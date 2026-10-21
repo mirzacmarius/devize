@@ -23,6 +23,8 @@ export type Cell = TextStyle & {
   // Lines under the first one, each with its own style: a code over a title.
   more?: CellPart[];
   colSpan?: number;
+  // Shaded, as one month of a bar in a schedule.
+  bar?: boolean;
 };
 
 export type RowKind =

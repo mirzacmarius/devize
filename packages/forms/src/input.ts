@@ -108,6 +108,7 @@ export const documentKinds = [
   "C5",
   "F4",
   "F5",
+  "F6",
   "C6",
   "C7",
   "C8",
@@ -154,6 +155,9 @@ export const subchapters = [
 
 export type Subchapter = (typeof subchapters)[number];
 
+/** The months a category of works runs in, from the first to the last, from 1. */
+export type ScheduleWindow = { start: number; end: number };
+
 /**
  * How the resource lists (C6–C9) group the works: one list for the whole
  * Deviz, one per object or one per category of works.
@@ -176,6 +180,12 @@ export type ExportOptions = {
   // The subchapter of each category of works, by its key, where the person
   // chose another than the one guessed from its name.
   subchapters?: Readonly<Record<string, Subchapter>>;
+  // F6: how many months the works take, and the months of each category of
+  // works, by its key, where the person chose other than ours.
+  schedule?: {
+    months?: number;
+    windows?: Readonly<Record<string, ScheduleWindow>>;
+  };
   // Today, as YYYY-MM-DD, printed by the signatures.
   date: string;
 };

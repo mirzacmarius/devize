@@ -21,7 +21,7 @@ type Line = {
   align: Align;
 };
 
-type LaidCell = { x: number; width: number; lines: Line[] };
+type LaidCell = { x: number; width: number; lines: Line[]; bar?: boolean };
 type LaidRow = { row: Row; height: number; cells: LaidCell[] };
 type LaidHeader = {
   top: number;
@@ -132,6 +132,7 @@ function layRow(
       x,
       width,
       lines: linesOf(writer, cell, width, fontSize, align),
+      bar: cell.bar,
     });
     column += cell.colSpan ?? 1;
   }
@@ -408,6 +409,11 @@ export function drawTable(writer: Writer, table: Table, reserve = 0) {
     const { kind } = laid.row;
     if (kind === "group" || (grid && kind === "total")) {
       writer.rect(columns.left, top, columns.width, laid.height, colors.shade);
+    }
+    for (const cell of laid.cells) {
+      if (cell.bar) {
+        writer.rect(cell.x, top, cell.width, laid.height, colors.bar);
+      }
     }
     if (grid) {
       if (kind !== "detail" || first) {

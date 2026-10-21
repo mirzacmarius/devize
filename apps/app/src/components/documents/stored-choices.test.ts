@@ -11,6 +11,8 @@ describe("parseChoices", () => {
       subchapters: { boiler: "4.1.4" },
       beneficiary: "Comuna Exemplu",
       designer: "",
+      months: 12,
+      windows: { boiler: { start: 9, end: 12 } },
     };
     expect(parseChoices(JSON.parse(JSON.stringify(choices)))).toEqual(choices);
   });
@@ -24,11 +26,19 @@ describe("parseChoices", () => {
         scope: "lot",
         subchapters: { boiler: "4.7", furniture: "4.5" },
         beneficiary: null,
+        months: 40,
+        windows: {
+          boiler: { start: 3, end: 2 },
+          furniture: { start: 1.5, end: 2 },
+          huts: { start: 1, end: 1 },
+          site: "1-2",
+        },
       }),
     ).toEqual({
       kinds: ["F1"],
       labels: { C5: "Lista C5" },
       subchapters: { furniture: "4.5" },
+      windows: { huts: { start: 1, end: 1 } },
     });
   });
 

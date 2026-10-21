@@ -3,6 +3,7 @@ import { devizDocument } from "./forms/deviz";
 import { f4Documents, f5Documents } from "./forms/equipment";
 import { generalDocuments, objectDocuments } from "./forms/general";
 import { c5Documents, f3Documents } from "./forms/quantities";
+import { f6Documents } from "./forms/schedule";
 import { f1Documents, f2Documents } from "./forms/summaries";
 import {
   type DocumentKind,
@@ -23,6 +24,7 @@ export type {
   LineItemInput,
   PartyInput,
   ResourceScope,
+  ScheduleWindow,
   SectionInput,
   Subchapter,
   WorksData,
@@ -48,6 +50,7 @@ const builders: Record<
   C5: c5Documents,
   F4: f4Documents,
   F5: f5Documents,
+  F6: f6Documents,
   C6: (data, options) => resourceDocuments(data, options, "material"),
   C7: (data, options) => resourceDocuments(data, options, "labor"),
   C8: (data, options) => resourceDocuments(data, options, "equipment"),

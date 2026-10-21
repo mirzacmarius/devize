@@ -665,7 +665,7 @@ export default {
     },
     forms: {
       title: "Official forms",
-      hint: "The general and object estimates, F1–F5, C5 and the C6–C9 resource lists, for tenders.",
+      hint: "The general and object estimates, F1–F6, C5 and the C6–C9 resource lists, for tenders.",
       open: "Choose",
       sheetTitle: "Official forms",
       sheetDescription:
@@ -704,6 +704,10 @@ export default {
           title: "F5 · Technical sheets",
           hint: "One for each item in F4, to fill in with its specifications.",
         },
+        F6: {
+          title: "F6 · General schedule of the works",
+          hint: "The works month by month, in time and value, with the running total.",
+        },
         C6: {
           title: "C6 · Materials consumed",
           hint: "With the store each price comes from.",
@@ -731,6 +735,18 @@ export default {
       placementHint:
         "Each category of works falls under a subchapter of the general estimate. We placed them by name; change any the tender documentation places differently.",
       placementReset: "Place them by name again",
+      schedule: "General schedule (F6)",
+      months: "Duration of the works (months)",
+      monthsHint:
+        "Use the duration in the tender documentation. We suggested one from the estimate's {hours} labour hours, for a crew of ten.",
+      windows: "Choose each category's months",
+      windowsDone: "Done with the months",
+      windowsHint:
+        "We placed them in the usual order of the works: site setup and earthworks first, then the structure, the services and the finishes, with the equipment and connections last.",
+      windowsReset: "Plan the months again",
+      windowStart: "First month",
+      windowEnd: "Last month",
+      month: "Month {month}",
       subchapters: {
         site: "Site preparation",
         environment: "Environmental protection",
