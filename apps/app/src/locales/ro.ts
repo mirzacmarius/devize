@@ -242,11 +242,7 @@ export default {
       ai: "propus de AI",
       tender: "din caietul de sarcini",
       copy: "copiat",
-      base: "normă de bază",
-      manufacturer: "normă {name}",
-      organization: "normă proprie",
       deletedNorm: "normă ștearsă",
-      unknownManufacturer: "producător necunoscut",
     },
     sources: {
       own: "Prețul firmei",
@@ -366,12 +362,6 @@ export default {
       total: "Total cu TVA",
       currency: "Valori în lei",
       laborHours: "Ore de manoperă: {hours}",
-      kinds: {
-        material: "Materiale",
-        labor: "Manoperă",
-        equipment: "Utilaje",
-        transport: "Transport",
-      },
       columns: {
         item: "Cheltuială",
         rate: "Cotă",
@@ -435,7 +425,6 @@ export default {
       custom: "Nu e în catalog? Adaugă un articol propriu",
       back: "Înapoi la rezultate",
       loading: "Se încarcă norma…",
-      unconfirmed: "Neconfirmată de producător",
       unit: "U.M. {unit}",
       includes: "Include",
       excludes: "Nu include",
@@ -491,10 +480,203 @@ export default {
   catalog: {
     title: "Catalog",
     description:
-      "Normele de bază și normele de producător, cu resursele și produsele lor.",
-    emptyTitle: "Catalogul vine în curând",
-    emptyDescription:
-      "Vei căuta norme după cod sau după lucrare și vei vedea ce consumă fiecare: manoperă, materiale, utilaje și transport.",
+      "Normele de bază, ale producătorilor și ale firmei tale, cu ce consumă fiecare.",
+    newNorm: "Normă nouă",
+    views: {
+      label: "Normele afișate",
+      catalog: "Catalogul public",
+      own: "Normele firmei",
+    },
+    searchPlaceholder: "Caută după cod sau lucrare",
+    columns: {
+      norm: "Normă",
+      source: "Sursă",
+      unit: "U.M.",
+      status: "Stare",
+      updated: "Modificată",
+    },
+    noResults: "Nicio normă nu se potrivește cu „{text}”.",
+    catalogEmpty:
+      "Catalogul public e gol deocamdată. Normele de bază și cele ale producătorilor apar aici pe măsură ce sunt publicate.",
+    ownEmptyTitle: "Încă nu ai norme proprii",
+    ownEmptyDescription:
+      "Scrie o normă de la zero sau copiază una din catalogul public și ajustează consumurile după cum lucrează echipa ta.",
+    ownEmptyAction: "Scrie prima normă",
+  },
+  norms: {
+    sources: {
+      base: "normă de bază",
+      manufacturer: "normă {name}",
+      organization: "normă proprie",
+      unknownManufacturer: "producător necunoscut",
+    },
+    statuses: {
+      draft: "Ciornă",
+      review: "În verificare",
+      published: "Publicată",
+      superseded: "Înlocuită",
+      archived: "Arhivată",
+    },
+    unconfirmed: "Neconfirmată de producător",
+  },
+  norm: {
+    breadcrumb: "Unde ești",
+    perUnit: "pe {unit}",
+    loading: "Se încarcă norma…",
+    notFoundTitle: "Norma nu există",
+    notFoundDescription:
+      "Poate a fost ștearsă sau e o normă proprie a altei firme.",
+    backToCatalog: "Înapoi la catalog",
+    backToNorm: "Înapoi la fișa normei",
+    notices: {
+      newer:
+        "Există o versiune mai nouă, publicată. Devizele noi o folosesc pe aceea.",
+      openNewer: "Deschide versiunea nouă",
+      draft:
+        "E o ciornă: nu apare în căutare și nu intră în devize până nu o publici.",
+      review: "Norma așteaptă verificarea echipei Devize.",
+      reviewNote: "Nota echipei Devize: {note}",
+      archived:
+        "Norma e arhivată și nu mai apare în căutare. Devizele care o folosesc își păstrează copia.",
+    },
+    resources: {
+      title: "Resurse pe {unit}",
+      description:
+        "Ce consumă o unitate de lucrare, cu prețurile de referință ale normei. În deviz, resursele iau tarifele și prețurile firmei.",
+      columns: {
+        resource: "Resursă",
+        consumption: "Consum",
+        price: "Preț ref. (lei)",
+        value: "Valoare (lei)",
+      },
+      none: "Norma nu are încă resurse.",
+      noPrice: "fără preț",
+      shareOf: {
+        material: "din materiale",
+        labor: "din manoperă",
+        equipment: "din utilaje",
+        transport: "din materiale",
+      },
+      total: "Cost direct de referință",
+      perUnitValue: "{value}\u00a0lei/{unit}",
+      partial:
+        "Unele resurse nu au preț de referință, așa că totalul e parțial.",
+    },
+    scope: {
+      title: "Ce cuprinde",
+      includes: "Include",
+      excludes: "Nu include",
+      measurement: "Cum se măsoară",
+    },
+    about: {
+      title: "Despre normă",
+      source: "Sursă",
+      category: "Categorie",
+      version: "Versiune",
+      edition: "Ediția documentului",
+      published: "Publicată",
+      updated: "Modificată",
+      check: "Verificare",
+      verified: "Verificată de Devize",
+      confirmed: "Confirmată de producător",
+      notVerified: "Neverificată",
+      copiedFrom: "Copiată din",
+    },
+    versions: {
+      title: "Versiuni",
+      name: "Versiunea {version}",
+      published: "publicată {date}",
+      updated: "modificată {date}",
+    },
+    actions: {
+      edit: "Editează",
+      publish: "Publică",
+      published: "Norma {code} a fost publicată.",
+      submit: "Trimite la verificare",
+      submitted: "Norma a fost trimisă la verificare.",
+      newVersion: "Versiune nouă",
+      versionOpened: "Lucrezi pe ciorna versiunii {version}.",
+      copy: "Copiază în normele firmei",
+      duplicate: "Fă o copie",
+      copied:
+        "Norma a fost copiată în normele firmei. Ajusteaz-o, apoi publică.",
+      confirm: "Confirmă norma",
+      confirmed: "Ai confirmat că norma corespunde documentelor voastre.",
+      archive: "Arhivează",
+      archived: "Norma a fost arhivată.",
+      deleteDraft: "Șterge ciorna",
+      deleted: "Ciorna a fost ștearsă.",
+    },
+    publishDialog: {
+      title: "Publici {code}?",
+      description:
+        "Norma publicată apare în căutare și poate intra în devize. O poți schimba apoi doar printr-o versiune nouă.",
+      replaces:
+        "Versiunea {version} o înlocuiește pe cea publicată acum. Devizele care o folosesc deja își păstrează versiunea.",
+      confirm: "Publică",
+    },
+    archiveDialog: {
+      title: "Arhivezi {code}?",
+      description:
+        "Norma nu mai apare în căutare. Devizele care o folosesc își păstrează copia.",
+      confirm: "Arhivează",
+    },
+    deleteDialog: {
+      title: "Ștergi ciorna {code}?",
+      description: "Ciorna se șterge definitiv.",
+      confirm: "Șterge ciorna",
+    },
+    form: {
+      newTitle: "Normă nouă",
+      newDescription:
+        "O normă a firmei tale: o văd doar colegii tăi și intră în devizele voastre după ce o publici.",
+      editTitle: "Editează {code}",
+      editDescription: "Modificările rămân în ciornă până o publici.",
+      locked:
+        "Norma e publicată, așa că nu se mai poate modifica. Creează o versiune nouă din fișa ei.",
+      code: "Cod",
+      codePlaceholder: "ex. FIR-FAI-01",
+      codeHint: "Unic printre normele firmei.",
+      codeRequired: "Scrie codul normei.",
+      title: "Denumire",
+      titlePlaceholder: "ex. Placare cu faianță pe pereți, cu adeziv flexibil",
+      titleRequired: "Scrie denumirea lucrării.",
+      unit: "U.M.",
+      unitRequired: "Scrie unitatea de măsură, de exemplu mp.",
+      unitPercent:
+        "O normă se măsoară într-o unitate de lucrare, nu în procente.",
+      category: "Categorie",
+      categoryPlaceholder: "ex. Finisaje",
+      resources: "Resurse pe unitate",
+      resourcesHint:
+        "Ce consumă o unitate de lucrare. Un consum în % e o cotă din materiale, ori din manoperă sau utilaje pentru resursele de acel tip.",
+      columns: {
+        kind: "Tip",
+        name: "Resursă",
+        unit: "U.M.",
+        quantity: "Consum",
+        price: "Preț ref. (lei)",
+      },
+      addRow: "Adaugă resursă",
+      removeRow: "Șterge {name}",
+      noResources: "Adaugă resursele din catalog sau scrie-le tu.",
+      rowInvalid:
+        "Fiecare resursă are nevoie de nume, unitate și consum. Consumul și prețul nu pot fi negative.",
+      referenceCost: "Cost de referință: {value}\u00a0lei/{unit}",
+      referenceCostNoUnit: "Cost de referință: {value}\u00a0lei",
+      scope: "Ce cuprinde",
+      includes: "Include",
+      includesPlaceholder:
+        "ex. Pregătirea suportului, amorsarea, lipirea plăcilor și rostuirea.",
+      excludes: "Nu include",
+      excludesPlaceholder: "ex. Furnizarea plăcilor ceramice.",
+      measurement: "Cum se măsoară",
+      measurementPlaceholder:
+        "ex. Suprafața placată, scăzând golurile mai mari de 0,5 mp.",
+      save: "Salvează ciorna",
+      saved: "Ciorna a fost salvată.",
+      created: "Norma a fost creată ca ciornă.",
+    },
   },
   clients: {
     title: "Clienți",
@@ -1063,6 +1245,12 @@ export default {
       material: "Material",
       labor: "Manoperă",
       equipment: "Utilaj",
+      transport: "Transport",
+    },
+    groups: {
+      material: "Materiale",
+      labor: "Manoperă",
+      equipment: "Utilaje",
       transport: "Transport",
     },
   },

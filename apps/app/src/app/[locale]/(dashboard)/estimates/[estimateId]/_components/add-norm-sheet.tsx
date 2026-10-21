@@ -17,6 +17,7 @@ import { ArrowLeft } from "lucide-react";
 import { type FormEvent, useDeferredValue, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
+import { useNormSource } from "@/components/norm-source";
 import { SearchInput } from "@/components/search-input";
 import { useRun } from "@/components/use-run";
 import {
@@ -25,12 +26,10 @@ import {
   formatUnit,
   parseDecimal,
 } from "@/lib/format";
+import { resourceKinds } from "@/lib/resource-values";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
-import { useNormSource } from "./norm-source";
 import { SectionSelect } from "./section-select";
 import type { Estimate } from "./types";
-
-const kindOrder = ["material", "labor", "equipment", "transport"] as const;
 
 /**
  * Finds norms by code or by the words of the work and adds them to the Deviz
@@ -194,6 +193,7 @@ function NormPreview({
 }) {
   const t = useScopedI18n("estimate");
   const tKinds = useScopedI18n("resources");
+  const tNorms = useScopedI18n("norms");
   const locale = useCurrentLocale();
   const normSource = useNormSource();
   const norm = useQuery(api.catalog.norms.get, { normId });
@@ -233,7 +233,7 @@ function NormPreview({
 
   const resources = norm
     ? [...norm.resources].sort(
-        (a, b) => kindOrder.indexOf(a.kind) - kindOrder.indexOf(b.kind),
+        (a, b) => resourceKinds.indexOf(a.kind) - resourceKinds.indexOf(b.kind),
       )
     : [];
   const notes = norm
@@ -265,7 +265,7 @@ function NormPreview({
                 {norm.code}
               </span>
               {norm.source === "manufacturer" && !norm.confirmedAt && (
-                <Badge>{t("addNorm.unconfirmed")}</Badge>
+                <Badge>{tNorms("unconfirmed")}</Badge>
               )}
             </span>
             <h3 className="m-0 text-title-card text-ink">{norm.title}</h3>

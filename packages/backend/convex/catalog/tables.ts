@@ -112,13 +112,23 @@ export const catalogTables = {
     importedNormId: v.optional(v.id("importedNorms")),
     edition: v.optional(v.string()),
     sourcePages: v.optional(v.array(v.number())),
+    // The norm a firm copied this one from, to adjust it to its own work.
+    copiedFromId: v.optional(v.id("norms")),
     createdBy: v.id("users"),
     updatedAt: v.number(),
   })
     .index("by_lineageId_and_version", ["lineageId", "version"])
-    .index("by_visibility_and_status", ["visibility", "status"])
+    .index("by_visibility_and_status_and_code", [
+      "visibility",
+      "status",
+      "code",
+    ])
     .index("by_organizationId_and_status", ["organizationId", "status"])
-    .index("by_manufacturerId_and_status", ["manufacturerId", "status"])
+    .index("by_manufacturerId_and_status_and_code", [
+      "manufacturerId",
+      "status",
+      "code",
+    ])
     .index("by_importedNormId", ["importedNormId"])
     .index("by_code", ["code"])
     .searchIndex("search_searchText", {

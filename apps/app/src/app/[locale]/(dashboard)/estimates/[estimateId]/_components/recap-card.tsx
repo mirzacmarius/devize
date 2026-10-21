@@ -39,15 +39,16 @@ export function RecapCard({
 }) {
   const t = useScopedI18n("estimate");
   const tMarkups = useScopedI18n("markups");
+  const tResources = useScopedI18n("resources");
   const locale = useCurrentLocale();
   const { totals, markups } = estimate;
   const rate = (value: number) => formatPercent(value, locale);
 
   const rows: Row[] = [
-    { label: t("recap.kinds.material"), value: totals.material },
-    { label: t("recap.kinds.labor"), value: totals.labor },
-    { label: t("recap.kinds.equipment"), value: totals.equipment },
-    { label: t("recap.kinds.transport"), value: totals.transport },
+    { label: tResources("groups.material"), value: totals.material },
+    { label: tResources("groups.labor"), value: totals.labor },
+    { label: tResources("groups.equipment"), value: totals.equipment },
+    { label: tResources("groups.transport"), value: totals.transport },
     {
       label: tMarkups("cam.label"),
       rate: t("recap.rates.cam", { rate: rate(markups.cam) }),

@@ -246,11 +246,7 @@ export default {
       ai: "proposed by AI",
       tender: "from the tender documents",
       copy: "copied",
-      base: "base norm",
-      manufacturer: "{name} norm",
-      organization: "own norm",
       deletedNorm: "deleted norm",
-      unknownManufacturer: "unknown manufacturer",
     },
     sources: {
       own: "Company price",
@@ -371,12 +367,6 @@ export default {
       total: "Total incl. VAT",
       currency: "Values in lei",
       laborHours: "Labour hours: {hours}",
-      kinds: {
-        material: "Materials",
-        labor: "Labour",
-        equipment: "Equipment",
-        transport: "Transport",
-      },
       columns: {
         item: "Cost",
         rate: "Rate",
@@ -440,7 +430,6 @@ export default {
       custom: "Not in the catalog? Add your own line item",
       back: "Back to results",
       loading: "Loading the norm…",
-      unconfirmed: "Not confirmed by the manufacturer",
       unit: "Unit {unit}",
       includes: "Includes",
       excludes: "Excludes",
@@ -495,10 +484,201 @@ export default {
   catalog: {
     title: "Catalog",
     description:
-      "Base norms and manufacturer norms, with their resources and products.",
-    emptyTitle: "The catalog is coming soon",
-    emptyDescription:
-      "You'll search norms by code or by work and see what each one consumes: labour, materials, equipment and transport.",
+      "Base norms, manufacturers' norms and your company's own, with what each one consumes.",
+    newNorm: "New norm",
+    views: {
+      label: "Norms shown",
+      catalog: "Public catalog",
+      own: "Company norms",
+    },
+    searchPlaceholder: "Search by code or work",
+    columns: {
+      norm: "Norm",
+      source: "Source",
+      unit: "Unit",
+      status: "Status",
+      updated: "Changed",
+    },
+    noResults: "No norm matches “{text}”.",
+    catalogEmpty:
+      "The public catalog is empty for now. Base norms and manufacturers' norms appear here as they are published.",
+    ownEmptyTitle: "No norms of your own yet",
+    ownEmptyDescription:
+      "Write a norm from scratch, or copy one from the public catalog and adjust its consumptions to how your team works.",
+    ownEmptyAction: "Write your first norm",
+  },
+  norms: {
+    sources: {
+      base: "base norm",
+      manufacturer: "{name} norm",
+      organization: "own norm",
+      unknownManufacturer: "unknown manufacturer",
+    },
+    statuses: {
+      draft: "Draft",
+      review: "In review",
+      published: "Published",
+      superseded: "Superseded",
+      archived: "Archived",
+    },
+    unconfirmed: "Not confirmed by the manufacturer",
+  },
+  norm: {
+    breadcrumb: "You are here",
+    perUnit: "per {unit}",
+    loading: "Loading the norm…",
+    notFoundTitle: "This norm doesn't exist",
+    notFoundDescription:
+      "It may have been deleted, or it is another company's own norm.",
+    backToCatalog: "Back to the catalog",
+    backToNorm: "Back to the norm",
+    notices: {
+      newer: "A newer version is published. New estimates use that one.",
+      openNewer: "Open the new version",
+      draft:
+        "This is a draft: it doesn't show in search or go into estimates until you publish it.",
+      review: "The norm is waiting for the Devize team to check it.",
+      reviewNote: "Note from the Devize team: {note}",
+      archived:
+        "The norm is archived and no longer shows in search. Estimates that use it keep their copy.",
+    },
+    resources: {
+      title: "Resources per {unit}",
+      description:
+        "What one unit of work consumes, at the norm's reference prices. In an estimate, resources take your company's rates and prices.",
+      columns: {
+        resource: "Resource",
+        consumption: "Consumption",
+        price: "Ref. price (lei)",
+        value: "Value (lei)",
+      },
+      none: "The norm has no resources yet.",
+      noPrice: "no price",
+      shareOf: {
+        material: "of materials",
+        labor: "of labour",
+        equipment: "of equipment",
+        transport: "of materials",
+      },
+      total: "Reference direct cost",
+      perUnitValue: "{value}\u00a0lei/{unit}",
+      partial:
+        "Some resources have no reference price, so the total is partial.",
+    },
+    scope: {
+      title: "What it covers",
+      includes: "Includes",
+      excludes: "Excludes",
+      measurement: "How it is measured",
+    },
+    about: {
+      title: "About the norm",
+      source: "Source",
+      category: "Category",
+      version: "Version",
+      edition: "Document edition",
+      published: "Published",
+      updated: "Changed",
+      check: "Check",
+      verified: "Verified by Devize",
+      confirmed: "Confirmed by the manufacturer",
+      notVerified: "Not verified",
+      copiedFrom: "Copied from",
+    },
+    versions: {
+      title: "Versions",
+      name: "Version {version}",
+      published: "published {date}",
+      updated: "changed {date}",
+    },
+    actions: {
+      edit: "Edit",
+      publish: "Publish",
+      published: "{code} is published.",
+      submit: "Send for review",
+      submitted: "The norm was sent for review.",
+      newVersion: "New version",
+      versionOpened: "You're working on the draft of version {version}.",
+      copy: "Copy to company norms",
+      duplicate: "Make a copy",
+      copied:
+        "The norm was copied to your company's norms. Adjust it, then publish it.",
+      confirm: "Confirm the norm",
+      confirmed: "You confirmed that the norm matches your documents.",
+      archive: "Archive",
+      archived: "The norm was archived.",
+      deleteDraft: "Delete draft",
+      deleted: "The draft was deleted.",
+    },
+    publishDialog: {
+      title: "Publish {code}?",
+      description:
+        "A published norm shows in search and can go into estimates. After that, it only changes through a new version.",
+      replaces:
+        "Version {version} replaces the one published now. Estimates that already use it keep their version.",
+      confirm: "Publish",
+    },
+    archiveDialog: {
+      title: "Archive {code}?",
+      description:
+        "The norm no longer shows in search. Estimates that use it keep their copy.",
+      confirm: "Archive",
+    },
+    deleteDialog: {
+      title: "Delete the draft {code}?",
+      description: "The draft is deleted for good.",
+      confirm: "Delete draft",
+    },
+    form: {
+      newTitle: "New norm",
+      newDescription:
+        "A norm of your company's own: only your colleagues see it, and it goes into your estimates once you publish it.",
+      editTitle: "Edit {code}",
+      editDescription: "Changes stay in the draft until you publish it.",
+      locked:
+        "The norm is published, so it can't change any more. Start a new version from its page.",
+      code: "Code",
+      codePlaceholder: "e.g. FIR-TIL-01",
+      codeHint: "Unique among your company's norms.",
+      codeRequired: "Enter the norm's code.",
+      title: "Name",
+      titlePlaceholder: "e.g. Wall tiling with flexible adhesive",
+      titleRequired: "Enter the name of the work.",
+      unit: "Unit",
+      unitRequired: "Enter the unit of measure, such as mp.",
+      unitPercent: "A norm is measured in a unit of work, not in percent.",
+      category: "Category",
+      categoryPlaceholder: "e.g. Finishes",
+      resources: "Resources per unit",
+      resourcesHint:
+        "What one unit of work consumes. A consumption in % is a share of the materials, or of labour or equipment for resources of that kind.",
+      columns: {
+        kind: "Kind",
+        name: "Resource",
+        unit: "Unit",
+        quantity: "Consumption",
+        price: "Ref. price (lei)",
+      },
+      addRow: "Add resource",
+      removeRow: "Remove {name}",
+      noResources: "Add resources from the catalog or type them in.",
+      rowInvalid:
+        "Each resource needs a name, a unit and a consumption. Consumption and price can't be negative.",
+      referenceCost: "Reference cost: {value}\u00a0lei/{unit}",
+      referenceCostNoUnit: "Reference cost: {value}\u00a0lei",
+      scope: "What it covers",
+      includes: "Includes",
+      includesPlaceholder:
+        "e.g. Preparing the surface, priming, laying the tiles and grouting.",
+      excludes: "Excludes",
+      excludesPlaceholder: "e.g. Supplying the ceramic tiles.",
+      measurement: "How it is measured",
+      measurementPlaceholder:
+        "e.g. The tiled area, less openings larger than 0.5 mp.",
+      save: "Save draft",
+      saved: "The draft was saved.",
+      created: "The norm was created as a draft.",
+    },
   },
   clients: {
     title: "Clients",
@@ -1069,6 +1249,12 @@ export default {
     noResults: "No resource matches.",
     kinds: {
       material: "Material",
+      labor: "Labour",
+      equipment: "Equipment",
+      transport: "Transport",
+    },
+    groups: {
+      material: "Materials",
       labor: "Labour",
       equipment: "Equipment",
       transport: "Transport",
