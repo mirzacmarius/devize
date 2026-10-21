@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { aiConfidence } from "../ai/validators";
 
 // Where a Producător is in the outreach pipeline. A research job in progress
 // is not a status: it is the manufacturer's queued or running aiJobs row.
@@ -126,3 +127,33 @@ export const importedNormStatus = v.union(
   v.literal("approved"),
   v.literal("rejected"),
 );
+
+// What manufacturer research returns, after the action checked its sources.
+export const researchFindings = v.object({
+  displayName: v.string(),
+  website: v.optional(v.string()),
+  legalName: v.optional(v.string()),
+  cui: v.optional(v.string()),
+  brands: v.array(v.string()),
+  categories: v.array(v.string()),
+  mainProducts: v.array(v.string()),
+  retailers: v.array(v.string()),
+  contacts: v.array(
+    v.object({
+      kind: contactKind,
+      email: v.optional(v.string()),
+      url: v.optional(v.string()),
+      role: v.optional(v.string()),
+      sourceUrl: v.optional(v.string()),
+      sourceVerified: v.boolean(),
+    }),
+  ),
+  existingNorms: v.array(existingNorm),
+  technicalDocs: v.array(technicalDoc),
+  declaredConsumption: v.array(declaredConsumption),
+  personalization: v.optional(personalization),
+  mainProductsPhrase: v.optional(v.string()),
+  recommendedEmail: v.optional(v.string()),
+  confidence: aiConfidence,
+  needsReview: v.optional(v.string()),
+});

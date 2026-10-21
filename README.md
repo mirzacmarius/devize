@@ -14,6 +14,7 @@ Devize is a web app, installable as a PWA, for construction estimates (devize) i
 - [Next.js 16](https://nextjs.org) with React 19, for the app and the marketing site
 - [Tailwind CSS](https://tailwindcss.com) and [shadcn/ui](https://ui.shadcn.com) components
 - [next-international](https://next-international.vercel.app) for Romanian (default) and English
+- The [Claude API](https://docs.claude.com) for the admin panel's manufacturer research and norm imports
 - [Sentry](https://sentry.io) for error reports, optional
 - [Turborepo](https://turbo.build), [Bun](https://bun.sh) and [Biome](https://biomejs.dev)
 
@@ -75,6 +76,16 @@ You need [Bun](https://bun.sh/docs/installation) 1.4.2, a [Convex](https://dashb
 
    The app runs on http://localhost:3000 and the marketing site on http://localhost:3001. `bun dev:app`, `bun dev:web` and `bun dev:backend` start one part each.
 
+6. To open the admin panel at `/admin`, sign in once, then make yourself a super admin. Manufacturer research and norm imports also need a Claude API key on the deployment:
+
+   ```bash
+   cd packages/backend
+   bunx convex run admin:grantSuperAdmin '{"email":"you@example.com"}'
+   bunx convex env set ANTHROPIC_API_KEY <key>
+   ```
+
+   `AI_MODEL` switches to another Claude model. The panel never sends email; see `docs/adr/0006`.
+
 ## Checks
 
 CI runs these on every push; run them before you push:
@@ -89,4 +100,4 @@ bun run build
 
 ## Deployment
 
-Each app is its own Vercel project, with `apps/app` or `apps/web` as the root directory. The app's `vercel.json` deploys the Convex functions first (it needs a `CONVEX_DEPLOY_KEY`) and builds against the deployed URL. Set `SITE_URL`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` and the Convex Auth keys on the production Convex deployment, and `NEXT_PUBLIC_APP_URL` on the marketing site. For error reports, set `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` on the app.
+Each app is its own Vercel project, with `apps/app` or `apps/web` as the root directory. The app's `vercel.json` deploys the Convex functions first (it needs a `CONVEX_DEPLOY_KEY`) and builds against the deployed URL. Set `SITE_URL`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, the Convex Auth keys and `ANTHROPIC_API_KEY` on the production Convex deployment, and `NEXT_PUBLIC_APP_URL` on the marketing site. For error reports, set `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` on the app.

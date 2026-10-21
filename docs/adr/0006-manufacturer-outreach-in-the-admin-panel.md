@@ -1,0 +1,10 @@
+# Manufacturer outreach runs in the admin panel, with Claude, and never sends email
+
+To seed the catalog, Devize asks Producători for the Norme de producător they already have. The first plan had a Grok bot research each Producător and draft its email outside Devize. On 21 October 2026 Marius chose to run this inside Devize instead, in an admin panel that only super admins can open, and with another AI provider. It uses Anthropic's Claude API: Claude researches a Producător with web search and web fetch, and reads the norm PDFs a Producător sends.
+
+## Consequences
+
+- Devize never sends outreach email. Research ends in a draft rendered from a fixed template, not written by the model, and a super admin approves it, sends it from their own mailbox and marks it sent. Each draft is checked against the rules for unsolicited business email (Legea 506/2004 and GDPR): one company at a time, a way to answer „stop”, no guessed addresses and a suppression list.
+- Every fact keeps the link it came from, and facts whose link the research never opened are dropped. An address counts as verified only once it is read on a page, such as the company's contact page.
+- Imported norms are drafts: a super admin reviews each article against its page in the PDF before it is published. Norm documents and the data taken from them stay out of this repository, which is public.
+- The API key lives only in the Convex deployment's environment (`ANTHROPIC_API_KEY`, and `AI_MODEL` to change the model). Each job's usage and list-price cost is kept on `aiJobs`, failed jobs included.
