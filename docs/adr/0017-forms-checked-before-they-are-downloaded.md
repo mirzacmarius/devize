@@ -10,3 +10,4 @@ A tender's financial offer is judged on its forms, and the mistakes that cost a 
 - A gap is a number missing between two of the authority's positions in one list. A number whose own positions follow ("3" before "3.1") is a heading, a line of the bidder's that prints the number fills it, and more than 20 missing in a row is a list numbered with a jump.
 - A quantity is compared in the line's own unit, as the import converted it, to four decimals. Units that don't convert, such as windows counted in pieces and priced by area, are the bidder's to count and aren't compared.
 - Nothing blocks the download. Where the sheet can fix a finding, the check links to the field, adds the missing forms or keeps what is there: a placement or a duration the person confirms is kept with the other choices, even when it is the one we guessed or planned.
+- With the offer form chosen, the check also asks for its validity and its signer, and for the duration it prints (ADR 0020).

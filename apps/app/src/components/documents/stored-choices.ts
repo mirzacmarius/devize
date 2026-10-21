@@ -22,11 +22,23 @@ export type StoredChoices = {
   designer?: string;
   months?: number;
   windows?: Record<string, ScheduleWindow>;
+  // The offer form: the days it stays valid, and who signs it.
+  validity?: number;
+  signer?: string;
+  role?: string;
 };
+
+/** Who signs the firm's offer forms, as last typed on this device. */
+export type Signer = { signer?: string; role?: string };
+
+/** The longest an offer form can say it stays valid, in days. */
+export const maxValidity = 365;
 
 const scopes: readonly ResourceScope[] = ["estimate", "object", "category"];
 
 const keyOf = (estimateId: string) => `devize.forms.${estimateId}`;
+const signerKeyOf = (organizationId: string) =>
+  `devize.forms.signer.${organizationId}`;
 
 function isOneOf<T extends string>(
   list: readonly T[],
@@ -40,6 +52,15 @@ function isOneOf<T extends string>(
 function isMonth(value: unknown): value is number {
   return (
     Number.isInteger(value) && Number(value) >= 1 && Number(value) <= maxMonths
+  );
+}
+
+/** The days an offer stays valid, as the sheet takes them. */
+export function isValidity(value: unknown): value is number {
+  return (
+    Number.isInteger(value) &&
+    Number(value) >= 1 &&
+    Number(value) <= maxValidity
   );
 }
 
@@ -91,13 +112,29 @@ export function parseChoices(value: unknown): StoredChoices {
   if (windows.length > 0) {
     choices.windows = Object.fromEntries(windows);
   }
-  for (const key of ["beneficiary", "designer"] as const) {
+  if (isValidity(stored.validity)) {
+    choices.validity = stored.validity;
+  }
+  for (const key of ["beneficiary", "designer", "signer", "role"] as const) {
     const text = stored[key];
     if (typeof text === "string") {
       choices[key] = text;
     }
   }
   return choices;
+}
+
+/** Keeps the names only: who signs and in what role. */
+export function parseSigner(value: unknown): Signer {
+  const stored = record(value);
+  const signer: Signer = {};
+  for (const key of ["signer", "role"] as const) {
+    const text = stored[key];
+    if (typeof text === "string" && text.trim()) {
+      signer[key] = text.trim();
+    }
+  }
+  return signer;
 }
 
 /** The choices made for a Deviz on this device, or none. */
@@ -115,5 +152,26 @@ export function writeChoices(estimateId: string, choices: StoredChoices) {
     window.localStorage.setItem(keyOf(estimateId), JSON.stringify(choices));
   } catch {
     // A private window or full storage: the next export starts afresh.
+  }
+}
+
+/** Who signed the firm's last offer form on this device, for its next Deviz. */
+export function readSigner(organizationId: string): Signer {
+  try {
+    const raw = window.localStorage.getItem(signerKeyOf(organizationId));
+    return raw ? parseSigner(JSON.parse(raw)) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function writeSigner(organizationId: string, signer: Signer) {
+  try {
+    window.localStorage.setItem(
+      signerKeyOf(organizationId),
+      JSON.stringify(parseSigner(signer)),
+    );
+  } catch {
+    // As with the choices, the next offer form starts without a signer.
   }
 }

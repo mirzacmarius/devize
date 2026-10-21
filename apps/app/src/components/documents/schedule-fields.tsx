@@ -60,6 +60,44 @@ export function shiftedWindows(
 const range = (from: number, to: number) =>
   Array.from({ length: to - from + 1 }, (_, index) => from + index);
 
+/** How many months the works take, which F6 and the offer form print. */
+export function MonthsField({
+  suggestedHours,
+  months,
+  onMonths,
+}: {
+  // The Deviz's labour hours, which the duration is first planned from.
+  suggestedHours: number;
+  months: number;
+  onMonths: (months: number) => void;
+}) {
+  const t = useScopedI18n("documents.forms");
+  const locale = useCurrentLocale();
+  return (
+    <Field
+      label={t("months")}
+      htmlFor="forms-months"
+      hint={t("monthsHint", { hours: formatHours(suggestedHours, locale) })}
+    >
+      <Select
+        value={String(months)}
+        onValueChange={(next) => onMonths(Number(next))}
+      >
+        <SelectTrigger id="forms-months" className="w-28">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {range(1, maxMonths).map((option) => (
+            <SelectItem key={option} value={String(option)}>
+              {String(option)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </Field>
+  );
+}
+
 /** F6: the duration of the works and the months of each category. */
 export function ScheduleFields({
   categories,
@@ -80,7 +118,6 @@ export function ScheduleFields({
   onWindows: (windows: Windows) => void;
 }) {
   const t = useScopedI18n("documents.forms");
-  const locale = useCurrentLocale();
   const shifted =
     Object.keys(shiftedWindows(categories, placement, windows, months)).length >
     0;
@@ -116,27 +153,11 @@ export function ScheduleFields({
       <legend className="mb-1.5 p-0 text-body font-medium text-ink">
         {t("schedule")}
       </legend>
-      <Field
-        label={t("months")}
-        htmlFor="forms-months"
-        hint={t("monthsHint", { hours: formatHours(suggestedHours, locale) })}
-      >
-        <Select
-          value={String(months)}
-          onValueChange={(next) => onMonths(Number(next))}
-        >
-          <SelectTrigger id="forms-months" className="w-28">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {range(1, maxMonths).map((option) => (
-              <SelectItem key={option} value={String(option)}>
-                {String(option)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
+      <MonthsField
+        suggestedHours={suggestedHours}
+        months={months}
+        onMonths={onMonths}
+      />
       <Button
         type="button"
         variant="link"

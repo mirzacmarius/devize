@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  addDays,
   estimateCode,
   formatConsumption,
   formatDate,
@@ -38,6 +39,13 @@ describe("dates, codes and units", () => {
   test("writes a calendar date as forms do", () => {
     expect(formatDate("2026-10-21")).toBe("21.10.2026");
     expect(formatDate("not a date")).toBe("not a date");
+  });
+
+  test("counts days on from a date, over months and years", () => {
+    expect(addDays("2026-11-10", 90)).toBe("2027-02-08");
+    expect(addDays("2028-02-28", 1)).toBe("2028-02-29");
+    expect(addDays("2026-03-28", 2)).toBe("2026-03-30");
+    expect(addDays("not a date", 90)).toBeUndefined();
   });
 
   test("names a Deviz and its revisions", () => {

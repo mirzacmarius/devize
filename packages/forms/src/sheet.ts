@@ -12,6 +12,7 @@ export {
   type OfferValue,
   offerValue,
 } from "./checks";
+export { addDays } from "./format";
 export type {
   DocumentKind,
   ExportOptions,

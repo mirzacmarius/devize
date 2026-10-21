@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { parseChoices, type StoredChoices } from "./stored-choices";
+import {
+  parseChoices,
+  parseSigner,
+  type StoredChoices,
+} from "./stored-choices";
 
 describe("parseChoices", () => {
   test("keeps what the sheet knows", () => {
@@ -13,6 +17,9 @@ describe("parseChoices", () => {
       designer: "",
       months: 12,
       windows: { boiler: { start: 9, end: 12 } },
+      validity: 90,
+      signer: "Ion Popescu",
+      role: "administrator",
     };
     expect(parseChoices(JSON.parse(JSON.stringify(choices)))).toEqual(choices);
   });
@@ -33,6 +40,8 @@ describe("parseChoices", () => {
           huts: { start: 1, end: 1 },
           site: "1-2",
         },
+        validity: 400,
+        signer: 3,
       }),
     ).toEqual({
       kinds: ["F1"],
@@ -42,9 +51,26 @@ describe("parseChoices", () => {
     });
   });
 
+  test("takes an offer's validity in whole days, up to a year", () => {
+    for (const validity of [0, 1.5, 366, "90"]) {
+      expect(parseChoices({ validity })).toEqual({});
+    }
+    expect(parseChoices({ validity: 365 })).toEqual({ validity: 365 });
+  });
+
   test("starts afresh from anything else", () => {
     for (const value of [null, "F1", 3, ["F1"], undefined]) {
       expect(parseChoices(value)).toEqual({});
     }
+  });
+});
+
+describe("parseSigner", () => {
+  test("keeps who signs, without spaces around", () => {
+    expect(
+      parseSigner({ signer: " Ion Popescu ", role: "administrator", x: 1 }),
+    ).toEqual({ signer: "Ion Popescu", role: "administrator" });
+    expect(parseSigner({ signer: " ", role: 3 })).toEqual({});
+    expect(parseSigner("Ion Popescu")).toEqual({});
   });
 });
