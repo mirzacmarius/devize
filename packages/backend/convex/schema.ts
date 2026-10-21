@@ -8,6 +8,7 @@ import { estimateTables } from "./estimates/tables";
 import { manufacturerTables } from "./manufacturers/tables";
 import { offerTables } from "./offers/tables";
 import { priceTables } from "./prices/tables";
+import { producerTables } from "./producers/tables";
 import { proposalTables } from "./proposals/tables";
 
 export default defineSchema({
@@ -41,5 +42,6 @@ export default defineSchema({
   ...offerTables,
   ...aiTables,
   ...manufacturerTables,
+  ...producerTables,
   ...proposalTables,
 });

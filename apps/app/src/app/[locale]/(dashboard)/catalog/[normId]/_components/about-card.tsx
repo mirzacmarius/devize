@@ -33,8 +33,23 @@ export function AboutCard({ norm }: { norm: Norm }) {
           .filter(Boolean)
           .join(" · ");
 
+  // A producer's norm leads to the producer's profile.
+  const source =
+    norm.source === "manufacturer" &&
+    norm.manufacturerId &&
+    norm.visibility === "public" ? (
+      <Link
+        href={`/producers/${norm.manufacturerId}`}
+        className="rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        {normSource(norm)}
+      </Link>
+    ) : (
+      normSource(norm)
+    );
+
   const rows: { label: string; value: ReactNode }[] = [
-    { label: t("about.source"), value: normSource(norm) },
+    { label: t("about.source"), value: source },
     ...(norm.category
       ? [{ label: t("about.category"), value: norm.category }]
       : []),

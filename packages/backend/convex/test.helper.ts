@@ -22,16 +22,25 @@ export function setup() {
 
 export type TestConvex = ReturnType<typeof setup>;
 
-/** A signed-in user, as Convex Auth identifies one, optionally a super admin. */
+/**
+ * A signed-in user, as Convex Auth identifies one, optionally a super admin.
+ * `verified` marks the address as proven, as Google and an emailed code do.
+ */
 export async function signIn(
   t: TestConvex,
-  fields: { name: string; superadmin?: boolean },
+  fields: {
+    name: string;
+    superadmin?: boolean;
+    email?: string;
+    verified?: boolean;
+  },
 ) {
   const userId: Id<"users"> = await t.run(
     async (ctx) =>
       await ctx.db.insert("users", {
         name: fields.name,
-        email: `${fields.name.toLowerCase()}@example.com`,
+        email: fields.email ?? `${fields.name.toLowerCase()}@example.com`,
+        ...(fields.verified ? { emailVerificationTime: Date.now() } : {}),
         ...(fields.superadmin ? { role: "superadmin" as const } : {}),
       }),
   );

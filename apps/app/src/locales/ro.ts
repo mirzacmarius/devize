@@ -24,6 +24,7 @@ export default {
     priceAlerts: "Alerte de preț: {count}",
     settings: "Setări",
     admin: "Administrare",
+    producerProfile: "Profilul producătorului",
     openMenu: "Deschide meniul",
     closeMenu: "Închide meniul",
     accountMenu: "Meniul contului",
@@ -1213,6 +1214,7 @@ export default {
     ownEmptyDescription:
       "Scrie o normă de la zero sau copiază una din catalogul public și ajustează consumurile după cum lucrează echipa ta.",
     ownEmptyAction: "Scrie prima normă",
+    producers: "Producători",
   },
   norms: {
     sources: {
@@ -1607,6 +1609,7 @@ export default {
       manufacturers: "Producători",
       catalog: "Catalog de bază",
       outreach: "Emailuri de aprobat",
+      claims: "Revendicări",
       settings: "Setări",
     },
     status: {
@@ -1762,8 +1765,108 @@ export default {
       },
       working: "Lucrează…",
     },
+    claims: {
+      title: "Revendicări și eliminări",
+      description:
+        "Cererile prin care cineva preia profilul unui producător sau cere să fie eliminat. Revendicările prin link și prin domeniu se aprobă singure.",
+      claims: "Cereri de revendicare",
+      claimsEmpty: "Nicio cerere de revendicare în așteptare.",
+      removals: "Cereri de eliminare",
+      removalsEmpty: "Nicio cerere de eliminare în așteptare.",
+      sent: "Trimisă pe {date}",
+      cui: "CUI {cui}",
+      firm: "Vrea să lege firma {name}",
+      anaf: {
+        title: "ANAF",
+        active: "activă",
+        inactive: "inactivă",
+        vatPayer: "plătitoare de TVA",
+        notVatPayer: "neplătitoare de TVA",
+        notFound: "ANAF nu cunoaște CUI-ul.",
+        unavailable: "ANAF nu a răspuns.",
+        waiting: "Se verifică la ANAF…",
+        check: "Întreabă din nou ANAF",
+      },
+      signals: {
+        emailMatchesWebsite: "Adresa e pe domeniul site-ului producătorului",
+        emailOtherDomain: "Adresa nu e pe domeniul site-ului producătorului",
+        anafNameMatches: "Numele de la ANAF seamănă cu al producătorului",
+        anafNameDiffers: "Numele de la ANAF nu seamănă cu al producătorului",
+        cuiMatches: "CUI-ul e cel din fișa producătorului",
+        cuiDiffers: "CUI-ul diferă de cel din fișa producătorului",
+      },
+      caution:
+        "Indiciile ajută, dar nu dovedesc nimic: CUI-urile sunt publice, iar o adresă poate fi pe un domeniu asemănător. Dacă ai dubii, sună la producător.",
+      alreadyClaimed: "Profilul e deja revendicat",
+      approve: "Aprobă",
+      approved: "Profilul a trecut la {name}.",
+      reject: "Respinge",
+      rejectTitle: "Respingi cererea lui {name}?",
+      rejectDescription:
+        "Motivul apare pe profil pentru cel care a trimis cererea.",
+      reason: "Motivul",
+      reasonPlaceholder: "ex. Nu am putut confirma că lucrezi la producător.",
+      rejected: "Cererea a fost respinsă.",
+      remove: "Elimină profilul",
+      removeTitle: "Elimini profilul {name}?",
+      removeDescription:
+        "Producătorul trece la „Exclus”: profilul dispare, normele lui publicate ies din catalog și nu-i mai scriem. Devizele făcute deja își păstrează copiile.",
+      removed: "Profilul {name} a fost eliminat.",
+      dismiss: "Păstrează profilul",
+      dismissed: "Cererea a fost închisă, iar profilul rămâne.",
+    },
     manufacturer: {
       back: "Producători",
+      claim: {
+        title: "Profil și revendicare",
+        description:
+          "Cine administrează profilul public al producătorului și cum îl poate prelua cineva de acolo.",
+        claimedBy: "Revendicat de firma {name}.",
+        unclaimed: "Nerevendicat.",
+        notVisible:
+          "Profilul nu e public încă: apare după prima normă publicată a producătorului.",
+        openProfile: "Vezi profilul",
+        domains: "Domeniile de email ale producătorului",
+        domainsHint:
+          "Cine intră cu o adresă verificată pe unul dintre ele preia profilul imediat. Scrie doar domenii văzute pe site-ul sau în emailurile producătorului; serviciile publice, ca gmail.com, nu sunt primite.",
+        domain: "Domeniu",
+        domainPlaceholder: "ex. producator.ro",
+        addDomain: "Adaugă",
+        removeDomain: "Scoate domeniul {domain}",
+        noDomains: "Niciun domeniu.",
+        links: "Linkuri de revendicare",
+        linksHint:
+          "Pune linkul în emailul de mulțumire către adresa care ți-a trimis normele. Merge o singură dată, 30 de zile, și doar pentru cine intră cu adresa aceea.",
+        email: "Adresa",
+        emailPlaceholder: "ex. tehnic@producator.ro",
+        createLink: "Creează linkul",
+        copy: "Copiază linkul",
+        copied: "Linkul a fost copiat.",
+        revoke: "Anulează linkul pentru {email}",
+        linkActive: "valabil până pe {date}",
+        linkUsed: "folosit pe {date}",
+        linkExpired: "expirat",
+        noLinks: "Niciun link.",
+        requests: "Cereri",
+        noRequests: "Nicio cerere.",
+        queue: "Deschide cererile în așteptare",
+        methods: {
+          link: "prin link",
+          domain: "prin domeniu",
+          manual: "verificată de admin",
+        },
+        statuses: {
+          pending: "În așteptare",
+          approved: "Aprobată",
+          rejected: "Respinsă",
+        },
+        removal: "Cerere de eliminare",
+        removalStatuses: {
+          pending: "În așteptare",
+          removed: "Profil eliminat",
+          dismissed: "Profil păstrat",
+        },
+      },
       notFound: "Producătorul nu mai există.",
       research: "Cercetează",
       researchAgain: "Cercetează din nou",
@@ -2033,6 +2136,123 @@ export default {
       member: "Membru",
     },
   },
+  producers: {
+    title: "Producători",
+    description:
+      "Producătorii ale căror norme sunt în catalog, fiecare cu normele și produsele lui.",
+    empty:
+      "Încă nu e niciun producător în catalog. Profilurile apar pe măsură ce publicăm normele lor.",
+    columns: {
+      name: "Producător",
+      profile: "Profil",
+      edition: "Ediția normelor",
+    },
+    claimed: "Revendicat",
+    unclaimed: "Nerevendicat",
+    searchPlaceholder: "Caută un producător",
+    noResults: "Niciun producător nu se potrivește cu „{text}”.",
+    breadcrumb: "Unde ești",
+    profile: {
+      unclaimedLabel:
+        "Profil nerevendicat, creat de Devize din documentele trimise de producător",
+      claimedLabel: "Profil administrat de producător",
+      editions: "Ediția {editions}",
+      notPublic:
+        "Profilul nu e public încă: apare după ce Devize publică prima normă a producătorului.",
+      notFound: "Profilul nu există sau nu e public.",
+      back: "Producători",
+      norms: "Norme",
+      normsCount: "Norme: {count}",
+      moreNorms:
+        "Aici sunt primele 500 de norme; le găsești pe toate în catalog.",
+      products: "Produse",
+      noNorms: "Nicio normă publicată încă.",
+      normColumns: {
+        norm: "Normă",
+        unit: "U.M.",
+      },
+      productColumns: {
+        name: "Produs",
+        unit: "U.M.",
+      },
+      yours:
+        "E profilul firmei tale. Deschide normele și confirmă-le pe cele care corespund documentelor voastre: primesc insigna „Confirmată de producător”.",
+      claimTitle: "Lucrezi la {name}?",
+      claimDescription:
+        "Revendică profilul ca să verifici normele, să adaugi norme și produse noi și să-ți inviți colegii. Normele confirmate de voi sunt marcate ca verificate de producător.",
+      claimAction: "Revendică profilul",
+      claimPending:
+        "Cererea ta din {date} așteaptă verificarea echipei Devize.",
+      withdraw: "Retrage cererea",
+      withdrawn: "Ai retras cererea.",
+      claimRejected: "Cererea ta a fost respinsă: {reason}",
+      claimRejectedNoReason:
+        "Cererea ta a fost respinsă. Poți trimite alta, cu mai multe detalii.",
+      removal: "Solicită eliminarea profilului",
+      removalPending:
+        "Ai cerut eliminarea profilului. Echipa Devize îți răspunde în curând.",
+    },
+    claimDialog: {
+      title: "Revendică profilul {name}",
+      domainDescription:
+        "Adresa ta, {email}, e pe domeniul producătorului, așa că profilul trece la tine imediat.",
+      manualDescription:
+        "Echipa Devize verifică cine ești înainte să-ți dea profilul și îți scrie la {email}.",
+      firm: "Firma care preia profilul",
+      newFirm: "O firmă nouă: {name}",
+      firmHint: "Membrii firmei vor putea confirma normele producătorului.",
+      message: "Cine ești la {name}",
+      messagePlaceholder:
+        "ex. Ana Popescu, director tehnic. Normele vi le-a trimis colegul meu Ion.",
+      messageRequired: "Scrie cine ești și ce rol ai la producător.",
+      cui: "CUI-ul producătorului",
+      cuiPlaceholder: "ex. RO12345678",
+      cuiHint: "Opțional. Îl verificăm la ANAF.",
+      submit: "Trimite cererea",
+      claim: "Revendică profilul",
+      sent: "Cererea a fost trimisă. Îți scriem după verificare.",
+      claimed: "Profilul {name} e acum al firmei tale.",
+    },
+    removalDialog: {
+      title: "Solicită eliminarea profilului {name}",
+      description:
+        "Spune-ne de ce. Echipa Devize verifică cererea; dacă o aprobă, profilul și normele lui ies din catalog. Devizele făcute deja își păstrează copiile.",
+      message: "Motivul",
+      messagePlaceholder:
+        "ex. Lucrez la producător și nu ne-am dat acordul pentru publicarea normelor.",
+      messageRequired: "Scrie motivul.",
+      submit: "Trimite cererea",
+      sent: "Cererea de eliminare a fost trimisă.",
+    },
+  },
+  claim: {
+    title: "Revendicarea profilului",
+    loading: "Se încarcă linkul…",
+    heading: "Revendică profilul {name}",
+    description:
+      "Devize a creat profilul din normele trimise de {name}. Ca administrator, verifici normele, adaugi norme și produse noi și îți inviți colegii.",
+    firm: "Firma care preia profilul",
+    newFirm: "O firmă nouă: {name}",
+    action: "Revendică profilul",
+    claimed: "Profilul {name} e acum al tău.",
+    goneTitle: "Linkul nu mai e valabil",
+    goneDescription:
+      "A fost anulat sau profilul a fost retras. Scrie-ne și îți trimitem altul.",
+    expiredTitle: "Linkul a expirat",
+    expiredDescription:
+      "Un link de revendicare ține 30 de zile. Scrie-ne și îți trimitem altul.",
+    usedTitle: "Profilul {name} e deja revendicat",
+    usedDescription:
+      "Dacă lucrezi la producător și nu ai acces, cere-i unui coleg o invitație în firmă.",
+    openProfile: "Deschide profilul",
+    goHome: "Mergi la Devize",
+    otherEmailTitle: "Linkul e pentru altă adresă",
+    otherEmailDescription:
+      "E pentru {email}, iar tu ești conectat ca {signedInAs}. Intră în cont cu adresa aceasta ca să revendici profilul.",
+    otherEmailNoAddress:
+      "E pentru {email}. Intră în cont cu adresa aceasta ca să revendici profilul.",
+    switchAccount: "Intră cu altă adresă",
+  },
   invite: {
     title: "Invitație",
     loading: "Se încarcă invitația…",
@@ -2104,6 +2324,20 @@ export default {
       "Devizul e trimis și blocat. Creează o revizie ca să-l modifici.",
     lockedOffer: "Oferta a fost deja trimisă clientului.",
     lockedNorm: "Norma e publicată. Creează o versiune nouă ca s-o modifici.",
+    notFoundClaimLink:
+      "Linkul de revendicare nu mai e valabil: a fost folosit, anulat sau a expirat.",
+    inUseManufacturer: "Profilul a fost deja revendicat de o firmă.",
+    inUseClaim: "Ai deja o cerere în așteptare pentru acest profil.",
+    inUseRemoval: "Ai cerut deja eliminarea acestui profil.",
+    inUseDomain: "Domeniul e trecut deja la alt producător.",
+    invalidDomain:
+      "Scrie un domeniu al producătorului, nu gmail.com sau alt serviciu public.",
+    invalidDomains: "Un producător poate avea cel mult 10 domenii.",
+    invalidMessage: "Scrie câteva cuvinte, cel mult 1000 de caractere.",
+    invalidClaims: "Ai deja 5 cereri în așteptare. Așteaptă un răspuns întâi.",
+    invalidOrganizationId: "Firma aleasă nu poate prelua profilul.",
+    forbiddenDomain: "Adresa ta nu e pe un domeniu al producătorului.",
+    forbiddenEmail: "Intră în cont cu o adresă de email confirmată.",
   },
   markups: {
     cam: {
