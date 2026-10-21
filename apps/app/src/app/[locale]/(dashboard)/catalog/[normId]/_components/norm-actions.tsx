@@ -18,6 +18,7 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
 import { useScopedI18n } from "@/locales/client";
+import { RejectDialog } from "./reject-dialog";
 import type { Norm } from "./types";
 
 type Confirm = "publish" | "archive" | "delete";
@@ -41,11 +42,15 @@ export function NormActions({ norm }: { norm: Norm }) {
   const archive = useMutation(api.catalog.norms.archive);
   const removeDraft = useMutation(api.catalog.norms.removeDraft);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
+  const [rejecting, setRejecting] = useState(false);
   const [busy, setBusy] = useState(false);
   const normId = norm._id;
   const { code, status, canEdit } = norm;
   const isDraft = status === "draft" || status === "review";
   const own = norm.source === "organization";
+  // Devize staff verify public norms: publish them or send them back.
+  const canReject =
+    norm.canPublish && norm.visibility === "public" && status === "review";
 
   const act = async <T,>(action: () => Promise<T>, success?: string) => {
     setBusy(true);
@@ -124,6 +129,17 @@ export function NormActions({ norm }: { norm: Norm }) {
       </Button>
     );
   }
+  if (canReject) {
+    secondary = (
+      <Button
+        variant="outline"
+        disabled={busy}
+        onClick={() => setRejecting(true)}
+      >
+        {t("actions.reject")}
+      </Button>
+    );
+  }
   if (norm.canConfirm) {
     secondary = (
       <Button
@@ -165,6 +181,13 @@ export function NormActions({ norm }: { norm: Norm }) {
                 </DropdownMenuItem>
               </>
             )}
+            {canReject && (
+              <DropdownMenuItem asChild>
+                <Link href={`/catalog/${normId}/edit`}>
+                  {t("actions.edit")}
+                </Link>
+              </DropdownMenuItem>
+            )}
             {canEdit && isDraft && (
               <>
                 <DropdownMenuSeparator />
@@ -200,6 +223,11 @@ export function NormActions({ norm }: { norm: Norm }) {
             setConfirm(null);
           }
         }}
+      />
+      <RejectDialog
+        norm={norm}
+        open={rejecting}
+        onClose={() => setRejecting(false)}
       />
       <ConfirmDialog
         open={confirm === "archive"}

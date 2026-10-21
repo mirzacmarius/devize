@@ -579,6 +579,8 @@ describe("the profile", () => {
     expect(Object.keys(profile ?? {}).sort()).toEqual([
       "_id",
       "claimed",
+      "details",
+      "drafts",
       "editions",
       "logoUrl",
       "moreNorms",

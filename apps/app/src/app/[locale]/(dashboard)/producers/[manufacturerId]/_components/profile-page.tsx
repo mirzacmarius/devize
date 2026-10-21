@@ -13,6 +13,7 @@ import { Button } from "@devize/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
   TickRule,
@@ -29,20 +30,26 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
+import { Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
+import { useFirm } from "@/components/firm-provider";
+import { NormStatusPill } from "@/components/norm-status";
 import { useRun } from "@/components/use-run";
 import { formatDay, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ClaimDialog } from "./claim-dialog";
+import { DetailsDialog } from "./details-dialog";
 import { RemovalDialog } from "./removal-dialog";
 import type { Profile } from "./types";
 
 /**
- * A Producător's profile: the norms and products it publishes in the
- * catalog. Someone who works there claims it from here, or asks Devize to
- * take it down.
+ * A Producător's profile: what it says about itself, and the norms and
+ * products it publishes in the catalog. Someone who works there claims it
+ * from here, or asks Devize to take it down; once claimed, the producer's
+ * firm writes its norms and its details from here.
  */
 export function ProfilePage({
   manufacturerId,
@@ -52,8 +59,11 @@ export function ProfilePage({
   const t = useScopedI18n("producers");
   const tCatalog = useScopedI18n("catalog");
   const tc = useScopedI18n("common");
+  const { firm } = useFirm();
   const profile = useQuery(api.producers.profiles.get, { manufacturerId });
-  const [dialog, setDialog] = useState<"claim" | "removal" | null>(null);
+  const [dialog, setDialog] = useState<"claim" | "removal" | "details" | null>(
+    null,
+  );
 
   if (profile === undefined) {
     return <p className="m-0 text-body text-ink-3">{tc("loading")}</p>;
@@ -83,6 +93,13 @@ export function ProfilePage({
   const normsCount = profile.moreNorms
     ? `${profile.norms.length}+`
     : profile.norms.length;
+  // The norm form writes for the firm the user works in, so only that firm
+  // starts the producer's norms here.
+  const writesNorms = firm.manufacturerId === profile._id;
+  const details =
+    profile.details && Object.values(profile.details).some(Boolean)
+      ? profile.details
+      : null;
 
   return (
     <>
@@ -127,6 +144,26 @@ export function ProfilePage({
         ]
           .filter(Boolean)
           .join(" · ")}
+        actions={
+          (viewer.canEditDetails || writesNorms) && (
+            <>
+              {viewer.canEditDetails && (
+                <Button variant="outline" onClick={() => setDialog("details")}>
+                  <Pencil aria-hidden />
+                  {t("profile.editDetails")}
+                </Button>
+              )}
+              {writesNorms && (
+                <Button asChild>
+                  <Link href="/catalog/new?for=producer">
+                    <Plus aria-hidden />
+                    {t("profile.newNorm")}
+                  </Link>
+                </Button>
+              )}
+            </>
+          )
+        }
       />
       <ProfileNotices profile={profile} />
       {canAskToClaim && (
@@ -145,6 +182,8 @@ export function ProfilePage({
           </p>
         </Notice>
       )}
+      {details && <DetailsCard details={details} />}
+      {profile.drafts.length > 0 && <DraftsCard profile={profile} />}
       <div
         className={
           profile.products.length > 0
@@ -176,6 +215,13 @@ export function ProfilePage({
         open={dialog === "removal"}
         onClose={() => setDialog(null)}
       />
+      {viewer.canEditDetails && (
+        <DetailsDialog
+          profile={profile}
+          open={dialog === "details"}
+          onClose={() => setDialog(null)}
+        />
+      )}
     </>
   );
 }
@@ -249,6 +295,159 @@ function ProfileNotices({ profile }: { profile: Profile }) {
       <p className="m-0 text-body text-ink-2">{notice.text}</p>
     </Notice>
   ));
+}
+
+const linkClass =
+  "rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+/** What the producer says about itself, and whom to ask technical questions. */
+function DetailsCard({
+  details,
+}: {
+  details: NonNullable<Profile["details"]>;
+}) {
+  const t = useScopedI18n("producers");
+  const rows: { label: string; value: ReactNode }[] = [
+    ...(details.website
+      ? [
+          {
+            label: t("profile.website"),
+            value: (
+              <a
+                href={details.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={linkClass}
+              >
+                {details.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+              </a>
+            ),
+          },
+        ]
+      : []),
+    ...(details.contactName
+      ? [{ label: t("profile.contact"), value: details.contactName }]
+      : []),
+    ...(details.contactEmail
+      ? [
+          {
+            label: t("detailsDialog.contactEmail"),
+            value: (
+              <a href={`mailto:${details.contactEmail}`} className={linkClass}>
+                {details.contactEmail}
+              </a>
+            ),
+          },
+        ]
+      : []),
+    ...(details.contactPhone
+      ? [
+          {
+            label: t("detailsDialog.contactPhone"),
+            value: (
+              <a
+                href={`tel:${details.contactPhone.replace(/[^\d+]/g, "")}`}
+                className={cn(linkClass, "tabular-nums")}
+              >
+                {details.contactPhone}
+              </a>
+            ),
+          },
+        ]
+      : []),
+  ];
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("profile.about")}</CardTitle>
+      </CardHeader>
+      <TickRule />
+      <CardContent
+        className={cn(
+          "grid gap-6 pt-4",
+          details.about &&
+            rows.length > 0 &&
+            "lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]",
+        )}
+      >
+        {details.about && (
+          <p className="m-0 max-w-3xl whitespace-pre-line text-body text-ink-2">
+            {details.about}
+          </p>
+        )}
+        {rows.length > 0 && (
+          <dl className="m-0 grid content-start gap-3">
+            {rows.map((row) => (
+              <div
+                key={row.label}
+                className="flex min-w-0 items-baseline justify-between gap-4"
+              >
+                <dt className="shrink-0 text-body text-ink-3">{row.label}</dt>
+                <dd className="m-0 min-w-0 text-right text-body font-medium text-ink [overflow-wrap:anywhere]">
+                  {row.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * The producer's norms still being written, or waiting for Devize to check
+ * them, with the note on any Devize sent back.
+ */
+function DraftsCard({ profile }: { profile: Profile }) {
+  const t = useScopedI18n("producers.profile");
+  const tNorm = useScopedI18n("norm");
+  return (
+    <Card className="min-w-0">
+      <CardHeader className="grid justify-stretch gap-1">
+        <CardTitle>{t("drafts")}</CardTitle>
+        <CardDescription>{t("draftsHint")}</CardDescription>
+      </CardHeader>
+      <TickRule />
+      <CardContent className="pt-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("normColumns.norm")}</TableHead>
+              <TableHead>{t("normColumns.status")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {profile.drafts.map((norm) => (
+              <TableRow key={norm._id}>
+                <TableCell>
+                  <Link
+                    href={`/catalog/${norm._id}`}
+                    className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="font-mono text-code text-ink-3">
+                      {norm.code}
+                    </span>
+                    <span className="text-body font-medium text-ink group-hover:underline">
+                      {norm.title}
+                    </span>
+                    {norm.reviewNote && (
+                      <span className="text-meta text-warning">
+                        {tNorm("notices.reviewNote", { note: norm.reviewNote })}
+                      </span>
+                    )}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <NormStatusPill status={norm.status} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
 }
 
 function NormsCard({ profile }: { profile: Profile }) {

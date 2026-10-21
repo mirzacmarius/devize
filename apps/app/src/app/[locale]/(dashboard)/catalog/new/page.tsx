@@ -7,6 +7,16 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("form.newTitle") };
 }
 
-export default function Page() {
-  return <NormForm />;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ for?: string }>;
+}) {
+  // The producer profile's "Normă nouă" opens the form on the producer's side.
+  const { for: owner } = await searchParams;
+  return (
+    <NormForm
+      initialOwner={owner === "producer" ? "manufacturer" : "organization"}
+    />
+  );
 }

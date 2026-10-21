@@ -234,6 +234,13 @@ export const search = query({
         return args.category ? scoped.eq("category", args.category) : scoped;
       })
       .take(limit);
+    // Among the public norms found, those their producer confirmed come
+    // first; the search's own order holds within each group.
+    shared.sort(
+      (a, b) =>
+        Number(b.confirmedAt !== undefined) -
+        Number(a.confirmedAt !== undefined),
+    );
     return await summaries(ctx, [...own, ...shared].slice(0, limit));
   },
 });
@@ -626,9 +633,13 @@ export const reject = mutation({
     if (norm.status !== "review") {
       throw appError("locked", norm.status);
     }
+    const note = args.note.trim();
+    if (note.length > 1000) {
+      throw invalid("length");
+    }
     await ctx.db.patch("norms", norm._id, {
       status: "draft",
-      reviewNote: args.note.trim() || undefined,
+      reviewNote: note || undefined,
       updatedAt: Date.now(),
     });
     return null;
