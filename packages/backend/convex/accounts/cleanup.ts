@@ -252,6 +252,15 @@ export const deleteOrganization = internalMutation({
         await ctx.storage.delete(firm.logoId);
       }
       await ctx.db.delete("organizations", firm._id);
+      // The Producător's profile it held can be claimed again.
+      const manufacturer = firm.manufacturerId
+        ? await ctx.db.get("manufacturers", firm.manufacturerId)
+        : null;
+      if (manufacturer?.claimStatus === "claimed") {
+        await ctx.db.patch("manufacturers", manufacturer._id, {
+          claimStatus: "unclaimed",
+        });
+      }
     }
     return null;
   },

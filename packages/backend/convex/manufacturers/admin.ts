@@ -6,6 +6,7 @@ import { mutation, query } from "../_generated/server";
 import { createJob, JOB_TIMEOUT_MS } from "../ai/jobs";
 import { aiModel } from "../ai/models";
 import { requireSuperAdmin } from "../lib/roles";
+import { deleteProducerRows } from "../producers/handover";
 import {
   isEmail,
   nameKey,
@@ -334,6 +335,7 @@ export const remove = mutation({
     for await (const normImport of imports) {
       await deleteNormImport(ctx, normImport);
     }
+    await deleteProducerRows(ctx, manufacturerId);
     await ctx.db.delete("manufacturers", manufacturerId);
     return null;
   },

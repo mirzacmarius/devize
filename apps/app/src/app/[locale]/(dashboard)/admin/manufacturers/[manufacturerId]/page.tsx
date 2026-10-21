@@ -16,6 +16,7 @@ import {
   Pill,
   useRun,
 } from "../../_components/ui";
+import { ClaimPanel } from "./_components/claim-panel";
 import { ContactsPanel } from "./_components/contacts-panel";
 import { DetailsPanel } from "./_components/details-panel";
 import { EmailPanel } from "./_components/email-panel";
@@ -133,6 +134,7 @@ export default function ManufacturerPage() {
             manufacturerId={manufacturerId}
             normImports={data.normImports}
           />
+          <ClaimPanel manufacturerId={manufacturerId} />
         </div>
       </div>
 

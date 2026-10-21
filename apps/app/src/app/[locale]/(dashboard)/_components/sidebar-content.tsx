@@ -90,6 +90,12 @@ export function SidebarContent({
           value: priceAlerts ?? 0,
           label: t("priceAlerts", { count: priceAlerts ?? 0 }),
         })}
+        {firm.manufacturerId &&
+          item(
+            `/producers/${firm.manufacturerId}`,
+            Icons.Producers,
+            t("producerProfile"),
+          )}
         <SidebarNavLabel>{t("account")}</SidebarNavLabel>
         {item("/settings", Icons.Settings, t("settings"))}
         {isSuperAdmin && item("/admin", Icons.Admin, t("admin"))}

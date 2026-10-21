@@ -40,6 +40,51 @@ export function checkMarkups(value: Infer<typeof markups>) {
   }
 }
 
+/**
+ * Creates a firm owned by `userId`, which opens first for them. A Producător's
+ * firm is created this way when someone claims its profile.
+ */
+export async function insertFirm(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  fields: {
+    name: string;
+    kind?: Doc<"organizations">["kind"];
+    cui?: string;
+    county?: string;
+    vatPayer?: boolean;
+    manufacturerId?: Id<"manufacturers">;
+  },
+): Promise<Id<"organizations">> {
+  const memberships = await ctx.db
+    .query("memberships")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .take(MAX_FIRMS_PER_USER);
+  if (memberships.length >= MAX_FIRMS_PER_USER) {
+    throw invalid("organizations");
+  }
+  const vatPayer = fields.vatPayer ?? true;
+  const cui = optionalText(fields.cui);
+  const organizationId = await ctx.db.insert("organizations", {
+    name: cleanName(fields.name),
+    kind: fields.kind ?? "contractor",
+    cui: cui ? cleanCui(cui) : undefined,
+    county: optionalText(fields.county, 50),
+    vatPayer,
+    defaultMarkups: { ...standardMarkups, vat: vatPayer ? 21 : 0 },
+    manufacturerId: fields.manufacturerId,
+    lastEstimateNumber: 0,
+    createdBy: userId,
+  });
+  await ctx.db.insert("memberships", {
+    organizationId,
+    userId,
+    role: "owner",
+    lastActiveAt: Date.now(),
+  });
+  return organizationId;
+}
+
 /** Creates a firm with the signed-in user as its owner. */
 export const create = mutation({
   args: {
@@ -52,32 +97,7 @@ export const create = mutation({
   returns: v.id("organizations"),
   handler: async (ctx, args) => {
     const userId = await requireUserId(ctx);
-    const memberships = await ctx.db
-      .query("memberships")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
-      .take(MAX_FIRMS_PER_USER);
-    if (memberships.length >= MAX_FIRMS_PER_USER) {
-      throw invalid("organizations");
-    }
-    const vatPayer = args.vatPayer ?? true;
-    const cui = optionalText(args.cui);
-    const organizationId = await ctx.db.insert("organizations", {
-      name: cleanName(args.name),
-      kind: args.kind ?? "contractor",
-      cui: cui ? cleanCui(cui) : undefined,
-      county: optionalText(args.county, 50),
-      vatPayer,
-      defaultMarkups: { ...standardMarkups, vat: vatPayer ? 21 : 0 },
-      lastEstimateNumber: 0,
-      createdBy: userId,
-    });
-    await ctx.db.insert("memberships", {
-      organizationId,
-      userId,
-      role: "owner",
-      lastActiveAt: Date.now(),
-    });
-    return organizationId;
+    return await insertFirm(ctx, userId, args);
   },
 });
 
@@ -112,6 +132,8 @@ export const listMine = query({
       _id: firm._id,
       name: firm.name,
       kind: firm.kind,
+      // The Producător whose profile the firm holds.
+      manufacturerId: firm.manufacturerId,
       role: membership.role,
       lastActiveAt: membership.lastActiveAt,
     }));

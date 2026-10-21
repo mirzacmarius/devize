@@ -26,6 +26,7 @@ export default {
     priceAlerts: "Price alerts: {count}",
     settings: "Settings",
     admin: "Admin",
+    producerProfile: "Manufacturer profile",
     openMenu: "Open menu",
     closeMenu: "Close menu",
     accountMenu: "Account menu",
@@ -1050,6 +1051,7 @@ export default {
     ownEmptyDescription:
       "Write a norm from scratch, or copy one from the public catalog and adjust its consumptions to how your team works.",
     ownEmptyAction: "Write your first norm",
+    producers: "Manufacturers",
   },
   norms: {
     sources: {
@@ -1447,6 +1449,7 @@ export default {
       manufacturers: "Manufacturers",
       catalog: "Base catalog",
       outreach: "Emails to approve",
+      claims: "Claims",
       settings: "Settings",
     },
     status: {
@@ -1601,8 +1604,111 @@ export default {
       },
       working: "Working…",
     },
+    claims: {
+      title: "Claims and removals",
+      description:
+        "Requests to take over a manufacturer's profile or to remove it. Claims by link and by domain approve themselves.",
+      claims: "Claim requests",
+      claimsEmpty: "No claim requests waiting.",
+      removals: "Removal requests",
+      removalsEmpty: "No removal requests waiting.",
+      sent: "Sent on {date}",
+      cui: "CUI {cui}",
+      firm: "Wants to link the firm {name}",
+      anaf: {
+        title: "ANAF",
+        active: "active",
+        inactive: "inactive",
+        vatPayer: "VAT payer",
+        notVatPayer: "not a VAT payer",
+        notFound: "ANAF doesn't know the CUI.",
+        unavailable: "ANAF didn't answer.",
+        waiting: "Checking with ANAF…",
+        check: "Ask ANAF again",
+      },
+      signals: {
+        emailMatchesWebsite:
+          "The address is on the manufacturer's website domain",
+        emailOtherDomain:
+          "The address isn't on the manufacturer's website domain",
+        anafNameMatches: "ANAF's name looks like the manufacturer's",
+        anafNameDiffers: "ANAF's name doesn't look like the manufacturer's",
+        cuiMatches: "The CUI is the one on the manufacturer's record",
+        cuiDiffers: "The CUI differs from the manufacturer's record",
+      },
+      caution:
+        "The hints help but prove nothing: CUIs are public, and an address can sit on a look-alike domain. When in doubt, call the manufacturer.",
+      alreadyClaimed: "The profile is already claimed",
+      approve: "Approve",
+      approved: "The profile now belongs to {name}.",
+      reject: "Reject",
+      rejectTitle: "Reject {name}'s request?",
+      rejectDescription:
+        "The reason shows on the profile to whoever sent the request.",
+      reason: "Reason",
+      reasonPlaceholder:
+        "e.g. We couldn't confirm you work for the manufacturer.",
+      rejected: "The request was rejected.",
+      remove: "Remove the profile",
+      removeTitle: "Remove {name}'s profile?",
+      removeDescription:
+        'The manufacturer becomes "Excluded": the profile disappears, its published norms leave the catalog and we stop writing to it. Estimates made already keep their copies.',
+      removed: "{name}'s profile was removed.",
+      dismiss: "Keep the profile",
+      dismissed: "The request was closed and the profile stays.",
+    },
     manufacturer: {
       back: "Manufacturers",
+      claim: {
+        title: "Profile and claiming",
+        description:
+          "Who runs the manufacturer's public profile, and how someone there can take it over.",
+        claimedBy: "Claimed by the firm {name}.",
+        unclaimed: "Unclaimed.",
+        notVisible:
+          "The profile isn't public yet: it shows after the manufacturer's first published norm.",
+        openProfile: "View the profile",
+        domains: "The manufacturer's email domains",
+        domainsHint:
+          "Anyone signed in with a verified address on one takes the profile over at once. Only add domains seen on the manufacturer's website or emails; public services such as gmail.com are refused.",
+        domain: "Domain",
+        domainPlaceholder: "e.g. manufacturer.ro",
+        addDomain: "Add",
+        removeDomain: "Remove the domain {domain}",
+        noDomains: "No domains.",
+        links: "Claim links",
+        linksHint:
+          "Put the link in the thank-you email to the address that sent you the norms. It works once, for 30 days, and only for someone signed in with that address.",
+        email: "Address",
+        emailPlaceholder: "e.g. technical@manufacturer.ro",
+        createLink: "Create the link",
+        copy: "Copy the link",
+        copied: "The link was copied.",
+        revoke: "Revoke the link for {email}",
+        linkActive: "valid until {date}",
+        linkUsed: "used on {date}",
+        linkExpired: "expired",
+        noLinks: "No links.",
+        requests: "Requests",
+        noRequests: "No requests.",
+        queue: "Open the waiting requests",
+        methods: {
+          link: "by link",
+          domain: "by domain",
+          manual: "checked by an admin",
+        },
+        statuses: {
+          pending: "Waiting",
+          approved: "Approved",
+          rejected: "Rejected",
+        },
+        removal: "Removal request",
+        removalStatuses: {
+          pending: "Waiting",
+          removed: "Profile removed",
+          dismissed: "Profile kept",
+        },
+      },
       notFound: "This manufacturer no longer exists.",
       research: "Research",
       researchAgain: "Research again",
@@ -1872,6 +1978,122 @@ export default {
       member: "Member",
     },
   },
+  producers: {
+    title: "Manufacturers",
+    description:
+      "The manufacturers whose norms are in the catalog, each with its norms and products.",
+    empty:
+      "No manufacturers in the catalog yet. Profiles appear as we publish their norms.",
+    columns: {
+      name: "Manufacturer",
+      profile: "Profile",
+      edition: "Norms edition",
+    },
+    claimed: "Claimed",
+    unclaimed: "Unclaimed",
+    searchPlaceholder: "Search manufacturers",
+    noResults: "No manufacturer matches “{text}”.",
+    breadcrumb: "You are here",
+    profile: {
+      unclaimedLabel:
+        "Unclaimed profile, created by Devize from the documents the manufacturer sent",
+      claimedLabel: "Profile run by the manufacturer",
+      editions: "Edition {editions}",
+      notPublic:
+        "The profile isn't public yet: it shows once Devize publishes the manufacturer's first norm.",
+      notFound: "The profile doesn't exist or isn't public.",
+      back: "Manufacturers",
+      norms: "Norms",
+      normsCount: "Norms: {count}",
+      moreNorms: "These are the first 500 norms; the catalog has them all.",
+      products: "Products",
+      noNorms: "No published norms yet.",
+      normColumns: {
+        norm: "Norm",
+        unit: "Unit",
+      },
+      productColumns: {
+        name: "Product",
+        unit: "Unit",
+      },
+      yours:
+        "This is your firm's profile. Open the norms and confirm the ones that match your documents: they get the “Confirmed by the manufacturer” badge.",
+      claimTitle: "Do you work for {name}?",
+      claimDescription:
+        "Claim the profile to check the norms, add new norms and products, and invite your colleagues. Norms you confirm are marked as verified by the manufacturer.",
+      claimAction: "Claim the profile",
+      claimPending: "Your request from {date} is waiting for the Devize team.",
+      withdraw: "Withdraw the request",
+      withdrawn: "You withdrew the request.",
+      claimRejected: "Your request was rejected: {reason}",
+      claimRejectedNoReason:
+        "Your request was rejected. You can send another one with more details.",
+      removal: "Ask to remove the profile",
+      removalPending:
+        "You asked to remove the profile. The Devize team will answer soon.",
+    },
+    claimDialog: {
+      title: "Claim {name}'s profile",
+      domainDescription:
+        "Your address, {email}, is on the manufacturer's domain, so the profile passes to you at once.",
+      manualDescription:
+        "The Devize team checks who you are before handing you the profile, and writes to you at {email}.",
+      firm: "Firm that takes the profile over",
+      newFirm: "A new firm: {name}",
+      firmHint:
+        "The firm's members will be able to confirm the manufacturer's norms.",
+      message: "Who you are at {name}",
+      messagePlaceholder:
+        "e.g. Ana Popescu, technical director. My colleague Ion sent you the norms.",
+      messageRequired: "Say who you are and your role at the manufacturer.",
+      cui: "The manufacturer's CUI",
+      cuiPlaceholder: "e.g. RO12345678",
+      cuiHint: "Optional. We check it with ANAF.",
+      submit: "Send the request",
+      claim: "Claim the profile",
+      sent: "Your request was sent. We'll write to you after checking it.",
+      claimed: "{name}'s profile now belongs to your firm.",
+    },
+    removalDialog: {
+      title: "Ask to remove {name}'s profile",
+      description:
+        "Tell us why. The Devize team checks the request; if it approves, the profile and its norms leave the catalog. Estimates made already keep their copies.",
+      message: "Reason",
+      messagePlaceholder:
+        "e.g. I work for the manufacturer and we didn't agree to publishing the norms.",
+      messageRequired: "Write the reason.",
+      submit: "Send the request",
+      sent: "Your removal request was sent.",
+    },
+  },
+  claim: {
+    title: "Claim a profile",
+    loading: "Loading the link…",
+    heading: "Claim {name}'s profile",
+    description:
+      "Devize created the profile from the norms {name} sent. As its admin, you check the norms, add new norms and products, and invite your colleagues.",
+    firm: "Firm that takes the profile over",
+    newFirm: "A new firm: {name}",
+    action: "Claim the profile",
+    claimed: "{name}'s profile is now yours.",
+    goneTitle: "The link is no longer valid",
+    goneDescription:
+      "It was revoked or the profile was withdrawn. Write to us and we'll send another.",
+    expiredTitle: "The link has expired",
+    expiredDescription:
+      "A claim link lasts 30 days. Write to us and we'll send another.",
+    usedTitle: "{name}'s profile is already claimed",
+    usedDescription:
+      "If you work for the manufacturer and have no access, ask a colleague for an invitation to the firm.",
+    openProfile: "Open the profile",
+    goHome: "Go to Devize",
+    otherEmailTitle: "The link is for another address",
+    otherEmailDescription:
+      "It's for {email}, and you're signed in as {signedInAs}. Sign in with that address to claim the profile.",
+    otherEmailNoAddress:
+      "It's for {email}. Sign in with that address to claim the profile.",
+    switchAccount: "Sign in with another address",
+  },
   invite: {
     title: "Invitation",
     loading: "Loading the invitation…",
@@ -1943,6 +2165,21 @@ export default {
       "The estimate was sent and is locked. Create a revision to change it.",
     lockedOffer: "The offer was already sent to the client.",
     lockedNorm: "The norm is published. Create a new version to change it.",
+    notFoundClaimLink:
+      "The claim link is no longer valid: it was used, revoked or has expired.",
+    inUseManufacturer: "A firm has already claimed the profile.",
+    inUseClaim: "You already have a request waiting for this profile.",
+    inUseRemoval: "You already asked to remove this profile.",
+    inUseDomain: "The domain already belongs to another manufacturer.",
+    invalidDomain:
+      "Enter one of the manufacturer's domains, not gmail.com or another public service.",
+    invalidDomains: "A manufacturer can have at most 10 domains.",
+    invalidMessage: "Write a few words, at most 1000 characters.",
+    invalidClaims:
+      "You already have 5 requests waiting. Wait for an answer first.",
+    invalidOrganizationId: "The firm you chose can't take the profile over.",
+    forbiddenDomain: "Your address isn't on one of the manufacturer's domains.",
+    forbiddenEmail: "Sign in with a confirmed email address.",
   },
   markups: {
     cam: {

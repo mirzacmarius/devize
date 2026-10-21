@@ -97,13 +97,21 @@ export function CatalogPage({ initialView }: { initialView: CatalogView }) {
     );
   };
 
-  const newNorm = (
-    <Button asChild>
-      <Link href="/catalog/new">
-        <Plus aria-hidden />
-        {t("newNorm")}
-      </Link>
-    </Button>
+  const actions = (
+    <>
+      <Button variant="outline" asChild>
+        <Link href="/producers">
+          <Icons.Producers aria-hidden />
+          {t("producers")}
+        </Link>
+      </Button>
+      <Button asChild>
+        <Link href="/catalog/new">
+          <Plus aria-hidden />
+          {t("newNorm")}
+        </Link>
+      </Button>
+    </>
   );
 
   return (
@@ -111,7 +119,7 @@ export function CatalogPage({ initialView }: { initialView: CatalogView }) {
       <PageHeader
         title={t("title")}
         description={t("description")}
-        actions={newNorm}
+        actions={actions}
       />
       <Card>
         <CardHeader className="flex-wrap">
