@@ -95,5 +95,9 @@ One product's price at one source on one date: a retailer, a Furnizor's price li
 _Avoid_: Offer, price (for the record itself)
 
 **Citire la cerere** (on-demand reading):
-Reading a retailer's public price for a single product only when a Deviz needs it, cached and rate-limited, until a partnership gives Devize that retailer's feed. Devize never scrapes retailers' catalogs in bulk. See `docs/adr/0003`.
+Reading a retailer's public price for a single product only when a Deviz needs it, cached and rate-limited, until a partnership gives Devize that retailer's feed. Devize never scrapes retailers' catalogs in bulk: it reads only the page a Constructor links to, and only its structured data. In code: `storeReads`. See `docs/adr/0003` and `docs/adr/0008`.
 _Avoid_: Scraping, crawling
+
+**Produs ales** (chosen store product):
+The product a Firmă buys at a store for a material, at most one per store, with how many of the material's units one item sold holds (25 for a 25 kg bag of a material counted in kg). Its price comes before public listings. In code: `storeChoices`.
+_Avoid_: Match, mapping

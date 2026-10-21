@@ -88,6 +88,30 @@ async function deleteSome(
   if (listings.length > 0) {
     return listings.length;
   }
+  const choices = await ctx.db
+    .query("storeChoices")
+    .withIndex("by_organizationId_and_productId", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of choices) {
+    await ctx.db.delete("storeChoices", row._id);
+  }
+  if (choices.length > 0) {
+    return choices.length;
+  }
+  const reads = await ctx.db
+    .query("storeReads")
+    .withIndex("by_organizationId_and_requestedAt", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of reads) {
+    await ctx.db.delete("storeReads", row._id);
+  }
+  if (reads.length > 0) {
+    return reads.length;
+  }
   for (const status of [
     "draft",
     "review",
