@@ -45,6 +45,14 @@ export function formatHours(value: number, locale: Locale): string {
   return decimalFormat(locale, 0, 1).format(value);
 }
 
+/** A file's size: 2,4 MB, or 340 KB under a megabyte. */
+export function formatFileSize(bytes: number, locale: Locale): string {
+  const kb = bytes / 1024;
+  return kb < 1024
+    ? `${Math.max(1, Math.round(kb))} KB`
+    : `${decimalFormat(locale, 0, 1).format(kb / 1024)} MB`;
+}
+
 /** A calendar date stored as YYYY-MM-DD, such as a Deviz's price date: 21 oct. 2026. */
 export function formatCalendarDate(value: string, locale: Locale): string {
   const [year, month, day] = value.split("-").map(Number);

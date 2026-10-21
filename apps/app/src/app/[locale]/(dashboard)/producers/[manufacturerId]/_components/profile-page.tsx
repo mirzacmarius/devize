@@ -2,6 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { MAX_PDF_PAGES } from "@devize/backend/convex/proposals/lib/input";
 import { Badge } from "@devize/ui/badge";
 import {
   Breadcrumb,
@@ -32,7 +33,7 @@ import {
 } from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Pencil, Plus } from "lucide-react";
+import { FileText, Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
@@ -41,9 +42,10 @@ import { useRun } from "@/components/use-run";
 import { formatDay, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ClaimDialog } from "./claim-dialog";
+import { DatasheetDialog } from "./datasheet-dialog";
 import { DetailsDialog } from "./details-dialog";
 import { RemovalDialog } from "./removal-dialog";
-import type { Profile } from "./types";
+import type { Profile, Reading } from "./types";
 
 /**
  * A Producător's profile: what it says about itself, and the norms and
@@ -61,9 +63,14 @@ export function ProfilePage({
   const tc = useScopedI18n("common");
   const { firm } = useFirm();
   const profile = useQuery(api.producers.profiles.get, { manufacturerId });
-  const [dialog, setDialog] = useState<"claim" | "removal" | "details" | null>(
-    null,
+  // The data sheets Devize AI reads for the producer, for its own people.
+  const readings = useQuery(
+    api.producers.datasheets.list,
+    profile?.viewer.isProducer ? { manufacturerId } : "skip",
   );
+  const [dialog, setDialog] = useState<
+    "claim" | "removal" | "details" | "datasheet" | null
+  >(null);
 
   if (profile === undefined) {
     return <p className="m-0 text-body text-ink-3">{tc("loading")}</p>;
@@ -100,6 +107,10 @@ export function ProfilePage({
     profile.details && Object.values(profile.details).some(Boolean)
       ? profile.details
       : null;
+  // A reading that made its draft shows as the draft itself.
+  const pending = (readings ?? []).filter(
+    (reading) => reading.status !== "done",
+  );
 
   return (
     <>
@@ -145,22 +156,18 @@ export function ProfilePage({
           .filter(Boolean)
           .join(" · ")}
         actions={
-          (viewer.canEditDetails || writesNorms) && (
+          writesNorms && (
             <>
-              {viewer.canEditDetails && (
-                <Button variant="outline" onClick={() => setDialog("details")}>
-                  <Pencil aria-hidden />
-                  {t("profile.editDetails")}
-                </Button>
-              )}
-              {writesNorms && (
-                <Button asChild>
-                  <Link href="/catalog/new?for=producer">
-                    <Plus aria-hidden />
-                    {t("profile.newNorm")}
-                  </Link>
-                </Button>
-              )}
+              <Button variant="ai" onClick={() => setDialog("datasheet")}>
+                <Icons.AI aria-hidden />
+                {t("profile.fromDatasheet")}
+              </Button>
+              <Button asChild>
+                <Link href="/catalog/new?for=producer">
+                  <Plus aria-hidden />
+                  {t("profile.newNorm")}
+                </Link>
+              </Button>
             </>
           )
         }
@@ -182,8 +189,17 @@ export function ProfilePage({
           </p>
         </Notice>
       )}
-      {details && <DetailsCard details={details} />}
-      {profile.drafts.length > 0 && <DraftsCard profile={profile} />}
+      {(details || viewer.canEditDetails) && (
+        <DetailsCard
+          details={details}
+          onEdit={
+            viewer.canEditDetails ? () => setDialog("details") : undefined
+          }
+        />
+      )}
+      {(profile.drafts.length > 0 || pending.length > 0) && (
+        <DraftsCard profile={profile} readings={pending} />
+      )}
       <div
         className={
           profile.products.length > 0
@@ -219,6 +235,12 @@ export function ProfilePage({
         <DetailsDialog
           profile={profile}
           open={dialog === "details"}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {writesNorms && (
+        <DatasheetDialog
+          open={dialog === "datasheet"}
           onClose={() => setDialog(null)}
         />
       )}
@@ -300,15 +322,20 @@ function ProfileNotices({ profile }: { profile: Profile }) {
 const linkClass =
   "rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-/** What the producer says about itself, and whom to ask technical questions. */
+/**
+ * What the producer says about itself, and whom to ask technical questions.
+ * Its owners edit it from here, and are asked to fill it in while it's empty.
+ */
 function DetailsCard({
   details,
+  onEdit,
 }: {
-  details: NonNullable<Profile["details"]>;
+  details: NonNullable<Profile["details"]> | null;
+  onEdit?: () => void;
 }) {
   const t = useScopedI18n("producers");
   const rows: { label: string; value: ReactNode }[] = [
-    ...(details.website
+    ...(details?.website
       ? [
           {
             label: t("profile.website"),
@@ -325,10 +352,10 @@ function DetailsCard({
           },
         ]
       : []),
-    ...(details.contactName
+    ...(details?.contactName
       ? [{ label: t("profile.contact"), value: details.contactName }]
       : []),
-    ...(details.contactEmail
+    ...(details?.contactEmail
       ? [
           {
             label: t("detailsDialog.contactEmail"),
@@ -340,7 +367,7 @@ function DetailsCard({
           },
         ]
       : []),
-    ...(details.contactPhone
+    ...(details?.contactPhone
       ? [
           {
             label: t("detailsDialog.contactPhone"),
@@ -360,17 +387,28 @@ function DetailsCard({
     <Card>
       <CardHeader>
         <CardTitle>{t("profile.about")}</CardTitle>
+        {onEdit && (
+          <Button variant="outline" size="sm" onClick={onEdit}>
+            <Pencil aria-hidden />
+            {t("profile.editDetails")}
+          </Button>
+        )}
       </CardHeader>
       <TickRule />
       <CardContent
         className={cn(
           "grid gap-6 pt-4",
-          details.about &&
+          details?.about &&
             rows.length > 0 &&
             "lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]",
         )}
       >
-        {details.about && (
+        {!details && (
+          <p className="m-0 max-w-3xl text-body text-ink-3">
+            {t("profile.noDetails")}
+          </p>
+        )}
+        {details?.about && (
           <p className="m-0 max-w-3xl whitespace-pre-line text-body text-ink-2">
             {details.about}
           </p>
@@ -397,9 +435,16 @@ function DetailsCard({
 
 /**
  * The producer's norms still being written, or waiting for Devize to check
- * them, with the note on any Devize sent back.
+ * them, with the note on any Devize sent back; first, the data sheets Devize
+ * AI is reading into drafts, or failed to.
  */
-function DraftsCard({ profile }: { profile: Profile }) {
+function DraftsCard({
+  profile,
+  readings,
+}: {
+  profile: Profile;
+  readings: Reading[];
+}) {
   const t = useScopedI18n("producers.profile");
   const tNorm = useScopedI18n("norm");
   return (
@@ -418,6 +463,9 @@ function DraftsCard({ profile }: { profile: Profile }) {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {readings.map((reading) => (
+              <ReadingRow key={reading._id} reading={reading} />
+            ))}
             {profile.drafts.map((norm) => (
               <TableRow key={norm._id}>
                 <TableCell>
@@ -428,8 +476,16 @@ function DraftsCard({ profile }: { profile: Profile }) {
                     <span className="font-mono text-code text-ink-3">
                       {norm.code}
                     </span>
-                    <span className="text-body font-medium text-ink group-hover:underline">
-                      {norm.title}
+                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="text-body font-medium text-ink group-hover:underline">
+                        {norm.title}
+                      </span>
+                      {norm.fromDatasheet && (
+                        <Badge tone="ai">
+                          <Icons.AI aria-hidden />
+                          {t("fromDatasheet")}
+                        </Badge>
+                      )}
                     </span>
                     {norm.reviewNote && (
                       <span className="text-meta text-warning">
@@ -447,6 +503,102 @@ function DraftsCard({ profile }: { profile: Profile }) {
         </Table>
       </CardContent>
     </Card>
+  );
+}
+
+// Why a reading failed, from the code its job stored.
+const failureReasons = {
+  not_datasheet: "notDatasheet",
+  not_pdf: "notPdf",
+  too_many_pages: "tooManyPages",
+  not_found: "deleted",
+  forbidden: "forbidden",
+  invalid_output: "incomplete",
+  max_tokens: "incomplete",
+  missing_api_key: "missingKey",
+  api_key_rejected: "keyRejected",
+  no_credit: "noCredit",
+  timeout: "timeout",
+  rate_limited: "busy",
+  api_unreachable: "busy",
+  api_unavailable: "busy",
+  refusal: "refusal",
+} as const;
+
+function failureReason(code: string | undefined) {
+  return (
+    (code && failureReasons[code as keyof typeof failureReasons]) || "unknown"
+  );
+}
+
+/** A data sheet Devize AI is reading, or failed to read, with what to do. */
+function ReadingRow({ reading }: { reading: Reading }) {
+  const t = useScopedI18n("producers.datasheet");
+  const retry = useMutation(api.producers.datasheets.retry);
+  const dismiss = useMutation(api.producers.datasheets.dismiss);
+  const run = useRun();
+  const [busy, setBusy] = useState(false);
+  const failed = reading.status === "failed";
+  const reason = failureReason(reading.error);
+
+  const act = async (action: () => Promise<null>, success?: string) => {
+    setBusy(true);
+    await run(action, success);
+    setBusy(false);
+  };
+
+  return (
+    <TableRow>
+      <TableCell>
+        <div className="grid gap-0.5">
+          <span className="flex min-w-0 items-center gap-2">
+            <FileText className="size-4 shrink-0 text-ink-3" aria-hidden />
+            <span className="truncate text-body font-medium text-ink">
+              {reading.fileName ?? t("deletedFile")}
+            </span>
+          </span>
+          {reading.work && (
+            <span className="text-meta text-ink-3">{reading.work}</span>
+          )}
+          {failed ? (
+            <span className="text-meta text-danger">
+              {reason === "tooManyPages"
+                ? t("reasons.tooManyPages", { max: MAX_PDF_PAGES })
+                : t(`reasons.${reason}`)}
+            </span>
+          ) : (
+            <span className="text-meta text-ai">{t("reading")}</span>
+          )}
+          {failed && (
+            <span className="flex flex-wrap gap-2 pt-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={busy}
+                onClick={() =>
+                  act(() => retry({ importId: reading._id }), t("retried"))
+                }
+              >
+                {t("retry")}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={busy}
+                onClick={() => act(() => dismiss({ importId: reading._id }))}
+              >
+                {t("dismiss")}
+              </Button>
+            </span>
+          )}
+        </div>
+      </TableCell>
+      <TableCell className="align-top">
+        <StatusPill tone={failed ? "danger" : "ai"}>
+          {t(`statuses.${reading.status}`)}
+        </StatusPill>
+      </TableCell>
+    </TableRow>
   );
 }
 

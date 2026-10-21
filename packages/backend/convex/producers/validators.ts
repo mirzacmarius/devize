@@ -15,6 +15,18 @@ export const claimStatus = v.union(
   v.literal("rejected"),
 );
 
+export const datasheetStatus = v.union(
+  v.literal("reading"),
+  v.literal("done"),
+  v.literal("failed"),
+);
+
+// A condition of applying the product, from its technical data sheet.
+export const datasheetCondition = v.object({
+  text: v.string(),
+  page: v.optional(v.number()),
+});
+
 export const removalStatus = v.union(
   v.literal("pending"),
   v.literal("removed"),

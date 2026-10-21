@@ -1436,6 +1436,21 @@ export default {
       notVerified: "Not verified",
       copiedFrom: "Copied from",
     },
+    datasheet: {
+      title: "Data sheet",
+      badge: "Read by Devize AI",
+      description:
+        "Devize AI wrote the draft from the product's data sheet. Each figure's note gives the page it comes from.",
+      file: "File",
+      deleted: "The file was deleted",
+      product: "Product",
+      pages: "Pages used",
+      page: "p. {page}",
+      conditions: "Application conditions",
+      checks: "To check before you send the norm",
+      estimates:
+        "Figures without a page are Devize AI estimates: correct them from your own data.",
+    },
     versions: {
       title: "Versions",
       name: "Version {version}",
@@ -1820,6 +1835,7 @@ export default {
     jobKind: {
       manufacturer_research: "Research",
       norm_import: "Norms import",
+      datasheet_norm: "Norm from a data sheet",
       estimate_proposal: "Estimate proposal",
       tender_import: "Quantity lists import",
       offer_question: "Question on an offer",
@@ -2360,7 +2376,10 @@ export default {
       moreNorms: "These are the first 500 norms; the catalog has them all.",
       products: "Products",
       newNorm: "New norm",
+      fromDatasheet: "From a data sheet",
       editDetails: "Edit profile",
+      noDetails:
+        "Tell contractors who you are, where to find you and whom to ask about your products.",
       drafts: "Norms in progress",
       draftsHint:
         "Only you and the Devize team see them. Send each one for review from its page; once checked, it shows in the catalog.",
@@ -2431,6 +2450,66 @@ export default {
       contactPhone: "Phone",
       contactPhonePlaceholder: "e.g. 0721 000 000",
       saved: "The profile was saved.",
+    },
+    datasheet: {
+      title: "Norm from a data sheet",
+      description:
+        "Upload a product's technical data sheet. Devize AI reads the consumption, packaging and application conditions and writes a draft norm, with the sheet's page for every figure. You check it, correct it and send it for review.",
+      file: "Data sheet",
+      choose: "Choose the data sheet PDF",
+      chooseHint: "or drop it here. At most {max} MB.",
+      remove: "Remove {name}",
+      notPdf: "{name} isn't a PDF. Upload the data sheet as a PDF.",
+      tooBig: "The PDF is too large: at most {max} MB.",
+      required: "Choose the data sheet PDF.",
+      work: "The work (optional)",
+      workPlaceholder:
+        "e.g. Bonding and anchoring mineral wool boards on a facade, with mesh and base coat",
+      workHint:
+        "If the product has several uses, say which one the norm is for. Otherwise the AI picks the main one.",
+      privacy:
+        "The sheet goes to Claude, Anthropic's AI model, only for this norm, and stays in your firm's files.",
+      submit: "Write the norm",
+      uploading: "Uploading the sheet…",
+      starting: "Starting the reading…",
+      uploadFailed: "{name} didn't upload. Try again.",
+      started:
+        "Devize AI is reading the sheet. The draft shows under Norms in progress in a few minutes.",
+      reading:
+        "Devize AI is reading the sheet and writing the norm. It usually takes one to three minutes.",
+      deletedFile: "Deleted file",
+      retry: "Try again",
+      retried: "Devize AI is reading the sheet again.",
+      dismiss: "Dismiss",
+      statuses: {
+        reading: "Reading",
+        done: "Done",
+        failed: "Failed",
+      },
+      reasons: {
+        notDatasheet:
+          "The document doesn't look like a construction product's data sheet.",
+        notPdf: "The file isn't a readable PDF.",
+        tooManyPages:
+          "The PDF has more than {max} pages. Upload only the product's data sheet.",
+        deleted: "The file was deleted before it was read.",
+        forbidden: "Your firm no longer manages the manufacturer's profile.",
+        incomplete:
+          "The sheet didn't make a complete norm. Try again, or say more exactly what the work is.",
+        missingKey: "AI isn't set up on this server yet.",
+        keyRejected: "The AI key is no longer valid.",
+        noCredit: "The AI account is out of credit.",
+        timeout: "It took too long. Try again.",
+        busy: "The AI service is busy right now. Try again in a minute.",
+        refusal: "The AI couldn't work with this sheet.",
+        unknown: "Something went wrong. Try again.",
+      },
+      errors: {
+        rateLimited:
+          "You sent many data sheets in the last hour. Try again later.",
+        notProducer:
+          "Only a manufacturer's firm writes norms from data sheets.",
+      },
     },
     removalDialog: {
       title: "Ask to remove {name}'s profile",

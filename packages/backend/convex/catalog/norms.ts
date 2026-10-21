@@ -132,7 +132,7 @@ async function assertCodeFree(ctx: QueryCtx, norm: Doc<"norms">) {
 }
 
 /** The code itself, or the first of "-2", "-3"… after it that is free. */
-async function freeCode(ctx: QueryCtx, scope: Scope, code: string) {
+export async function freeCode(ctx: QueryCtx, scope: Scope, code: string) {
   for (let copy = 1; copy <= 50; copy++) {
     const suffix = copy === 1 ? "" : `-${copy}`;
     const candidate = `${code.slice(0, 40 - suffix.length)}${suffix}`;
@@ -327,6 +327,25 @@ export const listForReview = query({
 });
 
 /**
+ * The technical data sheet Devize AI drafted a norm from: the file, and what
+ * the sheet says about applying the product and the AI said to check.
+ */
+async function datasheetOf(ctx: QueryCtx, importId: Id<"datasheetImports">) {
+  const row = await ctx.db.get("datasheetImports", importId);
+  if (!row) {
+    return null;
+  }
+  const file = await ctx.db.get("files", row.fileId);
+  return {
+    fileName: file?.name ?? null,
+    url: file ? await ctx.storage.getUrl(file.storageId) : null,
+    product: row.product ?? null,
+    conditions: row.conditions ?? [],
+    checks: row.checks ?? [],
+  };
+}
+
+/**
  * A norm version with its resources, the newest published version, the norm
  * it was copied from and what the signed-in user may do with it.
  */
@@ -364,6 +383,12 @@ export const get = query({
       copiedFrom,
       latestVersionId:
         latest && latest._id !== norm._id ? latest._id : undefined,
+      // The data sheet it was drafted from, for the producer and Devize staff
+      // who check it: the file is the producer's own.
+      datasheet:
+        canEdit && norm.datasheetImportId
+          ? await datasheetOf(ctx, norm.datasheetImportId)
+          : null,
     };
   },
 });
@@ -434,38 +459,76 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await requireUserId(ctx);
     const scope = await checkCreate(ctx, args);
-    const required = cleanRequired(args);
-    const fields = {
-      ...required,
-      baseCode: trimmed(args.baseCode),
-      category: trimmed(args.category),
-      includes: trimmed(args.includes),
-      excludes: trimmed(args.excludes),
-      measurement: trimmed(args.measurement),
-    };
-    const normId = await ctx.db.insert("norms", {
-      source: args.source,
-      visibility: args.source === "organization" ? "private" : "public",
+    return await insertDraftNorm(ctx, {
+      ...args,
+      // Only the ids the norm's catalog has.
+      manufacturerId: undefined,
+      organizationId: undefined,
       ...scope,
-      ...fields,
-      searchText: searchText(fields),
-      version: 1,
-      status: "draft",
-      createdBy: userId,
-      updatedAt: Date.now(),
-    });
-    await ctx.db.patch("norms", normId, { lineageId: normId });
-    const norm = await ctx.db.get("norms", normId);
-    if (norm) {
-      await assertCodeFree(ctx, norm);
-    }
-    await writeNormResources(ctx, normId, args.resources, {
-      organizationId: scope.organizationId,
       createdBy: userId,
     });
-    return normId;
   },
 });
+
+/**
+ * Inserts the first version of a draft norm and its resources, once the
+ * caller checked who may write it in that catalog.
+ */
+export async function insertDraftNorm(
+  ctx: MutationCtx,
+  args: {
+    source: Doc<"norms">["source"];
+    manufacturerId?: Id<"manufacturers">;
+    organizationId?: Id<"organizations">;
+    code: string;
+    title: string;
+    unit: string;
+    baseCode?: string;
+    category?: string;
+    includes?: string;
+    excludes?: string;
+    measurement?: string;
+    resources: readonly NormResourceInput[];
+    createdBy: Id<"users">;
+    // Where Devize AI read it from, for a norm drafted from a data sheet.
+    datasheetImportId?: Id<"datasheetImports">;
+    sourcePages?: number[];
+  },
+): Promise<Id<"norms">> {
+  const required = cleanRequired(args);
+  const fields = {
+    ...required,
+    baseCode: trimmed(args.baseCode),
+    category: trimmed(args.category),
+    includes: trimmed(args.includes),
+    excludes: trimmed(args.excludes),
+    measurement: trimmed(args.measurement),
+  };
+  const normId = await ctx.db.insert("norms", {
+    source: args.source,
+    visibility: args.source === "organization" ? "private" : "public",
+    manufacturerId: args.manufacturerId,
+    organizationId: args.organizationId,
+    ...fields,
+    searchText: searchText(fields),
+    version: 1,
+    status: "draft",
+    datasheetImportId: args.datasheetImportId,
+    sourcePages: args.sourcePages,
+    createdBy: args.createdBy,
+    updatedAt: Date.now(),
+  });
+  await ctx.db.patch("norms", normId, { lineageId: normId });
+  const norm = await ctx.db.get("norms", normId);
+  if (norm) {
+    await assertCodeFree(ctx, norm);
+  }
+  await writeNormResources(ctx, normId, args.resources, {
+    organizationId: args.organizationId,
+    createdBy: args.createdBy,
+  });
+  return normId;
+}
 
 /** Only drafts change; editing one in review takes it back to draft. */
 async function requireDraft(ctx: MutationCtx, normId: Id<"norms">) {

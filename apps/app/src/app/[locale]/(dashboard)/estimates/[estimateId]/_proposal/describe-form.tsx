@@ -16,9 +16,10 @@ import { useMutation } from "convex/react";
 import { ImagePlus, Mic, Square, X } from "lucide-react";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Field } from "@/components/field";
+import { uploadBlob } from "@/lib/upload";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
-import { shrinkPhoto, uploadBlob } from "./photos";
+import { shrinkPhoto } from "./photos";
 import { useDictation } from "./use-dictation";
 import { useProposalError } from "./use-proposal-error";
 

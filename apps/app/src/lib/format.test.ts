@@ -3,6 +3,7 @@ import {
   estimateCode,
   formatCalendarDate,
   formatConsumption,
+  formatFileSize,
   formatMoney,
   formatPercent,
   formatQuantity,
@@ -30,6 +31,13 @@ describe("formatting", () => {
 
   test("writes a price date with a short month", () => {
     expect(formatCalendarDate("2026-10-21", "ro")).toBe("21 oct. 2026");
+  });
+
+  test("writes a file's size in megabytes, or kilobytes under one", () => {
+    expect(formatFileSize(2.45 * 1024 * 1024, "ro")).toBe("2,5 MB");
+    expect(formatFileSize(20 * 1024 * 1024, "en")).toBe("20 MB");
+    expect(formatFileSize(340 * 1024, "ro")).toBe("340 KB");
+    expect(formatFileSize(12, "ro")).toBe("1 KB");
   });
 
   test("numbers a Deviz and its revisions", () => {

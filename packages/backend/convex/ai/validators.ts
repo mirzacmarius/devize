@@ -5,6 +5,7 @@ import { v } from "convex/values";
 export const aiJobKind = v.union(
   v.literal("manufacturer_research"),
   v.literal("norm_import"),
+  v.literal("datasheet_norm"),
   v.literal("estimate_proposal"),
   v.literal("tender_import"),
   v.literal("offer_question"),

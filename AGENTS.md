@@ -15,7 +15,7 @@ Devize builds construction estimates (devize) for the Romanian market: manufactu
 - `packages/backend/convex/_generated` is committed. After changing Convex functions or the schema, regenerate it with `bunx convex dev` (or `bun run setup`) and commit the result.
 - Every Convex function that touches a firm's data checks membership first, with `requireMember` or `requireFirmDoc` from `convex/lib/access.ts`, and reports another firm's rows as not found. Errors people see are `ConvexError`s with a `code` from `convex/lib/errors.ts`, which the interface translates.
 - Convex functions are tested in memory with `convex-test` under `bun test`: start from `setup()` and `signIn()` in `convex/test.helper.ts`. Test files and helpers have two dots in their names, so Convex never deploys them.
-- The repository is public and producers' norms are copyrighted. Never commit a producer's norm documents or data extracted from them; they reach the database only through the super-admin import. Tests use made-up norms.
+- The repository is public and producers' norms are copyrighted. Never commit a producer's norm documents, data sheets or data extracted from them; they reach the database only through the app: the super-admin import, or the producer's own firm writing its norms. Tests use made-up norms.
 - Bun installs one hoisted `node_modules` (see `bunfig.toml`). When something behaves differently than in CI, reinstall with `rm -rf node_modules && bun install`.
 
 <!-- convex-ai-start -->
