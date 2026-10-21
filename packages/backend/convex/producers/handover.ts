@@ -1,7 +1,11 @@
 import type { Infer } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
-import { insertFirm, MAX_FIRMS_PER_USER } from "../accounts/organizations";
+import {
+  insertFirm,
+  MAX_FIRMS_PER_USER,
+  nextActiveAt,
+} from "../accounts/organizations";
 import { getMembership } from "../lib/access";
 import { appError, invalid } from "../lib/errors";
 import { deleteDetails } from "./details";
@@ -90,7 +94,9 @@ export async function grantClaim(
       claimant.userId,
     );
     if (membership) {
-      await ctx.db.patch("memberships", membership._id, { lastActiveAt: now });
+      await ctx.db.patch("memberships", membership._id, {
+        lastActiveAt: await nextActiveAt(ctx, claimant.userId),
+      });
     }
   } else {
     organizationId = await insertFirm(ctx, claimant.userId, {

@@ -15,7 +15,7 @@ import { getMembership, requireMember, requireUserId } from "../lib/access";
 import { emailHtml, escapeHtml, sendEmail } from "../lib/email";
 import { appError, invalid, notFound } from "../lib/errors";
 import { newToken } from "../lib/tokens";
-import { MAX_FIRMS_PER_USER } from "./organizations";
+import { MAX_FIRMS_PER_USER, nextActiveAt } from "./organizations";
 import { invitedRole } from "./validators";
 
 // An invitation lasts a week; after that, an admin invites again.
@@ -301,8 +301,9 @@ export const accept = mutation({
       throw notFound("organization");
     }
     const membership = await getMembership(ctx, organizationId, userId);
+    const lastActiveAt = await nextActiveAt(ctx, userId);
     if (membership) {
-      await ctx.db.patch("memberships", membership._id, { lastActiveAt: now });
+      await ctx.db.patch("memberships", membership._id, { lastActiveAt });
     } else {
       const firms = await ctx.db
         .query("memberships")
@@ -315,7 +316,7 @@ export const accept = mutation({
         organizationId,
         userId,
         role: invitation.role,
-        lastActiveAt: now,
+        lastActiveAt,
       });
     }
     await ctx.db.delete("invitations", invitation._id);

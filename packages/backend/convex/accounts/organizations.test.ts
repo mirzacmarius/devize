@@ -50,6 +50,37 @@ describe("organizations", () => {
     expect(firms.map((firm) => firm.name)).toEqual(["A doua SRL", "Prima SRL"]);
   });
 
+  test("the firm picked last comes first, even within the same millisecond", async () => {
+    const t = setup();
+    const ana = await signIn(t, { name: "Ana" });
+    const first = await ana.as.mutation(api.accounts.organizations.create, {
+      name: "Prima SRL",
+    });
+    const second = await ana.as.mutation(api.accounts.organizations.create, {
+      name: "A doua SRL",
+    });
+    // The second firm was used a little ahead of the clock, as when it is
+    // used in the same millisecond the first one is picked.
+    await t.run(async (ctx) => {
+      const memberships = await ctx.db
+        .query("memberships")
+        .withIndex("by_userId", (q) => q.eq("userId", ana.userId))
+        .collect();
+      for (const membership of memberships) {
+        if (membership.organizationId === second) {
+          await ctx.db.patch("memberships", membership._id, {
+            lastActiveAt: Date.now() + 60_000,
+          });
+        }
+      }
+    });
+    await ana.as.mutation(api.accounts.organizations.setActive, {
+      organizationId: first,
+    });
+    const firms = await ana.as.query(api.accounts.organizations.listMine, {});
+    expect(firms.map((firm) => firm._id)).toEqual([first, second]);
+  });
+
   test("a firm that doesn't charge VAT starts with a VAT rate of 0, and gets 21% once it does", async () => {
     const t = setup();
     const ana = await signIn(t, { name: "Ana" });

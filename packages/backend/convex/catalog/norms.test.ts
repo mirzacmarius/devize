@@ -217,6 +217,8 @@ describe("norms", () => {
     });
     expect(second.code).toBe("DV-FAI-01-2");
 
+    // The first copy changes later than the second was made.
+    setSystemTime(Date.now() + 1_000);
     await ana.as.mutation(api.catalog.norms.update, {
       normId: copyId,
       title: "Placare cu faianță, cu echipa noastră",
