@@ -13,15 +13,23 @@ import { type ReactNode, useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./export-data";
 import { FormsSheet } from "./forms-sheet";
+import { TenderListSheet } from "./tender-list-sheet";
 import { useDownloadDocuments } from "./use-download-documents";
 
-/** A Deviz as documents: the PDF for its client and a tender's official forms. */
+/**
+ * A Deviz as documents: the PDF for its client, a tender's official forms
+ * and the authority's own list filled in.
+ */
 export function DocumentsCard({ estimate }: { estimate: Estimate }) {
   const t = useScopedI18n("documents");
   const download = useDownloadDocuments(estimate);
   const [downloading, setDownloading] = useState(false);
   const [formsOpen, setFormsOpen] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
   const empty = estimate.lineItems.length === 0;
+  // Positions imported from a tender's lists, which the authority wants
+  // back priced in its own file.
+  const tender = estimate.lineItems.some((item) => item.tenderRef);
 
   const downloadDeviz = async () => {
     setDownloading(true);
@@ -70,6 +78,22 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
               {t("forms.open")}
             </Button>
           </DocumentRow>
+          {tender && (
+            <DocumentRow
+              icon={<Icons.Spreadsheet aria-hidden />}
+              title={t("list.title")}
+              hint={t("list.hint")}
+            >
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setListOpen(true)}
+              >
+                {t("list.open")}
+              </Button>
+            </DocumentRow>
+          )}
         </ul>
         {empty && <p className="m-0 pt-1 text-meta text-ink-3">{t("empty")}</p>}
       </CardContent>
@@ -78,6 +102,13 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
         open={formsOpen}
         onClose={() => setFormsOpen(false)}
       />
+      {tender && (
+        <TenderListSheet
+          estimate={estimate}
+          open={listOpen}
+          onClose={() => setListOpen(false)}
+        />
+      )}
     </Card>
   );
 }

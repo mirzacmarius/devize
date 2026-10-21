@@ -922,6 +922,77 @@ export default {
         },
       },
     },
+    list: {
+      title: "Lista de cantități în Excel",
+      hint: "Fișierul .xlsx primit de la autoritate, completat cu prețurile tale, în aranjarea lui.",
+      open: "Completează",
+      sheetTitle: "Lista de cantități a autorității",
+      sheetDescription:
+        "Scriu prețurile devizului în fișierul primit cu licitația, fără să-i schimb rândurile, coloanele sau formatul. Totalurile cu formule se recalculează când îl deschizi în Excel.",
+      file: "Fișierul autorității",
+      fileHint:
+        "Fișierele .xlsx încărcate la importul licitației, sau altul de pe calculatorul tău.",
+      use: "Deschide",
+      opened: "Deschis",
+      other: "Alt fișier .xlsx",
+      reading: "Citesc {name}…",
+      unreadable:
+        "{name} nu e un fișier .xlsx pe care să-l pot citi. Un .xls vechi trebuie salvat întâi ca .xlsx, din Excel.",
+      failed: "Fișierul nu a putut fi citit. Încearcă din nou.",
+      none: "Nu am găsit în {name} pozițiile devizului. E lista din care ai importat devizul?",
+      sheet: "Foaia „{name}”",
+      found: "Poziții găsite: {count}",
+      unitPrice: "Prețul unitar",
+      total: "Valoarea",
+      noColumn: "Nu completez",
+      column: "Coloana {column}",
+      columnHeader: "Coloana {column} · {header}",
+      guessed:
+        "Capul de tabel nu numește coloanele de preț, așa că am ales cele două de lângă cantități. Verifică-le.",
+      kinds:
+        "Pe materiale, manoperă, utilaje și transport, prețurile unitare merg în coloanele {unit}, iar valorile în {total}.",
+      kindsUnit:
+        "Prețurile unitare pe materiale, manoperă, utilaje și transport merg în coloanele {columns}.",
+      kindsTotal:
+        "Valorile pe materiale, manoperă, utilaje și transport merg în coloanele {columns}.",
+      details:
+        "Rândurile a)–d) de sub fiecare poziție primesc prețul fiecărui fel de cheltuială.",
+      basis: "Prețurile unitare",
+      bases: {
+        direct: "Costuri directe",
+        inclusive: "Cu toate cheltuielile",
+      },
+      basisDirect:
+        "Scriu costurile directe, iar Recapitulația foii adaugă {added}, cu procentele devizului.",
+      basisCarried:
+        "În prețurile unitare intră și {carried}, pentru care foaia nu are rând.",
+      basisInclusive:
+        "Fiecare preț unitar include CAM-ul, cheltuielile indirecte și profitul devizului, așa că totalul foii e valoarea ofertei.",
+      basisInclusiveRows:
+        "Rândurile foii pentru cote rămân necompletate, dar dacă le calculează formule, le adaugă încă o dată peste prețuri.",
+      markups: {
+        cam: "CAM-ul",
+        indirect: "cheltuielile indirecte",
+        profit: "profitul",
+      },
+      sheetTotal: "Valoarea foii, fără TVA: {amount} lei",
+      formulas:
+        "Rânduri ale Recapitulației cu formulele autorității: {rows}. Excel le recalculează, așa că verifică dacă procentele lor sunt cele din deviz.",
+      unpriced: "Rânduri fără articol în deviz, de completat de mână: {rows}.",
+      unpricedRow: "rândul {row}",
+      unpricedPosition: "rândul {row} (poz. {position})",
+      more: "și încă {count}",
+      missing: "Poziții din deviz care nu sunt în acest fișier: {count}",
+      missingItem: "Poz. {position} · {text}",
+      missingHint:
+        "Dacă licitația are mai multe fișiere, completează-l pe fiecare.",
+      extra:
+        "Articole din deviz fără poziție în lista autorității: {count}. Prețul lor nu intră în fișier.",
+      download: "Descarcă Excelul completat",
+      downloaded: "Am descărcat {name}.",
+      fileName: "{name} completat",
+      saveFailed: "Excelul nu a putut fi făcut. Încearcă din nou.",
+    },
   },
   offer: {
     title: "Oferta pentru client",

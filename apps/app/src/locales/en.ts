@@ -926,6 +926,77 @@ export default {
         },
       },
     },
+    list: {
+      title: "Bill of quantities in Excel",
+      hint: "The authority's .xlsx file, filled in with your prices, in its own layout.",
+      open: "Fill in",
+      sheetTitle: "The authority's bill of quantities",
+      sheetDescription:
+        "I write the estimate's prices into the file that came with the tender, without changing its rows, columns or formatting. Totals with formulas recalculate when you open it in Excel.",
+      file: "The authority's file",
+      fileHint:
+        "The .xlsx files uploaded with the tender import, or another one from your computer.",
+      use: "Open",
+      opened: "Opened",
+      other: "Another .xlsx file",
+      reading: "Reading {name}…",
+      unreadable:
+        "{name} isn't an .xlsx file I can read. Save an old .xls as .xlsx in Excel first.",
+      failed: "The file couldn't be read. Try again.",
+      none: "I found none of the estimate's positions in {name}. Is it the list you imported the estimate from?",
+      sheet: "Sheet “{name}”",
+      found: "Positions found: {count}",
+      unitPrice: "Unit price",
+      total: "Value",
+      noColumn: "Leave empty",
+      column: "Column {column}",
+      columnHeader: "Column {column} · {header}",
+      guessed:
+        "The header doesn't name the price columns, so I chose the two beside the quantities. Check them.",
+      kinds:
+        "For materials, labour, equipment and transport, the unit prices go in columns {unit} and the values in {total}.",
+      kindsUnit:
+        "The unit prices for materials, labour, equipment and transport go in columns {columns}.",
+      kindsTotal:
+        "The values for materials, labour, equipment and transport go in columns {columns}.",
+      details:
+        "The a)–d) rows under each position get the price of each kind of cost.",
+      basis: "Unit prices",
+      bases: {
+        direct: "Direct costs",
+        inclusive: "All costs included",
+      },
+      basisDirect:
+        "I write the direct costs, and the sheet's summary adds {added} at the estimate's rates.",
+      basisCarried:
+        "The unit prices also carry {carried}, which the sheet has no row for.",
+      basisInclusive:
+        "Each unit price includes the estimate's CAM, indirect costs and profit, so the sheet's total is the offer's value.",
+      basisInclusiveRows:
+        "The sheet's rows for markups stay empty, but if formulas compute them, they add them again on top of the prices.",
+      markups: {
+        cam: "CAM",
+        indirect: "indirect costs",
+        profit: "profit",
+      },
+      sheetTotal: "Sheet value, without VAT: {amount} lei",
+      formulas:
+        "Summary rows with the authority's formulas: {rows}. Excel recalculates them, so check that their percentages are the estimate's.",
+      unpriced:
+        "Rows with no line item in the estimate, to fill in by hand: {rows}.",
+      unpricedRow: "row {row}",
+      unpricedPosition: "row {row} (pos. {position})",
+      more: "and {count} more",
+      missing: "Positions of the estimate that aren't in this file: {count}",
+      missingItem: "Pos. {position} · {text}",
+      missingHint: "If the tender has several files, fill in each one.",
+      extra:
+        "Line items of the estimate with no position in the authority's list: {count}. Their price isn't in the file.",
+      download: "Download the filled Excel",
+      downloaded: "Downloaded {name}.",
+      fileName: "{name} filled",
+      saveFailed: "The Excel file couldn't be made. Try again.",
+    },
   },
   offer: {
     title: "Offer for the client",

@@ -36,7 +36,7 @@ const NAMED = 3;
 // A line's title, cut where a list of them stays readable.
 const TITLE_LENGTH = 40;
 
-function shortTitle(title: string): string {
+export function shortTitle(title: string): string {
   const text = title.replace(/\s+/g, " ").trim();
   if (text.length <= TITLE_LENGTH) {
     return text;
