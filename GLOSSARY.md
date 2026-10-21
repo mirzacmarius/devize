@@ -68,6 +68,10 @@ _Avoid_: Deviz (for what the client sees), proposal
 An Articol of an Ofertă that the client may include or leave out; the Firmă says whether it starts included. Every total the client sees is the server's, for what they chose. In code: `offers.optionalItems`.
 _Avoid_: Extra, add-on
 
+**Asistentul ofertei** (offer assistant):
+Devize AI answering a client's questions on an Ofertă's link, only from what the link shows them. What the Ofertă doesn't say, or only the Firmă can decide, goes to the Firmă, who replies from the Deviz's page; the Firmă can also turn the assistant off for a link. In code: `offerQuestions`, `offers/assistant.ts`. See `docs/adr/0019`.
+_Avoid_: Chatbot, bot
+
 ### Public tenders
 
 **Licitație** (tender):

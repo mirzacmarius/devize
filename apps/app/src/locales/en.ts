@@ -982,6 +982,34 @@ export default {
     withdrawDone: "The link was withdrawn.",
     madeBy: "Created by {name}",
     deposit: "Deposit asked: {percent}",
+    questions: {
+      title: "The client's questions",
+      none: "The client hasn't asked anything yet.",
+      count: "Questions: {count}",
+      waiting: "Waiting for your answer: {count}",
+      open: "See the questions",
+      answer: "Answer",
+      assistant: "The AI assistant answers the client",
+      assistantHint:
+        "It answers from the offer sent. What it doesn't know, or only you can decide, comes to you.",
+      assistantOn: "The assistant answers the client's questions.",
+      assistantOff: "The client's questions come straight to you.",
+      dialogDescription:
+        "What the client asked on the offer's page and what they were told. Your answer shows on their page.",
+      client: "The client",
+      assistantLabel: "AI assistant",
+      firm: "The firm",
+      answering: "The assistant is writing the answer…",
+      waitingYou: "Waiting for your answer",
+      reply: "Your answer",
+      replyPlaceholder: "The client sees it on the offer's page.",
+      send: "Send the answer",
+      addReply: "Add an answer",
+      editReply: "Change your answer",
+      replied: "Your answer is on the client's page.",
+      replyInvalid: "Write an answer of at most 2,000 characters.",
+      at: "{date}, {time}",
+    },
     dialog: {
       title: "Link for the client",
       description:
@@ -1013,6 +1041,9 @@ export default {
       optionalIncludedLabel: "“{title}” included from the start",
       optionalRemove: "Remove “{title}” from the optional works",
       optionalAdd: "Add an optional work",
+      assistant: "The AI assistant answers the client's questions",
+      assistantHint:
+        "It answers from the offer alone. What it doesn't know, or only you can decide, it sends to you.",
       submit: "Create the link",
       created: "The link is ready and copied.",
       createdNotCopied: "The link is ready.",
@@ -1159,6 +1190,32 @@ export default {
         "{firm} got your answer on {date} at {time}. They can send you a new offer.",
       reason: "Your reason: {reason}",
     },
+    questions: {
+      title: "Questions about the offer",
+      hintAssistant:
+        "The AI assistant answers right away, from the offer. What it doesn't know, or is for the firm to say, goes to {firm}, who answers you here.",
+      hintFirm:
+        "Your questions go to {firm}, who answers you here, on the offer's page.",
+      label: "Your question",
+      placeholder: "For example: which materials does the price include?",
+      ask: "Ask",
+      suggestions: "You could ask, for example:",
+      suggest: {
+        price: "What does the price include?",
+        materials: "Which materials do you use?",
+        variants: "How do the variants differ?",
+        overhead: "What are the indirect costs?",
+      },
+      you: "You",
+      assistant: "AI assistant",
+      answering: "The assistant is looking for the answer in the offer…",
+      waiting: "Your question went to {firm}. The answer will show here.",
+      disclaimer:
+        "The assistant answers from the offer alone and can be wrong. What counts is the offer above and what you agree with the firm.",
+      preview: "In a preview you can't ask questions for the client.",
+      closed:
+        "You have already answered the offer. For other questions, contact the firm.",
+    },
     footer: "Offer sent with Devize",
     errors: {
       locked:
@@ -1169,6 +1226,10 @@ export default {
       signature: "The signature is too small. Sign again, larger.",
       reason: "The reason is too long.",
       empty: "Include at least one work to accept the offer.",
+      busy: "Wait for the answer to your last question.",
+      tooMany:
+        "You've asked many questions today. For more, call or write to the firm.",
+      question: "Write a question of at most 1,000 characters.",
       unknown: "Something went wrong. Try again.",
     },
   },
@@ -1663,6 +1724,7 @@ export default {
       norm_import: "Norms import",
       estimate_proposal: "Estimate proposal",
       tender_import: "Quantity lists import",
+      offer_question: "Question on an offer",
     },
     confidence: {
       high: "High confidence",

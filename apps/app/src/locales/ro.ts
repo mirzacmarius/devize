@@ -978,6 +978,34 @@ export default {
     withdrawDone: "Linkul a fost retras.",
     madeBy: "Creat de {name}",
     deposit: "Avans cerut: {percent}",
+    questions: {
+      title: "Întrebările clientului",
+      none: "Clientul n-a pus încă nicio întrebare.",
+      count: "Întrebări: {count}",
+      waiting: "Așteaptă răspunsul tău: {count}",
+      open: "Vezi întrebările",
+      answer: "Răspunde",
+      assistant: "Asistentul AI răspunde clientului",
+      assistantHint:
+        "Răspunde din oferta trimisă. Ce nu știe sau doar tu poți hotărî ajunge la tine.",
+      assistantOn: "Asistentul răspunde la întrebările clientului.",
+      assistantOff: "Întrebările clientului vin direct la tine.",
+      dialogDescription:
+        "Ce a întrebat clientul pe pagina ofertei și ce i s-a răspuns. Răspunsul tău apare pe pagina lui.",
+      client: "Clientul",
+      assistantLabel: "Asistentul AI",
+      firm: "Firma",
+      answering: "Asistentul scrie răspunsul…",
+      waitingYou: "Așteaptă răspunsul tău",
+      reply: "Răspunsul tău",
+      replyPlaceholder: "Clientul îl vede pe pagina ofertei.",
+      send: "Trimite răspunsul",
+      addReply: "Adaugă un răspuns",
+      editReply: "Schimbă răspunsul",
+      replied: "Răspunsul a ajuns pe pagina clientului.",
+      replyInvalid: "Scrie un răspuns de cel mult 2.000 de caractere.",
+      at: "{date}, {time}",
+    },
     dialog: {
       title: "Link pentru client",
       description:
@@ -1009,6 +1037,9 @@ export default {
       optionalIncludedLabel: "„{title}” inclusă de la început",
       optionalRemove: "Scoate „{title}” din opționale",
       optionalAdd: "Adaugă o lucrare opțională",
+      assistant: "Asistentul AI răspunde la întrebările clientului",
+      assistantHint:
+        "Răspunde doar din ofertă. Ce nu știe sau doar tu poți hotărî îți trimite ție.",
       submit: "Creează linkul",
       created: "Linkul e gata și l-am copiat.",
       createdNotCopied: "Linkul e gata.",
@@ -1155,6 +1186,32 @@ export default {
         "Răspunsul tău a ajuns la {firm} pe {date}, la {time}. Firma îți poate trimite o ofertă nouă.",
       reason: "Motivul tău: {reason}",
     },
+    questions: {
+      title: "Întrebări despre ofertă",
+      hintAssistant:
+        "Asistentul AI îți răspunde pe loc, din ofertă. Ce nu știe sau ține de firmă ajunge la {firm}, care îți răspunde aici.",
+      hintFirm:
+        "Întrebările ajung la {firm}, care îți răspunde aici, pe pagina ofertei.",
+      label: "Întrebarea ta",
+      placeholder: "De exemplu: ce materiale sunt incluse în preț?",
+      ask: "Întreabă",
+      suggestions: "Poți întreba, de exemplu:",
+      suggest: {
+        price: "Ce include prețul?",
+        materials: "Ce materiale folosiți?",
+        variants: "Prin ce diferă variantele?",
+        overhead: "Ce sunt cheltuielile indirecte?",
+      },
+      you: "Tu",
+      assistant: "Asistentul AI",
+      answering: "Asistentul caută răspunsul în ofertă…",
+      waiting: "Întrebarea a ajuns la {firm}. Răspunsul apare aici.",
+      disclaimer:
+        "Asistentul răspunde doar din ofertă și poate greși. Contează oferta de mai sus și ce stabilești cu firma.",
+      preview: "În previzualizare nu poți pune întrebări în locul clientului.",
+      closed:
+        "Ai răspuns deja la ofertă. Pentru alte întrebări, contactează firma.",
+    },
     footer: "Ofertă trimisă cu Devize",
     errors: {
       locked:
@@ -1165,6 +1222,10 @@ export default {
       signature: "Semnătura e prea mică. Semnează din nou, mai mare.",
       reason: "Motivul e prea lung.",
       empty: "Include cel puțin o lucrare ca să accepți oferta.",
+      busy: "Așteaptă răspunsul la întrebarea de dinainte.",
+      tooMany:
+        "Ai pus multe întrebări azi. Pentru altele, sună sau scrie firmei.",
+      question: "Scrie o întrebare de cel mult 1.000 de caractere.",
       unknown: "Ceva n-a mers. Încearcă din nou.",
     },
   },
@@ -1656,6 +1717,7 @@ export default {
       norm_import: "Import norme",
       estimate_proposal: "Propunere deviz",
       tender_import: "Import liste de cantități",
+      offer_question: "Întrebare la o ofertă",
     },
     confidence: {
       high: "Încredere mare",

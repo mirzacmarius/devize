@@ -30,6 +30,7 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
 import { OfferDialog } from "./offer-dialog";
 import { copyText, offerUrl, useOrigin, whatsappNumber } from "./offer-link";
+import { OfferQuestions } from "./offer-questions";
 
 type Offer = NonNullable<
   FunctionReturnType<typeof api.offers.offers.forEstimate>
@@ -243,6 +244,7 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
       {(offer.variants.length > 0 || offer.optionalItems.length > 0) && (
         <ChoiceBox label={t("looking")} offer={offer} />
       )}
+      <OfferQuestions offerId={offer._id} assistant={offer.assistant} live />
       <Button
         type="button"
         variant="ghost"
@@ -334,6 +336,11 @@ function AcceptedOffer({
         ) : (
           <p className="m-0 text-meta text-ink-3">{t("typedSignature")}</p>
         ))}
+      <OfferQuestions
+        offerId={offer._id}
+        assistant={offer.assistant}
+        live={false}
+      />
       <ClientViewLink token={offer.token} />
     </>
   );
@@ -355,6 +362,11 @@ function DeclinedOffer({ offer }: { offer: Offer }) {
           ? t("declineReason", { reason: offer.declineReason })
           : t("noReason")}
       </p>
+      <OfferQuestions
+        offerId={offer._id}
+        assistant={offer.assistant}
+        live={false}
+      />
       <p className="m-0 text-meta text-ink-3">{t("closed")}</p>
     </>
   );

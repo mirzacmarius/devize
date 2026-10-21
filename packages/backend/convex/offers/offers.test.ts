@@ -1,138 +1,22 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  setSystemTime,
-  test,
-} from "bun:test";
+import { afterEach, describe, expect, setSystemTime, test } from "bun:test";
 import { api, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { emptyRecap } from "../estimates/recap";
-import {
-  firmOwner,
-  publishedBaseNorm,
-  setup,
-  signIn,
-  type TestConvex,
-} from "../test.helper";
+import { firmOwner, setup, signIn } from "../test.helper";
 import { decisionEmail, formatLei } from "./notify";
-
-type SentEmail = { to: string[]; subject: string; text: string };
-
-const realFetch = globalThis.fetch;
-const variables = ["SITE_URL", "AUTH_RESEND_KEY"];
-let sent: SentEmail[] = [];
-
-beforeEach(() => {
-  sent = [];
-});
+import {
+  devizFor,
+  fakeResend,
+  premiumVariant,
+  restoreEmail,
+} from "./test.helper";
 
 afterEach(() => {
-  globalThis.fetch = realFetch;
-  for (const name of variables) {
-    delete process.env[name];
-  }
+  restoreEmail();
   setSystemTime();
 });
 
-function fakeResend() {
-  process.env.SITE_URL = "https://devize.test";
-  process.env.AUTH_RESEND_KEY = "re_test";
-  globalThis.fetch = (async (_url: string, init?: RequestInit) => {
-    sent.push(JSON.parse(String(init?.body)) as SentEmail);
-    return new Response('{"id":"1"}', { status: 200 });
-  }) as typeof fetch;
-}
-
 // A signature as the page draws it: a few strokes in the 600 × 200 box.
 const signature = "M40 120 L60 80 L80 130 L100 70 L130 125 M150 90 L220 95";
-
-/**
- * A Deviz with a tiling norm and a custom false ceiling, for Ion. A second
- * firm in the same test needs its own name and norm code.
- */
-async function devizFor(t: TestConvex, firmName = "Ana", code = "DV-FAI-01") {
-  const { normId } = await publishedBaseNorm(t, { code });
-  const firm = await firmOwner(t, firmName);
-  const clientId = await firm.as.mutation(api.accounts.clients.create, {
-    organizationId: firm.organizationId,
-    kind: "person",
-    name: "Ion Popescu",
-    phone: "0722 123 456",
-    notes: "Plătește greu, cere avans.",
-  });
-  const estimateId = await firm.as.mutation(api.estimates.estimates.create, {
-    organizationId: firm.organizationId,
-    title: "Baie apartament",
-    clientId,
-  });
-  const tilingId = await firm.as.mutation(api.estimates.lineItems.addFromNorm, {
-    estimateId,
-    normId,
-    quantity: 24,
-  });
-  const ceilingId = await firm.as.mutation(api.estimates.lineItems.addCustom, {
-    estimateId,
-    title: "Tavan fals din gips-carton",
-    unit: "mp",
-    quantity: 6,
-    resources: [
-      {
-        kind: "material",
-        name: "Placă gips-carton",
-        unit: "mp",
-        quantity: 1.05,
-        unitPrice: 30,
-      },
-      {
-        kind: "labor",
-        name: "Montator",
-        unit: "ora",
-        quantity: 0.8,
-        unitPrice: 40,
-      },
-    ],
-  });
-  await firm.as.mutation(api.estimates.lineItems.update, {
-    lineItemId: tilingId,
-    notes: "Cantitate din releveu, verifică la fața locului.",
-  });
-  return { firm, estimateId, tilingId, ceilingId, normId };
-}
-
-/** A Variantă that swaps the tiles for pricier ones. */
-async function premiumVariant(
-  t: TestConvex,
-  firm: Awaited<ReturnType<typeof firmOwner>>,
-  estimateId: Id<"estimates">,
-  tilingId: Id<"lineItems">,
-) {
-  return await t.run(async (ctx) => {
-    const item = await ctx.db.get("lineItems", tilingId);
-    const tiles = item?.resources.find((r) => r.name === "Faianță");
-    if (!tiles) {
-      throw new Error("no tiles");
-    }
-    return await ctx.db.insert("variants", {
-      organizationId: firm.organizationId,
-      estimateId,
-      name: "Premium",
-      tier: "premium",
-      position: 1,
-      swaps: [
-        {
-          lineItemId: tilingId,
-          resourceKey: tiles.key,
-          name: "Faianță rectificată 60×120",
-          unitPrice: 120,
-          priceSource: "manual",
-        },
-      ],
-      totals: emptyRecap,
-    });
-  });
-}
 
 describe("offers", () => {
   test("a link sends a draft Deviz and the client reads it without an account", async () => {
@@ -391,7 +275,7 @@ describe("offers", () => {
 
   test("the client accepts and signs; the choice and its price are frozen", async () => {
     const t = setup();
-    fakeResend();
+    const sent = fakeResend();
     const { firm, estimateId, tilingId, ceilingId } = await devizFor(t);
     const variantId = await premiumVariant(t, firm, estimateId, tilingId);
     const { token } = await firm.as.mutation(api.offers.offers.create, {
