@@ -4,6 +4,7 @@ import { query } from "../_generated/server";
 import { isProducer, requireUserId } from "../lib/access";
 import { getSuperAdmin } from "../lib/roles";
 import { isVisible, viewerEmail } from "./access";
+import { canWriteDetails, detailsOf } from "./details";
 import { domainOf } from "./domains";
 import { linkableFirms } from "./handover";
 
@@ -32,7 +33,8 @@ export const get = query({
     }
     const producer = await isProducer(ctx, manufacturer._id, viewer.userId);
     const visible = await isVisible(ctx, manufacturer);
-    if (!visible && !producer && !(await getSuperAdmin(ctx))) {
+    const superAdmin = (await getSuperAdmin(ctx)) !== null;
+    if (!visible && !producer && !superAdmin) {
       return null;
     }
     const claimed = manufacturer.claimStatus === "claimed";
@@ -81,6 +83,25 @@ export const get = query({
       .take(100);
     const canClaim =
       !claimed && visible && !producer && viewer.verified !== null;
+    // The producer's norms still being written or checked, for its own firm
+    // and Devize staff.
+    const unpublished =
+      producer || superAdmin
+        ? [
+            ...(await ctx.db
+              .query("norms")
+              .withIndex("by_manufacturerId_and_status_and_code", (q) =>
+                q.eq("manufacturerId", manufacturer._id).eq("status", "review"),
+              )
+              .take(MAX_LISTED)),
+            ...(await ctx.db
+              .query("norms")
+              .withIndex("by_manufacturerId_and_status_and_code", (q) =>
+                q.eq("manufacturerId", manufacturer._id).eq("status", "draft"),
+              )
+              .take(MAX_LISTED)),
+          ]
+        : [];
 
     return {
       _id: manufacturer._id,
@@ -106,6 +127,16 @@ export const get = query({
         confirmed: norm.confirmedAt !== undefined,
       })),
       moreNorms: norms.length === MAX_LISTED,
+      drafts: unpublished.map((norm) => ({
+        _id: norm._id,
+        code: norm.code,
+        title: norm.title,
+        status: norm.status,
+        reviewNote: norm.reviewNote,
+        updatedAt: norm.updatedAt,
+      })),
+      // What the producer wrote about itself, once it claimed the profile.
+      details: holder ? await detailsOf(ctx, manufacturer._id) : null,
       products: products.map((product) => ({
         _id: product._id,
         name: product.name,
@@ -115,6 +146,9 @@ export const get = query({
       })),
       viewer: {
         isProducer: producer,
+        canEditDetails:
+          holder !== null &&
+          (await canWriteDetails(ctx, manufacturer._id, viewer.userId)),
         email: viewer.verified,
         canClaim,
         // A verified address on one of the producer's domains claims at

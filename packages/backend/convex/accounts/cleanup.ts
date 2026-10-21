@@ -3,6 +3,7 @@ import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { internalMutation } from "../_generated/server";
+import { deleteDetails } from "../producers/details";
 import { deleteProposals } from "../proposals/proposals";
 
 const BATCH = 200;
@@ -260,6 +261,7 @@ export const deleteOrganization = internalMutation({
         await ctx.db.patch("manufacturers", manufacturer._id, {
           claimStatus: "unclaimed",
         });
+        await deleteDetails(ctx, manufacturer._id);
       }
     }
     return null;
