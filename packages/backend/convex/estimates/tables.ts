@@ -1,6 +1,7 @@
 import { defineTable } from "convex/server";
 import { v } from "convex/values";
 import { aiConfidence } from "../ai/validators";
+import { lineItemLayout } from "../materials/validators";
 import { store } from "../prices/validators";
 import {
   amountsByKind,
@@ -100,6 +101,9 @@ export const estimateTables = {
     unitCost: amountsByKind,
     laborHours: v.number(),
     notes: v.optional(v.string()),
+    // How its covering is laid (Mod de montaj), when not as the norm has it;
+    // the consumptions already include the method's losses.
+    layout: v.optional(lineItemLayout),
     // Set on items an AI proposed, until a person confirms them.
     confidence: v.optional(aiConfidence),
     aiJobId: v.optional(v.id("aiJobs")),

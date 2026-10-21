@@ -46,6 +46,7 @@ export function EstimateActions({
   const t = useScopedI18n("estimate");
   const tc = useScopedI18n("common");
   const tBasket = useScopedI18n("prices.basket");
+  const tMaterials = useScopedI18n("materials");
   const router = useRouter();
   const run = useRun();
   const setStatus = useMutation(api.estimates.estimates.setStatus);
@@ -177,6 +178,11 @@ export function EstimateActions({
             onSelect={() => router.push(`/estimates/${estimateId}/basket`)}
           >
             {tBasket("open")}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() => router.push(`/estimates/${estimateId}/materials`)}
+          >
+            {tMaterials("open")}
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => copy(false)}>
             {t("actions.copy")}

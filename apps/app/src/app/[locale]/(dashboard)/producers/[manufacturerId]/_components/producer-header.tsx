@@ -17,8 +17,8 @@ import type { Profile } from "./types";
 
 /**
  * The top of a Producător's pages: who it is and whether it claimed its
- * profile. Its own firm and Devize staff also get the tabs between the
- * profile and its usage statistics.
+ * profile, and the tabs between its profile and its systems. Its own firm
+ * and Devize staff also get its usage statistics.
  */
 export function ProducerHeader({
   profile,
@@ -26,7 +26,7 @@ export function ProducerHeader({
   actions,
 }: {
   profile: Profile;
-  tab: "profile" | "stats";
+  tab: "profile" | "systems" | "stats";
   actions?: ReactNode;
 }) {
   const t = useScopedI18n("producers");
@@ -81,16 +81,19 @@ export function ProducerHeader({
           .join(" · ")}
         actions={actions}
       />
-      {profile.viewer.canSeeStats && (
-        <TabsNav aria-label={t("tabs.label")}>
-          <TabsNavLink asChild active={tab === "profile"}>
-            <Link href={href}>{t("tabs.profile")}</Link>
-          </TabsNavLink>
+      <TabsNav aria-label={t("tabs.label")}>
+        <TabsNavLink asChild active={tab === "profile"}>
+          <Link href={href}>{t("tabs.profile")}</Link>
+        </TabsNavLink>
+        <TabsNavLink asChild active={tab === "systems"}>
+          <Link href={`${href}/systems`}>{t("tabs.systems")}</Link>
+        </TabsNavLink>
+        {profile.viewer.canSeeStats && (
           <TabsNavLink asChild active={tab === "stats"}>
             <Link href={`${href}/stats`}>{t("tabs.stats")}</Link>
           </TabsNavLink>
-        </TabsNav>
-      )}
+        )}
+      </TabsNav>
     </>
   );
 }
