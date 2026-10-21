@@ -238,6 +238,64 @@ describe("line items", () => {
     ).toMatchObject({ unitPrice: 2, priceSource: "own" });
   });
 
+  test("use a firm's rate only for resources counted in its unit", async () => {
+    const t = setup();
+    const { firm, normId, estimateId } = await estimateWithRates(t);
+    const rate = (unit: string, price: number) =>
+      firm.as.mutation(api.accounts.rates.set, {
+        organizationId: firm.organizationId,
+        kind: "equipment",
+        name: "Utilaje",
+        unit,
+        price,
+      });
+    const machinePrice = async () => {
+      const estimate = await firm.as.query(api.estimates.estimates.get, {
+        estimateId,
+      });
+      const machine = estimate.lineItems[0]?.resources.find(
+        (r) => r.name === "Mașină de tăiat faianță",
+      );
+      return [machine?.unitPrice, machine?.priceSource];
+    };
+    // 400 lei a day says nothing about a machine counted in hours.
+    await rate("zi", 400);
+    await firm.as.mutation(api.estimates.lineItems.addFromNorm, {
+      estimateId,
+      normId,
+      quantity: 1,
+    });
+    expect(await machinePrice()).toEqual([10, "reference"]);
+
+    await rate("ore", 12);
+    await firm.as.mutation(api.estimates.lineItems.refreshPrices, {
+      estimateId,
+    });
+    expect(await machinePrice()).toEqual([12, "own"]);
+    const rates = await firm.as.query(api.accounts.rates.list, {
+      organizationId: firm.organizationId,
+    });
+    expect(
+      rates.filter((r) => r.kind === "equipment").map((r) => [r.unit, r.price]),
+    ).toEqual([
+      ["zi", 400],
+      ["ora", 12],
+    ]);
+
+    const norm = await firm.as.query(api.catalog.norms.get, { normId });
+    const tiler = norm.resources.find((r) => r.name === "Faianțar");
+    await expect(
+      firm.as.mutation(api.accounts.rates.set, {
+        organizationId: firm.organizationId,
+        kind: "labor",
+        resourceId: tiler?.resourceId,
+        name: "Faianțar",
+        unit: "zi",
+        price: 350,
+      }),
+    ).rejects.toThrow(/invalid/);
+  });
+
   test("a revision keeps the number and a copy gets a new one", async () => {
     const t = setup();
     const { firm, normId, estimateId } = await estimateWithRates(t);
