@@ -129,6 +129,7 @@ export async function offerContent(
       _id: option._id,
       name: option.name,
       tier: option.tier,
+      description: option.description,
       total: totalWith(option),
     })),
     choice: { ...choice, totals: priced.totals },

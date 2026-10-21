@@ -10,6 +10,7 @@ import { appError, invalid, notFound } from "../lib/errors";
 import { defaultChoice, priceChoice } from "./choice";
 import { newToken } from "./helpers";
 import { optionalItem } from "./validators";
+import { MAX_VARIANTS } from "./variants";
 
 // The firm's side of an Ofertă: making the client's link, taking it back, and
 // following what the client does with it. The client's side is public.ts.
@@ -20,7 +21,6 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const CHECK_AHEAD_MS = 20 * DAY_MS;
 export const DEFAULT_VALID_DAYS = 30;
 const MAX_VALID_DAYS = 180;
-const MAX_VARIANTS = 4;
 const MAX_OPTIONAL_ITEMS = 100;
 
 /** Whether an Ofertă is still waiting for the client's answer. */
