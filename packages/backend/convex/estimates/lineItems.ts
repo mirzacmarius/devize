@@ -268,6 +268,9 @@ export const updateResource = mutation({
     key: v.string(),
     unitPrice: v.optional(v.number()),
     quantity: v.optional(v.number()),
+    // Drops a price typed by hand and prices the resource as when it was
+    // added: the firm's rate or price, a listing or the reference price.
+    automatic: v.optional(v.boolean()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -275,9 +278,13 @@ export const updateResource = mutation({
       ctx,
       args.lineItemId,
     );
-    if (!item.resources.some((resource) => resource.key === args.key)) {
+    const target = item.resources.find((resource) => resource.key === args.key);
+    if (!target) {
       throw notFound("resource");
     }
+    const automatic = args.automatic
+      ? await resolverFor(ctx, estimate).resolve(target)
+      : undefined;
     if (
       args.unitPrice !== undefined &&
       (!Number.isFinite(args.unitPrice) || args.unitPrice < 0)
@@ -302,6 +309,15 @@ export const updateResource = mutation({
                   listingId: undefined,
                   store: undefined,
                   pricedAt: now,
+                }),
+            ...(automatic === undefined
+              ? {}
+              : {
+                  unitPrice: automatic.unitPrice,
+                  priceSource: automatic.priceSource,
+                  listingId: automatic.listingId,
+                  store: automatic.store,
+                  pricedAt: automatic.pricedAt ?? now,
                 }),
           },
     );

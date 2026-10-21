@@ -1,13 +1,10 @@
 import { Input } from "@devize/ui/input";
 import { cn } from "@devize/ui/utils";
 import { Search } from "lucide-react";
-import type { InputHTMLAttributes } from "react";
+import type { ComponentProps } from "react";
 
 /** A search field with its icon; give it an aria-label or a label. */
-export function SearchInput({
-  className,
-  ...props
-}: InputHTMLAttributes<HTMLInputElement>) {
+export function SearchInput({ className, ...props }: ComponentProps<"input">) {
   return (
     <div className={cn("relative min-w-0", className)}>
       <Search

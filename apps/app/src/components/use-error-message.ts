@@ -62,6 +62,9 @@ export function useErrorMessage() {
       if (appError.detail?.startsWith("markups.")) {
         return t("invalidMarkup");
       }
+      if (appError.detail?.startsWith("resource.")) {
+        return t("invalidResources");
+      }
       const key =
         (appError.detail && detailKeys[appError.code]?.[appError.detail]) ||
         codeKeys[appError.code];

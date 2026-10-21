@@ -236,6 +236,19 @@ describe("line items", () => {
     expect(
       resources.find((r) => r.name === "Adeziv flexibil C2TE"),
     ).toMatchObject({ unitPrice: 2, priceSource: "own" });
+
+    // Until the firm asks for the automatic price again.
+    await firm.as.mutation(api.estimates.lineItems.updateResource, {
+      lineItemId,
+      key: tile?.key ?? "",
+      automatic: true,
+    });
+    const restored = await firm.as.query(api.estimates.estimates.get, {
+      estimateId,
+    });
+    expect(
+      restored.lineItems[0]?.resources.find((r) => r.name === "Faianță"),
+    ).toMatchObject({ unitPrice: 45, priceSource: "reference" });
   });
 
   test("use a firm's rate only for resources counted in its unit", async () => {
@@ -325,5 +338,12 @@ describe("line items", () => {
     expect([copy.number, copy.revision]).toEqual([2, 1]);
     expect(revision.lineItems).toHaveLength(1);
     expect(revision.totals).toEqual(original.totals);
+    const revisions = await firm.as.query(api.estimates.estimates.revisions, {
+      estimateId: revisionId,
+    });
+    expect(revisions.map((r) => [r._id, r.revision])).toEqual([
+      [estimateId, 1],
+      [revisionId, 2],
+    ]);
   });
 });
