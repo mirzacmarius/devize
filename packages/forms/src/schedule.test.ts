@@ -151,6 +151,23 @@ describe("F6, the general schedule", () => {
     expect(cumulated.at(-1)).toBe(bani(years));
   });
 
+  test("writes the duration as Romanian counts months", () => {
+    const duration = (months: number) =>
+      buildDocuments(schoolData(), ["F6"], {
+        ...options,
+        schedule: { months },
+      })[0]?.blocks.find(
+        (block) => block.type === "text" && block.text.startsWith("Durata"),
+      );
+    expect(duration(1)).toMatchObject({ text: "Durata de execuție: 1 lună" });
+    expect(duration(15)).toMatchObject({
+      text: "Durata de execuție: 15 luni",
+    });
+    expect(duration(24)).toMatchObject({
+      text: "Durata de execuție: 24 de luni",
+    });
+  });
+
   test("leaves the months blank for a designer", () => {
     const [f6] = buildDocuments(schoolData(), ["F6"], {
       ...options,

@@ -90,6 +90,10 @@ _Avoid_: Recapitulație (that closes one list of quantities), summary
 Form F6: an investment's works over the months of its duration, as bars and as the value of each month. Devize plans it from the Deviz's labour hours and its subchapters, and the person sets the tender's duration. In code: `F6` and `schedule`.
 _Avoid_: Timeline, Gantt chart (for the form)
 
+**Formularul de ofertă** (offer form):
+The bidder's letter at the head of a financial offer, which states the price without VAT and the VAT, each "în litere și în cifre". Devize gives the value as F1 totals it, written out in Romanian, ready to copy into it. In code: `offerValue` and `leiInWords`.
+_Avoid_: Ofertă (that is what a client receives for a private Deviz), cover letter
+
 ### People and companies
 
 **Firmă** (company):

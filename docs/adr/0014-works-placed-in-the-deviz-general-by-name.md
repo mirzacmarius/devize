@@ -7,5 +7,5 @@ The Deviz general (HG 907/2016, Anexa 7, as HG 1116/2023 amended it) and each ob
 - A Capitol whose code is a subchapter's, such as "4.1.4", goes there. An Obiect named for site organisation or utilities takes all its Capitole with it. A name nothing recognises is Arhitectură, the commonest.
 - Only the works are valued. The Deviz general prints chapters 1 to 7 in full, and leaves blank the rows its works do not fill, such as design, technical assistance and the budget margin, for the beneficiary.
 - VAT is worked out on each object's subchapter and summed, so the Deviz general and F1 agree with the objects' Devize to the ban. F4 prices each piece of equipment with its own CAM, indirect costs and profit, and a line for rounding makes it add up to subchapters 4.3 to 4.6.
-- Only the choices that differ from the guess are kept, so they still win when a later version guesses better.
+- Only the choices that differ from the guess are kept, so they still win when a later version guesses better. A placement the person confirms for works nothing recognises is kept too (ADR 0017).
 - The choices stay on one device and in one browser. Keeping them with the Deviz, for every device and colleague, needs a field in the schema.

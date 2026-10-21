@@ -1,10 +1,13 @@
 "use client";
 
 import {
+  checkForms,
   clampMonths,
   type DocumentKind,
   defaultLabel,
   documentKinds,
+  type FormCheck,
+  offerValue,
   procurement,
   type ResourceScope,
   type SheetCategory,
@@ -28,6 +31,7 @@ import { Field } from "@/components/field";
 import { SegmentedControl } from "@/components/segmented-control";
 import { useScopedI18n } from "@/locales/client";
 import { type Estimate, worksOf } from "./export-data";
+import { type CheckAction, FormChecks } from "./form-checks";
 import { type Placement, PlacementFields, placedIn } from "./placement-fields";
 import {
   ScheduleFields,
@@ -105,14 +109,9 @@ function FormsForm({
   const t = useScopedI18n("documents.forms");
   const tc = useScopedI18n("common");
   const download = useDownloadDocuments(estimate);
-  const categories = useMemo(
-    () => sheetCategories(worksOf(estimate)),
-    [estimate],
-  );
-  const suggested = useMemo(
-    () => suggestedMonths(worksOf(estimate)),
-    [estimate],
-  );
+  const works = useMemo(() => worksOf(estimate), [estimate]);
+  const categories = useMemo(() => sheetCategories(works), [works]);
+  const suggested = useMemo(() => suggestedMonths(works), [works]);
   // The sheet starts from what was chosen for this Deviz last time.
   const [stored] = useState(() => readChoices(estimate._id));
   const [placement, setPlacement] = useState<Placement>(
@@ -146,6 +145,8 @@ function FormsForm({
   const [months, setMonths] = useState(() =>
     clampMonths(stored.months ?? suggested.months),
   );
+  // Whether the person set the duration, even to the one we planned.
+  const [monthsChosen, setMonthsChosen] = useState(stored.months !== undefined);
   const [windows, setWindows] = useState<Windows>(() => stored.windows ?? {});
   const [error, setError] = useState<string>();
   const [downloading, setDownloading] = useState(false);
@@ -161,17 +162,85 @@ function FormsForm({
     setError(undefined);
   };
 
-  // Only where the person placed works other than we would.
-  const moved = Object.fromEntries(
-    categories.flatMap((category): [string, Subchapter][] => {
-      const subchapter = placement[category.key];
-      return subchapter && subchapter !== category.guess
-        ? [[category.key, subchapter]]
-        : [];
-    }),
+  // Where the person placed works other than we would, or placed works no
+  // name placed, so the check knows they were looked at.
+  const moved = useMemo(
+    () =>
+      Object.fromEntries(
+        categories.flatMap((category): [string, Subchapter][] => {
+          const subchapter = placement[category.key];
+          return subchapter &&
+            (subchapter !== category.guess || !category.hinted)
+            ? [[category.key, subchapter]]
+            : [];
+        }),
+      ),
+    [categories, placement],
   );
 
   const shifted = shiftedWindows(categories, placement, windows, months);
+
+  // Who the forms will name, as the PDF falls back on the Deviz's own.
+  const named = beneficiary.trim() || authority;
+  const checks = useMemo(
+    () =>
+      checkForms(works, {
+        kinds: formKinds.filter((kind) => chosen.has(kind)),
+        withValues,
+        subchapters: moved,
+        beneficiary: named,
+        months,
+        monthsChosen,
+      }),
+    [works, chosen, withValues, moved, named, months, monthsChosen],
+  );
+  const value = useMemo(
+    () => (withValues ? offerValue(works, { subchapters: moved }) : undefined),
+    [works, withValues, moved],
+  );
+
+  const focusField = (id: string) => {
+    const field = document.getElementById(id);
+    field?.scrollIntoView({ behavior: "smooth", block: "center" });
+    field?.focus({ preventScroll: true });
+  };
+
+  const fix = (check: FormCheck, action: CheckAction) => {
+    switch (check.id) {
+      case "placement":
+        if (action === "keep") {
+          setPlacement({
+            ...placement,
+            ...Object.fromEntries(
+              categories
+                .filter((category) =>
+                  check.categories.some((one) => one.key === category.key),
+                )
+                .map((category) => [
+                  category.key,
+                  placedIn(placement, category),
+                ]),
+            ),
+          });
+        } else if (check.categories[0]) {
+          focusField(`placement-${check.categories[0].key}`);
+        }
+        return;
+      case "procurement":
+        setChosen(new Set([...chosen, "F4", "F5"]));
+        return;
+      case "duration":
+        if (action === "keep") {
+          setMonthsChosen(true);
+        } else {
+          focusField("forms-months");
+        }
+        return;
+      case "beneficiary":
+        focusField("forms-beneficiary");
+        return;
+    }
+  };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -207,8 +276,8 @@ function FormsForm({
         // A beneficiary typed in, not the one the Deviz gives.
         beneficiary: beneficiary === authority ? undefined : beneficiary,
         designer: designer || undefined,
-        // A duration typed in, not the one planned from the labour hours.
-        months: months === suggested.months ? undefined : months,
+        // A duration the person set, not the one planned from the labour hours.
+        months: monthsChosen ? months : undefined,
         windows: shifted,
       });
       onDone();
@@ -321,7 +390,10 @@ function FormsForm({
           suggestedHours={suggested.hours}
           months={months}
           windows={windows}
-          onMonths={setMonths}
+          onMonths={(next) => {
+            setMonths(next);
+            setMonthsChosen(true);
+          }}
           onWindows={setWindows}
         />
       )}
@@ -348,6 +420,8 @@ function FormsForm({
           onChange={(event) => setDesigner(event.target.value)}
         />
       </Field>
+
+      <FormChecks checks={checks} value={value} onFix={fix} />
 
       <div className="flex justify-end gap-3">
         <Button type="button" variant="ghost" onClick={onDone}>

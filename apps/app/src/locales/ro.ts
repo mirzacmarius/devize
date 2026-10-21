@@ -732,10 +732,11 @@ export default {
       placementHint:
         "Fiecare categorie de lucrări intră la un subcapitol al devizului general. Le-am încadrat după nume; schimbă-le unde documentația le încadrează altfel.",
       placementReset: "Încadrează din nou după nume",
+      placementUnhinted: "Numele nu spune unde intră: verifică subcapitolul.",
       schedule: "Graficul general (F6)",
       months: "Durata de execuție (luni)",
       monthsHint:
-        "Pune durata din documentația de atribuire. Am propus una din cele {hours} ore de manoperă ale devizului, pentru o echipă de 10 oameni.",
+        "Pune durata din documentația de atribuire. Am propus una pentru o echipă de 10 oameni, din orele de manoperă ale devizului: {hours}.",
       windows: "Alege lunile fiecărei categorii",
       windowsDone: "Gata cu lunile",
       windowsHint:
@@ -775,6 +776,110 @@ export default {
       none: "Alege cel puțin un formular.",
       download: "Descarcă PDF",
       fileTitle: "Formulare oficiale",
+      checks: {
+        title: "Verificarea formularelor",
+        score: "{passed} din {total} trecute",
+        allPassed: "Nimic de corectat: formularele sunt gata de descărcat.",
+        showPassed: "Arată verificările trecute ({count})",
+        hidePassed: "Ascunde verificările trecute",
+        states: {
+          passed: "trece",
+          warning: "de văzut",
+          failed: "nu trece",
+        },
+        more: "{names} și încă {count}",
+        line: "poz. {number} {title}",
+        value: {
+          title: "Valoarea ofertei",
+          subtotal: "Fără TVA",
+          vat: "TVA {rate}",
+          lei: "{amount} lei",
+          total: "Total cu TVA",
+          hint: "F1, F2, listele F3 și devizul general dau aceeași valoare; copiaz-o în formularul de ofertă.",
+          difference:
+            "Diferă cu {difference} lei de recapitulația devizului, din rotunjirile pe categorii de lucrări și pe prețuri unitare.",
+          copySubtotal: "Copiază valoarea fără TVA, în cifre și în litere",
+          copyVat: "Copiază TVA-ul, în cifre și în litere",
+          copyTotal: "Copiază totalul cu TVA, în cifre și în litere",
+          copied:
+            "Am copiat suma în cifre și în litere, cum o cere formularul de ofertă.",
+        },
+        unpriced: {
+          title: "Toate articolele au valoare",
+          passed: "Niciun articol nu apare cu 0,00 lei în F3.",
+          failedTitle: "Articole cu valoarea 0",
+          failed: "Apar cu 0,00 lei în F3: {names}",
+        },
+        repeated: {
+          title: "Fiecare poziție o singură dată",
+          passed: "Nicio poziție nu se repetă într-o listă de cantități.",
+          failedTitle: "Poziții repetate",
+          failed:
+            "Apar de mai multe ori în aceeași listă: {names}. Șterge dublura din deviz.",
+          position: "poz. {number} din {category} (de {count} ori)",
+        },
+        missing: {
+          title: "Nicio poziție sărită",
+          passed: "Pozițiile din listele autorității merg la rând.",
+          warningTitle: "Poziții care par să lipsească",
+          warning:
+            "Lipsesc din șir: {names}. Verifică lista autorității și adaugă-le în deviz.",
+          position: "poz. {number} din {category}",
+        },
+        added: {
+          title: "Doar pozițiile autorității",
+          passed:
+            "Toate articolele vin din listele de cantități ale autorității.",
+          warningTitle: "Articole în afara listelor",
+          warning:
+            "Nu sunt în listele autorității și apar în F3 cu numărul lor de rând: {names}",
+        },
+        quantities: {
+          title: "Cantitățile autorității",
+          passed: "Cantitățile din deviz sunt cele din listele autorității.",
+          warningTitle: "Cantități schimbate",
+          warning:
+            "F3 păstrează cantitatea din listă, iar prețul unitar preia diferența: {names}",
+          line: "poz. {number}: {quantity} {unit} în deviz, {tendered} {unit} în listă",
+        },
+        placement: {
+          title: "Încadrarea în devizul general",
+          passed: "Fiecare categorie de lucrări are subcapitolul ei.",
+          warningTitle: "Încadrare de verificat",
+          warning:
+            "Numele nu spun unde intră, așa că le-am pus la 4.1.3 Arhitectură: {names}",
+          fix: "Alege subcapitolul",
+          keep: "Încadrarea e corectă",
+        },
+        procurement: {
+          title: "Utilaje și dotări în F4",
+          passed: "Articole încadrate la 4.3–4.6: {count}",
+          passedNone:
+            "Nicio categorie nu e încadrată la 4.3–4.6, așa că F4 spune „Nu este cazul”.",
+          warningTitle: "F4 nu e ales",
+          warning:
+            "Devizul are utilaje sau dotări (4.3–4.6), dar F4 și F5 nu sunt în PDF. Articole: {count}",
+          fix: "Adaugă F4 și F5",
+        },
+        duration: {
+          title: "Durata de execuție (F6)",
+          passed: "Durata aleasă, în luni: {months}",
+          warningTitle: "Durata din F6 e propunerea noastră",
+          warning:
+            "Am calculat-o din orele de manoperă ale devizului, pentru o echipă de 10 oameni. Pune durata din documentația de atribuire.",
+          warningNoHours:
+            "Devizul nu are ore de manoperă, așa că F6 are o lună. Pune durata din documentația de atribuire.",
+          fix: "Alege durata",
+          keep: "Durata e corectă",
+        },
+        beneficiary: {
+          title: "Beneficiar",
+          warningTitle: "Fără beneficiar",
+          warning:
+            "Formularele nu vor avea beneficiar. Scrie autoritatea contractantă sau clientul.",
+          fix: "Scrie beneficiarul",
+        },
+      },
     },
   },
   offer: {

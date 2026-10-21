@@ -1,7 +1,17 @@
 // What the export sheet needs before anything is drawn: the documents, their
-// default names and where each category of works falls. It leaves out the
-// builders, which load with the first export.
+// default names, where each category of works falls and what to check. It
+// leaves out the builders, which load with the first export.
 
+export {
+  type ChangedQuantity,
+  type CheckedLine,
+  type CheckOptions,
+  checkForms,
+  type FormCheck,
+  type FormCheckState,
+  type OfferValue,
+  offerValue,
+} from "./checks";
 export type {
   DocumentKind,
   ExportOptions,
@@ -12,14 +22,15 @@ export type {
 } from "./input";
 export { defaultLabel, documentKinds, subchapters } from "./input";
 export {
-  procurement,
-  type SheetCategory,
-  sheetCategories,
-} from "./subchapters";
-export {
   clampMonths,
   clampWindow,
   maxMonths,
   plannedWindow,
   suggestedMonths,
 } from "./schedule";
+export {
+  procurement,
+  type SheetCategory,
+  sheetCategories,
+} from "./subchapters";
+export { leiInFiguresAndWords, leiInWords } from "./words";

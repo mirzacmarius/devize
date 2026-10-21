@@ -86,14 +86,23 @@ export function PlacementFields({
           )}
           {object.categories.map((category) => {
             const id = `placement-${category.key}`;
+            // Placed by the fallback, until the person places it.
+            const unhinted = !category.hinted && !placement[category.key];
             return (
               <div
                 key={category.key}
                 className="grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_17rem] sm:items-center sm:gap-3"
               >
-                <label htmlFor={id} className="text-body text-ink">
-                  {category.name}
-                </label>
+                <div className="grid min-w-0 gap-0.5">
+                  <label htmlFor={id} className="text-body text-ink">
+                    {category.name}
+                  </label>
+                  {unhinted && (
+                    <span id={`${id}-hint`} className="text-meta text-warning">
+                      {t("placementUnhinted")}
+                    </span>
+                  )}
+                </div>
                 <Select
                   value={placedIn(placement, category)}
                   onValueChange={(next) =>
@@ -105,6 +114,7 @@ export function PlacementFields({
                 >
                   <SelectTrigger
                     id={id}
+                    aria-describedby={unhinted ? `${id}-hint` : undefined}
                     className="min-w-0 [&>span]:block [&>span]:truncate"
                   >
                     <SelectValue />

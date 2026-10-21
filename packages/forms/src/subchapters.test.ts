@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { schoolData } from "./sample.helper";
 import {
   guessSubchapter,
+  hintedSubchapter,
   placeCategories,
   sheetCategories,
   vatOf,
@@ -70,6 +71,18 @@ describe("guessSubchapter", () => {
     ).toBe("2");
   });
 
+  test("tells a hint from the fallback", () => {
+    expect(hintedSubchapter(building, category("Lucrări diverse"))).toBe(
+      undefined,
+    );
+    expect(hintedSubchapter(building, category("Diverse", "4.1.4"))).toBe(
+      "4.1.4",
+    );
+    expect(
+      hintedSubchapter(object("Instalații exterioare"), category("Lot 1")),
+    ).toBe("4.1.4");
+  });
+
   test("falls back on a named object's name, not on the Deviz's title", () => {
     expect(
       guessSubchapter(object("Instalații exterioare"), category("Lot 1")),
@@ -90,16 +103,17 @@ describe("placing a Deviz's categories", () => {
         entry.name,
         entry.object.name,
         entry.guess,
+        entry.hinted,
       ]),
     ).toEqual([
-      ["Branșamente utilități", "Lucrări generale", "2"],
-      ["Terasamente", "01 Corp școală", "4.1.1"],
-      ["Structură de rezistență", "01 Corp școală", "4.1.2"],
-      ["Arhitectură", "01 Corp școală", "4.1.3"],
-      ["Instalații electrice", "01 Corp școală", "4.1.4"],
-      ["Utilaje și echipamente tehnologice", "01 Corp școală", "4.3"],
-      ["Dotări", "01 Corp școală", "4.5"],
-      ["Construcții provizorii", "02 Organizare de șantier", "5.1.1"],
+      ["Branșamente utilități", "Lucrări generale", "2", true],
+      ["Terasamente", "01 Corp școală", "4.1.1", true],
+      ["Structură de rezistență", "01 Corp școală", "4.1.2", true],
+      ["Arhitectură", "01 Corp școală", "4.1.3", true],
+      ["Instalații electrice", "01 Corp școală", "4.1.4", true],
+      ["Utilaje și echipamente tehnologice", "01 Corp școală", "4.3", true],
+      ["Dotări", "01 Corp școală", "4.5", true],
+      ["Construcții provizorii", "02 Organizare de șantier", "5.1.1", true],
     ]);
   });
 

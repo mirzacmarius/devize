@@ -735,10 +735,12 @@ export default {
       placementHint:
         "Each category of works falls under a subchapter of the general estimate. We placed them by name; change any the tender documentation places differently.",
       placementReset: "Place them by name again",
+      placementUnhinted:
+        "The name doesn't say where it belongs: check the subchapter.",
       schedule: "General schedule (F6)",
       months: "Duration of the works (months)",
       monthsHint:
-        "Use the duration in the tender documentation. We suggested one from the estimate's {hours} labour hours, for a crew of ten.",
+        "Use the duration in the tender documentation. We suggested one for a crew of ten, from the estimate's labour hours: {hours}.",
       windows: "Choose each category's months",
       windowsDone: "Done with the months",
       windowsHint:
@@ -778,6 +780,110 @@ export default {
       none: "Choose at least one form.",
       download: "Download PDF",
       fileTitle: "Official forms",
+      checks: {
+        title: "Checking the forms",
+        score: "{passed} of {total} passed",
+        allPassed: "Nothing to fix: the forms are ready to download.",
+        showPassed: "Show the checks that passed ({count})",
+        hidePassed: "Hide the checks that passed",
+        states: {
+          passed: "passes",
+          warning: "to look at",
+          failed: "fails",
+        },
+        more: "{names} and {count} more",
+        line: "item {number} {title}",
+        value: {
+          title: "The offer's value",
+          subtotal: "Without VAT",
+          vat: "VAT {rate}",
+          lei: "{amount} lei",
+          total: "Total with VAT",
+          hint: "F1, F2, the F3 lists and the general estimate give the same value; copy it into the offer form.",
+          difference:
+            "It differs from the estimate's summary by {difference} lei, from rounding by category of works and by unit price.",
+          copySubtotal: "Copy the value without VAT, in figures and in words",
+          copyVat: "Copy the VAT, in figures and in words",
+          copyTotal: "Copy the total with VAT, in figures and in words",
+          copied:
+            "Copied the amount in figures and in Romanian words, as the offer form asks.",
+        },
+        unpriced: {
+          title: "Every item has a value",
+          passed: "No item shows as 0.00 lei in F3.",
+          failedTitle: "Items worth 0",
+          failed: "They show as 0.00 lei in F3: {names}",
+        },
+        repeated: {
+          title: "Each position once",
+          passed: "No position repeats within a quantity list.",
+          failedTitle: "Repeated positions",
+          failed:
+            "They appear more than once in the same list: {names}. Delete the duplicate from the estimate.",
+          position: "item {number} in {category} ({count} times)",
+        },
+        missing: {
+          title: "No skipped positions",
+          passed: "The positions from the authority's lists run in order.",
+          warningTitle: "Positions that seem to be missing",
+          warning:
+            "Missing from the sequence: {names}. Check the authority's list and add them to the estimate.",
+          position: "item {number} in {category}",
+        },
+        added: {
+          title: "Only the authority's positions",
+          passed: "Every item comes from the authority's quantity lists.",
+          warningTitle: "Items outside the lists",
+          warning:
+            "They aren't in the authority's lists and print in F3 with their row number: {names}",
+        },
+        quantities: {
+          title: "The authority's quantities",
+          passed:
+            "The estimate's quantities are those in the authority's lists.",
+          warningTitle: "Changed quantities",
+          warning:
+            "F3 keeps the list's quantity, and the unit price takes the difference: {names}",
+          line: "item {number}: {quantity} {unit} in the estimate, {tendered} {unit} in the list",
+        },
+        placement: {
+          title: "Placement in the general estimate",
+          passed: "Each category of works has its subchapter.",
+          warningTitle: "Placement to check",
+          warning:
+            "Their names don't say where they belong, so we put them under 4.1.3 Architecture: {names}",
+          fix: "Choose the subchapter",
+          keep: "The placement is right",
+        },
+        procurement: {
+          title: "Equipment and furnishings in F4",
+          passed: "Items under 4.3–4.6: {count}",
+          passedNone:
+            'No category is placed under 4.3–4.6, so F4 says "Nu este cazul" (not applicable).',
+          warningTitle: "F4 isn't chosen",
+          warning:
+            "The estimate has equipment or furnishings (4.3–4.6), but F4 and F5 aren't in the PDF. Items: {count}",
+          fix: "Add F4 and F5",
+        },
+        duration: {
+          title: "Duration of the works (F6)",
+          passed: "Duration chosen, in months: {months}",
+          warningTitle: "F6's duration is our suggestion",
+          warning:
+            "We worked it out from the estimate's labour hours, for a crew of ten. Use the duration in the tender documentation.",
+          warningNoHours:
+            "The estimate has no labour hours, so F6 runs one month. Use the duration in the tender documentation.",
+          fix: "Choose the duration",
+          keep: "The duration is right",
+        },
+        beneficiary: {
+          title: "Beneficiary",
+          warningTitle: "No beneficiary",
+          warning:
+            "The forms won't name a beneficiary. Enter the contracting authority or the client.",
+          fix: "Enter the beneficiary",
+        },
+      },
     },
   },
   offer: {
