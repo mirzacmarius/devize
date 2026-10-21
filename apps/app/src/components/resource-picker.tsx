@@ -11,7 +11,10 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 export type Resource = Doc<"resources">;
 
-/** Finds a Resursă in the catalog, the firm's own first, by the words of its name. */
+/**
+ * Finds a Resursă in the catalog, the firm's own first, by the words of its
+ * name. Picking one clears the search for the next.
+ */
 export function ResourcePicker({
   kind,
   onPick,
@@ -48,7 +51,10 @@ export function ResourcePicker({
             <li key={resource._id}>
               <button
                 type="button"
-                onClick={() => onPick(resource)}
+                onClick={() => {
+                  onPick(resource);
+                  setText("");
+                }}
                 className="flex w-full items-center justify-between gap-3 rounded-sm px-3 py-2 text-left text-body text-ink hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span className="min-w-0 truncate">{resource.name}</span>

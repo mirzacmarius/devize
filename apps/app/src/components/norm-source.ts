@@ -5,14 +5,14 @@ import { useScopedI18n } from "@/locales/client";
 
 /** Whose norm it is: "normă de bază", "normă ROCKWOOL", "normă proprie". */
 export function useNormSource() {
-  const t = useScopedI18n("estimate");
+  const t = useScopedI18n("norms");
   return (norm: {
     source: Doc<"norms">["source"];
     manufacturerName?: string;
   }) =>
     norm.source === "manufacturer"
-      ? t("origins.manufacturer", {
-          name: norm.manufacturerName ?? t("origins.unknownManufacturer"),
+      ? t("sources.manufacturer", {
+          name: norm.manufacturerName ?? t("sources.unknownManufacturer"),
         })
-      : t(`origins.${norm.source}`);
+      : t(`sources.${norm.source}`);
 }

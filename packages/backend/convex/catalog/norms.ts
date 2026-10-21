@@ -10,14 +10,16 @@ import {
   requireUserId,
 } from "../lib/access";
 import { appError, forbidden, invalid, notFound } from "../lib/errors";
-import { requireSuperAdmin } from "../lib/roles";
+import { getSuperAdmin, requireSuperAdmin } from "../lib/roles";
 import { normalizeText, normalizeUnit } from "../lib/text";
 import {
   canEditNorm,
+  canReadNorm,
+  isReadableByAll,
   requireEditableNorm,
   requireReadableNorm,
 } from "./access";
-import { writeNormResources } from "./resourceRows";
+import { type NormResourceInput, writeNormResources } from "./resourceRows";
 import { normResourceInput, normSource, normStatus } from "./validators";
 
 const descriptiveFields = {
@@ -86,7 +88,10 @@ export async function latestPublishedVersion(
   return versions.find((version) => version.status === "published") ?? null;
 }
 
-function sameScope(a: Doc<"norms">, b: Doc<"norms">) {
+// Which catalog a norm is in: Devize's, one producer's or one firm's.
+type Scope = Pick<Doc<"norms">, "source" | "manufacturerId" | "organizationId">;
+
+function sameScope(a: Scope, b: Scope) {
   return (
     a.source === b.source &&
     a.manufacturerId === b.manufacturerId &&
@@ -94,20 +99,48 @@ function sameScope(a: Doc<"norms">, b: Doc<"norms">) {
   );
 }
 
-/** A code names one norm in its catalog: Devize's, a producer's or a firm's. */
-async function assertCodeFree(ctx: QueryCtx, norm: Doc<"norms">) {
+/**
+ * Whether a norm of another lineage in the same catalog, not archived, has
+ * this code.
+ */
+async function codeTaken(
+  ctx: QueryCtx,
+  scope: Scope,
+  code: string,
+  lineageId?: Id<"norms">,
+) {
   const sameCode = ctx.db
     .query("norms")
-    .withIndex("by_code", (q) => q.eq("code", norm.code));
+    .withIndex("by_code", (q) => q.eq("code", code));
   for await (const other of sameCode) {
     if (
-      lineageOf(other) !== lineageOf(norm) &&
-      sameScope(other, norm) &&
+      lineageOf(other) !== lineageId &&
+      sameScope(other, scope) &&
       other.status !== "archived"
     ) {
-      throw appError("in_use", "code");
+      return true;
     }
   }
+  return false;
+}
+
+/** A code names one norm in its catalog: Devize's, a producer's or a firm's. */
+async function assertCodeFree(ctx: QueryCtx, norm: Doc<"norms">) {
+  if (await codeTaken(ctx, norm, norm.code, lineageOf(norm))) {
+    throw appError("in_use", "code");
+  }
+}
+
+/** The code itself, or the first of "-2", "-3"… after it that is free. */
+async function freeCode(ctx: QueryCtx, scope: Scope, code: string) {
+  for (let copy = 1; copy <= 50; copy++) {
+    const suffix = copy === 1 ? "" : `-${copy}`;
+    const candidate = `${code.slice(0, 40 - suffix.length)}${suffix}`;
+    if (!(await codeTaken(ctx, scope, candidate))) {
+      return candidate;
+    }
+  }
+  throw appError("in_use", "code");
 }
 
 async function manufacturerNames(
@@ -152,18 +185,21 @@ async function summaries(ctx: QueryCtx, norms: readonly Doc<"norms">[]) {
     verified: norm.verifiedAt !== undefined,
     confirmed: norm.confirmedAt !== undefined,
     edition: norm.edition,
+    updatedAt: norm.updatedAt,
   }));
 }
 
 /**
  * Published norms a firm can put in a Deviz that match the words typed, its own
- * first. Words are matched without diacritics, the last one as a prefix.
+ * first, or only the public ones. Words are matched without diacritics, the
+ * last one as a prefix.
  */
 export const search = query({
   args: {
     organizationId: v.id("organizations"),
     text: v.string(),
     category: v.optional(v.string()),
+    scope: v.optional(v.union(v.literal("all"), v.literal("public"))),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -173,16 +209,21 @@ export const search = query({
       return [];
     }
     const limit = Math.min(Math.max(Math.floor(args.limit ?? 20), 1), 50);
-    const own = await ctx.db
-      .query("norms")
-      .withSearchIndex("search_searchText", (q) => {
-        const scoped = q
-          .search("searchText", text)
-          .eq("organizationId", args.organizationId)
-          .eq("status", "published");
-        return args.category ? scoped.eq("category", args.category) : scoped;
-      })
-      .take(limit);
+    const own =
+      args.scope === "public"
+        ? []
+        : await ctx.db
+            .query("norms")
+            .withSearchIndex("search_searchText", (q) => {
+              const scoped = q
+                .search("searchText", text)
+                .eq("organizationId", args.organizationId)
+                .eq("status", "published");
+              return args.category
+                ? scoped.eq("category", args.category)
+                : scoped;
+            })
+            .take(limit);
     const shared = await ctx.db
       .query("norms")
       .withSearchIndex("search_searchText", (q) => {
@@ -197,7 +238,7 @@ export const search = query({
   },
 });
 
-/** The published public catalog, or one Producător's part of it. */
+/** The published public catalog, or one Producător's part of it, by code. */
 export const listPublished = query({
   args: {
     paginationOpts: paginationOptsValidator,
@@ -209,13 +250,13 @@ export const listPublished = query({
     const result = manufacturerId
       ? await ctx.db
           .query("norms")
-          .withIndex("by_manufacturerId_and_status", (q) =>
+          .withIndex("by_manufacturerId_and_status_and_code", (q) =>
             q.eq("manufacturerId", manufacturerId).eq("status", "published"),
           )
           .paginate(args.paginationOpts)
       : await ctx.db
           .query("norms")
-          .withIndex("by_visibility_and_status", (q) =>
+          .withIndex("by_visibility_and_status_and_code", (q) =>
             q.eq("visibility", "public").eq("status", "published"),
           )
           .paginate(args.paginationOpts);
@@ -223,7 +264,19 @@ export const listPublished = query({
   },
 });
 
-/** A firm's private norms in one status. */
+// A firm's norms that are still current: superseded versions only matter to
+// the devize that used them.
+const currentStatuses: Doc<"norms">["status"][] = [
+  "draft",
+  "review",
+  "published",
+  "archived",
+];
+
+/**
+ * A firm's private norms in one status, or all its current ones, the most
+ * recently changed first and the archived ones last.
+ */
 export const listForOrganization = query({
   args: {
     organizationId: v.id("organizations"),
@@ -231,14 +284,22 @@ export const listForOrganization = query({
   },
   handler: async (ctx, args) => {
     await requireMember(ctx, args.organizationId);
-    const norms = await ctx.db
-      .query("norms")
-      .withIndex("by_organizationId_and_status", (q) =>
-        q
-          .eq("organizationId", args.organizationId)
-          .eq("status", args.status ?? "published"),
-      )
-      .take(500);
+    const norms: Doc<"norms">[] = [];
+    for (const status of args.status ? [args.status] : currentStatuses) {
+      norms.push(
+        ...(await ctx.db
+          .query("norms")
+          .withIndex("by_organizationId_and_status", (q) =>
+            q.eq("organizationId", args.organizationId).eq("status", status),
+          )
+          .take(500)),
+      );
+    }
+    const archived = (norm: Doc<"norms">) =>
+      norm.status === "archived" ? 1 : 0;
+    norms.sort(
+      (a, b) => archived(a) - archived(b) || b.updatedAt - a.updatedAt,
+    );
     return await summaries(ctx, norms);
   },
 });
@@ -250,7 +311,7 @@ export const listForReview = query({
     await requireSuperAdmin(ctx);
     const norms = await ctx.db
       .query("norms")
-      .withIndex("by_visibility_and_status", (q) =>
+      .withIndex("by_visibility_and_status_and_code", (q) =>
         q.eq("visibility", "public").eq("status", "review"),
       )
       .take(200);
@@ -258,21 +319,64 @@ export const listForReview = query({
   },
 });
 
-/** A norm version with its resources and the newest published version. */
+/**
+ * A norm version with its resources, the newest published version, the norm
+ * it was copied from and what the signed-in user may do with it.
+ */
 export const get = query({
   args: { normId: v.id("norms") },
   handler: async (ctx, args) => {
     const norm = await requireReadableNorm(ctx, args.normId);
+    const userId = await requireUserId(ctx);
     const [summary] = await summaries(ctx, [norm]);
     const latest = await latestPublishedVersion(ctx, norm);
+    const canEdit = await canEditNorm(ctx, norm);
+    const original = norm.copiedFromId
+      ? await ctx.db.get("norms", norm.copiedFromId)
+      : null;
+    const [copiedFrom] =
+      original && (await canReadNorm(ctx, original))
+        ? await summaries(ctx, [original])
+        : [];
     return {
       ...norm,
       manufacturerName: summary?.manufacturerName,
       resources: await readNormResources(ctx, norm._id),
-      canEdit: await canEditNorm(ctx, norm),
+      canEdit,
+      // A firm publishes its own norms; a super admin publishes public ones.
+      canPublish:
+        canEdit &&
+        (norm.visibility === "private" || (await getSuperAdmin(ctx)) !== null),
+      // Only someone from the producer's own firm confirms its norms.
+      canConfirm:
+        norm.source === "manufacturer" &&
+        norm.manufacturerId !== undefined &&
+        norm.status === "published" &&
+        norm.confirmedAt === undefined &&
+        (await isProducer(ctx, norm.manufacturerId, userId)),
+      copiedFrom,
       latestVersionId:
         latest && latest._id !== norm._id ? latest._id : undefined,
     };
+  },
+});
+
+/** The versions of a norm the signed-in user may read, newest first. */
+export const versions = query({
+  args: { normId: v.id("norms") },
+  handler: async (ctx, args) => {
+    const norm = await requireReadableNorm(ctx, args.normId);
+    // Every version is in the same catalog, so one check covers them all.
+    const canEdit = await canEditNorm(ctx, norm);
+    return (await versionsOf(ctx, norm))
+      .filter((version) => canEdit || isReadableByAll(version))
+      .map((version) => ({
+        _id: version._id,
+        version: version.version,
+        status: version.status,
+        publishedAt: version.publishedAt,
+        updatedAt: version.updatedAt,
+      }));
   },
 });
 
@@ -365,6 +469,10 @@ async function requireDraft(ctx: MutationCtx, normId: Id<"norms">) {
   return { norm, userId };
 }
 
+/**
+ * Changes a draft's fields, and its resources too when they are given. An
+ * empty optional field is cleared.
+ */
 export const update = mutation({
   args: {
     normId: v.id("norms"),
@@ -372,10 +480,11 @@ export const update = mutation({
     title: v.optional(v.string()),
     unit: v.optional(v.string()),
     ...descriptiveFields,
+    resources: v.optional(v.array(normResourceInput)),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const { norm } = await requireDraft(ctx, args.normId);
+    const { norm, userId } = await requireDraft(ctx, args.normId);
     const required = cleanRequired({
       code: args.code ?? norm.code,
       title: args.title ?? norm.title,
@@ -404,6 +513,12 @@ export const update = mutation({
     });
     if (next.code !== norm.code) {
       await assertCodeFree(ctx, { ...norm, code: next.code });
+    }
+    if (args.resources) {
+      await writeNormResources(ctx, norm._id, args.resources, {
+        organizationId: norm.organizationId,
+        createdBy: userId,
+      });
     }
     return null;
   },
@@ -566,7 +681,6 @@ export const createVersion = mutation({
   },
 });
 
-/** Takes a norm out of the catalog. Devize that used it keep their copy. */
 /**
  * The producer confirms that a published norm of theirs matches their own
  * documents. Devize publishes producers' norms after a super admin checks the
@@ -598,6 +712,7 @@ export const confirm = mutation({
   },
 });
 
+/** Takes a norm out of the catalog. Devize that used it keep their copy. */
 export const archive = mutation({
   args: { normId: v.id("norms") },
   returns: v.null(),
@@ -622,5 +737,78 @@ export const removeDraft = mutation({
     }
     await ctx.db.delete("norms", norm._id);
     return null;
+  },
+});
+
+/**
+ * Copies a norm into a firm's own catalog as a draft, to adjust its
+ * consumptions or prices to the firm's work. The copy keeps the code, or takes
+ * the first free "-2", "-3"… after it when the firm already uses that code.
+ */
+export const copyToOrganization = mutation({
+  args: {
+    normId: v.id("norms"),
+    organizationId: v.id("organizations"),
+  },
+  returns: v.id("norms"),
+  handler: async (ctx, args) => {
+    const { userId } = await requireMember(ctx, args.organizationId);
+    const original = await requireReadableNorm(ctx, args.normId);
+    const scope = {
+      source: "organization" as const,
+      organizationId: args.organizationId,
+    };
+    const fields = {
+      code: await freeCode(ctx, scope, original.code),
+      title: original.title,
+      unit: original.unit,
+      baseCode: original.baseCode,
+      category: original.category,
+      includes: original.includes,
+      excludes: original.excludes,
+      measurement: original.measurement,
+    };
+    const normId = await ctx.db.insert("norms", {
+      ...scope,
+      visibility: "private",
+      ...fields,
+      searchText: searchText(fields),
+      version: 1,
+      status: "draft",
+      copiedFromId: original._id,
+      createdBy: userId,
+      updatedAt: Date.now(),
+    });
+    await ctx.db.patch("norms", normId, { lineageId: normId });
+    const resources: NormResourceInput[] = [];
+    for (const row of await readNormResources(ctx, original._id)) {
+      // Another firm's own resource is matched by name in this firm instead.
+      const linked = row.resourceId
+        ? await ctx.db.get("resources", row.resourceId)
+        : null;
+      const usable =
+        linked !== null &&
+        (linked.organizationId === undefined ||
+          linked.organizationId === args.organizationId);
+      const product = row.productId
+        ? await ctx.db.get("products", row.productId)
+        : null;
+      resources.push({
+        kind: row.kind,
+        name: row.name,
+        unit: row.unit,
+        quantity: row.quantity,
+        resourceId: usable ? linked._id : undefined,
+        productId:
+          product && product.status !== "archived" ? product._id : undefined,
+        referencePrice: row.referencePrice,
+        note: row.note,
+      });
+    }
+    await writeNormResources(ctx, normId, resources, {
+      organizationId: args.organizationId,
+      createdBy: userId,
+    });
+    return normId;
   },
 });

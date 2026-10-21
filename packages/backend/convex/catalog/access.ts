@@ -33,22 +33,28 @@ export async function canEditNorm(
 }
 
 /**
- * Whether the signed-in user may read a norm. Published public norms, and the
- * versions they superseded, are for every signed-in user; everything else only
- * for those who may edit it.
+ * Published public norms, and the versions they superseded, are for every
+ * signed-in user.
+ */
+export function isReadableByAll(
+  norm: Pick<Doc<"norms">, "visibility" | "status">,
+): boolean {
+  return (
+    norm.visibility === "public" &&
+    (norm.status === "published" || norm.status === "superseded")
+  );
+}
+
+/**
+ * Whether the signed-in user may read a norm: one readable by all, or one
+ * they may edit.
  */
 export async function canReadNorm(
   ctx: QueryCtx,
   norm: Doc<"norms">,
 ): Promise<boolean> {
   await requireUserId(ctx);
-  if (
-    norm.visibility === "public" &&
-    (norm.status === "published" || norm.status === "superseded")
-  ) {
-    return true;
-  }
-  return await canEditNorm(ctx, norm);
+  return isReadableByAll(norm) || (await canEditNorm(ctx, norm));
 }
 
 export async function requireReadableNorm(

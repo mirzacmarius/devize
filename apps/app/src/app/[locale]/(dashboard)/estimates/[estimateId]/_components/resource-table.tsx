@@ -13,38 +13,26 @@ import {
   formatPercent,
   formatUnit,
 } from "@/lib/format";
+import {
+  isPercent,
+  resourceKinds,
+  resourceValues,
+} from "@/lib/resource-values";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { LineItem, LineItemResource } from "./types";
-
-const kindOrder = ["material", "labor", "equipment", "transport"] as const;
-
-const isPercent = (resource: LineItemResource) => resource.unit === "%";
 
 const sourceTones: Partial<Record<LineItemResource["priceSource"], string>> = {
   missing: "text-danger",
   manual: "text-warning",
 };
 
-/**
- * What one unit of a line item costs, resource by resource. A "%" resource is
- * a share of the line's materials (or of its own kind for labour and
- * equipment), as estimates/recap.ts computes it.
- */
+/** What one unit of a line item costs, resource by resource. */
 function valuesPerUnit(resources: readonly LineItemResource[]) {
-  const base = { material: 0, labor: 0, equipment: 0, transport: 0 };
-  for (const resource of resources) {
-    if (!isPercent(resource)) {
-      base[resource.kind] += resource.quantity * resource.unitPrice;
-    }
-  }
+  const values = resourceValues(
+    resources.map((resource) => ({ ...resource, price: resource.unitPrice })),
+  );
   return new Map(
-    resources.map((resource) => {
-      if (!isPercent(resource)) {
-        return [resource.key, resource.quantity * resource.unitPrice];
-      }
-      const of = resource.kind === "transport" ? "material" : resource.kind;
-      return [resource.key, (base[of] * resource.quantity) / 100];
-    }),
+    resources.map((resource, index) => [resource.key, values[index] ?? 0]),
   );
 }
 
@@ -67,7 +55,7 @@ export function ResourceTable({
   const run = useRun();
   const values = valuesPerUnit(item.resources);
   const rows = [...item.resources].sort(
-    (a, b) => kindOrder.indexOf(a.kind) - kindOrder.indexOf(b.kind),
+    (a, b) => resourceKinds.indexOf(a.kind) - resourceKinds.indexOf(b.kind),
   );
 
   const source = (resource: LineItemResource) => {
