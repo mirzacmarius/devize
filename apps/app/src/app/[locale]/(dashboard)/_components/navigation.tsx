@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import type { api } from "@devize/backend/convex/_generated/api";
+import { api } from "@devize/backend/convex/_generated/api";
 import { Button, buttonVariants } from "@devize/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@devize/ui/dropdown-menu";
 import { cn } from "@devize/ui/utils";
-import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -55,6 +55,7 @@ export function Navigation({
   const pathname = usePathname();
   const router = useRouter();
   const user = usePreloadedQuery(preloadedUser);
+  const viewer = useQuery(api.admin.viewer);
 
   if (!user) {
     return null;
@@ -67,6 +68,15 @@ export function Navigation({
       label: t("settings"),
       isActive: pathname.startsWith("/settings"),
     },
+    ...(viewer?.isSuperAdmin
+      ? [
+          {
+            href: "/admin/manufacturers",
+            label: t("admin"),
+            isActive: pathname.startsWith("/admin"),
+          },
+        ]
+      : []),
   ];
 
   return (
