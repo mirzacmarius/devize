@@ -14,7 +14,12 @@ import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { Check, CircleAlert, TriangleAlert } from "lucide-react";
 import { useState } from "react";
-import { formatMoney, formatPercent, formatQuantity } from "@/lib/format";
+import {
+  formatCalendarDate,
+  formatMoney,
+  formatPercent,
+  formatQuantity,
+} from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 /** What a check's link does: take the person to the field, or keep what is there. */
@@ -348,6 +353,35 @@ function useCheckText() {
               ? t("duration.warning")
               : t("duration.warningNoHours"),
         };
+      case "validity":
+        if (check.until) {
+          return {
+            title: t("validity.title"),
+            detail: t("validity.passed", {
+              days: check.days ?? 0,
+              date: formatCalendarDate(check.until, locale),
+            }),
+          };
+        }
+        return check.days === undefined
+          ? {
+              title: t("validity.warningTitle"),
+              detail: t("validity.warning"),
+            }
+          : {
+              title: t("validity.noDeadlineTitle"),
+              detail: t("validity.noDeadline", { days: check.days }),
+            };
+      case "signer":
+        return check.state === "passed"
+          ? {
+              title: t("signer.title"),
+              detail: t("signer.passed", {
+                name: check.name,
+                role: check.role,
+              }),
+            }
+          : { title: t("signer.warningTitle"), detail: t("signer.warning") };
       case "beneficiary":
         return check.state === "passed"
           ? { title: t("beneficiary.title"), detail: check.name }
@@ -379,6 +413,13 @@ function useFixes() {
           { label: t("duration.fix"), action: "change" },
           { label: t("duration.keep"), action: "keep" },
         ];
+      case "validity":
+        // Without the tender's deadline, the date is the Deviz's to give.
+        return check.days === undefined
+          ? [{ label: t("validity.fix"), action: "change" }]
+          : [];
+      case "signer":
+        return [{ label: t("signer.fix"), action: "change" }];
       case "beneficiary":
         return [{ label: t("beneficiary.fix"), action: "change" }];
       default:

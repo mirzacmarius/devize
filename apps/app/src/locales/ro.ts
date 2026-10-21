@@ -663,13 +663,17 @@ export default {
     },
     forms: {
       title: "Formulare oficiale",
-      hint: "Devizul general și ale obiectelor, F1–F6, C5 și listele de resurse C6–C9, pentru licitații.",
+      hint: "Formularul de ofertă, devizul general și ale obiectelor, F1–F6, C5 și listele de resurse C6–C9, pentru licitații.",
       open: "Alege",
       sheetTitle: "Formulare oficiale",
       sheetDescription:
         "Listele pe care le cere documentația de atribuire, într-un singur PDF. Fiecare formular începe pe o pagină nouă.",
       choose: "Formulare",
       kinds: {
+        OF: {
+          title: "Formularul de ofertă",
+          hint: "Scrisoarea către autoritate, cu valoarea din F1 și TVA-ul în cifre și în litere, durata și valabilitatea ofertei.",
+        },
         DG: {
           title: "DG · Devizul general",
           hint: "Capitolele 1–7 ale obiectivului, cu TVA (HG 907/2016, Anexa 7).",
@@ -726,6 +730,7 @@ export default {
       rename: "Redenumește formularele",
       renameDone: "Gata cu denumirile",
       label: "Numele formularului {form} în documentația de atribuire",
+      labelOffer: "Numele formularului de ofertă în documentația de atribuire",
       withValues: "Cu prețuri și valori",
       withValuesHint:
         "Fără ele, listele arată ca în documentația publicată de proiectant.",
@@ -746,6 +751,22 @@ export default {
       windowStart: "Prima lună",
       windowEnd: "Ultima lună",
       month: "Luna {month}",
+      offer: {
+        title: "Formularul de ofertă",
+        validity: "Valabilitatea ofertei (zile)",
+        validityHint:
+          "Câte zile cere documentația de atribuire, de la termenul de depunere: {deadline}.",
+        validityUntil:
+          "Oferta rămâne valabilă până la {date}, de la termenul de depunere: {deadline}.",
+        validityNoDeadline:
+          "Câte zile cere documentația de atribuire. Devizul nu are termenul de depunere, așa că data până la care e valabilă oferta rămâne de scris de mână; îl poți adăuga în detaliile devizului.",
+        validityInvalid: "Scrie un număr întreg de zile, de la 1 la {max}.",
+        signer: "Semnează",
+        role: "În calitate de",
+        rolePlaceholder: "administrator",
+        signerHint:
+          "Cine e autorizat să semneze oferta pentru firmă. Îl ținem minte pe acest dispozitiv pentru următoarele devize ale firmei.",
+      },
       subchapters: {
         site: "Amenajarea terenului",
         environment: "Protecția mediului",
@@ -796,7 +817,7 @@ export default {
           vat: "TVA {rate}",
           lei: "{amount} lei",
           total: "Total cu TVA",
-          hint: "F1, F2, listele F3 și devizul general dau aceeași valoare; copiaz-o în formularul de ofertă.",
+          hint: "F1, F2, listele F3, devizul general și formularul de ofertă dau aceeași valoare. Copiaz-o oriunde o mai cere licitația, de pildă în SEAP.",
           difference:
             "Diferă cu {difference} lei de recapitulația devizului, din rotunjirile pe categorii de lucrări și pe prețuri unitare.",
           copySubtotal: "Copiază valoarea fără TVA, în cifre și în litere",
@@ -863,15 +884,34 @@ export default {
           fix: "Adaugă F4 și F5",
         },
         duration: {
-          title: "Durata de execuție (F6)",
+          title: "Durata de execuție",
           passed: "Durata aleasă, în luni: {months}",
-          warningTitle: "Durata din F6 e propunerea noastră",
+          warningTitle: "Durata e propunerea noastră",
           warning:
             "Am calculat-o din orele de manoperă ale devizului, pentru o echipă de 10 oameni. Pune durata din documentația de atribuire.",
           warningNoHours:
-            "Devizul nu are ore de manoperă, așa că F6 are o lună. Pune durata din documentația de atribuire.",
+            "Devizul nu are ore de manoperă, așa că durata e de o lună. Pune durata din documentația de atribuire.",
           fix: "Alege durata",
           keep: "Durata e corectă",
+        },
+        validity: {
+          title: "Valabilitatea ofertei",
+          passed: "Zile de valabilitate: {days}, până la {date}.",
+          warningTitle: "Fără valabilitatea ofertei",
+          warning:
+            "Formularul de ofertă ar lăsa necompletată durata de valabilitate. Scrie câte zile cere documentația de atribuire.",
+          noDeadlineTitle: "Fără data de valabilitate",
+          noDeadline:
+            "Zile de valabilitate: {days}. Devizul nu are termenul de depunere, așa că data până la care e valabilă oferta rămâne de scris de mână; îl poți adăuga în detaliile devizului.",
+          fix: "Scrie valabilitatea",
+        },
+        signer: {
+          title: "Cine semnează oferta",
+          passed: "{name}, în calitate de {role}",
+          warningTitle: "Fără semnatar",
+          warning:
+            "Formularul de ofertă ar lăsa loc gol pentru numele și calitatea celui care semnează.",
+          fix: "Scrie cine semnează",
         },
         beneficiary: {
           title: "Beneficiar",

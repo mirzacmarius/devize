@@ -53,6 +53,21 @@ export function formatDate(value: string): string {
   return match ? `${match[3]}.${match[2]}.${match[1]}` : value;
 }
 
+/**
+ * A calendar date stored as YYYY-MM-DD, some days later: the last day an
+ * offer stays valid, counted from the tender's deadline.
+ */
+export function addDays(value: string, days: number): string | undefined {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match || !Number.isInteger(days)) {
+    return undefined;
+  }
+  const date = new Date(
+    Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]) + days),
+  );
+  return date.toISOString().slice(0, 10);
+}
+
 /** A Deviz's number as the app writes it: DVZ-0142, DVZ-0142-R2. */
 export function estimateCode(number: number, revision = 1): string {
   const code = `DVZ-${String(number).padStart(4, "0")}`;

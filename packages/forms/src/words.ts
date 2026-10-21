@@ -7,7 +7,7 @@ import { formatMoney } from "./format";
 // ends in 1 to 19: "douăzeci de lei", "o sută de lei", but "o sută doi lei".
 
 /** The gender of what a number counts, which "unu" and "doi" agree with. */
-type Gender = "masculine" | "feminine" | "neuter";
+export type Gender = "masculine" | "feminine" | "neuter";
 
 // Up to nineteen; 1, 2 and 12 agree with what they count.
 const small = [
@@ -136,6 +136,23 @@ export function leiInWords(amount: number): string {
 /** An amount as an offer form writes it: "1.234,50 lei (o mie ... de bani)". */
 export function leiInFiguresAndWords(amount: number): string {
   return `${formatMoney(amount)} lei (${leiInWords(amount)})`;
+}
+
+/**
+ * A count in figures and in words, as an offer form writes a duration:
+ * "1 (una) lună", "6 (șase) luni", "90 (nouăzeci) de zile".
+ */
+export function countInFiguresAndWords(
+  n: number,
+  gender: Gender,
+  one: string,
+  many: string,
+): string {
+  const words = numberInWords(n, gender);
+  if (n === 1) {
+    return `1 (${words}) ${one}`;
+  }
+  return `${n} (${words})${takesDe(n) ? " de " : " "}${many}`;
 }
 
 /** A count in figures with its noun, as Romanian joins them: 1 lună, 6 luni, 20 de luni. */

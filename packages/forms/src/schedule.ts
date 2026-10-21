@@ -47,6 +47,14 @@ export function clampMonths(months: number): number {
   return Math.min(maxMonths, Math.max(1, Math.round(months) || 1));
 }
 
+/** How many months the works take: the person's, or the ones we planned. */
+export function scheduledMonths(
+  data: WorksData,
+  options: Pick<ExportOptions, "schedule">,
+): number {
+  return clampMonths(options.schedule?.months ?? suggestedMonths(data).months);
+}
+
 // When each subchapter's works usually run, as shares of the duration: the
 // site first, then the earthworks and the structure, the building services
 // and the finishes, and last the equipment, the connections and the cleanup.
@@ -113,9 +121,7 @@ export function scheduleOf(
   placed: readonly PlacedCategory[],
   options: Pick<ExportOptions, "schedule">,
 ): { months: number; categories: ScheduledCategory[] } {
-  const months = clampMonths(
-    options.schedule?.months ?? suggestedMonths(data).months,
-  );
+  const months = scheduledMonths(data, options);
   const categories = placed.map((entry) => {
     const chosen = options.schedule?.windows?.[entry.category.key];
     const window = chosen
