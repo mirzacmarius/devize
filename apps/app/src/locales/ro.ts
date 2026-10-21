@@ -1213,6 +1213,10 @@ export default {
       invalid: "Valoarea nu e validă.",
       invalidNorm:
         "Norma {code} nu se poate publica: nu are unitate de măsură sau resurse.",
+      missingConsent:
+        "Normele nu se pot publica fără acordul scris al producătorului. Înregistrează-l mai întâi.",
+      in_use:
+        "Producătorul are norme sau produse în catalog ori a fost revendicat de o firmă, așa că nu se poate șterge. Exclude-l în loc.",
       not_pdf: "Fișierul trebuie să fie PDF.",
       file_too_large: "PDF-ul are peste 20 MB.",
       missing_api_key: "Lipsește cheia Claude din variabilele de mediu Convex.",
@@ -1427,6 +1431,17 @@ export default {
       publish: {
         button: "Publică în catalog ({count})",
         result: "Publicate: {published}. Sărite, deja în catalog: {skipped}.",
+        needsConsent: "Înregistrează întâi acordul producătorului.",
+      },
+      consent: {
+        label: "Acordul producătorului",
+        hint: "Publicăm doar normele pe care producătorul ni le-a trimis și a acceptat în scris să apară în Devize. Scrie cine și-a dat acordul, când și unde îl găsim.",
+        placeholder: "De exemplu: emailul biroului tehnic din 21.10.2026",
+        save: "Salvează acordul",
+        cancel: "Renunță",
+        recorded: "Acord înregistrat",
+        recordedBy: "de {name}, {date}",
+        edit: "Modifică",
       },
     },
     outreach: {

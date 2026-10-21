@@ -53,7 +53,8 @@ async function publishedWithCode(
 
 /**
  * Publishes the approved rows of a norms document into the public catalog as
- * verified Norme de producător, one article (base code) or all of them. A row
+ * verified Norme de producător, one article (base code) or all of them, once
+ * the Producător's written agreement is recorded on the document. A row
  * already published is skipped; a changed row with a code already in the
  * catalog becomes that norm's new version.
  */
@@ -68,6 +69,9 @@ export const publishImportedNorms = mutation({
     const normImport = await ctx.db.get("normImports", args.normImportId);
     if (!normImport) {
       throw notFound("normImport");
+    }
+    if (!normImport.consent) {
+      throw invalid("consent");
     }
     const baseCode = args.baseCode;
     const rows = await ctx.db

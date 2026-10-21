@@ -1219,6 +1219,10 @@ export default {
       invalid: "That value isn't valid.",
       invalidNorm:
         "Norm {code} can't be published: it has no unit of measure or no resources.",
+      missingConsent:
+        "The norms can't be published without the manufacturer's written consent. Record it first.",
+      in_use:
+        "The manufacturer has norms or products in the catalog, or a firm claimed it, so it can't be deleted. Exclude it instead.",
       not_pdf: "The file has to be a PDF.",
       file_too_large: "The PDF is over 20 MB.",
       missing_api_key:
@@ -1434,6 +1438,17 @@ export default {
         button: "Publish to the catalog ({count})",
         result:
           "Published: {published}. Skipped, already in the catalog: {skipped}.",
+        needsConsent: "Record the manufacturer's consent first.",
+      },
+      consent: {
+        label: "The manufacturer's consent",
+        hint: "We only publish norms the manufacturer sent us and agreed in writing to show in Devize. Write who agreed, when, and where the agreement is.",
+        placeholder: "For example: the technical office's email of 21.10.2026",
+        save: "Save the consent",
+        cancel: "Cancel",
+        recorded: "Consent recorded",
+        recordedBy: "by {name}, {date}",
+        edit: "Change",
       },
     },
     outreach: {
