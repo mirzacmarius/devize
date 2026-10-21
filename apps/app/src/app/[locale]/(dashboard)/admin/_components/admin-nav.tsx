@@ -18,6 +18,7 @@ export function AdminNav() {
     { href: "/admin/manufacturers", label: t("manufacturers") },
     { href: "/admin/catalog", label: t("catalog") },
     { href: "/admin/outreach", label: t("outreach") },
+    { href: "/admin/review", label: t("review") },
     { href: "/admin/claims", label: t("claims"), count: waiting },
     { href: "/admin/settings", label: t("settings") },
   ];

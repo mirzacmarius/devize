@@ -78,4 +78,18 @@ export const producerTables = {
     .index("by_status", ["status"])
     .index("by_manufacturerId", ["manufacturerId"])
     .index("by_userId", ["userId"]),
+
+  // What a Producător says about itself on its claimed profile: a few words,
+  // its site, and whom contractors ask about its norms. Its own firm's owners
+  // and admins write it; it goes when the firm lets the profile go.
+  producerDetails: defineTable({
+    manufacturerId: v.id("manufacturers"),
+    about: v.optional(v.string()),
+    website: v.optional(v.string()),
+    contactName: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    contactPhone: v.optional(v.string()),
+    updatedBy: v.id("users"),
+    updatedAt: v.number(),
+  }).index("by_manufacturerId", ["manufacturerId"]),
 };

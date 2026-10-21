@@ -1258,6 +1258,8 @@ export default {
       archived: "Norma a fost arhivată.",
       deleteDraft: "Șterge ciorna",
       deleted: "Ciorna a fost ștearsă.",
+      reject: "Trimite înapoi",
+      rejected: "Norma a fost trimisă înapoi autorului.",
     },
     publishDialog: {
       title: "Publici {code}?",
@@ -1277,6 +1279,16 @@ export default {
       title: "Ștergi ciorna {code}?",
       description: "Ciorna se șterge definitiv.",
       confirm: "Șterge ciorna",
+    },
+    rejectDialog: {
+      title: "Trimiți înapoi norma {code}?",
+      description:
+        "Norma redevine ciornă, iar autorul vede nota ta pe pagina ei și o poate trimite din nou.",
+      note: "Nota pentru autor",
+      notePlaceholder:
+        "ex. Consumul de adeziv diferă de fișa tehnică: 5 kg/mp, nu 4,5.",
+      noteRequired: "Scrie ce trebuie schimbat.",
+      confirm: "Trimite înapoi",
     },
     form: {
       newTitle: "Normă nouă",
@@ -1328,6 +1340,11 @@ export default {
       save: "Salvează ciorna",
       saved: "Ciorna a fost salvată.",
       created: "Norma a fost creată ca ciornă.",
+      source: "Al cui e norma",
+      sourceOwn: "Normă proprie a firmei",
+      sourceProducer: "Normă {name}",
+      sourceHint:
+        "O normă a producătorului ajunge în catalogul public după ce o verifică echipa Devize. Una proprie o vede doar firma ta.",
     },
   },
   clients: {
@@ -1549,6 +1566,7 @@ export default {
       catalog: "Catalog de bază",
       outreach: "Emailuri de aprobat",
       claims: "Revendicări",
+      review: "Norme de verificat",
       settings: "Setări",
     },
     status: {
@@ -1702,6 +1720,17 @@ export default {
         email: "Email",
       },
       working: "Lucrează…",
+    },
+    review: {
+      title: "Norme de verificat",
+      description:
+        "Normele trimise de producători care așteaptă verificarea Devize. Deschide norma ca s-o compari cu documentele producătorului, apoi publică-o sau trimite-o înapoi cu o notă.",
+      empty: "Nicio normă nu așteaptă verificarea.",
+      columns: {
+        norm: "Normă",
+        source: "Sursă",
+        submitted: "Trimisă",
+      },
     },
     claims: {
       title: "Revendicări și eliminări",
@@ -2104,10 +2133,19 @@ export default {
       moreNorms:
         "Aici sunt primele 500 de norme; le găsești pe toate în catalog.",
       products: "Produse",
+      newNorm: "Normă nouă",
+      editDetails: "Editează profilul",
+      drafts: "Norme în lucru",
+      draftsHint:
+        "Le vedeți doar voi și echipa Devize. Trimite-le la verificare din pagina fiecăreia; după verificare apar în catalog.",
+      about: "Despre producător",
+      contact: "Contact tehnic",
+      website: "Site",
       noNorms: "Nicio normă publicată încă.",
       normColumns: {
         norm: "Normă",
         unit: "U.M.",
+        status: "Stare",
       },
       productColumns: {
         name: "Produs",
@@ -2150,6 +2188,23 @@ export default {
       claim: "Revendică profilul",
       sent: "Cererea a fost trimisă. Îți scriem după verificare.",
       claimed: "Profilul {name} e acum al firmei tale.",
+    },
+    detailsDialog: {
+      title: "Profilul {name}",
+      description:
+        "Ce scrii aici apare pe profil pentru toți constructorii din Devize.",
+      about: "Despre producător",
+      aboutPlaceholder:
+        "ex. Sisteme de termoizolație și tencuieli decorative, fabricate în România.",
+      website: "Site",
+      websitePlaceholder: "ex. producator.ro",
+      contactName: "Persoana de contact tehnic",
+      contactNamePlaceholder: "ex. Ana Popescu, consultant tehnic",
+      contactEmail: "Email",
+      contactEmailPlaceholder: "ex. tehnic@producator.ro",
+      contactPhone: "Telefon",
+      contactPhonePlaceholder: "ex. 0721 000 000",
+      saved: "Profilul a fost salvat.",
     },
     removalDialog: {
       title: "Solicită eliminarea profilului {name}",
@@ -2274,6 +2329,8 @@ export default {
     invalidMessage: "Scrie câteva cuvinte, cel mult 1000 de caractere.",
     invalidClaims: "Ai deja 5 cereri în așteptare. Așteaptă un răspuns întâi.",
     invalidOrganizationId: "Firma aleasă nu poate prelua profilul.",
+    invalidWebsite: "Scrie adresa unui site, de exemplu producator.ro.",
+    invalidPhone: "Scrie un număr de telefon, de exemplu 0721 000 000.",
     forbiddenDomain: "Adresa ta nu e pe un domeniu al producătorului.",
     forbiddenEmail: "Intră în cont cu o adresă de email confirmată.",
   },
