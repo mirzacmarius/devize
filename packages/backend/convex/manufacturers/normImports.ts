@@ -163,8 +163,12 @@ export const get = query({
           (order.get(b.baseCode) ?? Number.MAX_SAFE_INTEGER) ||
         a.code.localeCompare(b.code),
     );
+    const consentBy = normImport.consent
+      ? await ctx.db.get("users", normImport.consent.recordedBy)
+      : null;
     return {
       normImport,
+      consentBy: consentBy?.name ?? consentBy?.email ?? null,
       norms: await Promise.all(
         norms.map(async (norm) => ({
           ...norm,
@@ -173,6 +177,34 @@ export const get = query({
       ),
       fileUrl: await ctx.storage.getUrl(normImport.fileId),
     };
+  },
+});
+
+// Where the agreement is and who gave it fits in a sentence or two.
+const maxConsentLength = 500;
+
+/**
+ * Records how the manufacturer agreed in writing to Devize publishing the
+ * document's norms, such as "Email de la biroul tehnic, 21.10.2026". Recording
+ * it again replaces the note.
+ */
+export const recordConsent = mutation({
+  args: { normImportId: v.id("normImports"), note: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const admin = await requireSuperAdmin(ctx);
+    const normImport = await ctx.db.get("normImports", args.normImportId);
+    if (!normImport) {
+      throw new ConvexError({ code: "not_found" });
+    }
+    const note = args.note.trim();
+    if (!note || note.length > maxConsentLength) {
+      throw new ConvexError({ code: "invalid" });
+    }
+    await ctx.db.patch("normImports", normImport._id, {
+      consent: { note, recordedBy: admin._id, recordedAt: Date.now() },
+    });
+    return null;
   },
 });
 

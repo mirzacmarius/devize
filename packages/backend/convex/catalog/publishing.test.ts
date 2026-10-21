@@ -55,6 +55,11 @@ async function importWith(
       fileName: "norme-test.pdf",
       status: "review",
       edition: "2026",
+      consent: {
+        note: "Emailul biroului tehnic",
+        recordedBy: adminId,
+        recordedAt: Date.now(),
+      },
       articles: [],
       articlesDone: 1,
       createdBy: adminId,
@@ -193,6 +198,36 @@ describe("publishImportedNorms", () => {
       ["TT-01A01", true],
       ["TT-01B01", false],
     ]);
+  });
+
+  test("waits for the manufacturer's written consent", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    const manufacturerId = await manufacturer(t, admin.userId);
+    const normImportId = await importWith(
+      t,
+      admin.userId,
+      manufacturerId,
+      rows,
+    );
+    await t.run(async (ctx) => {
+      await ctx.db.patch("normImports", normImportId, { consent: undefined });
+    });
+    await expect(
+      admin.as.mutation(api.catalog.publishing.publishImportedNorms, {
+        normImportId,
+      }),
+    ).rejects.toThrow(/consent/);
+
+    await admin.as.mutation(api.manufacturers.normImports.recordConsent, {
+      normImportId,
+      note: "Emailul biroului tehnic din 21.10.2026",
+    });
+    expect(
+      await admin.as.mutation(api.catalog.publishing.publishImportedNorms, {
+        normImportId,
+      }),
+    ).toEqual({ published: 2, skipped: 0 });
   });
 
   test("is for super admins only", async () => {

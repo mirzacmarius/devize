@@ -11,6 +11,7 @@ import {
   manufacturerStatus,
   messageStatus,
   messageStep,
+  normConsent,
   normImportArticle,
   normImportStatus,
   normResource,
@@ -123,6 +124,7 @@ export const manufacturerTables = {
     status: normImportStatus,
     edition: v.optional(v.string()),
     laborRate: v.optional(v.number()),
+    consent: v.optional(normConsent),
     // The document's table of contents, from the first pass.
     articles: v.array(normImportArticle),
     articlesDone: v.number(),

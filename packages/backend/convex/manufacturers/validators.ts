@@ -128,6 +128,15 @@ export const importedNormStatus = v.union(
   v.literal("rejected"),
 );
 
+// A Producător's written agreement to Devize publishing the norms in one
+// document, as a super admin recorded it. Norms are published only with it.
+export const normConsent = v.object({
+  // Who agreed, when and where the agreement is, in the admin's words.
+  note: v.string(),
+  recordedBy: v.id("users"),
+  recordedAt: v.number(),
+});
+
 // What manufacturer research returns, after the action checked its sources.
 export const researchFindings = v.object({
   displayName: v.string(),

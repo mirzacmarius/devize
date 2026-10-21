@@ -261,8 +261,47 @@ export const update = mutation({
 });
 
 /**
+ * Whether anything outside the outreach refers to the manufacturer: a firm
+ * claimed it, or the catalog holds its norms, products or systems.
+ */
+async function isInUse(ctx: QueryCtx, manufacturer: Doc<"manufacturers">) {
+  const manufacturerId = manufacturer._id;
+  if (manufacturer.claimStatus === "claimed") {
+    return true;
+  }
+  const uses = await Promise.all([
+    ctx.db
+      .query("organizations")
+      .withIndex("by_manufacturerId", (q) =>
+        q.eq("manufacturerId", manufacturerId),
+      )
+      .first(),
+    ctx.db
+      .query("norms")
+      .withIndex("by_manufacturerId_and_status_and_code", (q) =>
+        q.eq("manufacturerId", manufacturerId),
+      )
+      .first(),
+    ctx.db
+      .query("products")
+      .withIndex("by_manufacturerId_and_status", (q) =>
+        q.eq("manufacturerId", manufacturerId),
+      )
+      .first(),
+    ctx.db
+      .query("systems")
+      .withIndex("by_manufacturerId", (q) =>
+        q.eq("manufacturerId", manufacturerId),
+      )
+      .first(),
+  ]);
+  return uses.some((use) => use !== null);
+}
+
+/**
  * Deletes a manufacturer with its contacts, emails and norm imports. Its AI
- * jobs stay, so their cost is still counted.
+ * jobs stay, so their cost is still counted. One that a firm claimed or the
+ * catalog uses can't be deleted; exclude it instead.
  */
 export const remove = mutation({
   args: { manufacturerId: v.id("manufacturers") },
@@ -270,6 +309,13 @@ export const remove = mutation({
   handler: async (ctx, args) => {
     await requireSuperAdmin(ctx);
     const { manufacturerId } = args;
+    const manufacturer = await ctx.db.get("manufacturers", manufacturerId);
+    if (!manufacturer) {
+      return null;
+    }
+    if (await isInUse(ctx, manufacturer)) {
+      throw new ConvexError({ code: "in_use" });
+    }
     for (const table of ["manufacturerContacts", "outreachMessages"] as const) {
       const rows = ctx.db
         .query(table)
