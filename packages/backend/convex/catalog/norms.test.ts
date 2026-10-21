@@ -108,6 +108,31 @@ describe("norms", () => {
     expect(published.status).toBe("published");
     expect(published.verifiedAt).toBeDefined();
     expect(published.manufacturerName).toBe("Termo Test SA");
+
+    // Checked by Devize, but only the producer confirms it as theirs.
+    expect(published.confirmedAt).toBeUndefined();
+    await expect(
+      admin.as.mutation(api.catalog.norms.confirm, { normId }),
+    ).rejects.toThrow(/forbidden/);
+    await producer.as.mutation(api.catalog.norms.confirm, { normId });
+    const [found] = await producer.as.query(api.catalog.norms.search, {
+      organizationId,
+      text: "termosistem",
+    });
+    expect(found).toMatchObject({ verified: true, confirmed: true });
+
+    const draftId = await producer.as.mutation(
+      api.catalog.norms.createVersion,
+      {
+        normId,
+      },
+    );
+    const draft = await producer.as.query(api.catalog.norms.get, {
+      normId: draftId,
+    });
+    expect(draft.version).toBe(2);
+    expect(draft.confirmedAt).toBeUndefined();
+    expect(draft.verifiedAt).toBeUndefined();
   });
 
   test("a code names one norm in its catalog", async () => {

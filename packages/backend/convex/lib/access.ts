@@ -104,9 +104,18 @@ export async function canEditManufacturer(
     return true;
   }
   const userId = await getAuthUserId(ctx);
-  if (!userId) {
-    return false;
-  }
+  return userId !== null && (await isProducer(ctx, manufacturerId, userId));
+}
+
+/**
+ * Whether the user works for the producer itself: a member of a firm that
+ * claimed the manufacturer. Super admins are not, however much they may edit.
+ */
+export async function isProducer(
+  ctx: QueryCtx,
+  manufacturerId: Id<"manufacturers">,
+  userId: Id<"users">,
+): Promise<boolean> {
   const firms = ctx.db
     .query("organizations")
     .withIndex("by_manufacturerId", (q) =>

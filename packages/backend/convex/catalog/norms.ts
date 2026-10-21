@@ -4,11 +4,12 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { mutation, query } from "../_generated/server";
 import {
+  isProducer,
   requireManufacturerEditor,
   requireMember,
   requireUserId,
 } from "../lib/access";
-import { appError, invalid, notFound } from "../lib/errors";
+import { appError, forbidden, invalid, notFound } from "../lib/errors";
 import { requireSuperAdmin } from "../lib/roles";
 import { normalizeText, normalizeUnit } from "../lib/text";
 import {
@@ -149,6 +150,7 @@ async function summaries(ctx: QueryCtx, norms: readonly Doc<"norms">[]) {
       ? names.get(norm.manufacturerId)
       : undefined,
     verified: norm.verifiedAt !== undefined,
+    confirmed: norm.confirmedAt !== undefined,
     edition: norm.edition,
   }));
 }
@@ -542,6 +544,8 @@ export const createVersion = mutation({
       reviewNote,
       verifiedBy,
       verifiedAt,
+      confirmedBy,
+      confirmedAt,
       publishedAt,
       importedNormId,
       ...copied
@@ -563,6 +567,37 @@ export const createVersion = mutation({
 });
 
 /** Takes a norm out of the catalog. Devize that used it keep their copy. */
+/**
+ * The producer confirms that a published norm of theirs matches their own
+ * documents. Devize publishes producers' norms after a super admin checks the
+ * transcription; only someone from the producer's own firm can confirm one,
+ * and each new version needs confirming again.
+ */
+export const confirm = mutation({
+  args: { normId: v.id("norms") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const norm = await requireReadableNorm(ctx, args.normId);
+    const userId = await requireUserId(ctx);
+    if (norm.source !== "manufacturer" || !norm.manufacturerId) {
+      throw invalid("source");
+    }
+    if (!(await isProducer(ctx, norm.manufacturerId, userId))) {
+      throw forbidden();
+    }
+    if (norm.status !== "published") {
+      throw appError("locked", norm.status);
+    }
+    if (norm.confirmedAt === undefined) {
+      await ctx.db.patch("norms", norm._id, {
+        confirmedBy: userId,
+        confirmedAt: Date.now(),
+      });
+    }
+    return null;
+  },
+});
+
 export const archive = mutation({
   args: { normId: v.id("norms") },
   returns: v.null(),

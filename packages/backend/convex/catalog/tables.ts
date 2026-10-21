@@ -98,8 +98,14 @@ export const catalogTables = {
     lineageId: v.optional(v.id("norms")),
     status: normStatus,
     reviewNote: v.optional(v.string()),
+    // A super admin checked the norm (for a producer's norm, its
+    // transcription from the producer's documents) before publishing it.
     verifiedBy: v.optional(v.id("users")),
     verifiedAt: v.optional(v.number()),
+    // A member of the producer's own firm confirmed that the published norm
+    // matches their documents. Until then it shows as not confirmed.
+    confirmedBy: v.optional(v.id("users")),
+    confirmedAt: v.optional(v.number()),
     publishedAt: v.optional(v.number()),
     // Where the norm came from: the imported row and the document's edition
     // and pages.
