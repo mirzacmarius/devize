@@ -80,7 +80,8 @@ export const manufacturerTables = {
   outreachMessages: defineTable({
     manufacturerId: v.id("manufacturers"),
     step: messageStep,
-    variant: emailVariant,
+    // Which first email it is; the thank-you has none.
+    variant: v.optional(emailVariant),
     status: messageStatus,
     to: v.optional(v.string()),
     subject: v.string(),

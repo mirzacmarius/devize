@@ -1,11 +1,14 @@
+import { ConvexError } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { createClaimLink } from "../producers/claimLinks";
 import { isSuppressed } from "./admin";
 import {
   type EmailIssue,
   type EmailVariant,
   lintEmail,
   renderInitialEmail,
+  renderThanksEmail,
   type Sender,
   type TemplateVars,
 } from "./lib/emailTemplate";
@@ -29,32 +32,56 @@ export async function getSender(ctx: QueryCtx): Promise<Sender> {
 /**
  * The outreach rules, the suppression list, and what research knows about
  * the recipient: whether the address was read on a page (or added by a
- * person) and whether it is on the manufacturer's own domain.
+ * person) and whether it is on the manufacturer's own domain. A thank-you
+ * goes to whoever sent the norms, so only its claim link is checked against
+ * the recipient.
  */
 export async function checkEmail(
   ctx: QueryCtx,
   manufacturerId: Id<"manufacturers">,
-  email: { subject: string; body: string; to?: string },
+  email: {
+    subject: string;
+    body: string;
+    to?: string;
+    step?: Doc<"outreachMessages">["step"];
+    vars?: TemplateVars;
+  },
 ): Promise<EmailIssue[]> {
   const issues = lintEmail(email);
-  if (!email.to || !isEmail(email.to)) {
+  const to =
+    email.to && isEmail(email.to) ? normalizeEmail(email.to) : undefined;
+  const manufacturer = await ctx.db.get("manufacturers", manufacturerId);
+  if (email.step === "thanks") {
+    const claimEmail = email.vars?.thanks?.claimEmail;
+    if (claimEmail && claimEmail !== to) {
+      issues.push({
+        code: "claim_link_mismatch",
+        level: "error",
+        detail: claimEmail,
+      });
+    }
+    if (manufacturer?.claimStatus === "claimed") {
+      issues.push({ code: "already_claimed", level: "error" });
+    }
+  }
+  if (!to) {
     return issues;
   }
-  const to = normalizeEmail(email.to);
   if (await isSuppressed(ctx, to)) {
     issues.push({ code: "suppressed_recipient", level: "error", detail: to });
   }
-  const contacts = await ctx.db
-    .query("manufacturerContacts")
-    .withIndex("by_manufacturerId", (q) =>
-      q.eq("manufacturerId", manufacturerId),
-    )
-    .take(50);
-  const contact = contacts.find((candidate) => candidate.email === to);
-  if (!contact || (!contact.sourceVerified && contact.origin !== "manual")) {
-    issues.push({ code: "unverified_recipient", level: "warning" });
+  if (email.step !== "thanks") {
+    const contacts = await ctx.db
+      .query("manufacturerContacts")
+      .withIndex("by_manufacturerId", (q) =>
+        q.eq("manufacturerId", manufacturerId),
+      )
+      .take(50);
+    const contact = contacts.find((candidate) => candidate.email === to);
+    if (!contact || (!contact.sourceVerified && contact.origin !== "manual")) {
+      issues.push({ code: "unverified_recipient", level: "warning" });
+    }
   }
-  const manufacturer = await ctx.db.get("manufacturers", manufacturerId);
   if (manufacturer?.website && !onCompanyDomain(to, manufacturer.website)) {
     issues.push({
       code: "recipient_other_domain",
@@ -179,21 +206,163 @@ export async function draftInitialEmail(
   });
 }
 
-/** Renders a draft again from its saved values and the current signature. */
+/**
+ * What the thank-you to `email` is rendered from: a claim link for that
+ * address (the one already out while it has two weeks left), and the latest
+ * document extracted from the norms.
+ */
+async function thanksVarsFor(
+  ctx: MutationCtx,
+  manufacturer: Doc<"manufacturers">,
+  email: string,
+  adminId: Id<"users">,
+): Promise<TemplateVars> {
+  const link = await createClaimLink(ctx, {
+    manufacturerId: manufacturer._id,
+    email,
+    createdBy: adminId,
+  });
+  const normImports = await ctx.db
+    .query("normImports")
+    .withIndex("by_manufacturerId", (q) =>
+      q.eq("manufacturerId", manufacturer._id),
+    )
+    .order("desc")
+    .take(20);
+  const extracted = normImports.find(
+    (normImport) => normImport.status === "review",
+  );
+  return {
+    firm: manufacturer.displayName ?? manufacturer.name,
+    address: email,
+    thanks: {
+      claimEmail: email,
+      claimUrl: link.url ?? undefined,
+      claimExpiresAt: link.expiresAt,
+      articles: extracted?.articles.length,
+      variants: extracted?.articles.reduce(
+        (sum, article) => sum + article.variantCodes.length,
+        0,
+      ),
+      consentRecorded: extracted?.consent !== undefined,
+    },
+  };
+}
+
+/** Whether the person at `email` may get a claim link to the profile. */
+async function canGetClaimLink(
+  ctx: QueryCtx,
+  manufacturer: Doc<"manufacturers">,
+  email: string,
+) {
+  return (
+    isEmail(email) &&
+    manufacturer.status !== "excluded" &&
+    manufacturer.claimStatus !== "claimed" &&
+    !(await isSuppressed(ctx, email))
+  );
+}
+
+/**
+ * Drafts the thank-you to the person who sent the manufacturer's norms, with
+ * a claim link for their address. An open thank-you is rendered again for
+ * this address. Nobody on the suppression list gets a link, and a profile
+ * already claimed needs none.
+ */
+export async function draftThanksEmail(
+  ctx: MutationCtx,
+  manufacturer: Doc<"manufacturers">,
+  to: string,
+  adminId: Id<"users">,
+): Promise<Id<"outreachMessages">> {
+  const email = normalizeEmail(to);
+  if (!isEmail(email)) {
+    throw new ConvexError({ code: "invalid" });
+  }
+  if (manufacturer.claimStatus === "claimed") {
+    throw new ConvexError({ code: "already_claimed" });
+  }
+  if (!(await canGetClaimLink(ctx, manufacturer, email))) {
+    throw new ConvexError({ code: "suppressed" });
+  }
+  const vars = await thanksVarsFor(ctx, manufacturer, email, adminId);
+  const rendered = renderThanksEmail(vars, await getSender(ctx));
+  const fields = {
+    to: email,
+    vars,
+    ...rendered,
+    issues: await checkEmail(ctx, manufacturer._id, {
+      ...rendered,
+      to: email,
+      step: "thanks",
+      vars,
+    }),
+    status: "draft" as const,
+    edited: false,
+    approvedBy: undefined,
+    approvedAt: undefined,
+    updatedAt: Date.now(),
+  };
+  const messages = await ctx.db
+    .query("outreachMessages")
+    .withIndex("by_manufacturerId", (q) =>
+      q.eq("manufacturerId", manufacturer._id),
+    )
+    .order("desc")
+    .take(50);
+  const open = messages.find(
+    (message) =>
+      message.step === "thanks" &&
+      (message.status === "draft" || message.status === "approved"),
+  );
+  if (open) {
+    await ctx.db.patch("outreachMessages", open._id, fields);
+    return open._id;
+  }
+  return await ctx.db.insert("outreachMessages", {
+    manufacturerId: manufacturer._id,
+    step: "thanks",
+    ...fields,
+  });
+}
+
+/**
+ * Renders a draft again from its saved values and the current signature. A
+ * thank-you also gets a claim link for its recipient as it now stands.
+ */
 export async function rerenderDraft(
   ctx: MutationCtx,
   message: Doc<"outreachMessages">,
+  adminId: Id<"users">,
 ) {
-  const email = renderInitialEmail(
-    message.variant,
-    { ...message.vars, address: message.to ?? message.vars.address },
-    await getSender(ctx),
-  );
+  const sender = await getSender(ctx);
+  let vars = message.vars;
+  let email: { subject: string; body: string };
+  if (message.step === "thanks") {
+    const manufacturer = await ctx.db.get(
+      "manufacturers",
+      message.manufacturerId,
+    );
+    const to = message.to ? normalizeEmail(message.to) : undefined;
+    if (manufacturer && to && (await canGetClaimLink(ctx, manufacturer, to))) {
+      vars = await thanksVarsFor(ctx, manufacturer, to, adminId);
+    }
+    email = renderThanksEmail(vars, sender);
+  } else {
+    email = renderInitialEmail(
+      message.variant ?? "A",
+      { ...vars, address: message.to ?? vars.address },
+      sender,
+    );
+  }
   await ctx.db.patch("outreachMessages", message._id, {
     ...email,
+    vars,
     issues: await checkEmail(ctx, message.manufacturerId, {
       ...email,
       to: message.to,
+      step: message.step,
+      vars,
     }),
     edited: false,
     updatedAt: Date.now(),

@@ -3,12 +3,18 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { mutation, query } from "../_generated/server";
 import { requireSuperAdmin } from "../lib/roles";
-import { checkEmail, getSender, rerenderDraft } from "./drafts";
+import {
+  checkEmail,
+  draftThanksEmail,
+  getSender,
+  rerenderDraft,
+} from "./drafts";
 import { hasBlockingIssue } from "./lib/emailTemplate";
 import { isEmail, normalizeEmail } from "./lib/text";
 
-// Statuses the pipeline moves past once an email is approved or sent; a
-// manufacturer further along (replied, norms received) keeps its status.
+// Statuses the pipeline moves past once a first email is approved or sent; a
+// manufacturer further along (replied, norms received) keeps its status, and
+// a thank-you for norms moves nothing.
 const beforeApproval = new Set(["new", "review"]);
 const beforeContact = new Set(["new", "review", "approved"]);
 
@@ -96,7 +102,11 @@ export const updateMessage = mutation({
     };
     await ctx.db.patch("outreachMessages", message._id, {
       ...email,
-      issues: await checkEmail(ctx, message.manufacturerId, email),
+      issues: await checkEmail(ctx, message.manufacturerId, {
+        ...email,
+        step: message.step,
+        vars: message.vars,
+      }),
       edited: true,
       status: "draft",
       approvedBy: undefined,
@@ -115,7 +125,7 @@ export const chooseContact = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    await requireSuperAdmin(ctx);
+    const admin = await requireSuperAdmin(ctx);
     const message = await getMessage(ctx, args.messageId);
     const contact = await ctx.db.get("manufacturerContacts", args.contactId);
     if (!contact || contact.manufacturerId !== message.manufacturerId) {
@@ -135,7 +145,11 @@ export const chooseContact = mutation({
       to: contact.email,
       vars,
     });
-    await rerenderDraft(ctx, { ...message, to: contact.email, vars });
+    await rerenderDraft(
+      ctx,
+      { ...message, to: contact.email, vars },
+      admin._id,
+    );
     return null;
   },
 });
@@ -145,13 +159,30 @@ export const rerender = mutation({
   args: { messageId: v.id("outreachMessages") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    await requireSuperAdmin(ctx);
+    const admin = await requireSuperAdmin(ctx);
     const message = await getMessage(ctx, args.messageId);
     if (message.status !== "draft") {
       throw new ConvexError({ code: "not_editable" });
     }
-    await rerenderDraft(ctx, message);
+    await rerenderDraft(ctx, message, admin._id);
     return null;
+  },
+});
+
+/**
+ * Drafts the thank-you to the person who sent the manufacturer's norms, with
+ * a link that lets their address claim its profile in Devize (ADR 0018).
+ */
+export const draftThanks = mutation({
+  args: { manufacturerId: v.id("manufacturers"), to: v.string() },
+  returns: v.id("outreachMessages"),
+  handler: async (ctx, args) => {
+    const admin = await requireSuperAdmin(ctx);
+    const manufacturer = await ctx.db.get("manufacturers", args.manufacturerId);
+    if (!manufacturer) {
+      throw new ConvexError({ code: "not_found" });
+    }
+    return await draftThanksEmail(ctx, manufacturer, args.to, admin._id);
   },
 });
 
@@ -184,7 +215,11 @@ export const approve = mutation({
       "manufacturers",
       message.manufacturerId,
     );
-    if (manufacturer && beforeApproval.has(manufacturer.status)) {
+    if (
+      message.step !== "thanks" &&
+      manufacturer &&
+      beforeApproval.has(manufacturer.status)
+    ) {
       await ctx.db.patch("manufacturers", manufacturer._id, {
         status: "approved",
       });
@@ -238,7 +273,11 @@ export const markSent = mutation({
       "manufacturers",
       message.manufacturerId,
     );
-    if (manufacturer && beforeContact.has(manufacturer.status)) {
+    if (
+      message.step !== "thanks" &&
+      manufacturer &&
+      beforeContact.has(manufacturer.status)
+    ) {
       await ctx.db.patch("manufacturers", manufacturer._id, {
         status: "contacted",
       });
@@ -288,7 +327,7 @@ export const updateSettings = mutation({
       .take(200);
     for (const draft of drafts) {
       if (!draft.edited) {
-        await rerenderDraft(ctx, draft);
+        await rerenderDraft(ctx, draft, admin._id);
       }
     }
     return null;
