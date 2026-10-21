@@ -2,7 +2,7 @@ import type { Infer } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 import type { priceSource } from "../estimates/validators";
-import { isPercentUnit } from "../lib/text";
+import { isPercentUnit, normalizeUnit } from "../lib/text";
 import type { resourceKind } from "../manufacturers/validators";
 import type { store } from "./validators";
 
@@ -66,25 +66,20 @@ export function createPriceResolver(
   async function firmRate(
     request: PriceRequest,
   ): Promise<ResolvedPrice | null> {
-    const own = request.resourceId
-      ? await ctx.db
-          .query("companyRates")
-          .withIndex("by_organizationId_and_resourceId", (q) =>
-            q
-              .eq("organizationId", organizationId)
-              .eq("resourceId", request.resourceId),
-          )
-          .first()
-      : null;
+    // A rate only prices resources counted in its own unit: 400 lei a day
+    // says nothing about a machine counted in hours.
+    const unit = normalizeUnit(request.unit);
+    const rates = await ctx.db
+      .query("companyRates")
+      .withIndex("by_organizationId_and_kind", (q) =>
+        q.eq("organizationId", organizationId).eq("kind", request.kind),
+      )
+      .take(500);
+    const inUnit = rates.filter((rate) => rate.unit === unit);
     const rate =
-      own ??
-      (await ctx.db
-        .query("companyRates")
-        .withIndex("by_organizationId_and_resourceId", (q) =>
-          q.eq("organizationId", organizationId).eq("resourceId", undefined),
-        )
-        .filter((q) => q.eq(q.field("kind"), request.kind))
-        .first());
+      (request.resourceId &&
+        inUnit.find((rate) => rate.resourceId === request.resourceId)) ||
+      inUnit.find((rate) => rate.resourceId === undefined);
     return rate
       ? { unitPrice: rate.price, priceSource: "own", pricedAt: rate.updatedAt }
       : null;
@@ -191,6 +186,7 @@ export function createPriceResolver(
       }
       const key = [
         request.kind,
+        normalizeUnit(request.unit),
         request.resourceId ?? "",
         request.productId ?? "",
         request.referencePrice ?? "",

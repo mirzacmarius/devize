@@ -63,21 +63,26 @@ export const set = mutation({
       if (
         !resource ||
         resource.kind !== args.kind ||
+        normalizeUnit(resource.unit) !== unit ||
         (resource.organizationId !== undefined &&
           resource.organizationId !== args.organizationId)
       ) {
         throw invalid("resourceId");
       }
     }
-    const existing = await ctx.db
+    // One rate per resource, and one default per kind and unit, such as
+    // equipment by the hour and equipment by the day.
+    const ofKind = await ctx.db
       .query("companyRates")
-      .withIndex("by_organizationId_and_resourceId", (q) =>
-        q
-          .eq("organizationId", args.organizationId)
-          .eq("resourceId", args.resourceId),
+      .withIndex("by_organizationId_and_kind", (q) =>
+        q.eq("organizationId", args.organizationId).eq("kind", args.kind),
       )
-      .filter((q) => q.eq(q.field("kind"), args.kind))
-      .first();
+      .take(500);
+    const existing = ofKind.find((rate) =>
+      args.resourceId
+        ? rate.resourceId === args.resourceId
+        : rate.resourceId === undefined && rate.unit === unit,
+    );
     const fields = {
       name,
       unit,
