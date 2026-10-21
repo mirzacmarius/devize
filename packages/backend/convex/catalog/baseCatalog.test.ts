@@ -255,6 +255,33 @@ describe("publishing the base catalog", () => {
     expect(versions[1]?.title).toBe(painting?.title ?? "");
   });
 
+  test("brings back a norm archived in the app while the code still has it", async () => {
+    const t = setup();
+    const admin = await publishAll(t);
+    const [scaffolding] = await normWithCode(t, "DV-SCH-01");
+    if (!scaffolding) {
+      throw new Error("DV-SCH-01 was not published");
+    }
+    await admin.as.mutation(api.catalog.norms.archive, {
+      normId: scaffolding._id,
+    });
+    const status = await admin.as.query(api.catalog.baseCatalog.status, {});
+    expect(
+      status.norms.filter((norm) => norm.state !== "unchanged"),
+    ).toMatchObject([{ code: "DV-SCH-01", state: "new" }]);
+
+    await admin.as.mutation(api.catalog.baseCatalog.publish, {});
+    await t.finishAllScheduledFunctions(() => {});
+
+    const versions = await normWithCode(t, "DV-SCH-01");
+    expect(
+      versions.map((norm) => [norm.version, norm.status, norm.lineageId]),
+    ).toEqual([
+      [1, "archived", scaffolding._id],
+      [2, "published", scaffolding._id],
+    ]);
+  });
+
   test("keeps the reference price a shared resource already has", async () => {
     const t = setup();
     await t.run(async (ctx) => {

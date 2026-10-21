@@ -10,7 +10,7 @@ import { readNormResources, versionsOf } from "./norms";
 import { findOrCreateResource, type NormResourceInput } from "./resourceRows";
 
 // Publishing Devize's own catalog of Norme de bază, which ships with the code
-// (catalog/baseNorms.ts, docs/adr/0010). A norm is new until a version of it
+// (catalog/baseNorms.ts, docs/adr/0012). A norm is new until a version of it
 // is published, changed when its published version differs from the code, and
 // unchanged otherwise.
 

@@ -29,7 +29,7 @@ A Normă tied to a Producător's actual products, with consumptions taken from t
 _Avoid_: Branded norm, product recipe
 
 **Normă de bază** (base norm):
-A generic Normă with no brand, from Devize's own catalog, written from scratch with current terms and materials. Devize does not use the 1981 norm indicators. Example: 25 cm AAC block masonry.
+A generic Normă with no brand, from Devize's own catalog, written from scratch with current terms and materials. Devize does not use the 1981 norm indicators. The catalog ships with the code, in editions that a super admin publishes from Admin → Catalog de bază; its codes are DV-, the category and a number. Example: DV-ZID-03, 25 cm AAC block masonry. In code: `catalog/baseNorms.ts`. See `docs/adr/0012`.
 _Avoid_: Standard norm, indicator norm
 
 **Articol de deviz** (line item):
@@ -105,6 +105,10 @@ _Avoid_: Scraping, crawling
 **Produs ales** (chosen store product):
 The product a Firmă buys at a store for a material, at most one per store, with how many of the material's units one item sold holds (25 for a 25 kg bag of a material counted in kg). Its price comes before public listings. In code: `storeChoices`.
 _Avoid_: Match, mapping
+
+**Preț de referință** (reference price):
+The indicative price a Normă gives each of its Resurse, in lei without VAT. It prices a Resursă only when the Firmă has no price of its own and no store price for it, as the last step of the price order. Devize's base catalog gives one to every Resursă it uses. In code: `normResources.referencePrice`, then `resources.referencePrice`. See `docs/adr/0005` and `docs/adr/0012`.
+_Avoid_: Default price, list price
 
 **Coș** (shopping basket):
 A Deviz's materials split between the stores at the lowest total: each material is bought at one store, in whole items, and every store used adds its delivery, or the trip there, unless the order reaches its free-delivery threshold. In code: `prices/basket.ts` and `prices/basketPlan.ts`, with each Firmă's store fees in `priceSettings`.
