@@ -6,7 +6,7 @@ import { offerStatus, optionalItem } from "./validators";
 export const offerTables = {
   // Oferte: the secure link a client opens, without an account, to read a
   // Deviz, choose between its Variante and optional works, ask questions,
-  // and accept and sign it or decline it. See docs/adr/0014.
+  // and accept and sign it or decline it. See docs/adr/0016.
   offers: defineTable({
     organizationId: v.id("organizations"),
     estimateId: v.id("estimates"),
