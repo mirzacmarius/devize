@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   isHourUnit,
+  isKnownUnit,
   isPercentUnit,
   normalizeText,
   normalizeUnit,
@@ -32,10 +33,30 @@ describe("normalizeUnit", () => {
     expect(normalizeUnit("buc.")).toBe("buc");
     expect(normalizeUnit("to")).toBe("t");
     expect(normalizeUnit("%")).toBe("%");
+    expect(normalizeUnit("Saci")).toBe("sac");
+    expect(normalizeUnit("Rolă")).toBe("rola");
+    expect(normalizeUnit("om-ore")).toBe("ora");
+    expect(normalizeUnit("t·km")).toBe("tkm");
+  });
+
+  test("keeps a count in front of the unit", () => {
+    expect(normalizeUnit("100 m²")).toBe("100 mp");
+    expect(normalizeUnit("10buc.")).toBe("10 buc");
+    expect(normalizeUnit("2,5 kg")).toBe("2.5 kg");
+    expect(normalizeUnit("1 buc")).toBe("buc");
+    expect(normalizeUnit(normalizeUnit("2,5 kg"))).toBe("2.5 kg");
   });
 
   test("keeps unknown units, normalized", () => {
-    expect(normalizeUnit("Sac ")).toBe("sac");
+    expect(normalizeUnit("Pachet ")).toBe("pachet");
+  });
+
+  test("tells the units it knows", () => {
+    expect(isKnownUnit("m²")).toBe(true);
+    expect(isKnownUnit("100 mp")).toBe(true);
+    expect(isKnownUnit("ore")).toBe(true);
+    expect(isKnownUnit("pachet")).toBe(false);
+    expect(isKnownUnit("10 pachete")).toBe(false);
   });
 
   test("recognizes percentages and hours", () => {
