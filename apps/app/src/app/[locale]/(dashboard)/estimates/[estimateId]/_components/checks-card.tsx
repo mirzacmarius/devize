@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useRun } from "@/components/use-run";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useStartOmissions } from "../_proposal/omissions-sheet";
 import type { Check as CheckResult, CheckState } from "./checks";
 import { useRefreshedMessage } from "./estimate-actions";
 import type { Estimate, OpenPanel, Updates } from "./types";
@@ -64,7 +65,7 @@ export function ChecksCard({
             {checks.map((check) => (
               <CheckRow
                 key={check.id}
-                estimateId={estimate._id}
+                estimate={estimate}
                 check={check}
                 updates={updates}
                 editable={editable}
@@ -79,13 +80,13 @@ export function ChecksCard({
 }
 
 function CheckRow({
-  estimateId,
+  estimate,
   check,
   updates,
   editable,
   open,
 }: {
-  estimateId: Estimate["_id"];
+  estimate: Estimate;
   check: CheckResult;
   updates: Updates | undefined;
   editable: boolean;
@@ -122,14 +123,17 @@ function CheckRow({
         >
           {detail}
         </span>
-        {editable && (
-          <CheckFix
-            estimateId={estimateId}
-            check={check}
-            updates={updates}
-            open={open}
-          />
-        )}
+        {editable &&
+          (check.id === "omissions" ? (
+            <OmissionsFix estimate={estimate} check={check} open={open} />
+          ) : (
+            <CheckFix
+              estimateId={estimate._id}
+              check={check}
+              updates={updates}
+              open={open}
+            />
+          ))}
       </div>
     </li>
   );
@@ -139,7 +143,72 @@ function CheckRow({
 function useCheckText() {
   const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
+  const omissions = (
+    check: OmissionsCheck,
+  ): { title: string; detail: string } => {
+    switch (check.status) {
+      case "loading":
+        return {
+          title: t("checks.omissions.noneTitle"),
+          detail: t("checks.pending"),
+        };
+      case "none":
+        return {
+          title: t("checks.omissions.noneTitle"),
+          detail: t("checks.omissions.none"),
+        };
+      case "working":
+        return {
+          title: t("checks.omissions.workingTitle"),
+          detail: t("checks.omissions.working"),
+        };
+      case "failed":
+        return {
+          title: t("checks.omissions.failedTitle"),
+          detail: t("checks.omissions.failed"),
+        };
+      case "found":
+        return {
+          title: t("checks.omissions.warningTitle"),
+          detail: [
+            check.works > 0
+              ? t("checks.omissions.works", { count: check.works })
+              : "",
+            check.questions > 0
+              ? check.tender
+                ? t("checks.omissions.clarifications", {
+                    count: check.questions,
+                  })
+                : t("checks.omissions.questions", { count: check.questions })
+              : "",
+            check.remarks > 0
+              ? t("checks.omissions.remarks", { count: check.remarks })
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" · "),
+        };
+      case "clear":
+        return {
+          title: t("checks.omissions.title"),
+          detail: t("checks.omissions.clear"),
+        };
+      case "applied":
+        return {
+          title: t("checks.omissions.title"),
+          detail: t("checks.omissions.applied", { count: check.works }),
+        };
+      case "reviewed":
+        return {
+          title: t("checks.omissions.title"),
+          detail: t("checks.omissions.reviewed"),
+        };
+    }
+  };
   return (check: CheckResult): { title: string; detail: string } => {
+    if (check.id === "omissions") {
+      return omissions(check);
+    }
     if (check.state === "pending") {
       return {
         title: t(`checks.${check.id}.title`),
@@ -244,6 +313,52 @@ function useCheckText() {
       }
     }
   };
+}
+
+type OmissionsCheck = Extract<CheckResult, { id: "omissions" }>;
+
+/**
+ * The omissions check's button, whatever its state: one click starts a check
+ * and shows it working, and any other opens what the check found.
+ */
+function OmissionsFix({
+  estimate,
+  check,
+  open,
+}: {
+  estimate: Estimate;
+  check: OmissionsCheck;
+  open: OpenPanel;
+}) {
+  const t = useScopedI18n("estimate");
+  const { start, starting } = useStartOmissions(estimate._id);
+  if (
+    check.status === "loading" ||
+    (check.status === "none" && estimate.lineItems.length === 0)
+  ) {
+    return null;
+  }
+  const label =
+    check.status === "none"
+      ? t("checks.omissions.start")
+      : check.status === "found"
+        ? t("checks.omissions.open")
+        : t("checks.omissions.view");
+  return (
+    <Button
+      type="button"
+      variant="link"
+      className="mt-1 text-meta"
+      disabled={starting}
+      onClick={async () => {
+        if (check.status !== "none" || (await start())) {
+          open({ kind: "omissions" });
+        }
+      }}
+    >
+      {label}
+    </Button>
+  );
 }
 
 /** The one-click fix for a check that didn't pass, when there is one. */

@@ -307,7 +307,7 @@ export default {
         passed: "passed",
         warning: "to review",
         failed: "failed",
-        pending: "in progress",
+        pending: "not checked yet",
       },
       items: {
         title: "Has line items",
@@ -315,6 +315,26 @@ export default {
         failedTitle: "No line items",
         failed: "Add line items from the catalog or your own.",
         fix: "Add from catalog",
+      },
+      omissions: {
+        title: "No forgotten works",
+        noneTitle: "Omissions not checked",
+        none: "Devize AI looks for the works missing from the estimate.",
+        workingTitle: "Looking for omissions",
+        working: "Devize AI is reading the estimate…",
+        failedTitle: "The omissions check didn't work",
+        failed: "See why and try again.",
+        warningTitle: "Possible omissions",
+        works: "Missing works: {count}",
+        questions: "Questions: {count}",
+        clarifications: "Clarifications: {count}",
+        remarks: "Remarks: {count}",
+        clear: "Devize AI found no missing works.",
+        applied: "Works added from Devize AI's proposals: {count}",
+        reviewed: "You've seen Devize AI's proposals.",
+        start: "Find omissions",
+        open: "See the proposals",
+        view: "See the check",
       },
       prices: {
         title: "Every resource has a price",
@@ -551,6 +571,8 @@ export default {
           "The import took too long. Try again, perhaps with the lists split into smaller files.",
         tenderIncomplete:
           "An answer came out incomplete. Try again, perhaps with the lists split into smaller files.",
+        checkTimeout: "The check took too long. Try again.",
+        checkIncomplete: "The answer came out incomplete. Try again.",
         unknown: "Something went wrong. Try again.",
       },
     },
@@ -634,6 +656,47 @@ export default {
       dismiss: "Discard the proposal",
       dismissed: "The proposal was set aside.",
       again: "New proposal",
+    },
+    omissions: {
+      title: "Omissions check",
+      description:
+        "Devize AI reads the estimate like a site engineer and looks for the works its line items call for but it doesn't have: waterproofing under tiles, rubble removal, primer, scaffolding. Each proposal comes with its reason, the line items it's for and a quantity worked out from them.",
+      tender:
+        "Devize AI reads the lists like a site engineer and looks for the works their items call for but they don't have. A tender's lists can't take new items, so it writes them as clarifications to request from the contracting authority, ready to copy.",
+      start: "Find omissions",
+      again: "Check again",
+      noItems: "Add line items to the estimate first.",
+      privacy:
+        "The estimate's line items go to Claude, Anthropic's AI model, only for this check.",
+      lastApplied: "Works added from the last check: {count}.",
+      lastReviewed: "You closed the last check after seeing its proposals.",
+      working: {
+        title: "Devize AI is reading the estimate",
+        reading: "Reading the line items and looking for missing works…",
+        matching:
+          "Works found: {count}. Looking for matching norms in the catalog…",
+        hint: "This usually takes a minute or two. You can close this window: the check waits for you in the estimate.",
+        cancel: "Stop the check",
+      },
+      failedTitle: "The omissions check didn't work",
+      review: {
+        understood: "What I checked",
+        remarks: "To check in the estimate",
+        clarifications: "Clarifications to request from the authority",
+        copy: "Copy the list",
+        copied: "List copied.",
+        basis: "For: {titles}",
+        duplicate: "The estimate seems to have it already: {title}",
+        noItems: "Devize AI found no works missing from the estimate.",
+        tenderNoItems:
+          "The works missing from the lists are above, as clarifications to request from the authority.",
+        tenderClear: "Devize AI found no works missing from the lists.",
+        apply: "Add the works ({count})",
+        applied:
+          "Works added to the estimate: {count}. They stay “Proposed by AI” until you confirm them.",
+        dismiss: "Close the check",
+        dismissed: "The check was closed.",
+      },
     },
     banner: {
       working: "Devize AI is writing line items from your description.",
@@ -1916,6 +1979,7 @@ export default {
       estimate_proposal: "Estimate proposal",
       tender_import: "Quantity lists import",
       offer_question: "Question on an offer",
+      omission_check: "Omissions check",
     },
     confidence: {
       high: "High confidence",

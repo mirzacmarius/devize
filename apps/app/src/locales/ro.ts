@@ -303,7 +303,7 @@ export default {
         passed: "trece",
         warning: "de văzut",
         failed: "nu trece",
-        pending: "în curs",
+        pending: "neverificat încă",
       },
       items: {
         title: "Are articole",
@@ -311,6 +311,26 @@ export default {
         failedTitle: "Niciun articol",
         failed: "Adaugă articole din catalog sau articole proprii.",
         fix: "Adaugă din catalog",
+      },
+      omissions: {
+        title: "Fără lucrări uitate",
+        noneTitle: "Omisiuni neverificate",
+        none: "Devize AI caută lucrările care lipsesc din deviz.",
+        workingTitle: "Se caută omisiuni",
+        working: "Devize AI citește devizul…",
+        failedTitle: "Căutarea omisiunilor nu a mers",
+        failed: "Vezi de ce și încearcă din nou.",
+        warningTitle: "Posibile omisiuni",
+        works: "Lucrări lipsă: {count}",
+        questions: "Întrebări: {count}",
+        clarifications: "Clarificări: {count}",
+        remarks: "Observații: {count}",
+        clear: "Devize AI nu a găsit lucrări care să lipsească.",
+        applied: "Lucrări adăugate din propunerile Devize AI: {count}",
+        reviewed: "Ai văzut propunerile Devize AI.",
+        start: "Caută omisiuni",
+        open: "Vezi propunerile",
+        view: "Vezi verificarea",
       },
       prices: {
         title: "Toate resursele au preț",
@@ -547,6 +567,8 @@ export default {
           "Importul a durat prea mult. Încearcă din nou, eventual cu listele împărțite în fișiere mai mici.",
         tenderIncomplete:
           "Un răspuns a ieșit incomplet. Încearcă din nou, eventual cu listele împărțite în fișiere mai mici.",
+        checkTimeout: "Verificarea a durat prea mult. Încearcă din nou.",
+        checkIncomplete: "Răspunsul a ieșit incomplet. Încearcă din nou.",
         unknown: "Ceva nu a mers. Încearcă din nou.",
       },
     },
@@ -631,6 +653,47 @@ export default {
       dismiss: "Renunță la propunere",
       dismissed: "Propunerea a fost pusă deoparte.",
       again: "Propunere nouă",
+    },
+    omissions: {
+      title: "Detector de omisiuni",
+      description:
+        "Devize AI citește devizul ca un diriginte de șantier și caută lucrările pe care articolele le cer, dar lipsesc: hidroizolația sub faianță, evacuarea molozului, amorsa, schela. Fiecare propunere are motivul, articolele pe care se bazează și cantitatea scoasă din ele.",
+      tender:
+        "Devize AI citește listele ca un diriginte de șantier și caută lucrările pe care pozițiile le cer, dar lipsesc. La licitație nu poți adăuga poziții noi, așa că le scrie ca clarificări de cerut autorității contractante, gata de copiat.",
+      start: "Caută omisiuni",
+      again: "Caută din nou",
+      noItems: "Adaugă întâi articole în deviz.",
+      privacy:
+        "Articolele devizului merg la Claude, modelul AI al Anthropic, doar pentru această verificare.",
+      lastApplied: "Lucrări adăugate din ultima verificare: {count}.",
+      lastReviewed: "Ai închis ultima verificare după ce ai văzut propunerile.",
+      working: {
+        title: "Devize AI citește devizul",
+        reading: "Citesc articolele și caut lucrările care lipsesc…",
+        matching: "Lucrări găsite: {count}. Caut normele potrivite în catalog…",
+        hint: "Durează de obicei unul sau două minute. Poți închide fereastra: verificarea te așteaptă în deviz.",
+        cancel: "Oprește verificarea",
+      },
+      failedTitle: "Căutarea omisiunilor nu a reușit",
+      review: {
+        understood: "Ce am verificat",
+        remarks: "De verificat în deviz",
+        clarifications: "Clarificări de cerut autorității",
+        copy: "Copiază lista",
+        copied: "Am copiat lista.",
+        basis: "Pentru: {titles}",
+        duplicate: "Devizul pare să o aibă deja: {title}",
+        noItems: "Devize AI nu a găsit lucrări care să lipsească din deviz.",
+        tenderNoItems:
+          "Lucrările care lipsesc din liste sunt mai sus, ca clarificări de cerut autorității.",
+        tenderClear:
+          "Devize AI nu a găsit lucrări care să lipsească din liste.",
+        apply: "Adaugă lucrările ({count})",
+        applied:
+          "Lucrări adăugate în deviz: {count}. Rămân „Propus de AI” până le confirmi.",
+        dismiss: "Închide verificarea",
+        dismissed: "Verificarea a fost închisă.",
+      },
     },
     banner: {
       working: "Devize AI scrie articolele din descrierea ta.",
@@ -1908,6 +1971,7 @@ export default {
       estimate_proposal: "Propunere deviz",
       tender_import: "Import liste de cantități",
       offer_question: "Întrebare la o ofertă",
+      omission_check: "Detector de omisiuni",
     },
     confidence: {
       high: "Încredere mare",

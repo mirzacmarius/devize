@@ -7,6 +7,7 @@ import { aiConfidence, aiUsage } from "../ai/validators";
 import { estimateKind, takeoffRow } from "../estimates/validators";
 import { normalizeText } from "../lib/text";
 import type { NormCandidate } from "./lib/match";
+import { leaveOutPresent } from "./omissions";
 import { proposedResource } from "./validators";
 
 // The steps of drafting a proposal that touch the database, called by the
@@ -276,6 +277,9 @@ export const complete = internalMutation({
           });
           matched += match.normId ? 1 : 0;
         }
+      }
+      if (proposal.source === "omissions") {
+        await leaveOutPresent(ctx, proposal);
       }
       articles = (
         await ctx.db

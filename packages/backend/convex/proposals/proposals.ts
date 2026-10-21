@@ -38,7 +38,8 @@ import { convertQuantity } from "./lib/match";
 // Proposals: what the AI suggests for a Deviz from a description of the work
 // and photos of it, or from a tender's quantity lists. The AI writes the
 // articles with their quantities, or reads the lists' positions; a person
-// reviews them, and only the ones they keep go into the Deviz.
+// reviews them, and only the ones they keep go into the Deviz. The omissions
+// check (omissions.ts) proposes the works a Deviz misses the same way.
 
 const MAX_ITEMS = MAX_TENDER_ITEMS;
 
@@ -57,8 +58,38 @@ const HOUR_MS = 60 * 60 * 1000;
 // The drafting action takes ten minutes at most; a job still running after
 // twelve has died, and its proposal shows as failed. A tender import runs in
 // a chain of actions and gets an hour.
-const JOB_TIMEOUT_MS = 12 * 60 * 1000;
+export const JOB_TIMEOUT_MS = 12 * 60 * 1000;
 const TENDER_TIMEOUT_MS = 60 * 60 * 1000;
+
+type Source = Doc<"proposals">["source"];
+
+// A Deviz's proposals come in two lanes, with at most one open in each: the
+// articles drafted from a description or read from a tender's lists, and the
+// works an omissions check finds missing.
+export const DRAFTING: readonly Source[] = ["description", "tender"];
+export const OMISSIONS: readonly Source[] = ["omissions"];
+
+/** A Deviz's newest proposals from some sources, the newest first. */
+export async function newestProposals(
+  ctx: QueryCtx,
+  estimateId: Id<"estimates">,
+  sources: readonly Source[],
+  count: number,
+) {
+  const rows: Doc<"proposals">[] = [];
+  for (const source of sources) {
+    rows.push(
+      ...(await ctx.db
+        .query("proposals")
+        .withIndex("by_estimateId_and_source", (q) =>
+          q.eq("estimateId", estimateId).eq("source", source),
+        )
+        .order("desc")
+        .take(count)),
+    );
+  }
+  return rows.sort((a, b) => b._creationTime - a._creationTime).slice(0, count);
+}
 
 async function readItems(ctx: QueryCtx, proposalId: Id<"proposals">) {
   return await ctx.db
@@ -122,8 +153,136 @@ async function normSummaries(
 }
 
 /**
- * A Deviz's newest proposal with its items, or null. A proposal whose AI job
+ * A proposal with its items, as the review shows it. A proposal whose AI job
  * failed shows as failed, with the job's error code.
+ */
+export async function proposalView(
+  ctx: QueryCtx,
+  estimate: Doc<"estimates">,
+  proposal: Doc<"proposals">,
+) {
+  const job = await ctx.db.get("aiJobs", proposal.aiJobId);
+  const failed =
+    proposal.status === "working" && (!job || job.status === "failed");
+  const status = failed ? ("failed" as const) : proposal.status;
+  const tender = proposal.source === "tender";
+  // A description's photos, with links to show them; a tender's lists.
+  const photos = [];
+  const files = [];
+  for (const fileId of proposal.fileIds) {
+    const file = await ctx.db.get("files", fileId);
+    if (file && file.organizationId === estimate.organizationId) {
+      if (tender) {
+        files.push({ _id: file._id, name: file.name });
+      } else {
+        photos.push({
+          _id: file._id,
+          name: file.name,
+          url: await ctx.storage.getUrl(file.storageId),
+        });
+      }
+    }
+  }
+  // While a tender is read, its progress says enough.
+  const items =
+    status === "ready" || (status === "working" && !tender)
+      ? await readItems(ctx, proposal._id)
+      : [];
+  const norms = await normSummaries(
+    ctx,
+    items.flatMap((item) => (item.normId ? [item.normId] : [])),
+    estimate.organizationId,
+  );
+  // The Deviz's articles a missing work is for, by name; deleted ones are
+  // left out.
+  const lines = new Map<Id<"lineItems">, string | null>();
+  for (const item of items) {
+    for (const lineItemId of [
+      ...(item.basis ?? []),
+      ...(item.duplicateOf ? [item.duplicateOf] : []),
+    ]) {
+      if (!lines.has(lineItemId)) {
+        const line = await ctx.db.get("lineItems", lineItemId);
+        lines.set(
+          lineItemId,
+          line?.estimateId === estimate._id ? line.title : null,
+        );
+      }
+    }
+  }
+  return {
+    _id: proposal._id,
+    _creationTime: proposal._creationTime,
+    status,
+    error: failed ? (job?.error ?? "unknown") : undefined,
+    startedAt: job?.startedAt,
+    source: proposal.source,
+    text: proposal.text,
+    photos,
+    files,
+    summary: proposal.summary,
+    assumptions: proposal.assumptions,
+    questions: proposal.questions,
+    remarks: proposal.remarks ?? [],
+    matchError: proposal.matchError,
+    progress: proposal.progress && {
+      stage: proposal.progress.stage,
+      file: proposal.progress.file,
+      read: proposal.progress.read,
+      matched: proposal.progress.matched,
+      issues: proposal.progress.issues,
+    },
+    applying:
+      status === "applying"
+        ? {
+            applied: proposal.applied ?? 0,
+            total: proposal.applyTotal ?? 0,
+          }
+        : undefined,
+    // What the list shows of each item; `itemDetails` has the rest, so a
+    // tender's hundreds of positions stay light.
+    items: items.map((item) => {
+      const linked = item.normId ? norms.get(item.normId) : undefined;
+      // A norm withdrawn since the proposal leaves the AI's own recipe and
+      // quantity, as `apply` will.
+      const norm = linked?.usable ? linked : undefined;
+      return {
+        _id: item._id,
+        chapter: item.chapter,
+        title: item.title,
+        unit: item.unit,
+        measured: item.measured,
+        note: item.note,
+        confidence: item.confidence,
+        quantity: item.normId && !norm ? item.measured : item.quantity,
+        selected: item.selected,
+        norm: norm ?? null,
+        // The norm's unit doesn't convert from the article's, so the
+        // quantity needs a look.
+        unitMismatch:
+          norm !== undefined &&
+          convertQuantity(item.measured, item.unit, norm.unit) === null,
+        // Whether the AI wrote a recipe for it, used without a norm.
+        recipe: item.resources.length > 0,
+        tender: item.tender && {
+          position: item.tender.position,
+          code: item.tender.code,
+          object: item.tender.object,
+          chapter: item.tender.chapter,
+        },
+        basis: (item.basis ?? []).flatMap((lineItemId) => {
+          const title = lines.get(lineItemId);
+          return title ? [{ _id: lineItemId, title }] : [];
+        }),
+        duplicateOf: (item.duplicateOf && lines.get(item.duplicateOf)) || null,
+      };
+    }),
+  };
+}
+
+/**
+ * A Deviz's newest proposal from a description or a tender's lists, with its
+ * items, or null.
  */
 export const latest = query({
   args: { estimateId: v.id("estimates") },
@@ -133,108 +292,8 @@ export const latest = query({
       "estimates",
       args.estimateId,
     );
-    const proposal = await ctx.db
-      .query("proposals")
-      .withIndex("by_estimateId", (q) => q.eq("estimateId", estimate._id))
-      .order("desc")
-      .first();
-    if (!proposal) {
-      return null;
-    }
-    const job = await ctx.db.get("aiJobs", proposal.aiJobId);
-    const failed =
-      proposal.status === "working" && (!job || job.status === "failed");
-    const status = failed ? ("failed" as const) : proposal.status;
-    const tender = proposal.source === "tender";
-    // A description's photos, with links to show them; a tender's lists.
-    const photos = [];
-    const files = [];
-    for (const fileId of proposal.fileIds) {
-      const file = await ctx.db.get("files", fileId);
-      if (file && file.organizationId === estimate.organizationId) {
-        if (tender) {
-          files.push({ _id: file._id, name: file.name });
-        } else {
-          photos.push({
-            _id: file._id,
-            name: file.name,
-            url: await ctx.storage.getUrl(file.storageId),
-          });
-        }
-      }
-    }
-    // While a tender is read, its progress says enough.
-    const items =
-      status === "ready" || (status === "working" && !tender)
-        ? await readItems(ctx, proposal._id)
-        : [];
-    const norms = await normSummaries(
-      ctx,
-      items.flatMap((item) => (item.normId ? [item.normId] : [])),
-      estimate.organizationId,
-    );
-    return {
-      _id: proposal._id,
-      _creationTime: proposal._creationTime,
-      status,
-      error: failed ? (job?.error ?? "unknown") : undefined,
-      startedAt: job?.startedAt,
-      source: proposal.source,
-      text: proposal.text,
-      photos,
-      files,
-      summary: proposal.summary,
-      assumptions: proposal.assumptions,
-      questions: proposal.questions,
-      matchError: proposal.matchError,
-      progress: proposal.progress && {
-        stage: proposal.progress.stage,
-        file: proposal.progress.file,
-        read: proposal.progress.read,
-        matched: proposal.progress.matched,
-        issues: proposal.progress.issues,
-      },
-      applying:
-        status === "applying"
-          ? {
-              applied: proposal.applied ?? 0,
-              total: proposal.applyTotal ?? 0,
-            }
-          : undefined,
-      // What the list shows of each item; `itemDetails` has the rest, so a
-      // tender's hundreds of positions stay light.
-      items: items.map((item) => {
-        const linked = item.normId ? norms.get(item.normId) : undefined;
-        // A norm withdrawn since the proposal leaves the AI's own recipe and
-        // quantity, as `apply` will.
-        const norm = linked?.usable ? linked : undefined;
-        return {
-          _id: item._id,
-          chapter: item.chapter,
-          title: item.title,
-          unit: item.unit,
-          measured: item.measured,
-          note: item.note,
-          confidence: item.confidence,
-          quantity: item.normId && !norm ? item.measured : item.quantity,
-          selected: item.selected,
-          norm: norm ?? null,
-          // The norm's unit doesn't convert from the article's, so the
-          // quantity needs a look.
-          unitMismatch:
-            norm !== undefined &&
-            convertQuantity(item.measured, item.unit, norm.unit) === null,
-          // Whether the AI wrote a recipe for it, used without a norm.
-          recipe: item.resources.length > 0,
-          tender: item.tender && {
-            position: item.tender.position,
-            code: item.tender.code,
-            object: item.tender.object,
-            chapter: item.tender.chapter,
-          },
-        };
-      }),
-    };
+    const [proposal] = await newestProposals(ctx, estimate._id, DRAFTING, 1);
+    return proposal ? await proposalView(ctx, estimate, proposal) : null;
   },
 });
 
@@ -301,17 +360,16 @@ async function checkPhotos(
 }
 
 /**
- * Sets aside the Deviz's proposal still open, so only the new one is
- * reviewed. One the AI is still writing, or one still going into the Deviz,
- * can't be replaced.
+ * Sets aside the Deviz's proposal still open in a lane, so only the new one
+ * is reviewed. One the AI is still writing, or one still going into the
+ * Deviz, can't be replaced.
  */
-async function setAsideOpen(ctx: MutationCtx, estimateId: Id<"estimates">) {
-  const recent = await ctx.db
-    .query("proposals")
-    .withIndex("by_estimateId", (q) => q.eq("estimateId", estimateId))
-    .order("desc")
-    .take(5);
-  for (const proposal of recent) {
+export async function setAsideOpen(
+  ctx: MutationCtx,
+  estimateId: Id<"estimates">,
+  lane: readonly Source[],
+) {
+  for (const proposal of await newestProposals(ctx, estimateId, lane, 5)) {
     if (proposal.status === "applying") {
       throw appError("in_use", "proposal");
     }
@@ -330,7 +388,10 @@ async function setAsideOpen(ctx: MutationCtx, estimateId: Id<"estimates">) {
   }
 }
 
-async function checkQuota(ctx: QueryCtx, organizationId: Id<"organizations">) {
+export async function checkQuota(
+  ctx: QueryCtx,
+  organizationId: Id<"organizations">,
+) {
   const now = Date.now();
   const lastDay = await ctx.db
     .query("proposals")
@@ -373,7 +434,7 @@ export const start = mutation({
       throw invalid("description");
     }
     await checkPhotos(ctx, estimate, args.fileIds);
-    await setAsideOpen(ctx, estimate._id);
+    await setAsideOpen(ctx, estimate._id, DRAFTING);
     await checkQuota(ctx, estimate.organizationId);
     const aiJobId = await createJob(
       ctx,
@@ -465,7 +526,7 @@ export const startTender = mutation({
       args.estimateId,
     );
     await checkTenderFiles(ctx, estimate, args.fileIds);
-    await setAsideOpen(ctx, estimate._id);
+    await setAsideOpen(ctx, estimate._id, DRAFTING);
     await checkQuota(ctx, estimate.organizationId);
     const aiJobId = await createJob(
       ctx,
@@ -822,7 +883,12 @@ async function applyBatch(ctx: MutationCtx, proposalId: Id<"proposals">) {
       );
   const resolver = resolverFor(ctx, estimate);
   const linkResources = resourceLinker(ctx, estimate.organizationId);
-  const method = proposal.fileIds.length > 0 ? "photo" : "voice";
+  const method =
+    proposal.source === "omissions"
+      ? "derived"
+      : proposal.fileIds.length > 0
+        ? "photo"
+        : "voice";
   const userId = proposal.appliedBy ?? proposal.createdBy;
   let position = await nextPosition(ctx, "lineItems", estimate._id);
   for (const item of batch) {
@@ -995,7 +1061,7 @@ export async function deleteProposals(
     "estimateId" in owner
       ? await ctx.db
           .query("proposals")
-          .withIndex("by_estimateId", (q) =>
+          .withIndex("by_estimateId_and_source", (q) =>
             q.eq("estimateId", owner.estimateId),
           )
           .take(limit)
