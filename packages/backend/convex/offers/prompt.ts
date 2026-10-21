@@ -261,7 +261,11 @@ export function offerContext(offer: AssistantOffer): string {
       "",
       "Variantele (totaluri cu TVA, cu lucrările opționale alese acum):",
       `- ${offer.baseLabel ?? "Standard"}, devizul de bază: ${lei(offer.baseTotal)}`,
-      ...offer.variants.map((x) => `- ${x.name}: ${lei(x.total)}`),
+      ...offer.variants.map((x) =>
+        x.description
+          ? `- ${x.name}: ${lei(x.total)}. ${x.description}`
+          : `- ${x.name}: ${lei(x.total)}`,
+      ),
       `Clientul are aleasă acum varianta ${chosen}.`,
     );
   }

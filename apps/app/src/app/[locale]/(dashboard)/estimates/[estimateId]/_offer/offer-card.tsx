@@ -31,6 +31,7 @@ import type { Estimate } from "../_components/types";
 import { OfferDialog } from "./offer-dialog";
 import { copyText, offerUrl, useOrigin, whatsappNumber } from "./offer-link";
 import { OfferQuestions } from "./offer-questions";
+import { OfferVariants } from "./variants-sheet";
 
 type Offer = NonNullable<
   FunctionReturnType<typeof api.offers.offers.forEstimate>
@@ -86,6 +87,7 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
     body = (
       <>
         <p className="m-0 text-body text-ink-2">{t("hint")}</p>
+        <OfferVariants estimate={estimate} />
         {createButton(t("create"))}
       </>
     );
@@ -96,7 +98,17 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
   } else if (offer.status === "declined") {
     body = <DeclinedOffer offer={offer} />;
   } else {
-    body = <EndedOffer offer={offer} action={createButton(t("newLink"))} />;
+    body = (
+      <EndedOffer
+        offer={offer}
+        action={
+          <>
+            <OfferVariants estimate={estimate} />
+            {createButton(t("newLink"))}
+          </>
+        }
+      />
+    );
   }
 
   return (

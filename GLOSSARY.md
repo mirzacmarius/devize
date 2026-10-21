@@ -61,7 +61,7 @@ What Devize AI suggests for a Deviz, from a description of the work and photos o
 _Avoid_: Ofertă (what the client receives), draft
 
 **Variantă** (variant):
-An alternative version of the same Deviz, such as economy, standard and premium, that the client chooses between. In code: `variants`.
+An alternative version of the same Deviz, such as economy, standard and premium, that the client chooses between. It puts other materials in some of the Deviz's works; the works and their quantities stay the same. In code: `variants`, made in `offers/variants.ts`. See `docs/adr/0021`.
 _Avoid_: Option, version (a Normă has versions)
 
 **Ofertă** (offer):

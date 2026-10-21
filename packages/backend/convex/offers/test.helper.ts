@@ -1,6 +1,5 @@
 import { api } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { emptyRecap } from "../estimates/recap";
 import { firmOwner, publishedBaseNorm, type TestConvex } from "../test.helper";
 
 // Made-up Devize and a fake Resend for the Ofertă tests.
@@ -114,7 +113,6 @@ export async function premiumVariant(
           priceSource: "manual",
         },
       ],
-      totals: emptyRecap,
     });
   });
 }

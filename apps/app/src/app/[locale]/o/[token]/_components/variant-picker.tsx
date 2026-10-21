@@ -36,12 +36,14 @@ export function VariantPicker({
       key: "base",
       variantId: undefined,
       name: offer.baseLabel ?? t("base"),
+      description: undefined,
       total: offer.baseTotal,
     },
     ...offer.variants.map((variant) => ({
       key: variant._id,
       variantId: variant._id,
       name: variant.name,
+      description: variant.description,
       total: variant.total,
     })),
   ];
@@ -65,7 +67,7 @@ export function VariantPicker({
               <label
                 key={option.key}
                 className={cn(
-                  "grid min-w-0 cursor-pointer gap-1 rounded-md border border-border bg-card px-4 py-3 transition-colors hover:bg-tile has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:disabled]:cursor-default has-[:disabled]:hover:bg-card",
+                  "flex min-w-0 cursor-pointer flex-col gap-1 rounded-md border border-border bg-card px-4 py-3 transition-colors hover:bg-tile has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:disabled]:cursor-default has-[:disabled]:hover:bg-card",
                   checked &&
                     "border-primary bg-selected has-[:disabled]:hover:bg-selected",
                 )}
@@ -81,7 +83,12 @@ export function VariantPicker({
                   <span className="truncate">{option.name}</span>
                   {checked && <Icons.Check aria-hidden className="size-4" />}
                 </span>
-                <span className="text-body tabular-nums text-ink-2">
+                {option.description && (
+                  <span className="text-meta text-ink-2">
+                    {option.description}
+                  </span>
+                )}
+                <span className="mt-auto text-body tabular-nums text-ink-2">
                   {t("total", { total: formatMoney(option.total, locale) })}
                 </span>
               </label>
