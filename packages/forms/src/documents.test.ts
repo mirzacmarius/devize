@@ -13,6 +13,7 @@ describe("buildDocuments", () => {
     const documents = buildDocuments(sampleData(), documentKinds, options);
     expect(documents.map((document) => document.id)).toEqual([
       "DEVIZ",
+      "OF",
       "DG",
       // By object: the general works, the apartment and the terrace.
       ...Array(3).fill("DO"),
@@ -29,7 +30,7 @@ describe("buildDocuments", () => {
       ...Array(3).fill("C8"),
       ...Array(3).fill("C9"),
     ]);
-    expect(documents[10]?.name).toBe("Formularul F3 · 01 Demolări");
+    expect(documents[11]?.name).toBe("Formularul F3 · 01 Demolări");
   });
 
   test("closes each F3 on its category's own Recapitulație", () => {

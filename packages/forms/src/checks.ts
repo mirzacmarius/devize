@@ -1,5 +1,6 @@
 import { computeRecap, roundLei } from "@devize/backend/convex/estimates/recap";
 import { convertQuantity } from "@devize/backend/convex/proposals/lib/match";
+import { addDays } from "./format";
 import {
   type DocumentKind,
   type ExportOptions,
@@ -87,15 +88,28 @@ export type FormCheck =
       months: number;
       hours: number;
     }
+  | {
+      id: "validity";
+      state: "passed" | "warning";
+      // The days the offer stays valid, and the day it stops, counted from
+      // the tender's deadline, when the Deviz has one.
+      days?: number;
+      until?: string;
+    }
+  | { id: "signer"; state: "passed" | "warning"; name: string; role: string }
   | { id: "beneficiary"; state: "passed" | "warning"; name: string };
 
 export type FormCheckState = FormCheck["state"];
 
-export type CheckOptions = Pick<ExportOptions, "withValues" | "subchapters"> & {
+export type CheckOptions = Pick<
+  ExportOptions,
+  "withValues" | "subchapters" | "offer"
+> & {
   kinds: readonly DocumentKind[];
   // Who the forms name as the beneficiary.
   beneficiary: string;
-  // F6's duration, and whether the person chose it rather than took ours.
+  // The duration F6 and the offer form print, and whether the person chose
+  // it rather than took ours.
   months: number;
   monthsChosen: boolean;
 };
@@ -354,12 +368,35 @@ export function checkForms(
     });
   }
 
-  if (kinds.has("F6")) {
+  // The offer form leaves its blanks empty without prices.
+  const offerForm = kinds.has("OF") && options.withValues;
+  if (kinds.has("F6") || offerForm) {
     checks.push({
       id: "duration",
       state: options.monthsChosen ? "passed" : "warning",
       months: options.months,
       hours: suggestedMonths(data).hours,
+    });
+  }
+
+  if (offerForm) {
+    const days = options.offer?.validity;
+    const deadline = data.estimate.tender?.deadline;
+    const until =
+      days !== undefined && deadline ? addDays(deadline, days) : undefined;
+    checks.push({
+      id: "validity",
+      state: until ? "passed" : "warning",
+      days,
+      until,
+    });
+    const signer = options.offer?.signer?.trim() ?? "";
+    const role = options.offer?.role?.trim() ?? "";
+    checks.push({
+      id: "signer",
+      state: signer && role ? "passed" : "warning",
+      name: signer,
+      role,
     });
   }
 

@@ -32,13 +32,20 @@ import { SegmentedControl } from "@/components/segmented-control";
 import { useScopedI18n } from "@/locales/client";
 import { type Estimate, worksOf } from "./export-data";
 import { type CheckAction, FormChecks } from "./form-checks";
+import { OfferFields, type OfferInput, validityDays } from "./offer-fields";
 import { type Placement, PlacementFields, placedIn } from "./placement-fields";
 import {
+  MonthsField,
   ScheduleFields,
   shiftedWindows,
   type Windows,
 } from "./schedule-fields";
-import { readChoices, writeChoices } from "./stored-choices";
+import {
+  readChoices,
+  readSigner,
+  writeChoices,
+  writeSigner,
+} from "./stored-choices";
 import { useDownloadDocuments } from "./use-download-documents";
 
 // The official forms one PDF can hold, in the order they print.
@@ -51,15 +58,24 @@ const resourceForms: readonly FormKind[] = ["C6", "C7", "C8", "C9"];
 const placedForms: readonly FormKind[] = ["DG", "DO", "F1", "F2", "F4", "F5"];
 
 /**
- * The forms a tender usually asks of a bidder: the financial offer's F1–F3,
- * F4 and F5 when the works buy equipment or furnishings, and the resource
- * lists.
+ * The forms a tender usually asks of a bidder: the offer form, the financial
+ * offer's F1–F3, F4 and F5 when the works buy equipment or furnishings, and
+ * the resource lists.
  */
 function offerKinds(
   categories: readonly SheetCategory[],
   placement: Placement,
 ): Set<FormKind> {
-  const kinds = new Set<FormKind>(["F1", "F2", "F3", "C6", "C7", "C8", "C9"]);
+  const kinds = new Set<FormKind>([
+    "OF",
+    "F1",
+    "F2",
+    "F3",
+    "C6",
+    "C7",
+    "C8",
+    "C9",
+  ]);
   if (
     categories.some((category) =>
       procurement.includes(placedIn(placement, category)),
@@ -148,6 +164,15 @@ function FormsForm({
   // Whether the person set the duration, even to the one we planned.
   const [monthsChosen, setMonthsChosen] = useState(stored.months !== undefined);
   const [windows, setWindows] = useState<Windows>(() => stored.windows ?? {});
+  // The offer form's validity and signer, the firm's last signer by default.
+  const [offer, setOffer] = useState<OfferInput>(() => {
+    const firm = readSigner(estimate.organizationId);
+    return {
+      validity: stored.validity === undefined ? "" : String(stored.validity),
+      signer: stored.signer ?? firm.signer ?? "",
+      role: stored.role ?? firm.role ?? "",
+    };
+  });
   const [error, setError] = useState<string>();
   const [downloading, setDownloading] = useState(false);
 
@@ -180,6 +205,21 @@ function FormsForm({
 
   const shifted = shiftedWindows(categories, placement, windows, months);
 
+  const chooseMonths = (next: number) => {
+    setMonths(next);
+    setMonthsChosen(true);
+  };
+
+  // What the offer form prints in its blanks.
+  const offerOptions = useMemo(
+    () => ({
+      validity: validityDays(offer.validity),
+      signer: offer.signer.trim() || undefined,
+      role: offer.role.trim() || undefined,
+    }),
+    [offer],
+  );
+
   // Who the forms will name, as the PDF falls back on the Deviz's own.
   const named = beneficiary.trim() || authority;
   const checks = useMemo(
@@ -191,8 +231,18 @@ function FormsForm({
         beneficiary: named,
         months,
         monthsChosen,
+        offer: offerOptions,
       }),
-    [works, chosen, withValues, moved, named, months, monthsChosen],
+    [
+      works,
+      chosen,
+      withValues,
+      moved,
+      named,
+      months,
+      monthsChosen,
+      offerOptions,
+    ],
   );
   const value = useMemo(
     () => (withValues ? offerValue(works, { subchapters: moved }) : undefined),
@@ -236,11 +286,20 @@ function FormsForm({
           focusField("forms-months");
         }
         return;
+      case "validity":
+        focusField("forms-validity");
+        return;
+      case "signer":
+        focusField(check.name ? "forms-role" : "forms-signer");
+        return;
       case "beneficiary":
         focusField("forms-beneficiary");
         return;
     }
   };
+
+  // F6's fields, which hold the duration when F6 is chosen.
+  const schedule = chosen.has("F6") && categories.length > 0;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -260,6 +319,7 @@ function FormsForm({
         labels,
         subchapters: moved,
         schedule: { months, windows: shifted },
+        offer: offerOptions,
       },
       t("fileTitle"),
     );
@@ -279,7 +339,12 @@ function FormsForm({
         // A duration the person set, not the one planned from the labour hours.
         months: monthsChosen ? months : undefined,
         windows: shifted,
+        ...offerOptions,
       });
+      // The firm's next Deviz starts with whoever signed this offer.
+      if (kinds.includes("OF") && withValues && offerOptions.signer) {
+        writeSigner(estimate.organizationId, offerOptions);
+      }
       onDone();
     }
   };
@@ -315,7 +380,9 @@ function FormsForm({
             </div>
             {renaming && chosen.has(kind) && (
               <Input
-                aria-label={t("label", { form: kind })}
+                aria-label={
+                  kind === "OF" ? t("labelOffer") : t("label", { form: kind })
+                }
                 placeholder={defaultLabel(kind)}
                 value={labels[kind] ?? ""}
                 onChange={(event) =>
@@ -383,19 +450,33 @@ function FormsForm({
           />
         )}
 
-      {chosen.has("F6") && categories.length > 0 && (
+      {schedule && (
         <ScheduleFields
           categories={categories}
           placement={placement}
           suggestedHours={suggested.hours}
           months={months}
           windows={windows}
-          onMonths={(next) => {
-            setMonths(next);
-            setMonthsChosen(true);
-          }}
+          onMonths={chooseMonths}
           onWindows={setWindows}
         />
+      )}
+
+      {chosen.has("OF") && withValues && (
+        <OfferFields
+          offer={offer}
+          deadline={estimate.tender?.deadline}
+          onChange={setOffer}
+        >
+          {/* The offer form prints the duration F6 would. */}
+          {!schedule && (
+            <MonthsField
+              suggestedHours={suggested.hours}
+              months={months}
+              onMonths={chooseMonths}
+            />
+          )}
+        </OfferFields>
       )}
 
       <Field
