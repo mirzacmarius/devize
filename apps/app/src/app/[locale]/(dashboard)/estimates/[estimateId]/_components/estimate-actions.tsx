@@ -45,6 +45,7 @@ export function EstimateActions({
 }) {
   const t = useScopedI18n("estimate");
   const tc = useScopedI18n("common");
+  const tBasket = useScopedI18n("prices.basket");
   const router = useRouter();
   const run = useRun();
   const setStatus = useMutation(api.estimates.estimates.setStatus);
@@ -172,6 +173,11 @@ export function EstimateActions({
               )}
             </>
           )}
+          <DropdownMenuItem
+            onSelect={() => router.push(`/estimates/${estimateId}/basket`)}
+          >
+            {tBasket("open")}
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => copy(false)}>
             {t("actions.copy")}
           </DropdownMenuItem>

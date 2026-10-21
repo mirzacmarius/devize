@@ -12,6 +12,7 @@ import { checkDate, romanianDate } from "../lib/dates";
 import { appError, invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import { store } from "../prices/validators";
+import { deleteProposals } from "../proposals/proposals";
 import {
   pricedFields,
   readLineItems,
@@ -564,6 +565,11 @@ export const deleteRows = internalMutation({
       }
       deleted += rows.length;
     }
+    deleted += await deleteProposals(
+      ctx,
+      { estimateId: args.estimateId },
+      Math.max(BATCH - deleted, 0),
+    );
     const files = await ctx.db
       .query("files")
       .withIndex("by_estimateId", (q) => q.eq("estimateId", args.estimateId))

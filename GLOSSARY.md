@@ -105,3 +105,7 @@ _Avoid_: Scraping, crawling
 **Produs ales** (chosen store product):
 The product a Firmă buys at a store for a material, at most one per store, with how many of the material's units one item sold holds (25 for a 25 kg bag of a material counted in kg). Its price comes before public listings. In code: `storeChoices`.
 _Avoid_: Match, mapping
+
+**Coș** (shopping basket):
+A Deviz's materials split between the stores at the lowest total: each material is bought at one store, in whole items, and every store used adds its delivery, or the trip there, unless the order reaches its free-delivery threshold. In code: `prices/basket.ts` and `prices/basketPlan.ts`, with each Firmă's store fees in `priceSettings`.
+_Avoid_: Cart, shopping list

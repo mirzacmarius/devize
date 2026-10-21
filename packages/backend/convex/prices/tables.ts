@@ -118,4 +118,20 @@ export const priceTables = {
     // After the store refused a read (403, 429, a captcha), none until then.
     pausedUntil: v.optional(v.number()),
   }).index("by_store", ["store"]),
+
+  // A firm's settings for store prices, one row per firm.
+  priceSettings: defineTable({
+    organizationId: v.id("organizations"),
+    // What using each store costs besides the goods, for the Coș: its
+    // delivery fee, or the trip there, in lei with VAT, and the order value
+    // from which delivery is free.
+    storeFees: v.array(
+      v.object({
+        store: store,
+        fee: v.number(),
+        freeFrom: v.optional(v.number()),
+      }),
+    ),
+    updatedAt: v.number(),
+  }).index("by_organizationId", ["organizationId"]),
 };
