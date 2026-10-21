@@ -9,6 +9,10 @@ export const env = createEnv({
       .transform((v) => (v ? `https://${v}` : undefined)),
     PORT: z.coerce.number().default(3000),
   },
+  server: {
+    /** Set by Vercel: "production", "preview" or "development". */
+    VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
+  },
   client: {
     NEXT_PUBLIC_CONVEX_URL: z.url(),
     /** Where error reports go (lib/sentry.ts); unset, nothing is sent. */
@@ -19,6 +23,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     PORT: process.env.PORT,
     VERCEL_URL: process.env.VERCEL_URL,
+    VERCEL_ENV: process.env.VERCEL_ENV,
   },
   // Skipping also skips the defaults above, so only skip when asked to.
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

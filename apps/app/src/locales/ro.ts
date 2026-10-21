@@ -30,6 +30,23 @@ export default {
     title: "Intră în Devize",
     description: "Creează devize cu norme de la producători și prețuri la zi.",
     google: "Continuă cu Google",
+    or: "sau",
+    email: "Email",
+    emailPlaceholder: "nume@firma.ro",
+    emailInvalid: "Scrie o adresă de email validă.",
+    sendCode: "Primește codul pe email",
+    sendFailed:
+      "Nu am putut trimite codul. Verifică adresa sau încearcă din nou peste un minut.",
+    tooManyCodes:
+      "Ai cerut prea multe coduri. Încearcă din nou peste câteva minute.",
+    codeSent: "Am trimis un cod de 8 cifre la {email}. Expiră în 15 minute.",
+    code: "Codul din email",
+    codeLength: "Codul are 8 cifre.",
+    verify: "Intră în cont",
+    codeWrong: "Codul nu e bun sau a expirat. Verifică-l sau cere altul.",
+    otherEmail: "Altă adresă",
+    resend: "Trimite alt cod",
+    resendIn: "Alt cod în {seconds} s",
   },
   username: {
     label: "Nume de utilizator",
