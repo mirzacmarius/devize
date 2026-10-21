@@ -39,6 +39,7 @@ import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
 import { useFirm } from "@/components/firm-provider";
 import { ResourcePicker } from "@/components/resource-picker";
+import { SegmentedControl } from "@/components/segmented-control";
 import { useRun } from "@/components/use-run";
 import {
   formatInputNumber,
@@ -124,12 +125,21 @@ function invalidField(row: Row) {
   return undefined;
 }
 
+export type NormOwner = "organization" | "manufacturer";
+
 /**
  * Writes a firm's own norm, or changes a draft: its code, name and unit, the
  * resources one unit of work consumes and what the work covers. The
- * reference cost of a unit follows the rows as they change.
+ * reference cost of a unit follows the rows as they change. A firm that
+ * holds a Producător's profile also writes the producer's norms here.
  */
-export function NormForm({ norm }: { norm?: Norm }) {
+export function NormForm({
+  norm,
+  initialOwner = "organization",
+}: {
+  norm?: Norm;
+  initialOwner?: NormOwner;
+}) {
   const t = useScopedI18n("norm");
   const tc = useScopedI18n("common");
   const tCatalog = useScopedI18n("catalog");
@@ -139,6 +149,12 @@ export function NormForm({ norm }: { norm?: Norm }) {
   const run = useRun();
   const ids = useId();
   const { firm } = useFirm();
+  // The Producător whose norms the firm writes, if it claimed one.
+  const producerId = firm.manufacturerId;
+  const [owner, setOwner] = useState<NormOwner>(
+    producerId ? initialOwner : "organization",
+  );
+  const forProducer = owner === "manufacturer" && producerId !== undefined;
   const create = useMutation(api.catalog.norms.create);
   const update = useMutation(api.catalog.norms.update);
   const [code, setCode] = useState(norm?.code ?? "");
@@ -172,7 +188,11 @@ export function NormForm({ norm }: { norm?: Norm }) {
     resources?: string;
   }>({});
   const [saving, setSaving] = useState(false);
-  const back = norm ? `/catalog/${norm._id}` : "/catalog?view=own";
+  const back = norm
+    ? `/catalog/${norm._id}`
+    : forProducer
+      ? `/producers/${producerId}`
+      : "/catalog?view=own";
 
   const updateRow = (id: string, patch: Partial<Row>) =>
     setRows((current) =>
@@ -243,8 +263,9 @@ export function NormForm({ norm }: { norm?: Norm }) {
     const result = await run(
       () =>
         create({
-          source: "organization",
-          organizationId: firm._id,
+          ...(forProducer
+            ? { source: "manufacturer" as const, manufacturerId: producerId }
+            : { source: "organization" as const, organizationId: firm._id }),
           ...fields,
           category: fields.category || undefined,
           includes: fields.includes || undefined,
@@ -308,12 +329,29 @@ export function NormForm({ norm }: { norm?: Norm }) {
             ? norm.version > 1
               ? t("actions.versionOpened", { version: norm.version })
               : t("form.editDescription")
-            : t("form.newDescription")
+            : producerId
+              ? t("form.sourceHint")
+              : t("form.newDescription")
         }
       />
       <form className="grid max-w-4xl gap-6" onSubmit={submit} noValidate>
         <Card>
           <CardContent className="gap-5 pt-5">
+            {!norm && producerId && (
+              <SegmentedControl
+                label={t("form.source")}
+                value={owner}
+                onChange={setOwner}
+                options={[
+                  {
+                    value: "manufacturer",
+                    label: t("form.sourceProducer", { name: firm.name }),
+                  },
+                  { value: "organization", label: t("form.sourceOwn") },
+                ]}
+                className="self-start"
+              />
+            )}
             <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_120px_minmax(0,1fr)]">
               <Field
                 label={t("form.code")}

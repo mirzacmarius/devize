@@ -4,6 +4,7 @@ import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { insertFirm, MAX_FIRMS_PER_USER } from "../accounts/organizations";
 import { getMembership } from "../lib/access";
 import { appError, invalid } from "../lib/errors";
+import { deleteDetails } from "./details";
 import type { claimMethod } from "./validators";
 
 /** A Producător's profile is held by one firm at most. */
@@ -123,8 +124,8 @@ export async function grantClaim(
 }
 
 /**
- * Deletes a Producător's claims, claim links, domains and removal requests,
- * for when Devize deletes the manufacturer itself.
+ * Deletes a Producător's claims, claim links, domains, removal requests and
+ * what it wrote about itself, for when Devize deletes the manufacturer itself.
  */
 export async function deleteProducerRows(
   ctx: MutationCtx,
@@ -162,4 +163,5 @@ export async function deleteProducerRows(
   for await (const row of removals) {
     await ctx.db.delete("removalRequests", row._id);
   }
+  await deleteDetails(ctx, manufacturerId);
 }

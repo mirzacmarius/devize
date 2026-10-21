@@ -1261,6 +1261,8 @@ export default {
       archived: "The norm was archived.",
       deleteDraft: "Delete draft",
       deleted: "The draft was deleted.",
+      reject: "Send back",
+      rejected: "The norm was sent back to its author.",
     },
     publishDialog: {
       title: "Publish {code}?",
@@ -1280,6 +1282,16 @@ export default {
       title: "Delete the draft {code}?",
       description: "The draft is deleted for good.",
       confirm: "Delete draft",
+    },
+    rejectDialog: {
+      title: "Send {code} back?",
+      description:
+        "The norm goes back to draft, and its author sees your note on its page and can send it again.",
+      note: "Note for the author",
+      notePlaceholder:
+        "e.g. The adhesive consumption differs from the data sheet: 5 kg/m², not 4.5.",
+      noteRequired: "Write what needs to change.",
+      confirm: "Send back",
     },
     form: {
       newTitle: "New norm",
@@ -1330,6 +1342,11 @@ export default {
       save: "Save draft",
       saved: "The draft was saved.",
       created: "The norm was created as a draft.",
+      source: "Whose norm it is",
+      sourceOwn: "Your company's own norm",
+      sourceProducer: "{name} norm",
+      sourceHint:
+        "A manufacturer norm reaches the public catalog once the Devize team checks it. Your own norm is seen only by your company.",
     },
   },
   clients: {
@@ -1556,6 +1573,7 @@ export default {
       catalog: "Base catalog",
       outreach: "Emails to approve",
       claims: "Claims",
+      review: "Norms to review",
       settings: "Settings",
     },
     status: {
@@ -1716,6 +1734,17 @@ export default {
         email: "Email",
       },
       working: "Working…",
+    },
+    review: {
+      title: "Norms to review",
+      description:
+        "Norms manufacturers sent that wait for Devize to check them. Open a norm to compare it with the manufacturer's documents, then publish it or send it back with a note.",
+      empty: "No norms are waiting for review.",
+      columns: {
+        norm: "Norm",
+        source: "Source",
+        submitted: "Sent",
+      },
     },
     claims: {
       title: "Claims and removals",
@@ -2130,10 +2159,19 @@ export default {
       normsCount: "Norms: {count}",
       moreNorms: "These are the first 500 norms; the catalog has them all.",
       products: "Products",
+      newNorm: "New norm",
+      editDetails: "Edit profile",
+      drafts: "Norms in progress",
+      draftsHint:
+        "Only you and the Devize team see them. Send each one for review from its page; once checked, it shows in the catalog.",
+      about: "About the manufacturer",
+      contact: "Technical contact",
+      website: "Website",
       noNorms: "No published norms yet.",
       normColumns: {
         norm: "Norm",
         unit: "Unit",
+        status: "Status",
       },
       productColumns: {
         name: "Product",
@@ -2176,6 +2214,23 @@ export default {
       claim: "Claim the profile",
       sent: "Your request was sent. We'll write to you after checking it.",
       claimed: "{name}'s profile now belongs to your firm.",
+    },
+    detailsDialog: {
+      title: "{name}'s profile",
+      description:
+        "What you write here shows on the profile to every contractor in Devize.",
+      about: "About the manufacturer",
+      aboutPlaceholder:
+        "e.g. Thermal insulation systems and decorative plasters, made in Romania.",
+      website: "Website",
+      websitePlaceholder: "e.g. producator.ro",
+      contactName: "Technical contact",
+      contactNamePlaceholder: "e.g. Ana Popescu, technical consultant",
+      contactEmail: "Email",
+      contactEmailPlaceholder: "e.g. tehnic@producator.ro",
+      contactPhone: "Phone",
+      contactPhonePlaceholder: "e.g. 0721 000 000",
+      saved: "The profile was saved.",
     },
     removalDialog: {
       title: "Ask to remove {name}'s profile",
@@ -2301,6 +2356,8 @@ export default {
     invalidClaims:
       "You already have 5 requests waiting. Wait for an answer first.",
     invalidOrganizationId: "The firm you chose can't take the profile over.",
+    invalidWebsite: "Enter a website address, such as producator.ro.",
+    invalidPhone: "Enter a phone number, such as 0721 000 000.",
     forbiddenDomain: "Your address isn't on one of the manufacturer's domains.",
     forbiddenEmail: "Sign in with a confirmed email address.",
   },

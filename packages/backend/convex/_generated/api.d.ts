@@ -102,6 +102,7 @@ import type * as producers_admin from "../producers/admin.js";
 import type * as producers_anaf from "../producers/anaf.js";
 import type * as producers_claimLinks from "../producers/claimLinks.js";
 import type * as producers_claims from "../producers/claims.js";
+import type * as producers_details from "../producers/details.js";
 import type * as producers_domains from "../producers/domains.js";
 import type * as producers_handover from "../producers/handover.js";
 import type * as producers_profiles from "../producers/profiles.js";
@@ -223,6 +224,7 @@ declare const fullApi: ApiFromModules<{
   "producers/anaf": typeof producers_anaf;
   "producers/claimLinks": typeof producers_claimLinks;
   "producers/claims": typeof producers_claims;
+  "producers/details": typeof producers_details;
   "producers/domains": typeof producers_domains;
   "producers/handover": typeof producers_handover;
   "producers/profiles": typeof producers_profiles;

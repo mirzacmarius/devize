@@ -42,6 +42,8 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     claims: "invalidClaims",
     removals: "invalidClaims",
     organizationId: "invalidOrganizationId",
+    website: "invalidWebsite",
+    phone: "invalidPhone",
   },
   not_found: {
     invitation: "notFoundInvitation",

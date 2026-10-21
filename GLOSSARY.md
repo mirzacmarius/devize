@@ -113,7 +113,7 @@ A company that makes construction products and publishes Norme de producător fo
 _Avoid_: Brand, vendor
 
 **Profil de producător** (manufacturer profile):
-A Producător's page in Devize: the Norme de producător and products it publishes, nothing else. Devize makes it from the documents the Producător sends; it shows once the first Normă is published, and goes away if the Producător asks and a super admin agrees. In code: `producers/profiles.ts`, at `/producers/<id>`.
+A Producător's page in Devize: the Norme de producător and products it publishes and, once it is claimed, what the Producător writes about itself: a few lines, its site and a technical contact. Devize makes it from the documents the Producător sends; it shows once the first Normă is published, and goes away if the Producător asks and a super admin agrees. The Firmă that claimed it also writes new Norme de producător from it, which the Devize team checks before they reach the catalog, publishing them or sending them back with a note. In code: `producers/profiles.ts` and `producerDetails`, at `/producers/<id>`.
 _Avoid_: Brand page, storefront
 
 **Revendicare** (claim):
