@@ -481,6 +481,107 @@ export default {
       added: "The line item was added.",
     },
   },
+  proposal: {
+    open: "Propose with AI",
+    emptyAction: "Describe the work",
+    title: "Propose with AI",
+    description:
+      "Describe the work or dictate it, and add photos. Devize AI writes the line items with their take-off, and you check them before they go into the estimate.",
+    describe: {
+      label: "The work",
+      placeholder:
+        "e.g. Bathroom 2 × 3 m, 2.60 m high. Remove the old wall and floor tiles, tile the walls up to the ceiling, new floor tiles, replace the bathtub with a walk-in shower.",
+      hint: "Dimensions help most: lengths, heights, how many.",
+      dictate: "Dictate",
+      stopDictation: "Stop dictating",
+      listening: "Listening. Say the work with its dimensions.",
+      dictationFailed:
+        "Dictation didn't start. Check that the browser may use the microphone.",
+      photos: "Photos",
+      photosHint:
+        "Up to {max} photos. A door or a tile in the photo helps measure.",
+      addPhotos: "Add photos",
+      removePhoto: "Remove photo {name}",
+      uploading: "Uploading the photos…",
+      uploadFailed: "Photo {name} didn't upload.",
+      unreadable: "Photo {name} can't be read. Try a JPEG or PNG photo.",
+      tooManyPhotos: "At most {max} photos.",
+      required: "Describe the work or add a photo.",
+      tooLong: "The description is too long: {max} characters at most.",
+      submit: "Propose line items",
+      back: "Back to the proposal",
+      privacy:
+        "The description and photos go to Claude, Anthropic's AI model, for this proposal only. The photos stay in the estimate's files.",
+    },
+    working: {
+      title: "Devize AI is writing the estimate",
+      reading: "Reading the description and photos, measuring the work…",
+      matching:
+        "Line items written: {count}. Looking for matching norms in the catalog…",
+      hint: "It usually takes one to three minutes. You can close this panel: the proposal waits for you in the estimate.",
+      cancel: "Discard the proposal",
+    },
+    failed: {
+      title: "The proposal didn't work",
+      retry: "Try again",
+      edit: "Edit the description",
+      reasons: {
+        missingKey: "AI isn't set up on this server yet.",
+        keyRejected: "The AI key is no longer valid.",
+        noCredit: "The AI account is out of credit.",
+        timeout: "It took too long. Try again, perhaps with fewer photos.",
+        busy: "The AI service is busy. Try again in a minute.",
+        refusal: "The AI couldn't work on this request.",
+        incomplete:
+          "The answer came out incomplete. Try splitting the work into smaller parts.",
+        unknown: "Something went wrong. Try again.",
+      },
+    },
+    review: {
+      title: "Check the proposal",
+      understood: "What I understood",
+      assumptions: "Assumed",
+      questions: "To ask the client",
+      noItems: "I found no construction work in the description or the photos.",
+      matchFailed:
+        "I couldn't search the catalog for norms, so the line items keep the AI's recipes.",
+      all: "All",
+      none: "None",
+      selectedCount: "Chosen: {selected} of {total}",
+      keep: "Keep: {title}",
+      assumed: "Assumed",
+      estimated: "Estimated, check it",
+      quantityOf: "Quantity for {title}",
+      norm: "Norm",
+      ownRecipe: "AI recipe, no norm",
+      noNorm: "No matching norm in the catalog; it goes in with the AI recipe.",
+      unitMismatch:
+        "The norm has another unit than the line item; check the quantity.",
+      details: "Details",
+      hideDetails: "Hide details",
+      recipe: "AI recipe per {unit}",
+      takeoff: "Take-off",
+      total: "Total",
+      apply: "Add to the estimate ({count})",
+      applied:
+        "Line items added to the estimate: {count}. They stay “Proposed by AI” until you confirm them.",
+      dismiss: "Discard the proposal",
+      dismissed: "The proposal was set aside.",
+      again: "New proposal",
+    },
+    banner: {
+      working: "Devize AI is writing line items from your description.",
+      ready: "The AI proposal is ready. Line items to check: {count}.",
+      failed: "The AI proposal didn't work.",
+      open: "View",
+      review: "Check the proposal",
+    },
+    errors: {
+      rateLimited:
+        "You asked for many proposals in the last hour. Try again later.",
+      inUse: "The AI is already working on a proposal for this estimate.",
+    },
+  },
   catalog: {
     title: "Catalog",
     description:
@@ -862,6 +963,7 @@ export default {
     jobKind: {
       manufacturer_research: "Research",
       norm_import: "Norms import",
+      estimate_proposal: "Estimate proposal",
     },
     confidence: {
       high: "High confidence",

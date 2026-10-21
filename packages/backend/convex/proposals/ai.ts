@@ -12,13 +12,13 @@ import {
   UsageMeter,
 } from "../ai/claude";
 import { cleanDraft, type DraftArticle } from "./lib/draft";
+import { isPhotoType } from "./lib/input";
 import {
   keyArticles,
   type MatchArticle,
   type MatchResult,
   resolveMatches,
 } from "./lib/match";
-import { isPhotoType } from "./lib/photos";
 import {
   draftRequest,
   draftSystemPrompt,

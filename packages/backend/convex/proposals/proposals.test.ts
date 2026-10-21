@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { api, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
+import { defaultModel } from "../ai/models";
 import {
   firmOwner,
   publishedBaseNorm,
   setup,
-  signIn,
   type TestConvex,
 } from "../test.helper";
 
@@ -17,7 +17,7 @@ delete process.env.ANTHROPIC_API_KEY;
 type Firm = Awaited<ReturnType<typeof firmOwner>>;
 
 async function estimateFor(t: TestConvex) {
-  const { normId } = await publishedBaseNorm(t);
+  const { normId, admin } = await publishedBaseNorm(t);
   const firm = await firmOwner(t, "Ana");
   await firm.as.mutation(api.accounts.rates.set, {
     organizationId: firm.organizationId,
@@ -30,7 +30,7 @@ async function estimateFor(t: TestConvex) {
     organizationId: firm.organizationId,
     title: "Baie apartament Popescu",
   });
-  return { firm, normId, estimateId };
+  return { firm, admin, normId, estimateId };
 }
 
 /** A proposal whose job is queued, as `start` leaves it. */
@@ -43,7 +43,7 @@ async function workingProposal(
     const aiJobId = await ctx.db.insert("aiJobs", {
       kind: "estimate_proposal",
       status: "queued",
-      model: "claude-opus-5-5",
+      model: defaultModel,
       organizationId: firm.organizationId,
       createdBy: firm.userId,
     });
@@ -124,7 +124,7 @@ const articles = [
 
 /** Plays the drafting action: saves the articles, then matches the tiling. */
 async function draftedProposal(t: TestConvex) {
-  const { firm, normId, estimateId } = await estimateFor(t);
+  const { firm, admin, normId, estimateId } = await estimateFor(t);
   const proposalId = await workingProposal(t, firm, estimateId);
   const state = await t.mutation(internal.proposals.drafting.begin, {
     proposalId,
@@ -172,7 +172,7 @@ async function draftedProposal(t: TestConvex) {
       },
     ],
   });
-  return { firm, normId, estimateId, proposalId };
+  return { firm, admin, normId, estimateId, proposalId };
 }
 
 describe("proposals", () => {
@@ -346,8 +346,7 @@ describe("proposals", () => {
 
   test("a norm in another unit gets the quantity converted", async () => {
     const t = setup();
-    const { firm, estimateId } = await draftedProposal(t);
-    const admin = await signIn(t, { name: "Root", superadmin: true });
+    const { firm, admin, estimateId } = await draftedProposal(t);
     const hundredId = await admin.as.mutation(api.catalog.norms.create, {
       source: "base",
       code: "DV-FAI-100",
@@ -376,6 +375,32 @@ describe("proposals", () => {
     expect(updated?.items[1]?.candidates.map((norm) => norm.code)).toEqual([
       "DV-FAI-01",
       "DV-FAI-100",
+    ]);
+  });
+
+  test("a norm withdrawn before applying leaves the AI's recipe", async () => {
+    const t = setup();
+    const { firm, admin, normId, estimateId, proposalId } =
+      await draftedProposal(t);
+    await admin.as.mutation(api.catalog.norms.archive, { normId });
+
+    const proposal = await firm.as.query(api.proposals.proposals.latest, {
+      estimateId,
+    });
+    const tiling = proposal?.items[1];
+    expect(tiling?.norm).toBeNull();
+    expect(tiling?.candidates).toEqual([]);
+    expect(tiling?.quantity).toBe(24.32);
+
+    await firm.as.mutation(api.proposals.proposals.apply, { proposalId });
+    const estimate = await firm.as.query(api.estimates.estimates.get, {
+      estimateId,
+    });
+    const item = estimate.lineItems.find((row) => row.title === tiling?.title);
+    expect([item?.origin, item?.normId, item?.quantity]).toEqual([
+      "ai",
+      undefined,
+      24.32,
     ]);
   });
 

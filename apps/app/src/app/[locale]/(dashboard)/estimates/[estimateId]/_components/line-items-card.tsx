@@ -84,6 +84,7 @@ export function LineItemsCard({
   open: OpenPanel;
 }) {
   const t = useScopedI18n("estimate");
+  const tProposal = useScopedI18n("proposal");
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
   const groups = groupLines(estimate.sections, estimate.lineItems);
   const count = estimate.lineItems.length;
@@ -166,9 +167,17 @@ export function LineItemsCard({
         </div>
         {editable && (
           <div className="flex flex-wrap items-center gap-2">
-            {/* An empty Deviz offers these two in its empty state. */}
+            {/* An empty Deviz offers these in its empty state. */}
             {!isEmpty && (
               <>
+                <Button
+                  variant="ai"
+                  size="sm"
+                  onClick={() => open({ kind: "proposal" })}
+                >
+                  <Icons.AI aria-hidden />
+                  {tProposal("open")}
+                </Button>
                 <Button
                   variant="secondary"
                   size="sm"
@@ -230,6 +239,13 @@ export function LineItemsCard({
             action={
               editable && (
                 <div className="flex flex-wrap justify-center gap-2">
+                  <Button
+                    variant="ai"
+                    onClick={() => open({ kind: "proposal" })}
+                  >
+                    <Icons.AI aria-hidden />
+                    {tProposal("emptyAction")}
+                  </Button>
                   <Button onClick={() => open({ kind: "addNorm" })}>
                     <Plus aria-hidden />
                     {t("items.addNorm")}

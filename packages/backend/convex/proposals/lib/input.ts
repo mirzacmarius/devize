@@ -1,6 +1,9 @@
-// The photos a proposal may read. The browser turns phone photos (HEIC
-// included) into JPEGs of about 2000 px before uploading them, well within
-// what the Claude API takes: these types, 5 MB an image, 32 MB a request.
+// What a person gives a proposal: a description and photos. The browser
+// turns phone photos into JPEGs of about 2000 px before uploading them, well
+// within what the Claude API takes: these types, 5 MB an image, 32 MB a
+// request. The app checks the same limits before sending.
+
+export const MAX_TEXT = 5000;
 
 export const photoTypes = [
   "image/jpeg",

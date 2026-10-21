@@ -20,19 +20,19 @@ import {
 import { requireFirmDoc } from "../lib/access";
 import { appError, invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
-import { convertQuantity } from "./lib/match";
 import {
   isPhotoType,
   MAX_PHOTO_BYTES,
   MAX_PHOTOS,
   MAX_PHOTOS_BYTES,
-} from "./lib/photos";
+  MAX_TEXT,
+} from "./lib/input";
+import { convertQuantity } from "./lib/match";
 
 // Proposals: what the AI suggests for a Deviz from a description of the work
 // and photos of it. The AI writes the articles with their quantities; a
 // person reviews them, and only the ones they keep go into the Deviz.
 
-const MAX_TEXT = 5000;
 const MAX_ITEMS = 500;
 
 // Proposals a firm may start, so a loop or a slip can't run up the AI bill.
@@ -167,7 +167,10 @@ export const latest = query({
       questions: proposal.questions,
       matchError: proposal.matchError,
       items: items.map((item) => {
-        const norm = item.normId ? norms.get(item.normId) : undefined;
+        const linked = item.normId ? norms.get(item.normId) : undefined;
+        // A norm withdrawn since the proposal leaves the AI's own recipe and
+        // quantity, as `apply` will.
+        const norm = linked?.usable ? linked : undefined;
         return {
           _id: item._id,
           chapter: item.chapter,
@@ -178,7 +181,7 @@ export const latest = query({
           note: item.note,
           confidence: item.confidence,
           resources: item.resources,
-          quantity: item.quantity,
+          quantity: item.normId && !norm ? item.measured : item.quantity,
           selected: item.selected,
           matchNote: item.matchNote,
           norm: norm ?? null,
@@ -392,6 +395,14 @@ export const updateItem = mutation({
         throw invalid("quantity");
       }
       patch.quantity = args.quantity;
+      // A quantity typed for an item whose norm was withdrawn is for the
+      // AI's recipe, which the item now uses.
+      if (item.normId && args.normId === undefined) {
+        const norm = await ctx.db.get("norms", item.normId);
+        if (!norm || !isUsableBy(norm, estimate.organizationId)) {
+          patch.normId = undefined;
+        }
+      }
     }
     await ctx.db.patch("proposalItems", item._id, patch);
     await ctx.db.patch("proposals", proposal._id, { updatedAt: Date.now() });

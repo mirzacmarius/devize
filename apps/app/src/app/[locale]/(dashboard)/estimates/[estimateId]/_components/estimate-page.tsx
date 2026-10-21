@@ -16,9 +16,11 @@ import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { ProposalBanner } from "../_proposal/proposal-banner";
+import { ProposalSheet } from "../_proposal/proposal-sheet";
 import { AddNormSheet } from "./add-norm-sheet";
-import { ChecksCard } from "./checks-card";
 import { runChecks } from "./checks";
+import { ChecksCard } from "./checks-card";
 import { CustomItemDialog } from "./custom-item-dialog";
 import { DetailsCard } from "./details-card";
 import { DetailsSheet } from "./details-sheet";
@@ -117,6 +119,12 @@ export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
       <EstimateStepper estimate={estimate} />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
         <div className="grid min-w-0 gap-6">
+          {editable && (
+            <ProposalBanner
+              estimateId={estimate._id}
+              onOpen={() => setPanel({ kind: "proposal" })}
+            />
+          )}
           <LineItemsCard
             estimate={estimate}
             updates={updates}
@@ -150,6 +158,11 @@ export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
       <MarkupsDialog
         estimate={estimate}
         open={panel?.kind === "markups"}
+        onClose={close}
+      />
+      <ProposalSheet
+        estimate={estimate}
+        open={panel?.kind === "proposal"}
         onClose={close}
       />
       <AddNormSheet
