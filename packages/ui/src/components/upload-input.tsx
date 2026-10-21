@@ -1,44 +1,52 @@
 "use client";
 
-import {
-  type UploadFileResponse,
-  useUploadFiles,
-} from "@xixixao/uploadstuff/react";
 import { type InputHTMLAttributes, useRef } from "react";
 
+/** What Convex storage answers for each uploaded file: its new storage id. */
+export type UploadedFile = { storageId: string };
+
+/**
+ * A file input that uploads the chosen files to Convex storage, each to a
+ * fresh upload URL, then reports their storage ids.
+ */
 export function UploadInput({
   generateUploadUrl,
   onUploadComplete,
   ...props
 }: {
   generateUploadUrl: () => Promise<string>;
-  onUploadComplete: (uploaded: UploadFileResponse[]) => void;
+  onUploadComplete: (uploaded: UploadedFile[]) => void;
 } & Pick<
   InputHTMLAttributes<HTMLInputElement>,
   "accept" | "id" | "type" | "className" | "required" | "tabIndex"
 >) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { startUpload } = useUploadFiles(generateUploadUrl, {
-    onUploadComplete: async (uploaded) => {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      onUploadComplete(uploaded);
-    },
-  });
   return (
     <input
       ref={fileInputRef}
       type="file"
       onChange={async (event) => {
-        if (!event.target.files) {
-          return;
-        }
-        const files = Array.from(event.target.files);
+        const files = Array.from(event.target.files ?? []);
         if (files.length === 0) {
           return;
         }
-        startUpload(files);
+        const uploaded = await Promise.all(
+          files.map(async (file) => {
+            const response = await fetch(await generateUploadUrl(), {
+              method: "POST",
+              headers: { "Content-Type": file.type },
+              body: file,
+            });
+            if (!response.ok) {
+              throw new Error(`Upload failed with status ${response.status}`);
+            }
+            return (await response.json()) as UploadedFile;
+          }),
+        );
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        onUploadComplete(uploaded);
       }}
       {...props}
     />

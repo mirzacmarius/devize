@@ -1,65 +1,62 @@
-import { AnimatedText } from "@/components/animated-text";
-import { CopyText } from "@/components/copy-text";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@v1/ui/tooltip";
-import Image from "next/image";
+import { buttonVariants } from "@devize/ui/button";
+import { cn } from "@devize/ui/utils";
+import { ClipboardList, Factory, ShoppingCart } from "lucide-react";
+import { env } from "@/env";
+
+const features = [
+  {
+    icon: Factory,
+    title: "Norme de la producători",
+    description:
+      "Producătorii își încarcă normele de deviz pentru produsele lor, nu indicatoare vechi de zeci de ani.",
+  },
+  {
+    icon: ShoppingCart,
+    title: "Prețuri la zi",
+    description:
+      "Prețurile materialelor vin din marile magazine de bricolaj, actualizate când ai nevoie de ele.",
+  },
+  {
+    icon: ClipboardList,
+    title: "Formulare oficiale",
+    description:
+      "Formularele pentru licitații, generate direct din deviz, gata de depus.",
+  },
+];
 
 export default function Page() {
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden">
-      <div className="absolute -top-[118px] inset-0 bg-[linear-gradient(to_right,#222_1px,transparent_1px),linear-gradient(to_bottom,#222_1px,transparent_1px)] bg-[size:4.5rem_2rem] -z-10 [transform:perspective(1000px)_rotateX(-63deg)] h-[80%] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent pointer-events-none -z-10" />
-
-      <h1 className="font-departure text-[40px] md:text-[84px] relative z-10 text-center h-[120px] md:h-auto leading-tight">
-        <AnimatedText text="Production ready code" />
-      </h1>
-
-      <p className="relative z-10 text-center md:text-xl max-w-[80%] mt-2 md:mt-6">
-        An open-source starter kit based on{" "}
-        <a href="https://midday.ai?utm_source=v1-convex" className="underline">
-          Midday
+    <main className="flex min-h-screen flex-col items-center px-6 py-24">
+      <div className="flex w-full max-w-3xl flex-col items-center gap-6 text-center">
+        <span className="text-lg font-semibold tracking-tight text-primary">
+          Devize
+        </span>
+        <h1 className="text-4xl font-medium tracking-tight text-primary md:text-6xl">
+          Devize de construcții cu prețuri la zi
+        </h1>
+        <p className="max-w-xl text-base text-primary/60 md:text-lg">
+          Norme de la producători, prețuri din magazine și formularele oficiale,
+          într-un singur loc. Cu ajutorul AI.
+        </p>
+        <a
+          href={env.NEXT_PUBLIC_APP_URL}
+          className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
+        >
+          Intră în aplicație
         </a>
-        . Now on{" "}
-        <a href="https://convex.dev/c/middayv1template" className="underline">
-          Convex
-        </a>
-        .
-      </p>
-
-      {/* In process */}
-      {/* <span className="relative z-10 text-center text-[#878787] text-xs mt-2">
-        Security verified by Kenshū.
-      </span> */}
-
-      <div className="mt-10 mb-8">
-        <CopyText value="npm create @convex-dev/v1@latest" />
       </div>
-
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              href={process.env.NEXT_PUBLIC_APP_URL}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-sm">Get started →</span>
-              </div>
-            </a>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={15} className="text-xs">
-            Log in to the example dashboard
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <div className="absolute -bottom-[280px] inset-0 bg-[linear-gradient(to_right,#222_1px,transparent_1px),linear-gradient(to_bottom,#222_1px,transparent_1px)] bg-[size:4.5rem_2rem] -z-10 [transform:perspective(560px)_rotateX(63deg)] pointer-events-none" />
-      <div className="absolute w-full bottom-[100px] h-1/2  bg-gradient-to-b from-background to-transparent pointer-events-none -z-10" />
-    </div>
+      <ul className="mt-20 grid w-full max-w-5xl gap-6 md:grid-cols-3">
+        {features.map(({ icon: Icon, title, description }) => (
+          <li
+            key={title}
+            className="flex flex-col gap-3 rounded-lg border border-border bg-card p-6"
+          >
+            <Icon className="h-6 w-6 stroke-[1.5px] text-primary/60" />
+            <h2 className="text-base font-medium text-primary">{title}</h2>
+            <p className="text-sm text-primary/60">{description}</p>
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }

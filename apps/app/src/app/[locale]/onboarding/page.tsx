@@ -1,28 +1,32 @@
 "use client";
 
+import { api } from "@devize/backend/convex/_generated/api";
+import * as validators from "@devize/backend/convex/utils/validators";
+import { Button } from "@devize/ui/button";
+import { Input } from "@devize/ui/input";
 import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-import { api } from "@v1/backend/convex/_generated/api";
-import * as validators from "@v1/backend/convex/utils/validators";
-import { Button } from "@v1/ui/button";
-import { Input } from "@v1/ui/input";
 import { useMutation, useQuery } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useFormStatus } from "react-dom";
+import { useScopedI18n } from "@/locales/client";
 
 export default function OnboardingUsername() {
+  const t = useScopedI18n("onboarding");
+  const tUsername = useScopedI18n("username");
   const user = useQuery(api.users.getUser);
   const updateUsername = useMutation(api.users.updateUsername);
   const router = useRouter();
 
-  const { pending } = useFormStatus();
-
   const form = useForm({
-    validatorAdapter: zodValidator(),
     defaultValues: {
       username: "",
+    },
+    validators: {
+      onSubmit: ({ value }) =>
+        validators.username.safeParse(value.username).success
+          ? undefined
+          : { fields: { username: tUsername("invalid") } },
     },
     onSubmit: async ({ value }) => {
       await updateUsername({
@@ -31,16 +35,11 @@ export default function OnboardingUsername() {
     },
   });
 
-  console.log("user", user);
-
   useEffect(() => {
-    if (!user) {
-      return;
-    }
     if (user?.username) {
       router.push("/");
     }
-  }, [user]);
+  }, [user, router]);
 
   if (!user) {
     return null;
@@ -51,10 +50,10 @@ export default function OnboardingUsername() {
       <div className="flex flex-col items-center gap-2">
         <span className="mb-2 select-none text-6xl">👋</span>
         <h3 className="text-center text-2xl font-medium text-primary">
-          Welcome!
+          {t("title")}
         </h3>
         <p className="text-center text-base font-normal text-primary/60">
-          Let's get started by choosing a username.
+          {t("description")}
         </p>
       </div>
       <form
@@ -65,48 +64,55 @@ export default function OnboardingUsername() {
           form.handleSubmit();
         }}
       >
-        <div className="flex w-full flex-col gap-1.5">
-          <label htmlFor="username" className="sr-only">
-            Username
-          </label>
-          <form.Field
-            name="username"
-            validators={{
-              onSubmit: validators.username,
-            }}
-            // biome-ignore lint/correctness/noChildrenProp: tanstack best practice
-            children={(field) => (
+        <form.Field name="username">
+          {(field) => (
+            <div className="flex w-full flex-col gap-1.5">
+              <label htmlFor={field.name} className="sr-only">
+                {tUsername("label")}
+              </label>
               <Input
-                placeholder="Username"
+                id={field.name}
+                placeholder={tUsername("placeholder")}
                 autoComplete="off"
                 required
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
+                aria-invalid={field.state.meta.errors.length > 0}
                 className={`bg-transparent ${
-                  field.state.meta?.errors.length > 0 &&
+                  field.state.meta.errors.length > 0 &&
                   "border-destructive focus-visible:ring-destructive"
                 }`}
               />
-            )}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          {form.state.fieldMeta.username?.errors.length > 0 && (
-            <span className="mb-2 text-sm text-destructive dark:text-destructive-foreground">
-              {form.state.fieldMeta.username?.errors.join(" ")}
-            </span>
+              {field.state.meta.errors.length > 0 && (
+                <span className="mb-2 text-sm text-destructive dark:text-destructive-foreground">
+                  {field.state.meta.errors.join(" ")}
+                </span>
+              )}
+            </div>
           )}
-        </div>
+        </form.Field>
 
-        <Button type="submit" size="sm" className="w-full">
-          {pending ? <Loader2 className="animate-spin" /> : "Continue"}
-        </Button>
+        <form.Subscribe selector={(state) => state.isSubmitting}>
+          {(isSubmitting) => (
+            <Button
+              type="submit"
+              size="sm"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                t("continue")
+              )}
+            </Button>
+          )}
+        </form.Subscribe>
       </form>
 
       <p className="px-6 text-center text-sm font-normal leading-normal text-primary/60">
-        You can update your username at any time from your account settings.
+        {t("hint")}
       </p>
     </div>
   );

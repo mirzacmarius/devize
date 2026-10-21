@@ -1,0 +1,4 @@
+[install]
+# One hoisted node_modules at the root, as in the other projects built on the
+# v1 template. Bun's isolated layout is the default for new lockfiles.
+linker = "hoisted"

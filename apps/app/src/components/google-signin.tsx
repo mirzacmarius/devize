@@ -1,14 +1,18 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import { Button } from "@v1/ui/button";
+import { Button } from "@devize/ui/button";
 
-export function GoogleSignin() {
+export function GoogleSignin({ label }: { label: string }) {
   const { signIn } = useAuthActions();
 
   return (
-    <Button onClick={() => signIn("google")} variant="outline" className="font-mono">
-      Sign in with Google
+    <Button
+      onClick={() => signIn("google")}
+      variant="outline"
+      className="w-full"
+    >
+      {label}
     </Button>
   );
 }

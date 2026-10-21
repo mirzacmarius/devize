@@ -1,55 +1,42 @@
 "use client";
 
-import { useScopedI18n } from "@/locales/client";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { api } from "@devize/backend/convex/_generated/api";
+import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import * as validators from "@devize/backend/convex/utils/validators";
+import { Button } from "@devize/ui/button";
+import { Input } from "@devize/ui/input";
+import { type UploadedFile, UploadInput } from "@devize/ui/upload-input";
+import { useDoubleCheck } from "@devize/ui/utils";
 import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-import { api } from "@v1/backend/convex/_generated/api";
-import type { Id } from "@v1/backend/convex/_generated/dataModel";
-import * as validators from "@v1/backend/convex/utils/validators";
-import { Button } from "@v1/ui/button";
-import { Input } from "@v1/ui/input";
-import { UploadInput } from "@v1/ui/upload-input";
-import { useDoubleCheck } from "@v1/ui/utils";
-import type { UploadFileResponse } from "@xixixao/uploadstuff/react";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
-import { useState } from "react";
+import { useScopedI18n } from "@/locales/client";
 
 export default function DashboardSettings() {
   const t = useScopedI18n("settings");
   const user = useQuery(api.users.getUser);
   const { signOut } = useAuthActions();
   const updateUserImage = useMutation(api.users.updateUserImage);
-  const updateUsername = useMutation(api.users.updateUsername);
   const removeUserImage = useMutation(api.users.removeUserImage);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
-  const deleteCurrentUserAccount = useAction(
+  const deleteCurrentUserAccount = useMutation(
     api.users.deleteCurrentUserAccount,
   );
   const { doubleCheck, getButtonProps } = useDoubleCheck();
 
-  const handleUpdateUserImage = (uploaded: UploadFileResponse[]) => {
-    return updateUserImage({
-      imageId: (uploaded[0]?.response as { storageId: Id<"_storage"> })
-        .storageId,
-    });
+  const handleUpdateUserImage = (uploaded: UploadedFile[]) => {
+    const [file] = uploaded;
+    if (!file) {
+      return;
+    }
+    return updateUserImage({ imageId: file.storageId as Id<"_storage"> });
   };
 
   const handleDeleteAccount = async () => {
     await deleteCurrentUserAccount();
-    signOut();
+    await signOut();
   };
-
-  const usernameForm = useForm({
-    validatorAdapter: zodValidator(),
-    defaultValues: {
-      username: user?.username,
-    },
-    onSubmit: async ({ value }) => {
-      await updateUsername({ username: value.username || "" });
-    },
-  });
 
   if (!user) {
     return null;
@@ -72,11 +59,12 @@ export default function DashboardSettings() {
             htmlFor="avatar_field"
             className="group relative flex cursor-pointer overflow-hidden rounded-full transition active:scale-95"
           >
+            <span className="sr-only">{t("avatar.change")}</span>
             {user.avatarUrl ? (
               <img
                 src={user.avatarUrl}
                 className="h-20 w-20 rounded-full object-cover"
-                alt={user.username ?? user.email}
+                alt={user.username ?? user.email ?? ""}
               />
             ) : (
               <div className="h-20 w-20 rounded-full bg-gradient-to-br from-lime-400 from-10% via-cyan-300 to-blue-500" />
@@ -109,64 +97,13 @@ export default function DashboardSettings() {
                 removeUserImage({});
               }}
             >
-              {t("avatar.resetButton")}
+              {t("avatar.reset")}
             </Button>
           )}
         </div>
       </div>
 
-      {/* Username */}
-      <form
-        className="flex w-full flex-col items-start rounded-lg border border-border bg-card"
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          usernameForm.handleSubmit();
-        }}
-      >
-        <div className="flex w-full flex-col gap-4 rounded-lg p-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-medium text-primary">Your Username</h2>
-            <p className="text-sm font-normal text-primary/60">
-              This is your username. It will be displayed on your profile.
-            </p>
-          </div>
-          <usernameForm.Field
-            name="username"
-            validators={{
-              onSubmit: validators.username,
-            }}
-            // biome-ignore lint/correctness/noChildrenProp: <explanation>
-            children={(field) => (
-              <Input
-                placeholder="Username"
-                autoComplete="off"
-                required
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-                className={`w-80 bg-transparent ${
-                  field.state.meta?.errors.length > 0 &&
-                  "border-destructive focus-visible:ring-destructive"
-                }`}
-              />
-            )}
-          />
-          {usernameForm.state.fieldMeta.username?.errors.length > 0 && (
-            <p className="text-sm text-destructive dark:text-destructive-foreground">
-              {usernameForm.state.fieldMeta.username?.errors.join(" ")}
-            </p>
-          )}
-        </div>
-        <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
-          <p className="text-sm font-normal text-primary/60">
-            Please use 32 characters at maximum.
-          </p>
-          <Button type="submit" size="sm">
-            Save
-          </Button>
-        </div>
-      </form>
+      <UsernameForm username={user.username ?? ""} />
 
       {/* Delete Account */}
       <div className="flex w-full flex-col items-start rounded-lg border border-destructive bg-card">
@@ -190,11 +127,88 @@ export default function DashboardSettings() {
             })}
           >
             {doubleCheck
-              ? t("deleteAccount.confirmButton")
-              : t("deleteAccount.deleteButton")}
+              ? t("deleteAccount.confirm")
+              : t("deleteAccount.button")}
           </Button>
         </div>
       </div>
     </div>
+  );
+}
+
+/** Rendered once the user has loaded, so the field starts with their username. */
+function UsernameForm({ username }: { username: string }) {
+  const t = useScopedI18n("settings");
+  const tUsername = useScopedI18n("username");
+  const updateUsername = useMutation(api.users.updateUsername);
+  const form = useForm({
+    defaultValues: { username },
+    validators: {
+      onSubmit: ({ value }) =>
+        validators.username.safeParse(value.username).success
+          ? undefined
+          : { fields: { username: tUsername("invalid") } },
+    },
+    onSubmit: async ({ value }) => {
+      await updateUsername({ username: value.username });
+    },
+  });
+
+  return (
+    <form
+      className="flex w-full flex-col items-start rounded-lg border border-border bg-card"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <div className="flex w-full flex-col gap-4 rounded-lg p-6">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-xl font-medium text-primary">
+            {t("username.title")}
+          </h2>
+          <p className="text-sm font-normal text-primary/60">
+            {t("username.description")}
+          </p>
+        </div>
+        <form.Field name="username">
+          {(field) => (
+            <>
+              <label htmlFor={field.name} className="sr-only">
+                {tUsername("label")}
+              </label>
+              <Input
+                id={field.name}
+                placeholder={tUsername("placeholder")}
+                autoComplete="off"
+                required
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+                aria-invalid={field.state.meta.errors.length > 0}
+                className={`w-80 bg-transparent ${
+                  field.state.meta.errors.length > 0 &&
+                  "border-destructive focus-visible:ring-destructive"
+                }`}
+              />
+              {field.state.meta.errors.length > 0 && (
+                <p className="text-sm text-destructive dark:text-destructive-foreground">
+                  {field.state.meta.errors.join(" ")}
+                </p>
+              )}
+            </>
+          )}
+        </form.Field>
+      </div>
+      <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
+        <p className="text-sm font-normal text-primary/60">
+          {tUsername("rules")}
+        </p>
+        <Button type="submit" size="sm">
+          {t("username.save")}
+        </Button>
+      </div>
+    </form>
   );
 }

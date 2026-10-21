@@ -1,33 +1,46 @@
-import "@v1/ui/globals.css";
+import "@devize/ui/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
-import { TooltipProvider } from "@v1/ui/tooltip";
-import { cn } from "@v1/ui/utils";
+import { TooltipProvider } from "@devize/ui/tooltip";
+import { cn } from "@devize/ui/utils";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
-import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
+import type { Metadata, Viewport } from "next";
+import { ThemeProvider } from "@/components/theme-provider";
+import { brand } from "@/lib/brand";
+import { I18nProvider } from "@/locales/client";
+import { loaders } from "@/locales/loaders";
+import { defaultLocale, isLocale } from "@/locales/locale";
+import { getI18n } from "@/locales/server";
 import { ConvexClientProvider } from "../convex-client-provider";
 
-export const metadata: Metadata = {
-  title: "Create v1",
-  description: "Production ready Next.js app",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getI18n();
+  return {
+    title: { default: t("common.appName"), template: "%s · Devize" },
+    description: t("common.appDescription"),
+  };
+}
 
-export const viewport = {
+export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)" },
-    { media: "(prefers-color-scheme: dark)" },
+    { media: "(prefers-color-scheme: light)", color: brand.lightBackground },
+    { media: "(prefers-color-scheme: dark)", color: brand.darkBackground },
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const requested = (await params).locale;
+  const locale = isLocale(requested) ? requested : defaultLocale;
+  const dictionary = (await loaders[locale]()).default;
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html lang={locale} suppressHydrationWarning>
         <body
           className={cn(
             `${GeistSans.variable} ${GeistMono.variable}`,
@@ -41,7 +54,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider delayDuration={0}>
-              <ConvexClientProvider>{children}</ConvexClientProvider>
+              <I18nProvider locale={locale} dictionary={dictionary}>
+                <ConvexClientProvider>{children}</ConvexClientProvider>
+              </I18nProvider>
             </TooltipProvider>
           </ThemeProvider>
         </body>

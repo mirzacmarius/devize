@@ -1,5 +1,6 @@
 {
-  "$schema": "https://turborepo.org/schema.json",
+  "$schema": "https://v2-11-7.turborepo.dev/schema.json",
+  "agentGuidance": false,
   "globalDependencies": ["**/.env"],
   "ui": "stream",
   "tasks": {
@@ -7,23 +8,12 @@
       "dependsOn": ["^topo"]
     },
     "build": {
-      "env": [
-        "RESEND_API_KEY",
-        "LOOPS_ENDPOINT",
-        "LOOPS_API_KEY",
-        "OPENPANEL_SECRET_KEY",
-        "SENTRY_AUTH_TOKEN",
-        "SENTRY_ORG",
-        "SENTRY_PROJECT"
-      ],
+      "env": ["SENTRY_AUTH_TOKEN", "SENTRY_ORG", "SENTRY_PROJECT"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", ".expo/**"]
+      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts"]
     },
     "start": {
-      "cache": false
-    },
-    "test": {
       "cache": false
     },
     "clean": {

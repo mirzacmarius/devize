@@ -1,0 +1,27 @@
+## About Devize
+
+Devize builds construction estimates (devize) for the Romanian market: manufacturers publish deviz norms for their own products, material prices come from the big DIY retailers, and contractors build estimates and the official tender forms with AI help.
+
+- Product spec and data model: [Devize – Specificație și model de date](https://claude.ai/artifact/SW88m78gjjRv75nTM6hH2Y)
+- Domain terms: `GLOSSARY.md`. Use its words in code, UI and docs.
+- Decisions: `docs/adr/`. Read the ones that touch the area you work in.
+
+## Working here
+
+- Work in your own git worktree or branch: another agent session may be using this checkout.
+- Before pushing, run what CI runs: `bun run lint`, `bun run format:check`, `bun run typecheck`, `bun run test` and `bun run build`.
+- The interface is Romanian first. Every string lives in `apps/app/src/locales/ro.ts`, with the English in `en.ts` under the same keys (typecheck fails otherwise). Write Romanian with comma-below diacritics (ș, ț), not cedillas (ş, ţ).
+- Next.js 16: the proxy is `apps/app/src/proxy.ts`, `params` are promises, and translations come from `@/locales/server` in server components and `@/locales/client` in client components.
+- `packages/backend/convex/_generated` is committed. After changing Convex functions or the schema, regenerate it with `bunx convex dev` (or `bun run setup`) and commit the result.
+- Bun installs one hoisted `node_modules` (see `bunfig.toml`). When something behaves differently than in CI, reinstall with `rm -rf node_modules && bun install`.
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend, in `packages/backend`.
+
+When working on Convex code, **always read
+`packages/backend/convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+<!-- convex-ai-end -->
