@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation";
 import { Wordmark } from "@/components/wordmark";
 import { useScopedI18n } from "@/locales/client";
 import { AccountMenu } from "./account-menu";
+import { FirmSwitcher } from "./firm-switcher";
 
 /**
  * What the sidebar holds: the mark, the app's areas and the signed-in user.
@@ -62,6 +63,7 @@ export function SidebarContent({
           <Wordmark />
         </Link>
       </div>
+      <FirmSwitcher onNavigate={onNavigate} />
       <SidebarNav aria-label={t("main")}>
         <SidebarNavLabel>{t("work")}</SidebarNavLabel>
         {item("/estimates", Icons.Deviz, t("estimates"))}

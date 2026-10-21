@@ -5,6 +5,7 @@ import { cn } from "@devize/ui/utils";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
+import { AppToaster } from "@/components/app-toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { brand } from "@/lib/brand";
 import { I18nProvider } from "@/locales/client";
@@ -56,6 +57,7 @@ export default async function RootLayout({
             <TooltipProvider delayDuration={0}>
               <I18nProvider locale={locale} dictionary={dictionary}>
                 <ConvexClientProvider>{children}</ConvexClientProvider>
+                <AppToaster />
               </I18nProvider>
             </TooltipProvider>
           </ThemeProvider>
