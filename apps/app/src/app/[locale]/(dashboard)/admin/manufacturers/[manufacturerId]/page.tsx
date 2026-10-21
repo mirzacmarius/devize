@@ -24,6 +24,7 @@ import { ExcludePanel } from "./_components/exclude-panel";
 import { FindingsPanel } from "./_components/findings-panel";
 import { ImportsPanel } from "./_components/imports-panel";
 import { JobsPanel } from "./_components/jobs-panel";
+import { ThanksPanel } from "./_components/thanks-panel";
 
 export default function ManufacturerPage() {
   const t = useScopedI18n("admin.manufacturer");
@@ -53,6 +54,12 @@ export default function ManufacturerPage() {
   const [message, ...history] = data.messages.filter(
     (candidate) => candidate.step === "initial",
   );
+  const thanks = data.messages.filter(
+    (candidate) => candidate.step === "thanks",
+  );
+  const sentTo = data.messages.find(
+    (candidate) => candidate.step === "initial" && candidate.status === "sent",
+  )?.to;
 
   return (
     <div className="flex w-full flex-col gap-6">
@@ -133,6 +140,12 @@ export default function ManufacturerPage() {
           <ImportsPanel
             manufacturerId={manufacturerId}
             normImports={data.normImports}
+          />
+          <ThanksPanel
+            manufacturer={manufacturer}
+            messages={thanks}
+            contacts={data.contacts}
+            suggestedTo={sentTo}
           />
           <ClaimPanel manufacturerId={manufacturerId} />
         </div>

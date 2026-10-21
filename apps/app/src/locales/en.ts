@@ -1710,6 +1710,9 @@ export default {
       max_tokens: "The model's answer was too long.",
       invalid_output: "The model didn't return valid data.",
       no_articles: "No norm articles were found in the PDF.",
+      suppressed:
+        "The address is on the suppression list, or the manufacturer asked not to be contacted.",
+      already_claimed: "The manufacturer's profile is already claimed.",
       unknown: "Something went wrong. Try again.",
     },
     level: {
@@ -1738,6 +1741,10 @@ export default {
       labor_sum: "The trades don't add up to the labour total: {detail}.",
       no_labor: "It has no labour.",
       price_total: "The printed total differs from the computed one: {detail}.",
+      claim_link_mismatch:
+        "The claim link is for {detail}, not for the recipient. Press “Rebuild from template” to make one for the new address.",
+      already_claimed:
+        "The profile was claimed in the meantime, so the link in the thank-you no longer works.",
     },
     manufacturers: {
       title: "Manufacturers",
@@ -1968,6 +1975,15 @@ export default {
         rules: "It follows every rule.",
         history: "Earlier messages",
       },
+      thanks: {
+        title: "Thank-you",
+        description:
+          "The reply to whoever sent us the norms, with the link to claim the manufacturer's profile. You approve it and send it from your own mailbox, like the first email.",
+        to: "Address that sent us the norms",
+        prepare: "Draft the thank-you",
+        claimed: "The profile is already claimed, so no link goes out.",
+        excluded: "The manufacturer asked not to be contacted.",
+      },
       imports: {
         title: "Norms received",
         description:
@@ -2047,6 +2063,7 @@ export default {
       empty: "Nothing to approve.",
       open: "Open",
       problems: "Problems: {count}",
+      thanks: "Thank-you",
     },
     catalog: {
       title: "Base catalog",

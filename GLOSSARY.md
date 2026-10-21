@@ -117,7 +117,7 @@ A Producător's page in Devize: the Norme de producător and products it publish
 _Avoid_: Brand page, storefront
 
 **Revendicare** (claim):
-How someone who works for a Producător takes its Profil over for a Firmă: with the link Devize emails to the address that sent the norms, at once with a verified address on one of the Producător's domains, or by a request a super admin checks, with the CUI looked up at ANAF. A Profil belongs to one Firmă. In code: `manufacturerClaims`, `claimLinks` and `manufacturerDomains`. See `docs/adr/0018`.
+How someone who works for a Producător takes its Profil over for a Firmă: with the link in the thank-you a super admin sends to the address that sent the norms, at once with a verified address on one of the Producător's domains, or by a request a super admin checks, with the CUI looked up at ANAF. A Profil belongs to one Firmă. In code: `manufacturerClaims`, `claimLinks` and `manufacturerDomains`. See `docs/adr/0018`.
 _Avoid_: Verification, ownership request
 
 **Furnizor** (supplier):

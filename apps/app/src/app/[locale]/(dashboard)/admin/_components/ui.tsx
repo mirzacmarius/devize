@@ -175,6 +175,8 @@ const errorCodes = [
   "max_tokens",
   "invalid_output",
   "no_articles",
+  "suppressed",
+  "already_claimed",
   "unknown",
 ] as const;
 
@@ -298,6 +300,8 @@ const issueCodes = [
   "suppressed_recipient",
   "unverified_recipient",
   "recipient_other_domain",
+  "claim_link_mismatch",
+  "already_claimed",
   "no_resources",
   "quantity_invalid",
   "unit_unknown",

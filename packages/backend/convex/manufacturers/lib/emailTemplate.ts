@@ -1,3 +1,4 @@
+import { romanianDate } from "../../lib/dates";
 import { isEmail } from "./text";
 
 // The first email to a Producător, from the outreach plan. Only the parts in
@@ -37,12 +38,22 @@ const noteForForm =
 
 export type EmailVariant = "A" | "B";
 
+export type ThanksVars = {
+  claimEmail: string;
+  claimUrl?: string;
+  claimExpiresAt?: number;
+  articles?: number;
+  variants?: number;
+  consentRecorded: boolean;
+};
+
 export type TemplateVars = {
   firm: string;
   personalization?: string;
   mainProducts?: string;
   address?: string;
   addressSourceUrl?: string;
+  thanks?: ThanksVars;
 };
 
 export type Sender = {
@@ -95,6 +106,98 @@ export function renderInitialEmail(
   };
 }
 
+// The answer to a Producător that sent its norms, with the link that lets
+// the person who sent them claim its profile (ADR 0018). Norms also come
+// without our first email, so it doesn't pretend to be a reply.
+const thanksSubjectTemplate = "Mulțumesc pentru normele de deviz {Firma}";
+
+const thanksBodyTemplate = `Bună ziua,
+
+Vă mulțumesc pentru normele de deviz {Firma}. {Stadiul normelor}
+
+{Acordul}Vă invit și să revendicați profilul {Firma} din Devize: acolo confirmați normele, adăugați altele noi și vă invitați colegii. Linkul de mai jos funcționează o singură dată, până pe {data linkului}, pentru cine intră în Devize cu adresa {adresa}:
+{link de revendicare}
+
+Mulțumesc,
+{Prenume} {Nume}
+Fondator, Devize · {telefon}
+
+Dacă nu doriți alte mesaje de la Devize, răspundeți „stop” și nu vă mai scriem. Cum folosim datele de contact: {link politica de confidențialitate}.`;
+
+const askConsent =
+  "Dacă nu mi-ați scris deja că sunteți de acord, vă rog să-mi confirmați printr-un răspuns că le putem publica în Devize, cu {Firma} menționată ca sursă.\n\n";
+
+const months = [
+  "ianuarie",
+  "februarie",
+  "martie",
+  "aprilie",
+  "mai",
+  "iunie",
+  "iulie",
+  "august",
+  "septembrie",
+  "octombrie",
+  "noiembrie",
+  "decembrie",
+];
+
+/** A day as a letter writes it, "20 noiembrie 2026", by Romania's calendar. */
+export function letterDate(timestamp: number): string {
+  const [year, month, day] = romanianDate(timestamp).split("-").map(Number);
+  return `${day} ${months[(month ?? 1) - 1]} ${year}`;
+}
+
+/**
+ * A count with its noun: "1 articol", "12 articole", "51 de variante".
+ * Romanian puts "de" after 20 or more, unless the last two digits are 1–19.
+ */
+export function countOf(count: number, one: string, many: string): string {
+  if (count === 1) {
+    return `1 ${one}`;
+  }
+  const lastTwo = count % 100;
+  return count >= 20 && (lastTwo === 0 || lastTwo >= 20)
+    ? `${count} de ${many}`
+    : `${count} ${many}`;
+}
+
+/**
+ * Renders the thank-you for the norms a manufacturer sent: what we extracted
+ * from them, a request for their written consent unless it's on record, and
+ * the claim link for the address they came from.
+ */
+export function renderThanksEmail(
+  vars: TemplateVars,
+  sender: Sender,
+): { subject: string; body: string } {
+  const thanks = vars.thanks;
+  const extracted =
+    thanks?.articles !== undefined && thanks.variants !== undefined
+      ? `Le-am digitizat deja în Devize: ${countOf(thanks.articles, "articol", "articole")} și ${countOf(thanks.variants, "variantă", "variante")}.`
+      : "Le digitizăm acum în Devize.";
+  const body = thanksBodyTemplate
+    .replace("{Stadiul normelor}", extracted)
+    .replace("{Acordul}", thanks?.consentRecorded ? "" : askConsent);
+  const values = {
+    Firma: vars.firm,
+    adresa: thanks?.claimEmail,
+    "link de revendicare": thanks?.claimUrl,
+    "data linkului":
+      thanks?.claimExpiresAt === undefined
+        ? undefined
+        : letterDate(thanks.claimExpiresAt),
+    Prenume: sender.firstName,
+    Nume: sender.lastName,
+    telefon: sender.phone,
+    "link politica de confidențialitate": sender.privacyUrl,
+  };
+  return {
+    subject: fill(thanksSubjectTemplate, values),
+    body: fill(body, values),
+  };
+}
+
 export type EmailIssue = {
   code:
     | "empty_subject"
@@ -108,7 +211,9 @@ export type EmailIssue = {
     | "invalid_recipient"
     | "suppressed_recipient"
     | "unverified_recipient"
-    | "recipient_other_domain";
+    | "recipient_other_domain"
+    | "claim_link_mismatch"
+    | "already_claimed";
   level: "error" | "warning";
   detail?: string;
 };

@@ -1702,6 +1702,9 @@ export default {
       max_tokens: "Răspunsul modelului a fost prea lung.",
       invalid_output: "Modelul nu a întors date valide.",
       no_articles: "Nu am găsit articole de normă în PDF.",
+      suppressed:
+        "Adresa e pe lista de excludere sau producătorul a cerut să nu mai fie contactat.",
+      already_claimed: "Profilul producătorului e deja revendicat.",
       unknown: "Ceva nu a mers. Încearcă din nou.",
     },
     level: {
@@ -1730,6 +1733,10 @@ export default {
       labor_sum: "Meseriile nu dau totalul de manoperă: {detail}.",
       no_labor: "Nu are manoperă.",
       price_total: "Totalul tipărit diferă de cel calculat: {detail}.",
+      claim_link_mismatch:
+        "Linkul de revendicare e pentru {detail}, nu pentru destinatar. Apasă „Refă din șablon” ca să-l faci pentru adresa nouă.",
+      already_claimed:
+        "Profilul a fost revendicat între timp, așa că linkul din mulțumire nu mai merge.",
     },
     manufacturers: {
       title: "Producători",
@@ -1958,6 +1965,15 @@ export default {
         rules: "Respectă toate regulile.",
         history: "Mesaje anterioare",
       },
+      thanks: {
+        title: "Mulțumire",
+        description:
+          "Răspunsul către cine ne-a trimis normele, cu linkul prin care revendică profilul producătorului. O aprobi și o trimiți din căsuța ta, ca pe primul email.",
+        to: "Adresa care ne-a trimis normele",
+        prepare: "Pregătește mulțumirea",
+        claimed: "Profilul e deja revendicat, așa că nu mai trimitem link.",
+        excluded: "Producătorul a cerut să nu mai fie contactat.",
+      },
       imports: {
         title: "Norme primite",
         description:
@@ -2036,6 +2052,7 @@ export default {
       empty: "Nimic de aprobat.",
       open: "Deschide",
       problems: "Probleme: {count}",
+      thanks: "Mulțumire",
     },
     catalog: {
       title: "Catalogul de bază",
