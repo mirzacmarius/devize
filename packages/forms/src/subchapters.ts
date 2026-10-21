@@ -120,15 +120,14 @@ function match(
 }
 
 /**
- * Where a category of works most likely falls: its own code when it is a
- * subchapter's, its object's when the object is wholly outside the base
- * investment, else the first subchapter its name or its object's suggests,
- * and Arhitectură, the commonest, when nothing does.
+ * Where a category of works' code or names place it: its own code when it is
+ * a subchapter's, its object's when the object is wholly outside the base
+ * investment, else the first subchapter its name or its object's suggests.
  */
-export function guessSubchapter(
+export function hintedSubchapter(
   object: WorkObject,
   category: Category,
-): Subchapter {
+): Subchapter | undefined {
   const code = category.code?.trim();
   if (code && isSubchapter(code)) {
     return code;
@@ -137,9 +136,19 @@ export function guessSubchapter(
   return (
     (named ? match(outside, object.name) : undefined) ??
     match(rules, category.name) ??
-    (named ? match(rules, object.name) : undefined) ??
-    "4.1.3"
+    (named ? match(rules, object.name) : undefined)
   );
+}
+
+/**
+ * Where a category of works most likely falls: where its code or names place
+ * it, and Arhitectură, the commonest, when nothing does.
+ */
+export function guessSubchapter(
+  object: WorkObject,
+  category: Category,
+): Subchapter {
+  return hintedSubchapter(object, category) ?? "4.1.3";
 }
 
 /** Where a category of works falls: where the person placed it, or our guess. */
@@ -221,6 +230,8 @@ export type SheetCategory = {
   name: string;
   object: { key: string; name: string; implicit: boolean };
   guess: Subchapter;
+  // Whether its code or names gave the guess, rather than the fallback.
+  hinted: boolean;
 };
 
 /** The Deviz's categories of works with our guess for each, in print order. */
@@ -235,6 +246,7 @@ export function sheetCategories(data: WorksData): SheetCategory[] {
         implicit: object.implicit,
       },
       guess: guessSubchapter(object, category),
+      hinted: hintedSubchapter(object, category) !== undefined,
     })),
   );
 }

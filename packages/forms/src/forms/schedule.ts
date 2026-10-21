@@ -3,6 +3,7 @@ import type { Cell, FormDocument, HeaderCell, Row, Table } from "../model";
 import { type ScheduledCategory, scheduleOf } from "../schedule";
 import { placeCategories } from "../subchapters";
 import { buildTree, type WorkObject } from "../tree";
+import { countOf } from "../words";
 import {
   categoryName,
   closingBlocks,
@@ -205,7 +206,7 @@ export function f6Documents(
         },
         {
           type: "text",
-          text: `Durata de execuție: ${months} ${months === 1 ? "lună" : "luni"}`,
+          text: `Durata de execuție: ${countOf(months, "lună", "luni")}`,
           align: "center",
           size: 8.5,
         },
