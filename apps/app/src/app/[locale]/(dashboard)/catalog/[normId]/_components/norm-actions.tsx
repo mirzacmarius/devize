@@ -3,14 +3,6 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@devize/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -22,6 +14,7 @@ import { useMutation } from "convex/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
 import { useScopedI18n } from "@/locales/client";
@@ -236,49 +229,5 @@ export function NormActions({ norm }: { norm: Norm }) {
         onConfirm={deleteDraft}
       />
     </>
-  );
-}
-
-function ConfirmDialog({
-  open,
-  onClose,
-  title,
-  description,
-  confirm,
-  destructive = false,
-  busy,
-  onConfirm,
-}: {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  description: string;
-  confirm: string;
-  destructive?: boolean;
-  busy: boolean;
-  onConfirm: () => void;
-}) {
-  const tc = useScopedI18n("common");
-  return (
-    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent closeLabel={tc("close")}>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
-            {tc("cancel")}
-          </Button>
-          <Button
-            variant={destructive ? "destructive" : "default"}
-            disabled={busy}
-            onClick={onConfirm}
-          >
-            {confirm}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }

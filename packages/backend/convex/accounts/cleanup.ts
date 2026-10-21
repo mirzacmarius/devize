@@ -188,6 +188,18 @@ async function deleteSome(
   if (jobs.length > 0) {
     return jobs.length;
   }
+  const invitations = await ctx.db
+    .query("invitations")
+    .withIndex("by_organizationId_and_email", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of invitations) {
+    await ctx.db.delete("invitations", row._id);
+  }
+  if (invitations.length > 0) {
+    return invitations.length;
+  }
   const proposals = await deleteProposals(ctx, { organizationId }, limit);
   if (proposals > 0) {
     return proposals;

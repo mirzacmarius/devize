@@ -5,6 +5,8 @@ import { resourceKind } from "../manufacturers/validators";
 import {
   clientKind,
   filePurpose,
+  invitationEmailStatus,
+  invitedRole,
   memberRole,
   organizationKind,
 } from "./validators";
@@ -45,6 +47,34 @@ export const accountTables = {
   })
     .index("by_userId", ["userId"])
     .index("by_organizationId_and_userId", ["organizationId", "userId"]),
+
+  // Someone an admin asked to join a Firmă, by email. They accept from the
+  // invitation's link, or in the app once they sign in with that address.
+  // Accepted, declined and revoked invitations are deleted, and the rest
+  // expire after a week (see accounts/invitations.ts).
+  invitations: defineTable({
+    organizationId: v.id("organizations"),
+    // Lowercase, as people sign in with it.
+    email: v.string(),
+    role: invitedRole,
+    // The secret part of the invitation's link.
+    token: v.string(),
+    invitedBy: v.id("users"),
+    expiresAt: v.number(),
+    // When the email was last asked for, so inviting again doesn't flood
+    // the address.
+    sentAt: v.number(),
+    emailStatus: invitationEmailStatus,
+  })
+    .index("by_organizationId_and_email", ["organizationId", "email"])
+    .index("by_email", ["email"])
+    .index("by_token", ["token"]),
+
+  // The invitation emails each user had sent in the last day, to cap them.
+  invitationEmails: defineTable({
+    userId: v.id("users"),
+    sentAt: v.number(),
+  }).index("by_userId_and_sentAt", ["userId", "sentAt"]),
 
   // The contractor's own clients, who receive Oferte.
   clients: defineTable({

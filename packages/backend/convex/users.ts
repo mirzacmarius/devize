@@ -149,6 +149,13 @@ export const deleteCurrentUserAccount = mutation({
       await ctx.storage.delete(user.imageId);
     }
     await leaveFirms(ctx, userId);
+    const emails = await ctx.db
+      .query("invitationEmails")
+      .withIndex("by_userId_and_sentAt", (q) => q.eq("userId", userId))
+      .take(100);
+    for (const row of emails) {
+      await ctx.db.delete("invitationEmails", row._id);
+    }
     const accounts = ctx.db
       .query("authAccounts")
       .withIndex("userIdAndProvider", (q) => q.eq("userId", userId));

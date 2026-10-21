@@ -16,8 +16,9 @@ const RESEND_AFTER_SECONDS = 30;
 /**
  * Sign-in with a code sent by email: the address first, then the 8 digits
  * from the email. Nothing redirects, so it works on any address of the app.
+ * Once signed in, it opens `next`, a path on this site, or the home page.
  */
-export function EmailSignIn() {
+export function EmailSignIn({ next = "/" }: { next?: string }) {
   const t = useScopedI18n("login");
   const { signIn } = useAuthActions();
   const [email, setEmail] = useState("");
@@ -80,7 +81,7 @@ export function EmailSignIn() {
     try {
       await signIn(PROVIDER, { email: sentTo, code: digits });
       // A full load, so the server sees the new session cookie.
-      window.location.assign("/");
+      window.location.assign(next);
     } catch {
       setError(t("codeWrong"));
       setBusy(false);
