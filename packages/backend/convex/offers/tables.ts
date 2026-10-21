@@ -60,7 +60,7 @@ export const offerTables = {
     .index("by_estimateId", ["estimateId"]),
 
   // What the client asks on the link, with the assistant's answer from the
-  // Ofertă and the firm's own reply. See docs/adr/0018.
+  // Ofertă and the firm's own reply. See docs/adr/0019.
   offerQuestions: defineTable({
     organizationId: v.id("organizations"),
     estimateId: v.id("estimates"),

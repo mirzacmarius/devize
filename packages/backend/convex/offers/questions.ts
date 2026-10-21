@@ -21,7 +21,7 @@ import { choiceArgs } from "./validators";
 // The questions a client asks on an Ofertă's link. The assistant answers
 // from what the link shows; a question it can't answer, or every question
 // when the firm turned it off, waits for the firm, who replies from the
-// Deviz's page. See docs/adr/0018.
+// Deviz's page. See docs/adr/0019.
 
 export const MAX_QUESTION = 1000;
 const MAX_REPLY = 2000;
