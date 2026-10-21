@@ -662,13 +662,29 @@ export default {
     },
     forms: {
       title: "Formulare oficiale",
-      hint: "F3, C5 și listele de resurse C6–C9, pentru licitații.",
+      hint: "Devizul general și ale obiectelor, F1–F5, C5 și listele de resurse C6–C9, pentru licitații.",
       open: "Alege",
       sheetTitle: "Formulare oficiale",
       sheetDescription:
         "Listele pe care le cere documentația de atribuire, într-un singur PDF. Fiecare formular începe pe o pagină nouă.",
       choose: "Formulare",
       kinds: {
+        DG: {
+          title: "DG · Devizul general",
+          hint: "Capitolele 1–7 ale obiectivului, cu TVA (HG 907/2016, Anexa 7).",
+        },
+        DO: {
+          title: "DO · Devizul obiectului",
+          hint: "Câte unul pentru fiecare obiect, cu TVA (Anexa 8).",
+        },
+        F1: {
+          title: "F1 · Centralizatorul cheltuielilor pe obiectiv",
+          hint: "Valorile pe capitolele devizului general, din care C+M.",
+        },
+        F2: {
+          title: "F2 · Centralizatorul pe categorii de lucrări",
+          hint: "Câte unul pentru fiecare obiect, cu totalurile I, II și III.",
+        },
         F3: {
           title: "F3 · Lista cu cantități de lucrări",
           hint: "Câte una pentru fiecare categorie de lucrări (HG 907/2016).",
@@ -676,6 +692,14 @@ export default {
         C5: {
           title: "C5 · Lista cantităților de lucrări, detaliată",
           hint: "Prețuri și valori pe materiale, manoperă, utilaj și transport (Ordinul 1014/2001).",
+        },
+        F4: {
+          title: "F4 · Lista utilajelor și dotărilor",
+          hint: "Utilajele, echipamentele, dotările și activele necorporale, cu furnizorul.",
+        },
+        F5: {
+          title: "F5 · Fișele tehnice",
+          hint: "Câte una pentru fiecare utilaj din F4, de completat cu specificațiile.",
         },
         C6: {
           title: "C6 · Consumurile de resurse materiale",
@@ -700,6 +724,26 @@ export default {
       withValues: "Cu prețuri și valori",
       withValuesHint:
         "Fără ele, listele arată ca în documentația publicată de proiectant.",
+      placement: "Încadrarea în devizul general",
+      placementHint:
+        "Fiecare categorie de lucrări intră la un subcapitol al devizului general. Le-am încadrat după nume; schimbă-le unde documentația le încadrează altfel.",
+      placementReset: "Încadrează din nou după nume",
+      subchapters: {
+        site: "Amenajarea terenului",
+        environment: "Protecția mediului",
+        relocation: "Relocarea utilităților",
+        utilities: "Asigurarea utilităților",
+        earthworks: "Terasamente și amenajări exterioare",
+        structure: "Rezistență",
+        architecture: "Arhitectură",
+        services: "Instalații",
+        assembly: "Montaj utilaje",
+        equipment: "Utilaje cu montaj",
+        looseEquipment: "Utilaje fără montaj",
+        furnishings: "Dotări",
+        intangibles: "Active necorporale",
+        siteSetup: "Organizare de șantier",
+      },
       scope: "Listele de resurse",
       scopeHint:
         "Pentru tot devizul, pentru fiecare obiect sau pentru fiecare categorie de lucrări.",

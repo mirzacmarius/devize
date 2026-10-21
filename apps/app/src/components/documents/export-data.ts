@@ -1,17 +1,14 @@
 import type { api } from "@devize/backend/convex/_generated/api";
 import type { ExportData } from "@devize/forms";
+import type { WorksData } from "@devize/forms/sheet";
 import type { FunctionReturnType } from "convex/server";
 
 export type Estimate = FunctionReturnType<typeof api.estimates.estimates.get>;
 type Firm = FunctionReturnType<typeof api.accounts.organizations.get>;
 type Client = FunctionReturnType<typeof api.accounts.clients.get>;
 
-/** A Deviz as the documents read it, with its firm's and client's details. */
-export function exportData(
-  estimate: Estimate,
-  firm: Firm,
-  client: Client | null,
-): ExportData {
+/** A Deviz's works as the documents read them. */
+export function worksOf(estimate: Estimate): WorksData {
   return {
     estimate: {
       number: estimate.number,
@@ -26,6 +23,17 @@ export function exportData(
     },
     sections: estimate.sections,
     lineItems: estimate.lineItems,
+  };
+}
+
+/** A Deviz as the documents read it, with its firm's and client's details. */
+export function exportData(
+  estimate: Estimate,
+  firm: Firm,
+  client: Client | null,
+): ExportData {
+  return {
+    ...worksOf(estimate),
     firm: {
       name: firm.name,
       cui: firm.cui,

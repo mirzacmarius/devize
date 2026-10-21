@@ -7,11 +7,12 @@ import {
   formatPercent,
   formatQuantity,
 } from "../format";
-import type {
-  DocumentKind,
-  ExportData,
-  ExportOptions,
-  Markups,
+import {
+  type DocumentKind,
+  defaultLabel,
+  type ExportData,
+  type ExportOptions,
+  type Markups,
 } from "../input";
 import type { Block, Cell, Row } from "../model";
 import type { Category } from "../tree";
@@ -38,14 +39,15 @@ export function beneficiaryOf(data: ExportData, options: ExportOptions) {
 export function partyFields(
   data: ExportData,
   options: ExportOptions,
-  works: { object?: string },
+  works: { object?: string; objective?: boolean },
 ): Block {
   const objective = data.estimate.title;
   const items = [
     { label: "Beneficiar", value: beneficiaryOf(data, options) },
     { label: "Ofertant", value: options.withValues ? data.firm.name : "" },
     { label: "Proiectant", value: options.designer?.trim() ?? "" },
-    { label: "Obiectivul", value: objective },
+    // Left out where the form's title names the objective.
+    { label: "Obiectivul", value: works.objective === false ? "" : objective },
     {
       label: "Obiectul",
       value: works.object && works.object !== objective ? works.object : "",
@@ -61,7 +63,7 @@ export function categoryName(category: Category) {
 
 /** What the corner of a form says: the tender's own name for it, or ours. */
 export function formLabel(options: ExportOptions, kind: DocumentKind) {
-  return options.labels?.[kind]?.trim() || `Formularul ${kind}`;
+  return options.labels?.[kind]?.trim() || defaultLabel(kind);
 }
 
 /** The footer of every page of a form: the Deviz's code and the form. */
@@ -76,6 +78,21 @@ export const currencyNote: Block = {
   align: "right",
   size: 7.5,
 };
+
+/** Above a Deviz general or an object's Deviz, which add VAT. */
+export function priceDateNote(data: ExportData): Block {
+  return {
+    type: "text",
+    text: `– lei, prețuri la data de ${formatDate(data.estimate.priceDate)} –`,
+    align: "right",
+    size: 7.5,
+  };
+}
+
+/** An object as the forms name it, with its code in front: "01 Corp A". */
+export function objectName(object: { code?: string; name: string }) {
+  return object.code ? `${object.code} ${object.name}` : object.name;
+}
 
 /** The date and who signs: the bidder, or whoever drew up a list without prices. */
 export function closingBlocks(

@@ -136,6 +136,7 @@ function layRow(
     column += cell.colSpan ?? 1;
   }
   const height = Math.max(
+    row.minHeight ?? 0,
     fontSize * leadingRatio + 2 * padY,
     ...cells.map((cell) => heightOf(cell.lines)),
   );

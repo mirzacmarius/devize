@@ -1,9 +1,26 @@
 "use client";
 
-import type { ResourceScope } from "@devize/forms";
+import {
+  type DocumentKind,
+  defaultLabel,
+  documentKinds,
+  procurement,
+  type ResourceScope,
+  type SheetCategory,
+  type Subchapter,
+  sheetCategories,
+  subchapters,
+} from "@devize/forms/sheet";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@devize/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -12,17 +29,84 @@ import {
   SheetTitle,
 } from "@devize/ui/sheet";
 import { Switch } from "@devize/ui/switch";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 import { Field } from "@/components/field";
 import { SegmentedControl } from "@/components/segmented-control";
 import { useScopedI18n } from "@/locales/client";
-import type { Estimate } from "./export-data";
+import { type Estimate, worksOf } from "./export-data";
+import { readChoices, writeChoices } from "./stored-choices";
 import { useDownloadDocuments } from "./use-download-documents";
 
 // The official forms one PDF can hold, in the order they print.
-const formKinds = ["F3", "C5", "C6", "C7", "C8", "C9"] as const;
-type FormKind = (typeof formKinds)[number];
+type FormKind = Exclude<DocumentKind, "DEVIZ">;
+const formKinds = documentKinds.filter(
+  (kind): kind is FormKind => kind !== "DEVIZ",
+);
 const resourceForms: readonly FormKind[] = ["C6", "C7", "C8", "C9"];
+// The forms that total the works by the Deviz general's subchapters.
+const placedForms: readonly FormKind[] = ["DG", "DO", "F1", "F2", "F4", "F5"];
+
+// Each subchapter's name in the locales.
+const subchapterKeys = {
+  "1.2": "site",
+  "1.3": "environment",
+  "1.4": "relocation",
+  "2": "utilities",
+  "4.1.1": "earthworks",
+  "4.1.2": "structure",
+  "4.1.3": "architecture",
+  "4.1.4": "services",
+  "4.2": "assembly",
+  "4.3": "equipment",
+  "4.4": "looseEquipment",
+  "4.5": "furnishings",
+  "4.6": "intangibles",
+  "5.1.1": "siteSetup",
+} as const satisfies Record<Subchapter, string>;
+
+type Placement = Readonly<Record<string, Subchapter>>;
+
+const placedIn = (placement: Placement, category: SheetCategory) =>
+  placement[category.key] ?? category.guess;
+
+/**
+ * The forms a tender usually asks of a bidder: the financial offer's F1–F3,
+ * F4 and F5 when the works buy equipment or furnishings, and the resource
+ * lists.
+ */
+function offerKinds(
+  categories: readonly SheetCategory[],
+  placement: Placement,
+): Set<FormKind> {
+  const kinds = new Set<FormKind>(["F1", "F2", "F3", "C6", "C7", "C8", "C9"]);
+  if (
+    categories.some((category) =>
+      procurement.includes(placedIn(placement, category)),
+    )
+  ) {
+    kinds.add("F4");
+    kinds.add("F5");
+  }
+  return kinds;
+}
+
+/** The categories of works under their objects, in print order. */
+function byObject(categories: readonly SheetCategory[]) {
+  const objects = new Map<
+    string,
+    { key: string; name: string; categories: SheetCategory[] }
+  >();
+  for (const category of categories) {
+    const object = objects.get(category.object.key) ?? {
+      key: category.object.key,
+      name: category.object.name,
+      categories: [],
+    };
+    object.categories.push(category);
+    objects.set(object.key, object);
+  }
+  return [...objects.values()];
+}
 
 /** Chooses a tender's forms and how they read, then downloads them. */
 export function FormsSheet({
@@ -38,7 +122,10 @@ export function FormsSheet({
   const tc = useScopedI18n("common");
   return (
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
-      <SheetContent closeLabel={tc("close")} className="overflow-y-auto">
+      <SheetContent
+        closeLabel={tc("close")}
+        className="w-full overflow-y-auto sm:w-3/4 sm:max-w-xl"
+      >
         <SheetHeader>
           <SheetTitle>{t("sheetTitle")}</SheetTitle>
           <SheetDescription>{t("sheetDescription")}</SheetDescription>
@@ -59,20 +146,39 @@ function FormsForm({
   const t = useScopedI18n("documents.forms");
   const tc = useScopedI18n("common");
   const download = useDownloadDocuments(estimate);
-  const [chosen, setChosen] = useState<ReadonlySet<FormKind>>(
-    new Set(["F3", "C6", "C7", "C8", "C9"]),
+  const categories = useMemo(
+    () => sheetCategories(worksOf(estimate)),
+    [estimate],
   );
-  const [labels, setLabels] = useState<Partial<Record<FormKind, string>>>({});
-  const [renaming, setRenaming] = useState(false);
-  const [withValues, setWithValues] = useState(true);
-  const [scope, setScope] = useState<ResourceScope>("object");
+  // The sheet starts from what was chosen for this Deviz last time.
+  const [stored] = useState(() => readChoices(estimate._id));
+  const [placement, setPlacement] = useState<Placement>(
+    () => stored.subchapters ?? {},
+  );
+  const [chosen, setChosen] = useState<ReadonlySet<FormKind>>(() => {
+    const kinds = formKinds.filter((kind) => stored.kinds?.includes(kind));
+    return kinds.length > 0
+      ? new Set(kinds)
+      : offerKinds(categories, stored.subchapters ?? {});
+  });
+  const [labels, setLabels] = useState<Partial<Record<FormKind, string>>>(
+    () => stored.labels ?? {},
+  );
+  // Forms already renamed show their names.
+  const [renaming, setRenaming] = useState(() =>
+    Object.values(labels).some((label) => label?.trim()),
+  );
+  const [withValues, setWithValues] = useState(stored.withValues ?? true);
+  const [scope, setScope] = useState<ResourceScope>(stored.scope ?? "object");
   // Who the forms are for, as they will print unless changed.
-  const [beneficiary, setBeneficiary] = useState(
+  const authority =
     (estimate.kind === "tender" && estimate.tender?.authority) ||
-      estimate.client?.name ||
-      "",
+    estimate.client?.name ||
+    "";
+  const [beneficiary, setBeneficiary] = useState(
+    stored.beneficiary ?? authority,
   );
-  const [designer, setDesigner] = useState("");
+  const [designer, setDesigner] = useState(stored.designer ?? "");
   const [error, setError] = useState<string>();
   const [downloading, setDownloading] = useState(false);
 
@@ -86,6 +192,16 @@ function FormsForm({
     setChosen(next);
     setError(undefined);
   };
+
+  // Only where the person placed works other than we would.
+  const moved = Object.fromEntries(
+    categories.flatMap((category): [string, Subchapter][] => {
+      const subchapter = placement[category.key];
+      return subchapter && subchapter !== category.guess
+        ? [[category.key, subchapter]]
+        : [];
+    }),
+  );
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -103,11 +219,24 @@ function FormsForm({
         beneficiary: beneficiary.trim() || undefined,
         designer: designer.trim() || undefined,
         labels,
+        subchapters: moved,
       },
       t("fileTitle"),
     );
     setDownloading(false);
     if (done) {
+      writeChoices(estimate._id, {
+        kinds,
+        labels: Object.fromEntries(
+          Object.entries(labels).filter(([, label]) => label?.trim()),
+        ),
+        withValues,
+        scope,
+        subchapters: moved,
+        // A beneficiary typed in, not the one the Deviz gives.
+        beneficiary: beneficiary === authority ? undefined : beneficiary,
+        designer: designer || undefined,
+      });
       onDone();
     }
   };
@@ -144,7 +273,7 @@ function FormsForm({
             {renaming && chosen.has(kind) && (
               <Input
                 aria-label={t("label", { form: kind })}
-                placeholder={`Formularul ${kind}`}
+                placeholder={defaultLabel(kind)}
                 value={labels[kind] ?? ""}
                 onChange={(event) =>
                   setLabels({ ...labels, [kind]: event.target.value })
@@ -201,6 +330,16 @@ function FormsForm({
         </Field>
       )}
 
+      {placedForms.some((kind) => chosen.has(kind)) &&
+        categories.length > 0 && (
+          <PlacementFields
+            categories={categories}
+            placement={placement}
+            moved={Object.keys(moved).length > 0}
+            onChange={setPlacement}
+          />
+        )}
+
       <Field
         label={t("beneficiary")}
         htmlFor="forms-beneficiary"
@@ -234,5 +373,85 @@ function FormsForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+/** Where each category of works falls in the Deviz general, by object. */
+function PlacementFields({
+  categories,
+  placement,
+  moved,
+  onChange,
+}: {
+  categories: readonly SheetCategory[];
+  placement: Placement;
+  // Whether some works are placed other than by their names.
+  moved: boolean;
+  onChange: (placement: Placement) => void;
+}) {
+  const t = useScopedI18n("documents.forms");
+  const objects = byObject(categories);
+  return (
+    <fieldset className="m-0 grid min-w-0 gap-3 border-0 p-0">
+      <legend className="mb-1.5 p-0 text-body font-medium text-ink">
+        {t("placement")}
+      </legend>
+      <p className="m-0 text-meta text-ink-3">{t("placementHint")}</p>
+      {objects.map((object) => (
+        <div key={object.key} className="grid gap-2">
+          {objects.length > 1 && (
+            <p className="m-0 text-meta font-medium text-ink-2">
+              {object.name}
+            </p>
+          )}
+          {object.categories.map((category) => {
+            const id = `placement-${category.key}`;
+            return (
+              <div
+                key={category.key}
+                className="grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_17rem] sm:items-center sm:gap-3"
+              >
+                <label htmlFor={id} className="text-body text-ink">
+                  {category.name}
+                </label>
+                <Select
+                  value={placedIn(placement, category)}
+                  onValueChange={(next) =>
+                    onChange({
+                      ...placement,
+                      [category.key]: next as Subchapter,
+                    })
+                  }
+                >
+                  <SelectTrigger
+                    id={id}
+                    className="min-w-0 [&>span]:block [&>span]:truncate"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subchapters.map((code) => (
+                      <SelectItem key={code} value={code}>
+                        {`${code} ${t(`subchapters.${subchapterKeys[code]}`)}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+      {moved && (
+        <Button
+          type="button"
+          variant="link"
+          className="justify-self-start"
+          onClick={() => onChange({})}
+        >
+          {t("placementReset")}
+        </Button>
+      )}
+    </fieldset>
   );
 }

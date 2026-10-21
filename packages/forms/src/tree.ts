@@ -2,7 +2,7 @@ import {
   computeRecap,
   type Recap,
 } from "@devize/backend/convex/estimates/recap";
-import type { ExportData, LineItemInput, SectionInput } from "./input";
+import type { LineItemInput, SectionInput, WorksData } from "./input";
 import { listedLine } from "./listed";
 
 // A Deviz the way the forms see it: an objective (the Deviz) made of objects,
@@ -36,7 +36,7 @@ const byPosition = <T extends { position: number }>(a: T, b: T) =>
  * the works outside any object first, then each object with the items placed
  * directly in it, then its chapters. Empty categories and objects are left out.
  */
-export function buildTree(data: ExportData): WorkObject[] {
+export function buildTree(data: WorksData): WorkObject[] {
   const sections = [...data.sections].sort(byPosition);
   const known = new Map(sections.map((section) => [section._id, section]));
   const objects = sections.filter((section) => section.kind === "object");

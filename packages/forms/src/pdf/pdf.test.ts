@@ -32,14 +32,15 @@ describe("renderPdf", () => {
     expect(pdf.getTitle()).toBe("DVZ-0142 Renovare apartament");
     expect(pdf.getAuthor()).toBe("Constructor Exemplu SRL");
     expect(pdf.getProducer()).toBe("Devize");
-    expect(pdf.getPageCount()).toBe(documents.length);
+    // Each on its own pages, the Deviz general's seven chapters on two.
+    expect(pdf.getPageCount()).toBe(documents.length + 1);
     const sizes = pdf
       .getPages()
       .map((page) => page.getSize())
       .map(({ width, height }) => [Math.round(width), Math.round(height)]);
     // The Deviz and F3 stand; C5's fourteen columns lie down.
     expect(sizes[0]).toEqual([595, 842]);
-    expect(sizes[documents.findIndex((d) => d.id === "C5")]).toEqual([
+    expect(sizes[documents.findIndex((d) => d.id === "C5") + 1]).toEqual([
       842, 595,
     ]);
     expect(pdf.catalog.get(PDFName.of("Outlines"))).toBeDefined();
