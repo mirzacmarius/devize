@@ -1,6 +1,8 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { aiTables } from "./ai/tables";
+import { manufacturerTables } from "./manufacturers/tables";
 
 export default defineSchema({
   ...authTables,
@@ -17,5 +19,9 @@ export default defineSchema({
     // custom fields
     username: v.optional(v.string()),
     imageId: v.optional(v.id("_storage")),
+    // Devize staff. Granted with `bunx convex run admin:grantSuperAdmin`.
+    role: v.optional(v.literal("superadmin")),
   }).index("email", ["email"]),
+  ...aiTables,
+  ...manufacturerTables,
 });
