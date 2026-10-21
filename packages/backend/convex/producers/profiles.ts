@@ -148,6 +148,8 @@ export const get = query({
       })),
       viewer: {
         isProducer: producer,
+        // The producer's usage statistics are for its firm and Devize staff.
+        canSeeStats: producer || superAdmin,
         canEditDetails:
           holder !== null &&
           (await canWriteDetails(ctx, manufacturer._id, viewer.userId)),

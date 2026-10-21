@@ -4,12 +4,6 @@ import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { MAX_PDF_PAGES } from "@devize/backend/convex/proposals/lib/input";
 import { Badge } from "@devize/ui/badge";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -21,7 +15,6 @@ import {
 } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
-import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
@@ -44,6 +37,7 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ClaimDialog } from "./claim-dialog";
 import { DatasheetDialog } from "./datasheet-dialog";
 import { DetailsDialog } from "./details-dialog";
+import { ProducerHeader } from "./producer-header";
 import { RemovalDialog } from "./removal-dialog";
 import type { Profile, Reading } from "./types";
 
@@ -59,7 +53,6 @@ export function ProfilePage({
   manufacturerId: Id<"manufacturers">;
 }) {
   const t = useScopedI18n("producers");
-  const tCatalog = useScopedI18n("catalog");
   const tc = useScopedI18n("common");
   const { firm } = useFirm();
   const profile = useQuery(api.producers.profiles.get, { manufacturerId });
@@ -97,9 +90,6 @@ export function ProfilePage({
     profile.visible &&
     !viewer.removalPending &&
     (!profile.claimed || viewer.isProducer);
-  const normsCount = profile.moreNorms
-    ? `${profile.norms.length}+`
-    : profile.norms.length;
   // The norm form writes for the firm the user works in, so only that firm
   // starts the producer's norms here.
   const writesNorms = firm.manufacturerId === profile._id;
@@ -114,47 +104,9 @@ export function ProfilePage({
 
   return (
     <>
-      <PageHeader
-        breadcrumb={
-          <Breadcrumb aria-label={t("breadcrumb")}>
-            <BreadcrumbLink asChild>
-              <Link href="/catalog">{tCatalog("title")}</Link>
-            </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbLink asChild>
-              <Link href="/producers">{t("title")}</Link>
-            </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{profile.name}</BreadcrumbPage>
-          </Breadcrumb>
-        }
-        thumb={
-          profile.logoUrl ? (
-            <img
-              src={profile.logoUrl}
-              alt=""
-              className="size-full bg-card object-contain p-1"
-            />
-          ) : (
-            <Icons.Producers />
-          )
-        }
-        title={profile.name}
-        status={
-          <StatusPill tone={profile.claimed ? "success" : "neutral"}>
-            {profile.claimed ? t("claimed") : t("unclaimed")}
-          </StatusPill>
-        }
-        description={[
-          profile.claimed
-            ? t("profile.claimedLabel")
-            : t("profile.unclaimedLabel"),
-          profile.editions.length > 0 &&
-            t("profile.editions", { editions: profile.editions.join(", ") }),
-          t("profile.normsCount", { count: normsCount }),
-        ]
-          .filter(Boolean)
-          .join(" · ")}
+      <ProducerHeader
+        profile={profile}
+        tab="profile"
         actions={
           writesNorms && (
             <>

@@ -6,14 +6,17 @@ import { signIn, type TestConvex, tilingResources } from "../test.helper";
 // producer's norms or documents: they are copyrighted and the repository is
 // public.
 
-/** A producer whose profile shows, with one published norm. */
-export async function visibleProducer(t: TestConvex) {
-  const admin = await signIn(t, { name: "Admin", superadmin: true });
-  const manufacturerId: Id<"manufacturers"> = await t.run(
+/** A producer as Devize's research adds one, with its norms received. */
+export async function insertManufacturer(
+  t: TestConvex,
+  name: string,
+  createdBy: Id<"users">,
+): Promise<Id<"manufacturers">> {
+  return await t.run(
     async (ctx) =>
       await ctx.db.insert("manufacturers", {
-        name: "Termo Test SA",
-        nameKey: "termo test sa",
+        name,
+        nameKey: name.toLowerCase(),
         wave: 1,
         status: "norms_received",
         normsStatus: "received",
@@ -25,8 +28,18 @@ export async function visibleProducer(t: TestConvex) {
         existingNorms: [],
         technicalDocs: [],
         declaredConsumption: [],
-        createdBy: admin.userId,
+        createdBy,
       }),
+  );
+}
+
+/** A producer whose profile shows, with one published norm. */
+export async function visibleProducer(t: TestConvex) {
+  const admin = await signIn(t, { name: "Admin", superadmin: true });
+  const manufacturerId = await insertManufacturer(
+    t,
+    "Termo Test SA",
+    admin.userId,
   );
   const normId = await publishedNorm(admin, manufacturerId, {
     code: "TT-01A01",

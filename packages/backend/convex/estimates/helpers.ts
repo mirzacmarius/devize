@@ -1,3 +1,4 @@
+import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { requireFirmDoc } from "../lib/access";
@@ -25,7 +26,8 @@ export async function requireEditableEstimate(
  * Moves a Deviz to `status`, for the firm's buttons and for the client's
  * answer on an Ofertă's link. Leaving draft locks the Deviz, so what the
  * client saw can't change; going back to draft unlocks it, unless an Ofertă
- * is still out or was accepted.
+ * is still out or was accepted. Sent and accepted devize count in their
+ * producers' statistics.
  */
 export async function changeStatus(
   ctx: MutationCtx,
@@ -60,6 +62,14 @@ export async function changeStatus(
     lockedAt: estimate.lockedAt ?? now,
     updatedAt: now,
   });
+  if (status === "sent" || status === "accepted") {
+    // For the statistics of the producers whose norms and products it holds.
+    await ctx.scheduler.runAfter(0, internal.producers.usage.countEstimate, {
+      estimateId: estimate._id,
+      kind: status,
+      at: now,
+    });
+  }
 }
 
 /** A line item and its Deviz, checked like `requireEditableEstimate`. */

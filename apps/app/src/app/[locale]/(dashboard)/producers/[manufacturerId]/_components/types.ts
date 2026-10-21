@@ -9,3 +9,8 @@ export type Profile = NonNullable<
 export type Reading = FunctionReturnType<
   typeof api.producers.datasheets.list
 >[number];
+
+/** A Producător's usage statistics, for its own firm and Devize staff. */
+export type Stats = NonNullable<
+  FunctionReturnType<typeof api.producers.usage.stats>
+>;

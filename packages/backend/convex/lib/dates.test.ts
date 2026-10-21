@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { checkDate, romanianDate } from "./dates";
+import {
+  checkDate,
+  checkMonth,
+  monthsUntil,
+  romanianDate,
+  romanianMonth,
+} from "./dates";
 
 describe("romanianDate", () => {
   test("is three hours ahead of UTC in summer", () => {
@@ -30,5 +36,29 @@ describe("checkDate", () => {
     expect(() => checkDate("21.10.2026")).toThrow();
     expect(() => checkDate("2026-02-30")).toThrow();
     expect(() => checkDate("2026-13-01")).toThrow();
+  });
+});
+
+describe("months", () => {
+  test("are taken in Romania's time", () => {
+    expect(romanianMonth(Date.parse("2026-10-31T22:30:00Z"))).toBe("2026-11");
+    expect(romanianMonth(Date.parse("2026-10-31T21:30:00Z"))).toBe("2026-10");
+  });
+
+  test("count back across the year", () => {
+    expect(monthsUntil("2026-02", 4)).toEqual([
+      "2025-11",
+      "2025-12",
+      "2026-01",
+      "2026-02",
+    ]);
+    expect(monthsUntil("2026-10", 12)).toHaveLength(12);
+    expect(monthsUntil("2026-10", 12)[0]).toBe("2025-11");
+  });
+
+  test("are checked", () => {
+    expect(checkMonth("2026-10")).toBe("2026-10");
+    expect(() => checkMonth("2026-13")).toThrow();
+    expect(() => checkMonth("2026-1")).toThrow();
   });
 });

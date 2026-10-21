@@ -45,6 +45,16 @@ export function formatHours(value: number, locale: Locale): string {
   return decimalFormat(locale, 0, 1).format(value);
 }
 
+/** A count of things: 1.284. */
+export function formatCount(value: number, locale: Locale): string {
+  return decimalFormat(locale, 0, 0).format(value);
+}
+
+/** An amount added up over many devize, such as 1.250 kg: a decimal at most. */
+export function formatAmount(value: number, locale: Locale): string {
+  return decimalFormat(locale, 0, 1).format(value);
+}
+
 /** A file's size: 2,4 MB, or 340 KB under a megabyte. */
 export function formatFileSize(bytes: number, locale: Locale): string {
   const kb = bytes / 1024;
@@ -65,6 +75,23 @@ export function formatCalendarDate(value: string, locale: Locale): string {
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(Date.UTC(year, month - 1, day)));
+}
+
+/** A month stored as YYYY-MM: oct., or oct. 2026 with its year. */
+export function formatMonth(
+  value: string,
+  locale: Locale,
+  withYear = false,
+): string {
+  const [year, month] = value.split("-").map(Number);
+  if (!year || !month) {
+    return value;
+  }
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    month: "short",
+    year: withYear ? "numeric" : undefined,
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, 1)));
 }
 
 /** A moment, without the year when it is this year's: 14 oct., or 14 oct. 2025. */

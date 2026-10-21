@@ -2422,6 +2422,11 @@ export default {
     searchPlaceholder: "Caută un producător",
     noResults: "Niciun producător nu se potrivește cu „{text}”.",
     breadcrumb: "Unde ești",
+    tabs: {
+      label: "Paginile producătorului",
+      profile: "Profil",
+      stats: "Statistici",
+    },
     profile: {
       unclaimedLabel:
         "Profil nerevendicat, creat de Devize din documentele trimise de producător",
@@ -2581,6 +2586,82 @@ export default {
       messageRequired: "Scrie motivul.",
       submit: "Trimite cererea",
       sent: "Cererea de eliminare a fost trimisă.",
+    },
+    stats: {
+      title: "Statistici",
+      period: "Ultimele 12 luni",
+      privacy:
+        "Cifrele sunt agregate și anonime: nu vedeți niciodată ce firme v-au folosit normele, iar un județ apare separat abia de la {min} firme.",
+      denied:
+        "Statisticile de utilizare sunt doar pentru firma producătorului și echipa Devize.",
+      backToProfile: "Înapoi la profil",
+      emptyTitle: "Încă nu sunt date",
+      emptyDescription:
+        "Numărăm din momentul în care o firmă pune o normă sau un produs al vostru într-un deviz. Aici vedeți apoi lunile, normele, produsele și județele.",
+      kpis: {
+        added: "Adăugări în devize",
+        addedHint: "De câte ori firmele au pus normele voastre într-un deviz",
+        firms: "Firme",
+        firmsHint: "Care v-au folosit normele sau produsele",
+        sent: "Devize trimise",
+        sentHint: "Clienților, cu normele sau produsele voastre",
+        accepted: "Devize acceptate",
+        acceptedHint: "De clienți",
+        acceptedRate: "De clienți: {rate} din cele trimise",
+      },
+      chart: {
+        title: "Pe luni",
+        view: "Cum vedeți lunile",
+        asChart: "Grafic",
+        asTable: "Tabel",
+        measure: "Ce numără graficul",
+        measures: {
+          added: "Adăugări",
+          sent: "Trimise",
+          accepted: "Acceptate",
+        },
+        month: "Luna",
+        current: "{month}, luna în curs",
+      },
+      norms: {
+        title: "Normele voastre în devize",
+        empty:
+          "Nicio normă a voastră nu a ajuns încă într-un deviz în aceste 12 luni.",
+        columns: {
+          norm: "Normă",
+          added: "Adăugări",
+          sent: "Trimise",
+          accepted: "Acceptate",
+          quantity: "Cantitate acceptată",
+        },
+      },
+      products: {
+        title: "Cererea pentru produsele voastre",
+        description:
+          "Cât din fiecare produs cuprind devizele trimise și cele acceptate. La cele acceptate contează varianta aleasă de client, fără lucrările opționale lăsate deoparte.",
+        empty:
+          "Niciun produs al vostru nu a ajuns încă într-un deviz în aceste 12 luni.",
+        columns: {
+          product: "Produs",
+          sent: "În devize trimise",
+          accepted: "În devize acceptate",
+          value: "Valoare acceptată (lei)",
+          replaced: "Înlocuit",
+        },
+        inEstimates: "Devize: {count}",
+        packages: "≈ {count} × {package}",
+        replacedHint:
+          "Înlocuit: de câte ori clientul a acceptat o variantă cu produsul altui producător în locul vostru.",
+      },
+      counties: {
+        title: "Județe",
+        description: "Adăugări în devize, după județul șantierului.",
+        firms: "Firme: {count}",
+        sentAccepted: "Trimise: {sent} · Acceptate: {accepted}",
+        others: "Celelalte județe",
+        othersHint:
+          "Județele cu mai puțin de {min} firme și devizele fără județ",
+      },
     },
   },
   claim: {
