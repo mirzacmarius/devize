@@ -196,6 +196,7 @@ export default {
   admin: {
     title: "Administrare",
     nav: {
+      label: "Secțiunile administrării",
       manufacturers: "Producători",
       outreach: "Emailuri de aprobat",
       settings: "Setări",

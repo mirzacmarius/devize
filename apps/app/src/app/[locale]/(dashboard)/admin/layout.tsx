@@ -23,11 +23,9 @@ export default async function Layout({
     notFound();
   }
   return (
-    <div className="flex h-full w-full px-6 py-8">
-      <div className="mx-auto flex h-full w-full max-w-screen-xl flex-col gap-6">
-        <AdminNav />
-        {children}
-      </div>
-    </div>
+    <>
+      <AdminNav />
+      {children}
+    </>
   );
 }

@@ -201,6 +201,7 @@ export default {
   admin: {
     title: "Admin",
     nav: {
+      label: "Admin sections",
       manufacturers: "Manufacturers",
       outreach: "Emails to approve",
       settings: "Settings",

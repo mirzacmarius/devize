@@ -17,7 +17,7 @@ export default async function Layout({
   if (!user?.username) {
     return redirect("/onboarding");
   }
-  const [preloadedUser, preloadedFirms, viewer] = await Promise.all([
+  const [preloadedUser, preloadedFirms, { isSuperAdmin }] = await Promise.all([
     preloadQuery(api.users.getUser, {}, { token }),
     preloadQuery(api.accounts.organizations.listMine, {}, { token }),
     fetchQuery(api.admin.viewer, {}, { token }),
@@ -32,13 +32,13 @@ export default async function Layout({
         <AppSidebar>
           <SidebarContent
             preloadedUser={preloadedUser}
-            isSuperAdmin={viewer.isSuperAdmin}
+            isSuperAdmin={isSuperAdmin}
           />
         </AppSidebar>
         <AppMain>
           <MobileNav
             preloadedUser={preloadedUser}
-            isSuperAdmin={viewer.isSuperAdmin}
+            isSuperAdmin={isSuperAdmin}
           />
           {children}
         </AppMain>

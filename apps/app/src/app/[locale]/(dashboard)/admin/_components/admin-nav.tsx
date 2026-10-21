@@ -1,11 +1,11 @@
 "use client";
 
-import { buttonVariants } from "@devize/ui/button";
-import { cn } from "@devize/ui/utils";
+import { TabsNav, TabsNavLink } from "@devize/ui/tabs-nav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useScopedI18n } from "@/locales/client";
 
+/** The admin area's sections, one route each. */
 export function AdminNav() {
   const t = useScopedI18n("admin.nav");
   const pathname = usePathname();
@@ -15,21 +15,16 @@ export function AdminNav() {
     { href: "/admin/settings", label: t("settings") },
   ];
   return (
-    <nav className="flex flex-wrap gap-2">
+    <TabsNav aria-label={t("label")}>
       {links.map((link) => (
-        <Link
+        <TabsNavLink
           key={link.href}
-          href={link.href}
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "sm" }),
-            pathname.startsWith(link.href)
-              ? "bg-primary/5 text-primary"
-              : "text-primary/60",
-          )}
+          asChild
+          active={pathname.startsWith(link.href)}
         >
-          {link.label}
-        </Link>
+          <Link href={link.href}>{link.label}</Link>
+        </TabsNavLink>
       ))}
-    </nav>
+    </TabsNav>
   );
 }
