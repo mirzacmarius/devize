@@ -84,6 +84,7 @@ import type * as offers_questions from "../offers/questions.js";
 import type * as offers_signature from "../offers/signature.js";
 import type * as offers_tables from "../offers/tables.js";
 import type * as offers_validators from "../offers/validators.js";
+import type * as offers_variants from "../offers/variants.js";
 import type * as prices_alerts from "../prices/alerts.js";
 import type * as prices_basket from "../prices/basket.js";
 import type * as prices_basketPlan from "../prices/basketPlan.js";
@@ -210,6 +211,7 @@ declare const fullApi: ApiFromModules<{
   "offers/signature": typeof offers_signature;
   "offers/tables": typeof offers_tables;
   "offers/validators": typeof offers_validators;
+  "offers/variants": typeof offers_variants;
   "prices/alerts": typeof prices_alerts;
   "prices/basket": typeof prices_basket;
   "prices/basketPlan": typeof prices_basketPlan;

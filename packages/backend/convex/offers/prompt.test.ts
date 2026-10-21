@@ -90,7 +90,13 @@ function offer(overrides: Partial<AssistantOffer> = {}): AssistantOffer {
     baseLabel: "Standard",
     baseTotal: 2900,
     variants: [
-      { _id: premiumId, name: "Premium", tier: "premium", total: 3400 },
+      {
+        _id: premiumId,
+        name: "Premium",
+        tier: "premium",
+        description: "Faianță rectificată, mai mare.",
+        total: 3400,
+      },
     ],
     choice: {
       variantId: premiumId,
@@ -124,7 +130,9 @@ describe("the assistant's prompt", () => {
     expect(text).toContain(
       "Avans la acceptare: 30% din totalul cu TVA, adică 925,95 lei",
     );
-    expect(text).toContain("- Premium: 3.400,00 lei");
+    expect(text).toContain(
+      "- Premium: 3.400,00 lei. Faianță rectificată, mai mare.",
+    );
     expect(text).toContain("Clientul are aleasă acum varianta Premium.");
     expect(text).toContain(
       "- DV-FAI-01 Placare pereți cu faianță: 24,5 mp × 85,50 lei = 2.094,75 lei; în varianta aleasă: Faianță rectificată, în loc de Faianță; materiale: Adeziv flexibil C2TE, Faianță rectificată.",

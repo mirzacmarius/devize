@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@devize/ui/dialog";
 import { Icons } from "@devize/ui/icons";
+import { Input } from "@devize/ui/input";
 import {
   Select,
   SelectContent,
@@ -22,15 +23,15 @@ import {
 import { toast } from "@devize/ui/sonner";
 import { Switch } from "@devize/ui/switch";
 import { Textarea } from "@devize/ui/textarea";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { X } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
 import { useErrorMessage } from "@/components/use-error-message";
 import { appErrorOf } from "@/lib/errors";
-import { parseDecimal } from "@/lib/format";
-import { useScopedI18n } from "@/locales/client";
+import { formatMoney, parseDecimal } from "@/lib/format";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
 import { copyText, offerUrl } from "./offer-link";
 
@@ -47,8 +48,8 @@ type Optional = { lineItemId: Id<"lineItems">; included: boolean };
 
 /**
  * Makes the client's link for a Deviz: a message, how long it is valid, the
- * deposit asked and the works the client may leave out. A draft is sent and
- * locked with it.
+ * deposit asked, the Variante the client chooses between and the works they
+ * may leave out. A draft is sent and locked with it.
  */
 export function OfferDialog({
   estimate,
@@ -81,7 +82,11 @@ function OfferForm({
 }) {
   const t = useScopedI18n("offer");
   const tc = useScopedI18n("common");
+  const locale = useCurrentLocale();
   const create = useMutation(api.offers.offers.create);
+  const variants = useQuery(api.offers.variants.forEstimate, {
+    estimateId: estimate._id,
+  });
   const errorMessage = useErrorMessage();
   const [message, setMessage] = useState("");
   const [validDays, setValidDays] = useState(30);
@@ -89,6 +94,17 @@ function OfferForm({
   const [depositError, setDepositError] = useState<string>();
   const [optional, setOptional] = useState<Optional[]>([]);
   const [assistant, setAssistant] = useState(true);
+  // Every Variantă goes on the link until the firm unticks one.
+  const [left, setLeft] = useState<Id<"variants">[]>([]);
+  const offered = (variants?.variants ?? []).filter(
+    (variant) => !left.includes(variant._id),
+  );
+  const [baseLabel, setBaseLabel] = useState<string>();
+  const defaultLabel = offered.some(
+    (variant) => variant.name === t("variants.tiers.standard"),
+  )
+    ? t("variants.base")
+    : t("variants.tiers.standard");
   const [busy, setBusy] = useState(false);
   const chosen = new Set(optional.map((entry) => entry.lineItemId));
   const titles = new Map(
@@ -138,6 +154,11 @@ function OfferForm({
         depositPercent,
         optionalItems: optional,
         assistant,
+        variantIds: offered.map((variant) => variant._id),
+        baseLabel:
+          offered.length > 0
+            ? (baseLabel ?? defaultLabel).trim() || defaultLabel
+            : undefined,
       });
       const copied = await copyText(offerUrl(window.location.origin, token));
       toast.success(
@@ -205,6 +226,56 @@ function OfferForm({
           />
         </Field>
       </div>
+      {variants && variants.variants.length > 0 && (
+        <fieldset className="m-0 grid min-w-0 gap-2 border-0 p-0">
+          <legend className="mb-1.5 p-0 text-body font-medium text-ink">
+            {t("dialog.variants")}
+          </legend>
+          <p className="m-0 text-meta text-ink-3">{t("dialog.variantsHint")}</p>
+          <ul className="m-0 grid list-none gap-2 p-0">
+            {variants.variants.map((variant) => (
+              <li
+                key={variant._id}
+                className="flex min-w-0 items-center gap-3 rounded-md border border-border bg-card py-1.5 pl-3 pr-1.5"
+              >
+                <span className="min-w-0 flex-1 truncate text-body text-ink">
+                  {variant.name}
+                </span>
+                <span className="text-meta tabular-nums text-ink-3">
+                  {t("dialog.variantTotal", {
+                    total: formatMoney(variant.total, locale),
+                  })}
+                </span>
+                <Switch
+                  checked={!left.includes(variant._id)}
+                  aria-label={variant.name}
+                  onCheckedChange={(on) =>
+                    setLeft(
+                      on
+                        ? left.filter((id) => id !== variant._id)
+                        : [...left, variant._id],
+                    )
+                  }
+                />
+              </li>
+            ))}
+          </ul>
+          {offered.length > 0 && (
+            <Field
+              label={t("dialog.baseLabel")}
+              htmlFor="offer-base-label"
+              hint={t("dialog.baseLabelHint")}
+            >
+              <Input
+                id="offer-base-label"
+                value={baseLabel ?? defaultLabel}
+                maxLength={40}
+                onChange={(event) => setBaseLabel(event.target.value)}
+              />
+            </Field>
+          )}
+        </fieldset>
+      )}
       <fieldset className="m-0 grid min-w-0 gap-2 border-0 p-0">
         <legend className="mb-1.5 p-0 text-body font-medium text-ink">
           {t("dialog.optional")}
@@ -314,7 +385,8 @@ function OfferForm({
         <Button type="button" variant="ghost" onClick={onDone}>
           {tc("cancel")}
         </Button>
-        <Button type="submit" disabled={busy}>
+        {/* The Variante load first, so none is left off the link by accident. */}
+        <Button type="submit" disabled={busy || variants === undefined}>
           {busy && <Icons.Loader className="animate-spin" aria-hidden />}
           {t("dialog.submit")}
         </Button>

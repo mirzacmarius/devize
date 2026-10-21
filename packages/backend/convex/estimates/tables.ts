@@ -149,6 +149,8 @@ export const estimateTables = {
     estimateId: v.id("estimates"),
     name: v.string(),
     tier: v.optional(variantTier),
+    // What the client gets in this Variantă, in their words.
+    description: v.optional(v.string()),
     position: v.number(),
     swaps: v.array(
       v.object({
@@ -162,6 +164,8 @@ export const estimateTables = {
         priceSource: priceSource,
       }),
     ),
-    totals: recap,
+    // Not kept: a Variantă is priced when it's read (offers/choice.ts), since
+    // editing the Deviz's line items changes what it costs.
+    totals: v.optional(recap),
   }).index("by_estimateId_and_position", ["estimateId", "position"]),
 };
