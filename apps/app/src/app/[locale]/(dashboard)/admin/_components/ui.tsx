@@ -161,6 +161,7 @@ const errorCodes = [
   "not_editable",
   "not_approved",
   "invalid",
+  "in_use",
   "not_pdf",
   "file_too_large",
   "missing_api_key",
@@ -193,6 +194,9 @@ export function useErrorText() {
     // Publishing names the imported row it couldn't publish.
     if (code === "invalid" && detail?.startsWith("importedNorm.")) {
       return t("invalidNorm", { code: detail.slice("importedNorm.".length) });
+    }
+    if (code === "invalid" && detail === "consent") {
+      return t("missingConsent");
     }
     return isErrorCode(code) ? t(code) : code;
   };

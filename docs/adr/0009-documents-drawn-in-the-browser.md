@@ -11,4 +11,4 @@ A Deviz leaves Devize as documents: the PDF its client gets, and the official fo
 - Works outside every object print as "Lucrări generale", and items outside every chapter as "Lucrări diverse".
 - The client's Deviz lists the items as the Deviz's page numbers them, at their direct cost, then the Recapitulație with CAM, indirect costs, profit and VAT.
 - The PDF library loads with the first export, not with the page, and the fonts come from `apps/app/public/fonts`, with the SIL Open Font License they are shipped under.
-- Authorities number the forms differently, so each form's name can be changed before downloading. The choices made for an export are not kept yet; keeping them with the Deviz needs a field in the schema.
+- Authorities number the forms differently, so each form's name can be changed before downloading. The browser keeps the choices made for an export, for each Deviz (ADR 0014).

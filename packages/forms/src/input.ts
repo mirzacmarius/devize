@@ -90,11 +90,25 @@ export type ExportData = {
   client?: PartyInput | null;
 };
 
-/** The documents a Deviz can be exported as, in the order they print. */
+/** A Deviz's works, without who builds them or for whom. */
+export type WorksData = Pick<ExportData, "estimate" | "sections" | "lineItems">;
+
+/**
+ * The documents a Deviz can be exported as, in the order they print: the
+ * client's Deviz, the Deviz general and the objects' Devize, then the forms
+ * of a tender's financial offer.
+ */
 export const documentKinds = [
   "DEVIZ",
+  "DG",
+  "DO",
+  "F1",
+  "F2",
   "F3",
   "C5",
+  "F4",
+  "F5",
+  "F6",
   "C6",
   "C7",
   "C8",
@@ -102,6 +116,47 @@ export const documentKinds = [
 ] as const;
 
 export type DocumentKind = (typeof documentKinds)[number];
+
+/** What a document's corner and footer call it, unless the person renamed it. */
+export function defaultLabel(kind: DocumentKind): string {
+  switch (kind) {
+    case "DEVIZ":
+      return "Deviz";
+    case "DG":
+      return "Devizul general";
+    case "DO":
+      return "Devizul obiectului";
+    default:
+      return `Formularul ${kind}`;
+  }
+}
+
+/**
+ * Where a category of works falls in the Deviz general and in its object's
+ * Deviz (HG 907/2016, Anexele 7 și 8): a subchapter of chapter 4, the base
+ * investment, or one of the works outside it.
+ */
+export const subchapters = [
+  "1.2",
+  "1.3",
+  "1.4",
+  "2",
+  "4.1.1",
+  "4.1.2",
+  "4.1.3",
+  "4.1.4",
+  "4.2",
+  "4.3",
+  "4.4",
+  "4.5",
+  "4.6",
+  "5.1.1",
+] as const;
+
+export type Subchapter = (typeof subchapters)[number];
+
+/** The months a category of works runs in, from the first to the last, from 1. */
+export type ScheduleWindow = { start: number; end: number };
 
 /**
  * How the resource lists (C6–C9) group the works: one list for the whole
@@ -122,6 +177,15 @@ export type ExportOptions = {
   // The tender documentation's own names for the forms, since authorities
   // number them differently: "Formularul nr. 5" for F3.
   labels?: Partial<Record<DocumentKind, string>>;
+  // The subchapter of each category of works, by its key, where the person
+  // chose another than the one guessed from its name.
+  subchapters?: Readonly<Record<string, Subchapter>>;
+  // F6: how many months the works take, and the months of each category of
+  // works, by its key, where the person chose other than ours.
+  schedule?: {
+    months?: number;
+    windows?: Readonly<Record<string, ScheduleWindow>>;
+  };
   // Today, as YYYY-MM-DD, printed by the signatures.
   date: string;
 };

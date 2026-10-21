@@ -3,6 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
+import { Input } from "@devize/ui/input";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
@@ -14,6 +15,7 @@ import { useScopedI18n } from "@/locales/client";
 import {
   ErrorText,
   ExternalLink,
+  Field,
   IssueList,
   importTone,
   Pill,
@@ -48,7 +50,7 @@ export default function NormImportPage() {
     return <p className="text-sm text-primary/60">{t("notFound")}</p>;
   }
 
-  const { normImport, norms, fileUrl } = data;
+  const { normImport, consentBy, norms, fileUrl } = data;
   const byArticle = new Map<string, Norm[]>();
   for (const norm of norms) {
     byArticle.set(norm.baseCode, [
@@ -99,7 +101,12 @@ export default function NormImportPage() {
           )}
         </div>
         <p className="text-sm text-primary/50">{t("catalogNote")}</p>
-        <Publish normImportId={normImport._id} norms={norms} />
+        <Consent normImport={normImport} consentBy={consentBy} />
+        <Publish
+          normImportId={normImport._id}
+          norms={norms}
+          consented={normImport.consent !== undefined}
+        />
       </div>
 
       <div className="grid w-full gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]">
@@ -130,15 +137,111 @@ export default function NormImportPage() {
 }
 
 /**
+ * The manufacturer's written agreement to publish the document's norms, which
+ * a super admin records before anything goes into the catalog.
+ */
+function Consent({
+  normImport,
+  consentBy,
+}: {
+  normImport: ImportData["normImport"];
+  consentBy: string | null;
+}) {
+  const t = useScopedI18n("admin.import.consent");
+  const record = useMutation(api.manufacturers.normImports.recordConsent);
+  const format = useFormat();
+  const { run, error, pending } = useRun();
+  const { consent } = normImport;
+  const [editing, setEditing] = useState(false);
+  const [note, setNote] = useState("");
+
+  if (consent && !editing) {
+    return (
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <Pill tone="success">{t("recorded")}</Pill>
+        <span className="text-primary/80">{consent.note}</span>
+        <span className="text-primary/50">
+          {consentBy
+            ? t("recordedBy", {
+                name: consentBy,
+                date: format.date(consent.recordedAt),
+              })
+            : format.date(consent.recordedAt)}
+        </span>
+        <button
+          type="button"
+          className="text-primary/60 underline underline-offset-2 hover:text-primary"
+          onClick={() => {
+            setNote(consent.note);
+            setEditing(true);
+          }}
+        >
+          {t("edit")}
+        </button>
+      </div>
+    );
+  }
+  return (
+    <form
+      className="flex max-w-2xl flex-col gap-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        run(async () => {
+          await record({ normImportId: normImport._id, note });
+          setEditing(false);
+        });
+      }}
+    >
+      <Field label={t("label")} htmlFor="consent_note">
+        <Input
+          id="consent_note"
+          value={note}
+          maxLength={500}
+          required
+          placeholder={t("placeholder")}
+          onChange={(event) => setNote(event.target.value)}
+        />
+      </Field>
+      <p className="text-xs text-primary/50">{t("hint")}</p>
+      <div className="flex gap-2">
+        <Button
+          type="submit"
+          size="sm"
+          className="w-fit"
+          disabled={pending || !note.trim()}
+        >
+          {t("save")}
+        </Button>
+        {consent && (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={pending}
+            onClick={() => setEditing(false)}
+          >
+            {t("cancel")}
+          </Button>
+        )}
+      </div>
+      <ErrorText error={error} />
+    </form>
+  );
+}
+
+/**
  * Publishes the approved rows that aren't in the catalog yet, one article per
- * call so a long document stays within a mutation's limits.
+ * call so a long document stays within a mutation's limits. Only once the
+ * manufacturer's consent is recorded.
  */
 function Publish({
   normImportId,
   norms,
+  consented,
 }: {
   normImportId: Id<"normImports">;
   norms: Norm[];
+  consented: boolean;
 }) {
   const t = useScopedI18n("admin.import.publish");
   const publish = useMutation(api.catalog.publishing.publishImportedNorms);
@@ -170,11 +273,14 @@ function Publish({
         <Button
           size="sm"
           className="w-fit"
-          disabled={pending || articles.length === 0}
+          disabled={pending || !consented || articles.length === 0}
           onClick={publishAll}
         >
           {t("button", { count: waiting.length })}
         </Button>
+        {!consented && articles.length > 0 && (
+          <span className="text-sm text-primary/60">{t("needsConsent")}</span>
+        )}
         {result && (
           <span className="text-sm text-primary/60" role="status">
             {t("result", result)}

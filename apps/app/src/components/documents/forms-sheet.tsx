@@ -1,6 +1,17 @@
 "use client";
 
-import type { ResourceScope } from "@devize/forms";
+import {
+  clampMonths,
+  type DocumentKind,
+  defaultLabel,
+  documentKinds,
+  procurement,
+  type ResourceScope,
+  type SheetCategory,
+  type Subchapter,
+  sheetCategories,
+  suggestedMonths,
+} from "@devize/forms/sheet";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -12,17 +23,49 @@ import {
   SheetTitle,
 } from "@devize/ui/sheet";
 import { Switch } from "@devize/ui/switch";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 import { Field } from "@/components/field";
 import { SegmentedControl } from "@/components/segmented-control";
 import { useScopedI18n } from "@/locales/client";
-import type { Estimate } from "./export-data";
+import { type Estimate, worksOf } from "./export-data";
+import { type Placement, PlacementFields, placedIn } from "./placement-fields";
+import {
+  ScheduleFields,
+  shiftedWindows,
+  type Windows,
+} from "./schedule-fields";
+import { readChoices, writeChoices } from "./stored-choices";
 import { useDownloadDocuments } from "./use-download-documents";
 
 // The official forms one PDF can hold, in the order they print.
-const formKinds = ["F3", "C5", "C6", "C7", "C8", "C9"] as const;
-type FormKind = (typeof formKinds)[number];
+type FormKind = Exclude<DocumentKind, "DEVIZ">;
+const formKinds = documentKinds.filter(
+  (kind): kind is FormKind => kind !== "DEVIZ",
+);
 const resourceForms: readonly FormKind[] = ["C6", "C7", "C8", "C9"];
+// The forms that total the works by the Deviz general's subchapters.
+const placedForms: readonly FormKind[] = ["DG", "DO", "F1", "F2", "F4", "F5"];
+
+/**
+ * The forms a tender usually asks of a bidder: the financial offer's F1–F3,
+ * F4 and F5 when the works buy equipment or furnishings, and the resource
+ * lists.
+ */
+function offerKinds(
+  categories: readonly SheetCategory[],
+  placement: Placement,
+): Set<FormKind> {
+  const kinds = new Set<FormKind>(["F1", "F2", "F3", "C6", "C7", "C8", "C9"]);
+  if (
+    categories.some((category) =>
+      procurement.includes(placedIn(placement, category)),
+    )
+  ) {
+    kinds.add("F4");
+    kinds.add("F5");
+  }
+  return kinds;
+}
 
 /** Chooses a tender's forms and how they read, then downloads them. */
 export function FormsSheet({
@@ -38,7 +81,10 @@ export function FormsSheet({
   const tc = useScopedI18n("common");
   return (
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
-      <SheetContent closeLabel={tc("close")} className="overflow-y-auto">
+      <SheetContent
+        closeLabel={tc("close")}
+        className="w-full overflow-y-auto sm:w-3/4 sm:max-w-xl"
+      >
         <SheetHeader>
           <SheetTitle>{t("sheetTitle")}</SheetTitle>
           <SheetDescription>{t("sheetDescription")}</SheetDescription>
@@ -59,20 +105,48 @@ function FormsForm({
   const t = useScopedI18n("documents.forms");
   const tc = useScopedI18n("common");
   const download = useDownloadDocuments(estimate);
-  const [chosen, setChosen] = useState<ReadonlySet<FormKind>>(
-    new Set(["F3", "C6", "C7", "C8", "C9"]),
+  const categories = useMemo(
+    () => sheetCategories(worksOf(estimate)),
+    [estimate],
   );
-  const [labels, setLabels] = useState<Partial<Record<FormKind, string>>>({});
-  const [renaming, setRenaming] = useState(false);
-  const [withValues, setWithValues] = useState(true);
-  const [scope, setScope] = useState<ResourceScope>("object");
+  const suggested = useMemo(
+    () => suggestedMonths(worksOf(estimate)),
+    [estimate],
+  );
+  // The sheet starts from what was chosen for this Deviz last time.
+  const [stored] = useState(() => readChoices(estimate._id));
+  const [placement, setPlacement] = useState<Placement>(
+    () => stored.subchapters ?? {},
+  );
+  const [chosen, setChosen] = useState<ReadonlySet<FormKind>>(() => {
+    const kinds = formKinds.filter((kind) => stored.kinds?.includes(kind));
+    return kinds.length > 0
+      ? new Set(kinds)
+      : offerKinds(categories, stored.subchapters ?? {});
+  });
+  const [labels, setLabels] = useState<Partial<Record<FormKind, string>>>(
+    () => stored.labels ?? {},
+  );
+  // Forms already renamed show their names.
+  const [renaming, setRenaming] = useState(() =>
+    Object.values(labels).some((label) => label?.trim()),
+  );
+  const [withValues, setWithValues] = useState(stored.withValues ?? true);
+  const [scope, setScope] = useState<ResourceScope>(stored.scope ?? "object");
   // Who the forms are for, as they will print unless changed.
-  const [beneficiary, setBeneficiary] = useState(
+  const authority =
     (estimate.kind === "tender" && estimate.tender?.authority) ||
-      estimate.client?.name ||
-      "",
+    estimate.client?.name ||
+    "";
+  const [beneficiary, setBeneficiary] = useState(
+    stored.beneficiary ?? authority,
   );
-  const [designer, setDesigner] = useState("");
+  const [designer, setDesigner] = useState(stored.designer ?? "");
+  // F6: the duration typed in, or the one planned from the labour hours.
+  const [months, setMonths] = useState(() =>
+    clampMonths(stored.months ?? suggested.months),
+  );
+  const [windows, setWindows] = useState<Windows>(() => stored.windows ?? {});
   const [error, setError] = useState<string>();
   const [downloading, setDownloading] = useState(false);
 
@@ -86,6 +160,18 @@ function FormsForm({
     setChosen(next);
     setError(undefined);
   };
+
+  // Only where the person placed works other than we would.
+  const moved = Object.fromEntries(
+    categories.flatMap((category): [string, Subchapter][] => {
+      const subchapter = placement[category.key];
+      return subchapter && subchapter !== category.guess
+        ? [[category.key, subchapter]]
+        : [];
+    }),
+  );
+
+  const shifted = shiftedWindows(categories, placement, windows, months);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -103,11 +189,28 @@ function FormsForm({
         beneficiary: beneficiary.trim() || undefined,
         designer: designer.trim() || undefined,
         labels,
+        subchapters: moved,
+        schedule: { months, windows: shifted },
       },
       t("fileTitle"),
     );
     setDownloading(false);
     if (done) {
+      writeChoices(estimate._id, {
+        kinds,
+        labels: Object.fromEntries(
+          Object.entries(labels).filter(([, label]) => label?.trim()),
+        ),
+        withValues,
+        scope,
+        subchapters: moved,
+        // A beneficiary typed in, not the one the Deviz gives.
+        beneficiary: beneficiary === authority ? undefined : beneficiary,
+        designer: designer || undefined,
+        // A duration typed in, not the one planned from the labour hours.
+        months: months === suggested.months ? undefined : months,
+        windows: shifted,
+      });
       onDone();
     }
   };
@@ -144,7 +247,7 @@ function FormsForm({
             {renaming && chosen.has(kind) && (
               <Input
                 aria-label={t("label", { form: kind })}
-                placeholder={`Formularul ${kind}`}
+                placeholder={defaultLabel(kind)}
                 value={labels[kind] ?? ""}
                 onChange={(event) =>
                   setLabels({ ...labels, [kind]: event.target.value })
@@ -199,6 +302,28 @@ function FormsForm({
             ]}
           />
         </Field>
+      )}
+
+      {placedForms.some((kind) => chosen.has(kind)) &&
+        categories.length > 0 && (
+          <PlacementFields
+            categories={categories}
+            placement={placement}
+            moved={Object.keys(moved).length > 0}
+            onChange={setPlacement}
+          />
+        )}
+
+      {chosen.has("F6") && categories.length > 0 && (
+        <ScheduleFields
+          categories={categories}
+          placement={placement}
+          suggestedHours={suggested.hours}
+          months={months}
+          windows={windows}
+          onMonths={setMonths}
+          onWindows={setWindows}
+        />
       )}
 
       <Field

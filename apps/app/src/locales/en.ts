@@ -665,13 +665,29 @@ export default {
     },
     forms: {
       title: "Official forms",
-      hint: "F3, C5 and the C6–C9 resource lists, for tenders.",
+      hint: "The general and object estimates, F1–F6, C5 and the C6–C9 resource lists, for tenders.",
       open: "Choose",
       sheetTitle: "Official forms",
       sheetDescription:
         "The lists the tender documentation asks for, in one PDF, each form on a new page. Forms are in Romanian, as tenders require.",
       choose: "Forms",
       kinds: {
+        DG: {
+          title: "DG · General estimate",
+          hint: "The objective's chapters 1–7, with VAT (HG 907/2016, Annex 7).",
+        },
+        DO: {
+          title: "DO · Object estimate",
+          hint: "One for each object, with VAT (Annex 8).",
+        },
+        F1: {
+          title: "F1 · Cost summary for the objective",
+          hint: "Amounts by chapter of the general estimate, with the construction works (C+M).",
+        },
+        F2: {
+          title: "F2 · Cost summary by category of works",
+          hint: "One for each object, with totals I, II and III.",
+        },
         F3: {
           title: "F3 · Bill of quantities",
           hint: "One for each category of works (HG 907/2016).",
@@ -679,6 +695,18 @@ export default {
         C5: {
           title: "C5 · Detailed bill of quantities",
           hint: "Prices and amounts for materials, labour, equipment and transport (Order 1014/2001).",
+        },
+        F4: {
+          title: "F4 · Equipment and furnishings",
+          hint: "Equipment, furnishings and intangible assets, with their supplier.",
+        },
+        F5: {
+          title: "F5 · Technical sheets",
+          hint: "One for each item in F4, to fill in with its specifications.",
+        },
+        F6: {
+          title: "F6 · General schedule of the works",
+          hint: "The works month by month, in time and value, with the running total.",
         },
         C6: {
           title: "C6 · Materials consumed",
@@ -703,6 +731,38 @@ export default {
       withValues: "With prices and amounts",
       withValuesHint:
         "Without them, the lists look as the designer publishes them in the tender documentation.",
+      placement: "Placement in the general estimate",
+      placementHint:
+        "Each category of works falls under a subchapter of the general estimate. We placed them by name; change any the tender documentation places differently.",
+      placementReset: "Place them by name again",
+      schedule: "General schedule (F6)",
+      months: "Duration of the works (months)",
+      monthsHint:
+        "Use the duration in the tender documentation. We suggested one from the estimate's {hours} labour hours, for a crew of ten.",
+      windows: "Choose each category's months",
+      windowsDone: "Done with the months",
+      windowsHint:
+        "We placed them in the usual order of the works: site setup and earthworks first, then the structure, the services and the finishes, with the equipment and connections last.",
+      windowsReset: "Plan the months again",
+      windowStart: "First month",
+      windowEnd: "Last month",
+      month: "Month {month}",
+      subchapters: {
+        site: "Site preparation",
+        environment: "Environmental protection",
+        relocation: "Utility relocation",
+        utilities: "Utility connections",
+        earthworks: "Earthworks and outdoor works",
+        structure: "Structure",
+        architecture: "Architecture",
+        services: "Building services",
+        assembly: "Equipment installation",
+        equipment: "Equipment to install",
+        looseEquipment: "Equipment not installed",
+        furnishings: "Furnishings",
+        intangibles: "Intangible assets",
+        siteSetup: "Site organisation",
+      },
       scope: "Resource lists",
       scopeHint:
         "For the whole estimate, for each object or for each category of works.",
@@ -1464,6 +1524,10 @@ export default {
       invalid: "That value isn't valid.",
       invalidNorm:
         "Norm {code} can't be published: it has no unit of measure or no resources.",
+      missingConsent:
+        "The norms can't be published without the manufacturer's written consent. Record it first.",
+      in_use:
+        "The manufacturer has norms or products in the catalog, or a firm claimed it, so it can't be deleted. Exclude it instead.",
       not_pdf: "The file has to be a PDF.",
       file_too_large: "The PDF is over 20 MB.",
       missing_api_key:
@@ -1679,6 +1743,17 @@ export default {
         button: "Publish to the catalog ({count})",
         result:
           "Published: {published}. Skipped, already in the catalog: {skipped}.",
+        needsConsent: "Record the manufacturer's consent first.",
+      },
+      consent: {
+        label: "The manufacturer's consent",
+        hint: "We only publish norms the manufacturer sent us and agreed in writing to show in Devize. Write who agreed, when, and where the agreement is.",
+        placeholder: "For example: the technical office's email of 21.10.2026",
+        save: "Save the consent",
+        cancel: "Cancel",
+        recorded: "Consent recorded",
+        recordedBy: "by {name}, {date}",
+        edit: "Change",
       },
     },
     outreach: {

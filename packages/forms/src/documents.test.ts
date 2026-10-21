@@ -1,50 +1,35 @@
 import { describe, expect, test } from "bun:test";
 import { computeRecap } from "@devize/backend/convex/estimates/recap";
+import { fields, rowLabelled, tablesOf } from "./documents.helper";
 import { formatMoney } from "./format";
 import { buildDocuments, documentKinds } from "./index";
 import type { ExportOptions } from "./input";
-import type { Block, FormDocument, Row, Table } from "./model";
 import { lineItem, sampleData } from "./sample.helper";
 
 const options: ExportOptions = { withValues: true, date: "2026-10-21" };
-
-function tablesOf(document: FormDocument | undefined): Table[] {
-  return (document?.blocks ?? []).filter(
-    (block): block is Table => block.type === "table",
-  );
-}
-
-/** The last row with a cell saying `label`: the closing, not a line item's. */
-function rowLabelled(table: Table | undefined, label: string): Row | undefined {
-  return [...(table?.rows ?? [])]
-    .reverse()
-    .find((row) => row.cells.some((cell) => cell.text === label));
-}
-
-function fields(document: FormDocument | undefined) {
-  const block = document?.blocks.find(
-    (item): item is Extract<Block, { type: "fields" }> =>
-      item.type === "fields",
-  );
-  return Object.fromEntries(
-    (block?.items ?? []).map((item) => [item.label, item.value]),
-  );
-}
 
 describe("buildDocuments", () => {
   test("prints every form of a kind before the next kind", () => {
     const documents = buildDocuments(sampleData(), documentKinds, options);
     expect(documents.map((document) => document.id)).toEqual([
       "DEVIZ",
+      "DG",
+      // By object: the general works, the apartment and the terrace.
+      ...Array(3).fill("DO"),
+      "F1",
+      ...Array(3).fill("F2"),
       ...Array(4).fill("F3"),
       ...Array(4).fill("C5"),
-      // By object: the general works, the apartment and the terrace.
+      // No equipment: one F4 saying so, and a blank technical sheet.
+      "F4",
+      "F5",
+      "F6",
       ...Array(3).fill("C6"),
       ...Array(3).fill("C7"),
       ...Array(3).fill("C8"),
       ...Array(3).fill("C9"),
     ]);
-    expect(documents[2]?.name).toBe("Formularul F3 · 01 Demolări");
+    expect(documents[10]?.name).toBe("Formularul F3 · 01 Demolări");
   });
 
   test("closes each F3 on its category's own Recapitulație", () => {

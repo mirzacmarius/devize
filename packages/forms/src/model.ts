@@ -23,6 +23,8 @@ export type Cell = TextStyle & {
   // Lines under the first one, each with its own style: a code over a title.
   more?: CellPart[];
   colSpan?: number;
+  // Shaded, as one month of a bar in a schedule.
+  bar?: boolean;
 };
 
 export type RowKind =
@@ -42,6 +44,8 @@ export type Row = {
   cells: Cell[];
   // Keeps this row on the same page as the next one.
   keepWithNext?: boolean;
+  // Points, for room to write in by hand.
+  minHeight?: number;
 };
 
 export type Column = {
