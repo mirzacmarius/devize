@@ -12,6 +12,7 @@ A Deviz's proposals now come in two lanes, each with at most one open: drafting,
 
 - A work the Deviz seems to have already, by the same norm in any of its versions or by the same name, starts left out and names the article that has it. So do the works the model is unsure of.
 - A Licitație's lists can't take new positions, so for a tender the missing works come back as clarifications to request from the contracting authority, ready to copy, and nothing goes into the Deviz.
+- What the compatibility check (ADR 0028) found and the firm didn't hide goes in the request as already flagged, by the keys of its articles, so the check doesn't propose it again. For a tender, the missing works it names still come back as clarifications, since the bidder can't add them.
 - Checks count against the same hourly and daily limits as drafted proposals, and use the same model.
 - The Verificări card shows the newest check: not run, running, failed, with findings waiting for review (a warning), or with nothing found, applied or reviewed (passed). It never stops the Deviz from being sent.
 - The Deviz's articles go to Anthropic only when someone starts a check.

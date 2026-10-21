@@ -182,4 +182,44 @@ describe("omissions", () => {
     );
     expect(request).not.toContain("mai are");
   });
+
+  test("lists what the compatibility check already flagged", () => {
+    const input = {
+      title: "Renovare baie",
+      kind: "private" as const,
+      lines: [
+        {
+          key: "L1",
+          code: "DV-PRD-03",
+          title: "Pardoseală din gresie",
+          unit: "mp",
+          quantity: 6,
+          materials: [],
+        },
+      ],
+      more: 0,
+    };
+    expect(
+      omissionsRequest({
+        ...input,
+        flagged: [
+          {
+            keys: ["L1"],
+            sentence:
+              "Sistemul „Pardoseală din gresie” cere și „Hidroizolație sub placaje”.",
+          },
+        ],
+      }),
+    ).toContain(
+      [
+        "L1. DV-PRD-03 Pardoseală din gresie — 6 mp",
+        "",
+        "Semnalate deja de verificarea de compatibilitate (constructorul le vede acolo, cu remedierea):",
+        "- L1: Sistemul „Pardoseală din gresie” cere și „Hidroizolație sub placaje”.",
+      ].join("\n"),
+    );
+    expect(omissionsRequest({ ...input, flagged: [] })).not.toContain(
+      "Semnalate",
+    );
+  });
 });
