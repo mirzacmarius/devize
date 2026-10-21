@@ -4,14 +4,27 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import * as validators from "@devize/backend/convex/utils/validators";
+import { Avatar, AvatarFallback, AvatarImage } from "@devize/ui/avatar";
 import { Button } from "@devize/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@devize/ui/card";
 import { Input } from "@devize/ui/input";
 import { type UploadedFile, UploadInput } from "@devize/ui/upload-input";
-import { useDoubleCheck } from "@devize/ui/utils";
+import { cn, useDoubleCheck } from "@devize/ui/utils";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
+import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
+
+// A settings card's footer: a hint on the left, the card's action on the right.
+const footer = "justify-between border-t bg-sunken py-3";
 
 export default function DashboardSettings() {
   const t = useScopedI18n("settings");
@@ -43,35 +56,27 @@ export default function DashboardSettings() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col gap-6">
-      {/* Avatar */}
-      <div className="flex w-full flex-col items-start rounded-lg border border-border bg-card">
-        <div className="flex w-full items-start justify-between rounded-lg p-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-medium text-primary">
-              {t("avatar.title")}
-            </h2>
-            <p className="text-sm font-normal text-primary/60">
-              {t("avatar.description")}
-            </p>
+    <>
+      <Card className="overflow-hidden">
+        <CardHeader className="items-start">
+          <div className="grid gap-1">
+            <CardTitle>{t("avatar.title")}</CardTitle>
+            <CardDescription>{t("avatar.description")}</CardDescription>
           </div>
           <label
             htmlFor="avatar_field"
-            className="group relative flex cursor-pointer overflow-hidden rounded-full transition active:scale-95"
+            className="group relative flex shrink-0 cursor-pointer overflow-hidden rounded-full transition active:scale-95"
           >
             <span className="sr-only">{t("avatar.change")}</span>
-            {user.avatarUrl ? (
-              <img
-                src={user.avatarUrl}
-                className="h-20 w-20 rounded-full object-cover"
-                alt={user.username ?? user.email ?? ""}
-              />
-            ) : (
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-lime-400 from-10% via-cyan-300 to-blue-500" />
-            )}
-            <div className="absolute z-10 hidden h-full w-full items-center justify-center bg-primary/40 group-hover:flex">
-              <Upload className="h-6 w-6 text-secondary" />
-            </div>
+            <Avatar className="size-16">
+              {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt="" />}
+              <AvatarFallback className="text-[20px]">
+                {initials(user.name ?? user.email ?? "")}
+              </AvatarFallback>
+            </Avatar>
+            <span className="absolute inset-0 hidden items-center justify-center bg-black/40 text-white group-hover:flex">
+              <Upload aria-hidden className="size-5" />
+            </span>
           </label>
           <UploadInput
             id="avatar_field"
@@ -83,16 +88,14 @@ export default function DashboardSettings() {
             generateUploadUrl={generateUploadUrl}
             onUploadComplete={handleUpdateUserImage}
           />
-        </div>
-        <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
-          <p className="text-sm font-normal text-primary/60">
-            {t("avatar.uploadHint")}
-          </p>
+        </CardHeader>
+        <CardFooter className={footer}>
+          <p className="m-0 text-meta text-ink-3">{t("avatar.uploadHint")}</p>
           {user.avatarUrl && (
             <Button
               type="button"
               size="sm"
-              variant="secondary"
+              variant="outline"
               onClick={() => {
                 removeUserImage({});
               }}
@@ -100,23 +103,20 @@ export default function DashboardSettings() {
               {t("avatar.reset")}
             </Button>
           )}
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
 
       <UsernameForm username={user.username ?? ""} />
 
-      {/* Delete Account */}
-      <div className="flex w-full flex-col items-start rounded-lg border border-destructive bg-card">
-        <div className="flex flex-col gap-2 p-6">
-          <h2 className="text-xl font-medium text-primary">
-            {t("deleteAccount.title")}
-          </h2>
-          <p className="text-sm font-normal text-primary/60">
-            {t("deleteAccount.description")}
-          </p>
-        </div>
-        <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-red-500/10 px-6 dark:bg-red-500/10">
-          <p className="text-sm font-normal text-primary/60">
+      <Card className="overflow-hidden border-danger-border">
+        <CardHeader>
+          <div className="grid gap-1">
+            <CardTitle>{t("deleteAccount.title")}</CardTitle>
+            <CardDescription>{t("deleteAccount.description")}</CardDescription>
+          </div>
+        </CardHeader>
+        <CardFooter className={cn(footer, "border-danger-border")}>
+          <p className="m-0 text-meta text-danger">
             {t("deleteAccount.warning")}
           </p>
           <Button
@@ -130,9 +130,9 @@ export default function DashboardSettings() {
               ? t("deleteAccount.confirm")
               : t("deleteAccount.button")}
           </Button>
-        </div>
-      </div>
-    </div>
+        </CardFooter>
+      </Card>
+    </>
   );
 }
 
@@ -156,59 +156,57 @@ function UsernameForm({ username }: { username: string }) {
 
   return (
     <form
-      className="flex w-full flex-col items-start rounded-lg border border-border bg-card"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
         form.handleSubmit();
       }}
     >
-      <div className="flex w-full flex-col gap-4 rounded-lg p-6">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-medium text-primary">
-            {t("username.title")}
-          </h2>
-          <p className="text-sm font-normal text-primary/60">
-            {t("username.description")}
-          </p>
-        </div>
-        <form.Field name="username">
-          {(field) => (
-            <>
-              <label htmlFor={field.name} className="sr-only">
-                {tUsername("label")}
-              </label>
-              <Input
-                id={field.name}
-                placeholder={tUsername("placeholder")}
-                autoComplete="off"
-                required
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-                aria-invalid={field.state.meta.errors.length > 0}
-                className={`w-80 bg-transparent ${
-                  field.state.meta.errors.length > 0 &&
-                  "border-destructive focus-visible:ring-destructive"
-                }`}
-              />
-              {field.state.meta.errors.length > 0 && (
-                <p className="text-sm text-destructive dark:text-destructive-foreground">
-                  {field.state.meta.errors.join(" ")}
-                </p>
-              )}
-            </>
-          )}
-        </form.Field>
-      </div>
-      <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
-        <p className="text-sm font-normal text-primary/60">
-          {tUsername("rules")}
-        </p>
-        <Button type="submit" size="sm">
-          {t("username.save")}
-        </Button>
-      </div>
+      <Card className="overflow-hidden">
+        <CardHeader>
+          <div className="grid gap-1">
+            <CardTitle>{t("username.title")}</CardTitle>
+            <CardDescription>{t("username.description")}</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form.Field name="username">
+            {(field) => (
+              <div className="grid gap-2">
+                <label htmlFor={field.name} className="sr-only">
+                  {tUsername("label")}
+                </label>
+                <Input
+                  id={field.name}
+                  placeholder={tUsername("placeholder")}
+                  autoComplete="off"
+                  required
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={field.state.meta.errors.length > 0}
+                  className={cn(
+                    "max-w-80",
+                    field.state.meta.errors.length > 0 &&
+                      "border-danger focus-visible:ring-danger",
+                  )}
+                />
+                {field.state.meta.errors.length > 0 && (
+                  <p className="m-0 text-meta text-danger">
+                    {field.state.meta.errors.join(" ")}
+                  </p>
+                )}
+              </div>
+            )}
+          </form.Field>
+        </CardContent>
+        <CardFooter className={footer}>
+          <p className="m-0 text-meta text-ink-3">{tUsername("rules")}</p>
+          <Button type="submit" size="sm">
+            {t("username.save")}
+          </Button>
+        </CardFooter>
+      </Card>
     </form>
   );
 }

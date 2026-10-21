@@ -1,8 +1,10 @@
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { api } from "@devize/backend/convex/_generated/api";
+import { AppMain, AppShell, AppSidebar } from "@devize/ui/app-shell";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { redirect } from "next/navigation";
-import { Navigation } from "./_components/navigation";
+import { MobileNav } from "./_components/mobile-nav";
+import { SidebarContent } from "./_components/sidebar-content";
 
 export default async function Layout({
   children,
@@ -14,11 +16,22 @@ export default async function Layout({
   if (!user?.username) {
     return redirect("/onboarding");
   }
-  const preloadedUser = await preloadQuery(api.users.getUser, {}, { token });
+  const [preloadedUser, { isSuperAdmin }] = await Promise.all([
+    preloadQuery(api.users.getUser, {}, { token }),
+    fetchQuery(api.admin.viewer, {}, { token }),
+  ]);
   return (
-    <div className="flex min-h-[100vh] w-full flex-col bg-secondary dark:bg-black">
-      <Navigation preloadedUser={preloadedUser} />
-      {children}
-    </div>
+    <AppShell>
+      <AppSidebar>
+        <SidebarContent
+          preloadedUser={preloadedUser}
+          isSuperAdmin={isSuperAdmin}
+        />
+      </AppSidebar>
+      <AppMain>
+        <MobileNav preloadedUser={preloadedUser} isSuperAdmin={isSuperAdmin} />
+        {children}
+      </AppMain>
+    </AppShell>
   );
 }

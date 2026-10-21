@@ -5,9 +5,17 @@ export default {
       "Devize de construcții cu norme de la producători și prețuri la zi din magazine.",
   },
   navigation: {
-    home: "Panou",
+    main: "Navigație principală",
+    work: "Lucru",
+    account: "Cont",
+    estimates: "Devize",
+    catalog: "Catalog",
+    clients: "Clienți",
+    rates: "Tarife",
     settings: "Setări",
     admin: "Administrare",
+    openMenu: "Deschide meniul",
+    closeMenu: "Închide meniul",
     accountMenu: "Meniul contului",
     theme: "Temă",
     language: "Limbă",
@@ -36,16 +44,40 @@ export default {
     continue: "Continuă",
     hint: "Îl poți schimba oricând din setări.",
   },
-  dashboard: {
-    title: "Devizele tale",
-    description: "Aici vei crea și urmări devizele lucrărilor tale.",
+  estimates: {
+    title: "Devize",
+    description: "Devizele lucrărilor tale, de la ciornă la oferta acceptată.",
     emptyTitle: "Încă nu ai niciun deviz",
     emptyDescription:
       "Constructorul de devize vine în curând: norme de la producători, prețuri din magazine și formularele oficiale, într-un singur loc.",
   },
+  catalog: {
+    title: "Catalog",
+    description:
+      "Normele de bază și normele de producător, cu resursele și produsele lor.",
+    emptyTitle: "Catalogul vine în curând",
+    emptyDescription:
+      "Vei căuta norme după cod sau după lucrare și vei vedea ce consumă fiecare: manoperă, materiale, utilaje și transport.",
+  },
+  clients: {
+    title: "Clienți",
+    description: "Clienții tăi și ofertele trimise fiecăruia.",
+    emptyTitle: "Lista de clienți vine în curând",
+    emptyDescription:
+      "Vei păstra aici datele clienților și vei vedea ce oferte au primit și pe care le-au acceptat.",
+  },
+  rates: {
+    title: "Tarife",
+    description:
+      "Tarifele firmei pentru manoperă și utilaje și procentele din recapitulație.",
+    emptyTitle: "Tarifele vin în curând",
+    emptyDescription:
+      "Vei seta tariful orar pe meserii, tarifele utilajelor și procentele implicite: CAM, cheltuieli indirecte și profit.",
+  },
   settings: {
     title: "Setări",
     description: "Gestionează-ți contul.",
+    sections: "Secțiunile setărilor",
     general: "General",
     avatar: {
       title: "Fotografia ta",
@@ -71,6 +103,7 @@ export default {
   admin: {
     title: "Administrare",
     nav: {
+      label: "Secțiunile administrării",
       manufacturers: "Producători",
       outreach: "Emailuri de aprobat",
       settings: "Setări",
