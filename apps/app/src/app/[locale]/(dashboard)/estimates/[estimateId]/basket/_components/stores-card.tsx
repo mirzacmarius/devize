@@ -129,14 +129,16 @@ export function StoresCard({
                   aria-label={t("editFee", { store: tStores(store) })}
                 >
                   <Truck aria-hidden />
-                  {fee
-                    ? fee.freeFrom !== undefined
-                      ? t("feeFree", {
-                          fee: money(fee.fee),
-                          freeFrom: money(fee.freeFrom),
-                        })
-                      : t("fee", { fee: money(fee.fee) })
-                    : t("feeUnset")}
+                  {!fee
+                    ? t("feeUnset")
+                    : fee.fee === 0
+                      ? t("feeNone")
+                      : fee.freeFrom !== undefined
+                        ? t("feeFree", {
+                            fee: money(fee.fee),
+                            freeFrom: money(fee.freeFrom),
+                          })
+                        : t("fee", { fee: money(fee.fee) })}
                 </Button>
                 {inPlan && (
                   <Button

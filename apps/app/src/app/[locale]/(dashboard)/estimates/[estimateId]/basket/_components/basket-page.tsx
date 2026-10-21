@@ -111,14 +111,15 @@ export function BasketPage({ estimateId }: { estimateId: Id<"estimates"> }) {
           description={t("emptyDescription")}
         />
       ) : (
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
           <MaterialsCard
             basket={basket}
             plan={plans.plan}
             leaveOut={leaveOut}
             open={setPanel}
           />
-          <div className="grid min-w-0 gap-6">
+          {/* The answer first on a phone, beside the table on a wide screen. */}
+          <div className="order-first grid min-w-0 gap-6 xl:order-none">
             <PlanCard
               basket={basket}
               plan={plans.plan}

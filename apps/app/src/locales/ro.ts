@@ -1293,6 +1293,7 @@ export default {
         nothing: "Niciun material cu preț aici",
         fee: "Livrare {fee} lei",
         feeFree: "Livrare {fee} lei, gratuită de la {freeFrom} lei",
+        feeNone: "Livrare gratuită",
         feeUnset: "Livrare nesetată",
         editFee: "Livrarea la {store}",
         copy: "Copiază lista",

@@ -1299,6 +1299,7 @@ export default {
         nothing: "No material priced here",
         fee: "Delivery {fee} lei",
         feeFree: "Delivery {fee} lei, free from {freeFrom} lei",
+        feeNone: "Free delivery",
         feeUnset: "Delivery not set",
         editFee: "Delivery at {store}",
         copy: "Copy the list",
