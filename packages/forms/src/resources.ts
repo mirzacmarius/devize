@@ -40,7 +40,7 @@ const storeNames: Record<string, string> = {
   dedeman: "Dedeman",
   leroy_merlin: "Leroy Merlin",
   hornbach: "Hornbach",
-  brico_depot: "Brico Dépôt",
+  brico_depot: "BRICO",
 };
 
 const percentOf: Record<ResourceKind, string> = {

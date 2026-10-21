@@ -34,7 +34,7 @@ describe("resourceList", () => {
     );
     expect(stores.get("Gresie porțelanată 60x60")).toBe("Dedeman");
     expect(stores.get("Adeziv flexibil C2TE")).toBe("Leroy Merlin");
-    expect(stores.get("Amorsă")).toBe("Brico Dépôt");
+    expect(stores.get("Amorsă")).toBe("BRICO");
     expect(stores.get("Amorsă bituminoasă")).toBeUndefined();
   });
 
