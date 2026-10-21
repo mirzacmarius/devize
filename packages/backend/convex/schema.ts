@@ -7,6 +7,7 @@ import { catalogTables } from "./catalog/tables";
 import { estimateTables } from "./estimates/tables";
 import { manufacturerTables } from "./manufacturers/tables";
 import { priceTables } from "./prices/tables";
+import { proposalTables } from "./proposals/tables";
 
 export default defineSchema({
   ...authTables,
@@ -38,4 +39,5 @@ export default defineSchema({
   ...estimateTables,
   ...aiTables,
   ...manufacturerTables,
+  ...proposalTables,
 });

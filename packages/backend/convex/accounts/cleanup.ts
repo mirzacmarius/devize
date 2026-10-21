@@ -3,6 +3,7 @@ import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { internalMutation } from "../_generated/server";
+import { deleteProposals } from "../proposals/proposals";
 
 const BATCH = 200;
 
@@ -174,6 +175,10 @@ async function deleteSome(
   }
   if (jobs.length > 0) {
     return jobs.length;
+  }
+  const proposals = await deleteProposals(ctx, { organizationId }, limit);
+  if (proposals > 0) {
+    return proposals;
   }
   const memberships = await ctx.db
     .query("memberships")

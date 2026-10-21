@@ -5,6 +5,7 @@ import { v } from "convex/values";
 export const aiJobKind = v.union(
   v.literal("manufacturer_research"),
   v.literal("norm_import"),
+  v.literal("estimate_proposal"),
 );
 
 // needs_review is for jobs whose result waits in `result` for a person to

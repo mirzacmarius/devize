@@ -1,0 +1,61 @@
+import { defineTable } from "convex/server";
+import { v } from "convex/values";
+import { aiConfidence } from "../ai/validators";
+import { takeoffRow } from "../estimates/validators";
+import { proposalSource, proposalStatus, proposedResource } from "./validators";
+
+export const proposalTables = {
+  // What the AI proposes for a Deviz. Nothing reaches the Deviz until a
+  // person reviews the items and applies the ones they keep.
+  proposals: defineTable({
+    organizationId: v.id("organizations"),
+    estimateId: v.id("estimates"),
+    aiJobId: v.id("aiJobs"),
+    source: proposalSource,
+    status: proposalStatus,
+    // What the person gave: a description and photos (files of the firm).
+    text: v.optional(v.string()),
+    fileIds: v.array(v.id("files")),
+    // What the AI understood, what it had to assume and what it would ask
+    // the client before pricing.
+    summary: v.optional(v.string()),
+    assumptions: v.array(v.string()),
+    questions: v.array(v.string()),
+    // Why the items have no catalog norms, when matching them failed: the
+    // proposal is still usable with the AI's own recipes.
+    matchError: v.optional(v.string()),
+    createdBy: v.id("users"),
+    appliedAt: v.optional(v.number()),
+    updatedAt: v.number(),
+  })
+    .index("by_estimateId", ["estimateId"])
+    .index("by_organizationId", ["organizationId"]),
+
+  // One proposed Articol de deviz, in the order the AI wrote them.
+  proposalItems: defineTable({
+    organizationId: v.id("organizations"),
+    proposalId: v.id("proposals"),
+    position: v.number(),
+    // The Capitol it goes in, by name.
+    chapter: v.string(),
+    title: v.string(),
+    // The quantity the AI measured, in the article's own unit: the total of
+    // its Antemăsurătoare, whose rows say how it was measured.
+    unit: v.string(),
+    measured: v.number(),
+    takeoff: v.array(takeoffRow),
+    note: v.optional(v.string()),
+    confidence: aiConfidence,
+    // The catalog norm the item uses, if one fits, and the norms found for
+    // it, which the person can pick instead.
+    normId: v.optional(v.id("norms")),
+    candidateIds: v.array(v.id("norms")),
+    matchNote: v.optional(v.string()),
+    // The quantity that goes in the Deviz: in the norm's unit when it uses
+    // a norm, else in the article's unit.
+    quantity: v.number(),
+    // The AI's own resources per unit, for an article no norm fits.
+    resources: v.array(proposedResource),
+    selected: v.boolean(),
+  }).index("by_proposalId_and_position", ["proposalId", "position"]),
+};
