@@ -41,6 +41,24 @@ export default {
     description:
       "Build estimates with manufacturers' norms and up-to-date prices.",
     google: "Continue with Google",
+    or: "or",
+    email: "Email",
+    emailPlaceholder: "name@company.com",
+    emailInvalid: "Enter a valid email address.",
+    sendCode: "Email me a code",
+    sendFailed:
+      "We couldn't send the code. Check the address or try again in a minute.",
+    tooManyCodes:
+      "You've asked for too many codes. Try again in a few minutes.",
+    codeSent: "We sent an 8-digit code to {email}. It expires in 15 minutes.",
+    code: "Code from the email",
+    codeLength: "The code has 8 digits.",
+    verify: "Sign in",
+    codeWrong:
+      "That code is wrong or has expired. Check it or ask for another.",
+    otherEmail: "Use another address",
+    resend: "Send another code",
+    resendIn: "Another code in {seconds} s",
   },
   username: {
     label: "Username",
@@ -690,6 +708,8 @@ export default {
       not_editable: "It can no longer be changed.",
       not_approved: "The email has to be approved first.",
       invalid: "That value isn't valid.",
+      invalidNorm:
+        "Norm {code} can't be published: it has no unit of measure or no resources.",
       not_pdf: "The file has to be a PDF.",
       file_too_large: "The PDF is over 20 MB.",
       missing_api_key:
@@ -882,6 +902,8 @@ export default {
       edition: "Edition {edition}",
       laborRate: "Labour {rate} lei/hour",
       summary: "{approved} approved and {rejected} rejected of {total} norms",
+      inCatalogCount: "In the catalog: {count}",
+      inCatalog: "In the catalog",
       approve: "Approve article",
       reject: "Reject article",
       pages: "Page {pages}",
@@ -898,7 +920,12 @@ export default {
         unitPrice: "Unit price",
       },
       catalogNote:
-        "Approving confirms that the transcription matches the PDF. Approved articles are then published to the catalog, with their source, edition and pages.",
+        "Approving confirms that the transcription matches the PDF. Then “Publish to the catalog” puts the approved articles in the catalog, with their source, edition and pages. A norm already published and unchanged is skipped, and a changed one becomes a new version.",
+      publish: {
+        button: "Publish to the catalog ({count})",
+        result:
+          "Published: {published}. Skipped, already in the catalog: {skipped}.",
+      },
     },
     outreach: {
       title: "Emails to approve",

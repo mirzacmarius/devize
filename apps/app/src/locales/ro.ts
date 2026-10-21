@@ -38,6 +38,23 @@ export default {
     title: "Intră în Devize",
     description: "Creează devize cu norme de la producători și prețuri la zi.",
     google: "Continuă cu Google",
+    or: "sau",
+    email: "Email",
+    emailPlaceholder: "nume@firma.ro",
+    emailInvalid: "Scrie o adresă de email validă.",
+    sendCode: "Primește codul pe email",
+    sendFailed:
+      "Nu am putut trimite codul. Verifică adresa sau încearcă din nou peste un minut.",
+    tooManyCodes:
+      "Ai cerut prea multe coduri. Încearcă din nou peste câteva minute.",
+    codeSent: "Am trimis un cod de 8 cifre la {email}. Expiră în 15 minute.",
+    code: "Codul din email",
+    codeLength: "Codul are 8 cifre.",
+    verify: "Intră în cont",
+    codeWrong: "Codul nu e bun sau a expirat. Verifică-l sau cere altul.",
+    otherEmail: "Altă adresă",
+    resend: "Trimite alt cod",
+    resendIn: "Alt cod în {seconds} s",
   },
   username: {
     label: "Nume de utilizator",
@@ -684,6 +701,8 @@ export default {
       not_editable: "Nu se mai poate modifica.",
       not_approved: "Emailul trebuie aprobat întâi.",
       invalid: "Valoarea nu e validă.",
+      invalidNorm:
+        "Norma {code} nu se poate publica: nu are unitate de măsură sau resurse.",
       not_pdf: "Fișierul trebuie să fie PDF.",
       file_too_large: "PDF-ul are peste 20 MB.",
       missing_api_key: "Lipsește cheia Claude din variabilele de mediu Convex.",
@@ -876,6 +895,8 @@ export default {
       edition: "Ediția {edition}",
       laborRate: "Manoperă {rate} lei/oră",
       summary: "{approved} aprobate și {rejected} respinse din {total} norme",
+      inCatalogCount: "În catalog: {count}",
+      inCatalog: "În catalog",
       approve: "Aprobă articolul",
       reject: "Respinge articolul",
       pages: "Pagina {pages}",
@@ -892,7 +913,11 @@ export default {
         unitPrice: "Preț unitar",
       },
       catalogNote:
-        "Aprobarea confirmă că transcrierea corespunde PDF-ului. Articolele aprobate se publică apoi în catalog, cu sursa, ediția și paginile lor.",
+        "Aprobarea confirmă că transcrierea corespunde PDF-ului. Apoi „Publică în catalog” pune articolele aprobate în catalog, cu sursa, ediția și paginile lor. O normă deja publicată și neschimbată e sărită, iar una schimbată devine o versiune nouă.",
+      publish: {
+        button: "Publică în catalog ({count})",
+        result: "Publicate: {published}. Sărite, deja în catalog: {skipped}.",
+      },
     },
     outreach: {
       title: "Emailuri de aprobat",

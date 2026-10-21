@@ -8,7 +8,8 @@ export type ErrorCode =
   | "not_found"
   | "invalid"
   | "locked"
-  | "in_use";
+  | "in_use"
+  | "rate_limited";
 
 export function appError(code: ErrorCode, detail?: string) {
   return new ConvexError(detail === undefined ? { code } : { code, detail });

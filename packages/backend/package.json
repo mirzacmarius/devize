@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "convex dev --tail-logs",
     "setup": "convex dev --once && bun scripts/link-app-env.ts",
+    "auth:keys": "bun scripts/auth-keys.ts",
     "typecheck": "tsc --noEmit -p convex",
     "lint": "biome lint"
   },

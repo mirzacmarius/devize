@@ -38,6 +38,7 @@ import type * as catalog_resourceRows from "../catalog/resourceRows.js";
 import type * as catalog_resources from "../catalog/resources.js";
 import type * as catalog_tables from "../catalog/tables.js";
 import type * as catalog_validators from "../catalog/validators.js";
+import type * as emailSignIn from "../emailSignIn.js";
 import type * as estimates_estimates from "../estimates/estimates.js";
 import type * as estimates_helpers from "../estimates/helpers.js";
 import type * as estimates_lineItems from "../estimates/lineItems.js";
@@ -106,6 +107,7 @@ declare const fullApi: ApiFromModules<{
   "catalog/resources": typeof catalog_resources;
   "catalog/tables": typeof catalog_tables;
   "catalog/validators": typeof catalog_validators;
+  emailSignIn: typeof emailSignIn;
   "estimates/estimates": typeof estimates_estimates;
   "estimates/helpers": typeof estimates_helpers;
   "estimates/lineItems": typeof estimates_lineItems;
