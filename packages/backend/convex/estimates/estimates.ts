@@ -30,8 +30,9 @@ function cleanTitle(title: string): string {
   return result;
 }
 
+// The number both as typed ("142") and as the code shows it ("DVZ-0142").
 function searchText(number: number, title: string) {
-  return normalizeText(`${number} ${title}`);
+  return normalizeText(`${number} ${String(number).padStart(4, "0")} ${title}`);
 }
 
 async function checkClient(
@@ -134,15 +135,95 @@ export const get = query({
       ? await ctx.db.get("clients", estimate.clientId)
       : null;
     const items = await readLineItems(ctx, estimate._id);
+    const norms = await normSources(
+      ctx,
+      items.flatMap((item) => (item.normId ? [item.normId] : [])),
+    );
     return {
       ...estimate,
       client: client ? { _id: client._id, name: client.name } : null,
       sections: await readSections(ctx, estimate._id),
       lineItems: items.map((item) => ({
         ...item,
+        norm: item.normId ? norms.get(item.normId) : undefined,
         totals: lineTotals(item),
       })),
     };
+  },
+});
+
+/**
+ * Where each line item's norm comes from, for the label under its title
+ * ("normă ROCKWOOL · v2"). A deleted draft norm is left out.
+ */
+async function normSources(ctx: QueryCtx, normIds: Id<"norms">[]) {
+  const sources = new Map<
+    Id<"norms">,
+    {
+      source: Doc<"norms">["source"];
+      version: number;
+      manufacturerName?: string;
+      confirmed: boolean;
+    }
+  >();
+  const manufacturers = new Map<Id<"manufacturers">, string | undefined>();
+  for (const normId of new Set(normIds)) {
+    const norm = await ctx.db.get("norms", normId);
+    if (!norm) {
+      continue;
+    }
+    let manufacturerName: string | undefined;
+    if (norm.manufacturerId) {
+      if (!manufacturers.has(norm.manufacturerId)) {
+        const manufacturer = await ctx.db.get(
+          "manufacturers",
+          norm.manufacturerId,
+        );
+        manufacturers.set(
+          norm.manufacturerId,
+          manufacturer
+            ? (manufacturer.displayName ?? manufacturer.name)
+            : undefined,
+        );
+      }
+      manufacturerName = manufacturers.get(norm.manufacturerId);
+    }
+    sources.set(normId, {
+      source: norm.source,
+      version: norm.version,
+      manufacturerName,
+      confirmed: norm.confirmedAt !== undefined,
+    });
+  }
+  return sources;
+}
+
+/** Every revision of a Deviz's number, the first one first. */
+export const revisions = query({
+  args: { estimateId: v.id("estimates") },
+  handler: async (ctx, args) => {
+    const { doc: estimate } = await requireFirmDoc(
+      ctx,
+      "estimates",
+      args.estimateId,
+    );
+    const sameNumber = await ctx.db
+      .query("estimates")
+      .withIndex("by_organizationId_and_number", (q) =>
+        q
+          .eq("organizationId", estimate.organizationId)
+          .eq("number", estimate.number),
+      )
+      .take(200);
+    return sameNumber
+      .map((revision) => ({
+        _id: revision._id,
+        revision: revision.revision,
+        status: revision.status,
+        total: revision.totals.total,
+        updatedAt: revision.updatedAt,
+      }))
+      .sort((a, b) => a.revision - b.revision);
   },
 });
 
