@@ -52,6 +52,10 @@ _Avoid_: Rates (a rate is a price per hour), fees
 The measured quantities behind a Deviz's Articole, taken from plans, photos or site measurements. In code: `takeoffs`.
 _Avoid_: Measurement, survey
 
+**Propunere AI** (AI proposal):
+What Devize AI suggests for a Deviz, from a description of the work and photos of it, or from a Licitație's Liste de cantități: Articole with their quantities and Norme, which a person checks before any of them goes into the Deviz. In code: `proposals`.
+_Avoid_: Ofertă (what the client receives), draft
+
 **Variantă** (variant):
 An alternative version of the same Deviz, such as economy, standard and premium, that the client chooses between. In code: `variants`.
 _Avoid_: Option, version (a Normă has versions)
@@ -65,6 +69,10 @@ _Avoid_: Deviz (for what the client sees), proposal
 **Licitație** (tender):
 A public procurement on SEAP whose documentation includes the lists of work quantities to price.
 _Avoid_: Auction, bid (for the procedure itself)
+
+**Listă de cantități** (bill of quantities):
+A Licitație's list of the works to price, formularul F3: for each position its number, often an old indicator code, the work's text, the U.M. and the contracting authority's quantity. Devize imports it into a Deviz without changing the authority's U.M. or quantities, which each Articol keeps in `tenderRef`.
+_Avoid_: Antemăsurătoare (the Constructor's own measuring)
 
 **Formulare oficiale** (official forms):
 The forms a Licitație requires: the F series (F1–F6, DG, DO, used with HG 907/2016) and the C series of Ordinul 1014/2001 (C4–C5 quantity lists, C6–C9 resource lists). Numbering differs between contracting authorities, so each form is a configurable template.

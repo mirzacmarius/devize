@@ -6,8 +6,9 @@ import {
   type MatchArticle,
   type NormCandidate,
   resolveMatches,
+  resolveTenderMatches,
 } from "./match";
-import { matchRequest } from "./prompts";
+import { matchRequest, tenderMatchRequest } from "./prompts";
 
 const norm = (id: string, unit: string, code = id): NormCandidate => ({
   _id: id as Id<"norms">,
@@ -140,6 +141,90 @@ describe("matchRequest", () => {
         "A1. Articol 0: 24,32 mp (capitolul Placări ceramice)",
         "   N1. DV-FAI-01 Normă DV-FAI-01; U.M. mp; norma de bază Devize; categoria Finisaje",
         "   N2. X-1 Normă X-1; U.M. mp; norma producătorului Producător Test",
+      ].join("\n"),
+    );
+  });
+});
+
+describe("resolveTenderMatches", () => {
+  test("keeps how sure the model is, and its recipe where no norm fits", () => {
+    const keyed = keyArticles(
+      [
+        article(0, [norm("n1", "mp")]),
+        article(1, []),
+        article(2, [norm("n2", "mp")]),
+      ],
+      { all: true },
+    );
+    expect(keyed.map((item) => item.key)).toEqual(["A1", "A2", "A3"]);
+    const recipe = [
+      { kind: "labor" as const, name: "Zidar", unit: "ore", quantity: 1.25 },
+      { kind: "material" as const, name: "  ", unit: "kg", quantity: 2 },
+    ];
+    expect(
+      resolveTenderMatches(keyed, {
+        matches: [
+          { ...answer("A1", "N1"), confidence: "high", resources: recipe },
+          { ...answer("A2", null), confidence: "low", resources: recipe },
+        ],
+      }),
+    ).toEqual([
+      {
+        position: 0,
+        normId: "n1" as Id<"norms">,
+        quantity: 24.32,
+        matchNote: "Motiv",
+        confidence: "high",
+        resources: [],
+      },
+      {
+        position: 1,
+        quantity: 24.32,
+        matchNote: "Motiv",
+        confidence: "low",
+        resources: [
+          { kind: "labor", name: "Zidar", unit: "ora", quantity: 1.25 },
+        ],
+      },
+      // Skipped by the model: nothing to go on.
+      { position: 2, quantity: 24.32, confidence: "low", resources: [] },
+    ]);
+  });
+});
+
+describe("tenderMatchRequest", () => {
+  test("lists each position with the list's number and code", () => {
+    const keyed = keyArticles(
+      [
+        {
+          ...article(0, [norm("n1", "mc", "DV-ZID-01")]),
+          title: "Zidărie din blocuri ceramice",
+          unit: "mc",
+          measured: 12.5,
+          chapter: "Zidării",
+          tenderPosition: "1",
+          tenderCode: "CZ0101A1",
+          object: "Clădire atelier",
+        },
+        {
+          ...article(1, []),
+          title: "Glet de ipsos",
+          measured: 1234.5,
+          chapter: "",
+          tenderPosition: "2",
+        },
+      ],
+      { all: true },
+    );
+    expect(tenderMatchRequest(keyed)).toBe(
+      [
+        "Pozițiile listei, fiecare cu normele găsite pentru ea:",
+        "",
+        "A1. Poz. 1, cod CZ0101A1: Zidărie din blocuri ceramice — 12,5 mc (Clădire atelier / Zidării)",
+        "   N1. DV-ZID-01 Normă DV-ZID-01; U.M. mc; norma de bază Devize",
+        "",
+        "A2. Poz. 2: Glet de ipsos — 1234,5 mp",
+        "   (nicio normă găsită: scrii rețeta)",
       ].join("\n"),
     );
   });

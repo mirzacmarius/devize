@@ -128,3 +128,152 @@ export const matchSchema = z.object({
 });
 
 export type MatchOutput = z.infer<typeof matchSchema>;
+
+const entryKind = z
+  .enum(["object", "chapter", "position"])
+  .describe(
+    "object: un obiect al investiției (o clădire, o rețea); chapter: un capitol sau o categorie de lucrări; position: o poziție a listei, cu cantitate.",
+  );
+
+const searchTerms = z
+  .array(z.string())
+  .describe(
+    "Doar la poziții: 2–3 formulări scurte ale lucrării pentru căutarea în catalogul de norme, fără diacritice, de exemplu „zidarie blocuri ceramice 25 cm”; la obiecte și capitole, o listă goală.",
+  );
+
+/** A batch of a spreadsheet's rows, read by reference to its cells. */
+export const sheetSchema = z.object({
+  columns: z
+    .object({
+      position: z
+        .string()
+        .nullable()
+        .describe("Litera coloanei cu numărul curent (Nr. crt.), sau null."),
+      code: z
+        .string()
+        .nullable()
+        .describe(
+          "Litera coloanei cu codul articolului, de exemplu CZ0101A1, sau null când codul nu are coloana lui.",
+        ),
+      text: z
+        .string()
+        .nullable()
+        .describe("Litera coloanei cu denumirea lucrării."),
+      unit: z.string().nullable().describe("Litera coloanei cu U.M."),
+      quantity: z
+        .string()
+        .nullable()
+        .describe("Litera coloanei cu cantitatea autorității."),
+    })
+    .describe("Coloanele listei, după capul de tabel."),
+  entries: z
+    .array(
+      z.object({
+        kind: entryKind,
+        firstRow: z.number().describe("Rândul pe care începe."),
+        lastRow: z
+          .number()
+          .describe(
+            "Rândul pe care se termină: la o poziție cu denumirea pe mai multe rânduri, ultimul dintre ele.",
+          ),
+        code: z
+          .string()
+          .nullable()
+          .describe(
+            "La obiect sau capitol, codul sau numărul lui, dacă are; la o poziție, codul articolului doar când e scris în aceeași celulă cu denumirea; altfel null.",
+          ),
+        name: z
+          .string()
+          .nullable()
+          .describe(
+            "La obiect sau capitol, numele lui fără cod, copiat exact; la o poziție null.",
+          ),
+        terms: searchTerms,
+      }),
+    )
+    .describe(
+      "Obiectele, capitolele și pozițiile care încep în rândurile de citit, în ordine.",
+    ),
+});
+
+export type SheetOutput = z.infer<typeof sheetSchema>;
+
+/** A batch of a document's pages, read and copied. */
+export const pagesSchema = z.object({
+  pageCount: z.number().describe("Câte pagini are documentul."),
+  entries: z
+    .array(
+      z.object({
+        kind: entryKind,
+        page: z.number().describe("Pagina pe care începe."),
+        position: z
+          .string()
+          .nullable()
+          .describe(
+            "Numărul curent al poziției, cum e tipărit; null la obiecte și capitole.",
+          ),
+        code: z
+          .string()
+          .nullable()
+          .describe(
+            "Codul articolului, sau codul ori numărul obiectului sau capitolului, dacă are.",
+          ),
+        text: z
+          .string()
+          .describe(
+            "La o poziție, denumirea lucrării întreagă și copiată exact, inclusiv rândurile de pe pagina următoare; la obiecte și capitole, numele lor fără cod.",
+          ),
+        unit: z
+          .string()
+          .nullable()
+          .describe("U.M., cum e scrisă; null la obiecte și capitole."),
+        quantity: z
+          .number()
+          .nullable()
+          .describe(
+            "Cantitatea, ca număr cu punct zecimal (1.234,50 din listă se scrie 1234.5); null la obiecte și capitole sau când lipsește.",
+          ),
+        terms: searchTerms,
+      }),
+    )
+    .describe(
+      "Obiectele, capitolele și pozițiile care încep pe paginile de citit, în ordine.",
+    ),
+});
+
+export type PagesOutput = z.infer<typeof pagesSchema>;
+
+export const tenderMatchSchema = z.object({
+  matches: z.array(
+    z.object({
+      article: z.string().describe("Cheia poziției, de exemplu A3."),
+      norm: z
+        .string()
+        .nullable()
+        .describe(
+          "Cheia normei alese, de exemplu N12, sau null dacă nicio normă nu descrie aceeași lucrare.",
+        ),
+      quantity: z
+        .number()
+        .nullable()
+        .describe(
+          "Cantitatea în U.M. a normei, doar când U.M. diferă și nu se transformă direct, de exemplu din mp în mc la o grosime dată; altfel null.",
+        ),
+      confidence: z
+        .enum(["high", "medium", "low"])
+        .describe(
+          "high: norma sau rețeta descrie exact lucrarea; medium: aproape, cu o diferență de verificat; low: lucrarea e neclară sau rețeta e estimată.",
+        ),
+      reason: z
+        .string()
+        .describe("Pe scurt, de ce se potrivește norma sau de ce nu."),
+      resources: z
+        .array(resource)
+        .describe(
+          "Doar când norm e null: rețeta pe unitatea poziției, cu materialele, manopera pe meserii și utilajele, fără prețuri; altfel o listă goală.",
+        ),
+    }),
+  ),
+});
+
+export type TenderMatchOutput = z.infer<typeof tenderMatchSchema>;

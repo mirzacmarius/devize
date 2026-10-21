@@ -105,8 +105,9 @@ function dimension(value: number | null) {
   return result === undefined ? undefined : round(result, 3);
 }
 
-function cleanResources(
-  resources: DraftOutput["chapters"][number]["articles"][number]["resources"],
+/** A recipe the model wrote, with units spelled as Devize stores them. */
+export function cleanResources(
+  resources: readonly DraftResource[],
 ): DraftResource[] {
   const result: DraftResource[] = [];
   for (const resource of resources) {

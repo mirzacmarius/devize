@@ -105,11 +105,18 @@ export const estimateTables = {
     confidence: v.optional(aiConfidence),
     aiJobId: v.optional(v.id("aiJobs")),
     // The tender's own position number, code and text, kept for the forms.
+    // unit and quantity are the contracting authority's U.M. and quantity as
+    // the tender writes them, before any conversion, while the line's own
+    // quantity is in the norm's unit (2,432 for 243,2 mp on a "100 mp"
+    // norm). An import sets both or neither; the factor between the two
+    // quantities is never stored.
     tenderRef: v.optional(
       v.object({
         position: v.string(),
         code: v.optional(v.string()),
         text: v.optional(v.string()),
+        unit: v.optional(v.string()),
+        quantity: v.optional(v.number()),
       }),
     ),
     updatedAt: v.number(),
