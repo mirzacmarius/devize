@@ -3,6 +3,7 @@ import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { internalMutation } from "../_generated/server";
+import { deletePackagingRows } from "../materials/packagings";
 import { deleteFirmDatasheets } from "../producers/datasheets";
 import { deleteDetails } from "../producers/details";
 import { deleteFirmUsage } from "../producers/usage";
@@ -226,6 +227,10 @@ async function deleteSome(
   const proposals = await deleteProposals(ctx, { organizationId }, limit);
   if (proposals > 0) {
     return proposals;
+  }
+  const packagings = await deletePackagingRows(ctx, organizationId, limit);
+  if (packagings > 0) {
+    return packagings;
   }
   const memberships = await ctx.db
     .query("memberships")

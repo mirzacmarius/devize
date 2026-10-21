@@ -56,6 +56,10 @@ _Avoid_: Rates (a rate is a price per hour), fees
 The measured quantities behind a Deviz's Articole, taken from plans, photos or site measurements. In code: `takeoffs`.
 _Avoid_: Measurement, survey
 
+**Mod de montaj** (laying method):
+How an Articol's covering is laid: straight, as its Normă assumes; offset, diagonally or in a herringbone for tiles and planks; with many cuts for boards. A method raises the covering's losses and the labour, always from the consumptions before any method, and the Deviz follows; the Firmă can change both figures before applying it. In code: `lineItems.layout`, `materials/layout.ts`. See `docs/adr/0027`.
+_Avoid_: Pattern, installation type
+
 **Propunere AI** (AI proposal):
 What Devize AI suggests for a Deviz, from a description of the work and photos of it, or from a Licitație's Liste de cantități: Articole with their quantities and Norme, which a person checks before any of them goes into the Deviz. In code: `proposals`.
 _Avoid_: Ofertă (what the client receives), draft
@@ -63,6 +67,14 @@ _Avoid_: Ofertă (what the client receives), draft
 **Detector de omisiuni** (omissions check):
 Devize AI reading a Deviz as an experienced site engineer would, for the works its Articole call for but it doesn't have, such as the waterproofing under a shower's tiles or the removal of a demolition's rubble. Each missing work comes with its reason, the Articole it is for and a quantity worked out from them, as a Propunere AI the Firmă reviews; the ones the Deviz has after all start left out. For a Licitație, whose lists can't take new positions, the missing works are clarifications to request from the contracting authority. In code: `proposals/omissions.ts`, proposals with source `omissions`. See `docs/adr/0026`.
 _Avoid_: Audit, validator, AI review
+
+**Sistem compatibil** (compatible system):
+Works and materials that go together, such as floor tiles, their skirting and, in a bathroom, the waterproofing under them. Devize's base systems come from the Norme de bază; a Producător publishes its own on its profile, from its norms and products, with the places they suit and don't. A Deviz that holds part of a system is offered the rest of it (Restul sistemului), with a quantity worked out from the Articole it has. In code: `systems`, `systems/baseSystems.ts`, `systems/completion.ts`. See `docs/adr/0028`.
+_Avoid_: Bundle, kit, package
+
+**Combinație greșită** (wrong combination):
+A material that doesn't suit where its Articol is done, such as a rigid tile adhesive on underfloor heating or wall tiles outdoors, found by Devize's own rules with why and the swap or Normă that fixes it. Read from the Articol's own words, it's a mistake; read from the Deviz's title or a neighbouring Articol, something to check. In code: `systems/rules.ts`, `systems/check.ts`. See `docs/adr/0028`.
+_Avoid_: Conflict, incompatibility
 
 **Variantă** (variant):
 An alternative version of the same Deviz, such as economy, standard and premium, that the client chooses between. It puts other materials in some of the Deviz's works; the works and their quantities stay the same. In code: `variants`, made in `offers/variants.ts`. See `docs/adr/0021`.
@@ -160,7 +172,15 @@ _Avoid_: Default price, list price
 
 **Coș** (shopping basket):
 A Deviz's materials split between the stores at the lowest total: each material is bought at one store, in whole items, and every store used adds its delivery, or the trip there, unless the order reaches its free-delivery threshold. In code: `prices/basket.ts` and `prices/basketPlan.ts`, with each Firmă's store fees in `priceSettings`.
-_Avoid_: Cart, shopping list
+_Avoid_: Cart, Lista de cumpărături (what to buy, not where)
+
+**Lista de cumpărături** (shopping list):
+A Deviz's materials summed over all its Articole and rounded up to whole Ambalaje, in the cheapest mix of sizes, with what is left over after the work and what that costs. It says what to buy; the Coș says where. In code: `materials/list.ts`, `materials/shoppingList.ts`. See `docs/adr/0027`.
+_Avoid_: Bill of materials, Coș
+
+**Ambalaj** (package):
+What a material is sold in: a 25 kg bag, a 15 l bucket, a box of 1,44 mp. It comes from the Firmă's own, its Produs ales, the Producător's product or, failing those, the size Devize assumes, shown as one to check. In code: `packagings` for a Firmă's own, `materials/packages.ts`.
+_Avoid_: Packaging unit, SKU
 
 **Alertă de preț** (price alert):
 A sent or accepted Deviz whose total would change by at least the Firmă's threshold (5 % unless it chose another) if it were priced today. It shows the total, the direct costs and the profit left if the client pays the price sent, with the resources that moved most. The Deviz itself never changes. In code: `priceAlerts`, checked every morning by `prices/alerts.ts`. See `docs/adr/0010`.

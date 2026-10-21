@@ -6,10 +6,12 @@ import { aiTables } from "./ai/tables";
 import { catalogTables } from "./catalog/tables";
 import { estimateTables } from "./estimates/tables";
 import { manufacturerTables } from "./manufacturers/tables";
+import { materialTables } from "./materials/tables";
 import { offerTables } from "./offers/tables";
 import { priceTables } from "./prices/tables";
 import { producerTables } from "./producers/tables";
 import { proposalTables } from "./proposals/tables";
+import { systemTables } from "./systems/tables";
 
 export default defineSchema({
   ...authTables,
@@ -44,4 +46,6 @@ export default defineSchema({
   ...manufacturerTables,
   ...producerTables,
   ...proposalTables,
+  ...materialTables,
+  ...systemTables,
 });

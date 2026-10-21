@@ -164,18 +164,6 @@ export const catalogTables = {
     .index("by_productId", ["productId"])
     .index("by_resourceId", ["resourceId"]),
 
-  // Products and norms that work together, such as a complete ETICS
-  // thermosystem with its adhesive, mesh, plaster and corner details.
-  systems: defineTable({
-    manufacturerId: v.optional(v.id("manufacturers")),
-    name: v.string(),
-    description: v.optional(v.string()),
-    productIds: v.array(v.id("products")),
-    normLineageIds: v.array(v.id("norms")),
-    status: catalogStatus,
-    createdBy: v.id("users"),
-  }).index("by_manufacturerId", ["manufacturerId"]),
-
   // How firms use catalog norms, so producers see aggregate statistics: never
   // which firm, only counts, quantities and counties.
   usageEvents: defineTable({

@@ -17,10 +17,12 @@ import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { PackagingCard } from "../_materials/packaging-card";
 import { OfferCard } from "../_offer/offer-card";
 import { OmissionsSheet } from "../_proposal/omissions-sheet";
 import { ProposalBanner } from "../_proposal/proposal-banner";
 import { ProposalSheet } from "../_proposal/proposal-sheet";
+import { CompatibilityCard } from "../_systems/compatibility-card";
 import { AddNormSheet } from "./add-norm-sheet";
 import { runChecks } from "./checks";
 import { ChecksCard } from "./checks-card";
@@ -147,8 +149,10 @@ export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
             editable={editable}
             open={setPanel}
           />
+          <CompatibilityCard estimate={estimate} editable={editable} />
           <OfferCard estimate={estimate} />
           <DocumentsCard estimate={estimate} />
+          <PackagingCard estimateId={estimate._id} />
           <DetailsCard
             estimate={estimate}
             editable={editable}
