@@ -1070,6 +1070,7 @@ export default {
     nav: {
       label: "Admin sections",
       manufacturers: "Manufacturers",
+      catalog: "Base catalog",
       outreach: "Emails to approve",
       settings: "Settings",
     },
@@ -1374,6 +1375,34 @@ export default {
       empty: "Nothing to approve.",
       open: "Open",
       problems: "Problems: {count}",
+    },
+    catalog: {
+      title: "Base catalog",
+      description:
+        "Devize's own unbranded base norms, written by the Devize team. They ship with the app's code, and you publish them here into the catalog every firm sees.",
+      edition: "Edition: {edition}",
+      editionDescription:
+        "Publishing adds the new norms and makes a new version of each changed one. Devize already made keep the version they were priced with.",
+      publish: "Publish",
+      waiting: "New and changed norms appear in the catalog once published.",
+      upToDate: "Every norm in this edition is published.",
+      counts: {
+        new: "New: {count}",
+        changed: "Changed: {count}",
+        unchanged: "Published: {count}",
+      },
+      norms: "Norms in this edition",
+      columns: {
+        code: "Code",
+        title: "Norm",
+        unit: "Unit",
+        state: "Status",
+      },
+      states: {
+        new: "New",
+        changed: "Changed since v{version}",
+        unchanged: "Published, v{version}",
+      },
     },
     settings: {
       title: "Settings",

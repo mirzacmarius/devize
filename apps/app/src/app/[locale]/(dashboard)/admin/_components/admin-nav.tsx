@@ -11,6 +11,7 @@ export function AdminNav() {
   const pathname = usePathname();
   const links = [
     { href: "/admin/manufacturers", label: t("manufacturers") },
+    { href: "/admin/catalog", label: t("catalog") },
     { href: "/admin/outreach", label: t("outreach") },
     { href: "/admin/settings", label: t("settings") },
   ];
