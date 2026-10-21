@@ -17,8 +17,12 @@ A recipe for one unit of work: a code, a name, a unit of measure and the Resurse
 _Avoid_: Indicator, standard, recipe
 
 **Resursă** (resource):
-One thing a Normă consumes, of one of four kinds: material, manoperă (labour), utilaj (equipment) or transport. Example: flexible tile adhesive, 4.5 kg per m²; a tiler, 0.9 hours per m².
+One thing a Normă consumes, of one of four kinds: material, manoperă (labour), utilaj (equipment) or transport. Example: flexible tile adhesive, 4.5 kg per m²; a tiler, 0.9 hours per m². The catalog keeps each Resursă once, so a Firmă prices it once for every Normă. In code: `resources`, and `normResources` for a Normă's consumptions.
 _Avoid_: Input, component, cost item
+
+**Tarif** (rate):
+A Firmă's own price for labour, equipment or transport, in lei per hour or per unit, such as 40 lei per hour for a tiler. In code: `companyRates`.
+_Avoid_: Cost, wage
 
 **Normă de producător** (manufacturer norm):
 A Normă tied to a Producător's actual products, with consumptions taken from their technical data sheets. Example: thermal insulation system X, with its own adhesive and mesh.
@@ -37,8 +41,12 @@ How a Deviz groups its Articole: a Capitol by kind of work, an Obiect by buildin
 _Avoid_: Category, group, folder
 
 **Recapitulație** (summary):
-A Deviz's totals for each kind of Resursă, plus the rates added on top: CAM on labour, indirect costs, profit and VAT.
+A Deviz's totals for each kind of Resursă, plus its Cote: CAM on labour, indirect costs, profit and VAT. In code: `totals`, computed in `estimates/recap.ts`.
 _Avoid_: Total, breakdown
+
+**Cote** (markups):
+The percentages a Recapitulație adds on top of the direct costs: CAM (contribuția asiguratorie pentru muncă) on labour, indirect costs on the direct costs, profit on direct plus indirect costs, and VAT on the total. Each Deviz copies them from its Firmă's defaults. In code: `markups`.
+_Avoid_: Rates (a rate is a price per hour), fees
 
 **Antemăsurătoare** (quantity take-off):
 The measured quantities behind a Deviz's Articole, taken from plans, photos or site measurements. In code: `takeoffs`.

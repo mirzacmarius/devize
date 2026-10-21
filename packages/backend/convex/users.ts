@@ -1,5 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import { username } from "./utils/validators";
 
@@ -89,8 +92,50 @@ export const removeUserImage = mutation({
 });
 
 /**
- * Deletes the signed-in user with their sign-in accounts, sessions and avatar.
- * The client signs out afterwards.
+ * Takes a user out of their firms. A firm left without members is deleted; a
+ * firm left without an owner passes to its longest-standing admin, or member.
+ */
+async function leaveFirms(ctx: MutationCtx, userId: Id<"users">) {
+  const memberships = await ctx.db
+    .query("memberships")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .take(100);
+  for (const membership of memberships) {
+    const colleagues = (
+      await ctx.db
+        .query("memberships")
+        .withIndex("by_organizationId_and_userId", (q) =>
+          q.eq("organizationId", membership.organizationId),
+        )
+        .take(200)
+    )
+      .filter((other) => other._id !== membership._id)
+      .sort((a, b) => a._creationTime - b._creationTime);
+    await ctx.db.delete("memberships", membership._id);
+    if (colleagues.length === 0) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.accounts.cleanup.deleteOrganization,
+        { organizationId: membership.organizationId },
+      );
+      continue;
+    }
+    if (
+      membership.role === "owner" &&
+      !colleagues.some((other) => other.role === "owner")
+    ) {
+      const heir =
+        colleagues.find((other) => other.role === "admin") ?? colleagues[0];
+      if (heir) {
+        await ctx.db.patch("memberships", heir._id, { role: "owner" });
+      }
+    }
+  }
+}
+
+/**
+ * Deletes the signed-in user with their sign-in accounts, sessions and avatar,
+ * and takes them out of their firms. The client signs out afterwards.
  */
 export const deleteCurrentUserAccount = mutation({
   args: {},
@@ -103,6 +148,7 @@ export const deleteCurrentUserAccount = mutation({
     if (user?.imageId) {
       await ctx.storage.delete(user.imageId);
     }
+    await leaveFirms(ctx, userId);
     const accounts = ctx.db
       .query("authAccounts")
       .withIndex("userIdAndProvider", (q) => q.eq("userId", userId));

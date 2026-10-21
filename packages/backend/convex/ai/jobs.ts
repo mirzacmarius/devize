@@ -19,6 +19,7 @@ export async function createJob(
   fields: {
     kind: Infer<typeof aiJobKind>;
     model?: string;
+    organizationId?: Id<"organizations">;
     manufacturerId?: Id<"manufacturers">;
     normImportId?: Id<"normImports">;
     fileId?: Id<"_storage">;
