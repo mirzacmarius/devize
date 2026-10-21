@@ -2,6 +2,7 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { canEditManufacturer } from "../lib/access";
 import { invalid, notFound } from "../lib/errors";
+import { unitsPerSale } from "./units";
 
 /** A material a firm prices: a catalog product, or a generic resource. */
 export type Material =
@@ -54,6 +55,22 @@ export async function requireMaterial(
     throw notFound("resource");
   }
   return { name: resource.name, unit: resource.unit };
+}
+
+/**
+ * How many of the material's units one item of a store listing holds, as
+ * Devize guesses it: the match a listing has to the product, else what its
+ * title says, else 1.
+ */
+export function guessUnits(
+  listing: Doc<"listings">,
+  material: Material,
+  unit: string,
+): number {
+  if (material.productId && listing.productId === material.productId) {
+    return listing.unitsPerSale;
+  }
+  return unitsPerSale(listing.title, unit) ?? 1;
 }
 
 /** The firm's choices for a material, one per store at most. */

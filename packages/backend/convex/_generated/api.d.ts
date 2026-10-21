@@ -66,6 +66,8 @@ import type * as manufacturers_outreach from "../manufacturers/outreach.js";
 import type * as manufacturers_research from "../manufacturers/research.js";
 import type * as manufacturers_tables from "../manufacturers/tables.js";
 import type * as manufacturers_validators from "../manufacturers/validators.js";
+import type * as prices_basket from "../prices/basket.js";
+import type * as prices_basketPlan from "../prices/basketPlan.js";
 import type * as prices_choices from "../prices/choices.js";
 import type * as prices_listings from "../prices/listings.js";
 import type * as prices_materials from "../prices/materials.js";
@@ -143,6 +145,8 @@ declare const fullApi: ApiFromModules<{
   "manufacturers/research": typeof manufacturers_research;
   "manufacturers/tables": typeof manufacturers_tables;
   "manufacturers/validators": typeof manufacturers_validators;
+  "prices/basket": typeof prices_basket;
+  "prices/basketPlan": typeof prices_basketPlan;
   "prices/choices": typeof prices_choices;
   "prices/listings": typeof prices_listings;
   "prices/materials": typeof prices_materials;
