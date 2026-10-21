@@ -129,7 +129,7 @@ export function DatasheetCard({
                 <li key={condition.text} className="text-body text-ink-2">
                   {condition.text}
                   {condition.page !== undefined && (
-                    <span className="text-meta text-ink-3">
+                    <span className="whitespace-nowrap text-meta text-ink-3">
                       {" "}
                       ({page(condition.page)})
                     </span>
