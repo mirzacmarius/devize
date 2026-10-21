@@ -19,7 +19,47 @@ const config = {
     },
     extend: {
       fontFamily: {
+        sans: [
+          "var(--font-geist-sans)",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "sans-serif",
+        ],
+        mono: [
+          "var(--font-geist-mono)",
+          "ui-monospace",
+          "SF Mono",
+          "Menlo",
+          "monospace",
+        ],
         departure: ["var(--font-departure-mono)"],
+      },
+      // Devize type styles. Big means thin: display, title-page and kpi are 300.
+      fontSize: {
+        display: [
+          "60px",
+          { lineHeight: "64px", letterSpacing: "-0.02em", fontWeight: "300" },
+        ],
+        "title-page": [
+          "34px",
+          { lineHeight: "40px", letterSpacing: "-0.015em", fontWeight: "300" },
+        ],
+        kpi: [
+          "32px",
+          { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "300" },
+        ],
+        "title-card": ["17px", { lineHeight: "24px", fontWeight: "500" }],
+        "body-lg": ["15px", { lineHeight: "22px" }],
+        body: ["14px", { lineHeight: "20px" }],
+        meta: ["13px", { lineHeight: "18px" }],
+        pill: ["13px", { lineHeight: "20px", fontWeight: "500" }],
+        label: [
+          "12px",
+          { lineHeight: "16px", letterSpacing: "0.06em", fontWeight: "500" },
+        ],
+        code: ["13px", { lineHeight: "20px" }],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -54,12 +94,66 @@ const config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          border: "hsl(var(--card-border))",
+        },
+        // Devize surfaces, text and signal colors (see globals.css)
+        shell: "hsl(var(--shell))",
+        panel: "hsl(var(--panel))",
+        sunken: "hsl(var(--sunken))",
+        field: "hsl(var(--field))",
+        selected: "hsl(var(--selected))",
+        tile: "hsl(var(--tile))",
+        backdrop: "hsl(var(--backdrop))",
+        tick: "hsl(var(--tick))",
+        ink: {
+          DEFAULT: "hsl(var(--ink))",
+          2: "hsl(var(--ink-2))",
+          3: "hsl(var(--ink-3))",
+        },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--on-brand))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          soft: "hsl(var(--success-soft))",
+          dot: "hsl(var(--success-dot))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          soft: "hsl(var(--warning-soft))",
+          dot: "hsl(var(--warning-dot))",
+        },
+        danger: {
+          DEFAULT: "hsl(var(--danger))",
+          soft: "hsl(var(--danger-soft))",
+          solid: "hsl(var(--danger-solid))",
+          "solid-foreground": "hsl(var(--on-danger-solid))",
+          border: "hsl(var(--danger-border))",
+        },
+        "neutral-dot": "hsl(var(--neutral-dot))",
+        ai: {
+          DEFAULT: "hsl(var(--ai))",
+          soft: "hsl(var(--ai-soft))",
+          border: "hsl(var(--ai-border))",
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        xs: "4px",
+        sm: "6px",
+        md: "8px",
+        lg: "14px",
+        xl: "18px",
+        "2xl": "20px",
+      },
+      boxShadow: {
+        raised: "var(--shadow-raised)",
+        card: "var(--shadow-card)",
+        panel: "var(--shadow-panel)",
+      },
+      spacing: {
+        sidebar: "256px",
+        rail: "360px",
       },
       keyframes: {
         "accordion-down": {
