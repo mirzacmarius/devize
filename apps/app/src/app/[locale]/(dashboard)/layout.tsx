@@ -16,14 +16,20 @@ export default async function Layout({
   if (!user?.username) {
     return redirect("/onboarding");
   }
-  const preloadedUser = await preloadQuery(api.users.getUser, {}, { token });
+  const [preloadedUser, { isSuperAdmin }] = await Promise.all([
+    preloadQuery(api.users.getUser, {}, { token }),
+    fetchQuery(api.admin.viewer, {}, { token }),
+  ]);
   return (
     <AppShell>
       <AppSidebar>
-        <SidebarContent preloadedUser={preloadedUser} />
+        <SidebarContent
+          preloadedUser={preloadedUser}
+          isSuperAdmin={isSuperAdmin}
+        />
       </AppSidebar>
       <AppMain>
-        <MobileNav preloadedUser={preloadedUser} />
+        <MobileNav preloadedUser={preloadedUser} isSuperAdmin={isSuperAdmin} />
         {children}
       </AppMain>
     </AppShell>
