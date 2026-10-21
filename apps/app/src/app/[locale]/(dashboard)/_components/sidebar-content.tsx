@@ -1,16 +1,18 @@
 "use client";
 
-import type { api } from "@devize/backend/convex/_generated/api";
+import { api } from "@devize/backend/convex/_generated/api";
 import {
   SidebarNav,
   SidebarNavItem,
   SidebarNavLabel,
 } from "@devize/ui/app-shell";
+import { Count } from "@devize/ui/badge";
 import { Icons } from "@devize/ui/icons";
-import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useFirm } from "@/components/firm-provider";
 import { Wordmark } from "@/components/wordmark";
 import { useScopedI18n } from "@/locales/client";
 import { AccountMenu } from "./account-menu";
@@ -34,12 +36,21 @@ export function SidebarContent({
   const t = useScopedI18n("navigation");
   const pathname = usePathname();
   const user = usePreloadedQuery(preloadedUser);
+  const { firm } = useFirm();
+  const priceAlerts = useQuery(api.prices.alerts.count, {
+    organizationId: firm._id,
+  });
 
   if (!user) {
     return null;
   }
 
-  const item = (href: string, Icon: LucideIcon, label: string) => (
+  const item = (
+    href: string,
+    Icon: LucideIcon,
+    label: string,
+    count?: { value: number; label: string },
+  ) => (
     <SidebarNavItem
       key={href}
       asChild
@@ -48,6 +59,11 @@ export function SidebarContent({
       <Link href={href} onClick={onNavigate}>
         <Icon aria-hidden />
         {label}
+        {count && count.value > 0 && (
+          <Count tone="warning" className="ml-auto" aria-label={count.label}>
+            {count.value}
+          </Count>
+        )}
       </Link>
     </SidebarNavItem>
   );
@@ -70,6 +86,10 @@ export function SidebarContent({
         {item("/catalog", Icons.Catalog, t("catalog"))}
         {item("/clients", Icons.Clients, t("clients"))}
         {item("/rates", Icons.Rates, t("rates"))}
+        {item("/prices", Icons.Prices, t("prices"), {
+          value: priceAlerts ?? 0,
+          label: t("priceAlerts", { count: priceAlerts ?? 0 }),
+        })}
         <SidebarNavLabel>{t("account")}</SidebarNavLabel>
         {item("/settings", Icons.Settings, t("settings"))}
         {isSuperAdmin && item("/admin", Icons.Admin, t("admin"))}

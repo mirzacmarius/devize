@@ -20,6 +20,8 @@ export default {
     catalog: "Catalog",
     clients: "Clienți",
     rates: "Tarife",
+    prices: "Prețuri",
+    priceAlerts: "Alerte de preț: {count}",
     settings: "Setări",
     admin: "Administrare",
     openMenu: "Deschide meniul",
@@ -1556,6 +1558,74 @@ export default {
     archived: "Arhivat",
   },
   prices: {
+    title: "Prețuri",
+    description:
+      "Produsele din magazine pe care le cumpără firma, cu prețul la zi, și devizele trimise pe care prețurile le schimbă.",
+    alerts: {
+      title: "Alerte de preț",
+      description:
+        "Devizele trimise sau acceptate al căror total s-ar schimba cu cel puțin {percent} la prețurile de azi. Le verificăm în fiecare dimineață.",
+      off: "Alertele sunt oprite. Alege un prag ca să afli când prețurile schimbă un deviz trimis.",
+      checkNow: "Verifică acum",
+      checking:
+        "Verific devizele trimise ({count}). Alertele apar aici în câteva secunde.",
+      checkedRecently: "Devizele au fost verificate acum câteva minute.",
+      noneTitle: "Nicio alertă",
+      noneDescription:
+        "La prețurile de azi, niciun deviz trimis nu se schimbă peste prag.",
+      dismissedCount:
+        "Alerte ignorate: {count}. Revin dacă prețurile se mai schimbă cu {percent}.",
+      up: "Mai scump cu {percent}",
+      down: "Mai ieftin cu {percent}",
+      total: "Total cu TVA",
+      direct: "Costuri directe",
+      profit: "Profit",
+      profitHint: "Dacă clientul plătește prețul trimis.",
+      fromTo: "{from} → {to}\u00a0lei",
+      changes: "Cele mai mari schimbări",
+      change: "{from} → {to}\u00a0lei/{unit}",
+      impact: "{impact}\u00a0lei",
+      more: "Și încă {count} resurse cu prețul schimbat.",
+      checked: "Verificat {date}",
+      open: "Deschide devizul",
+      dismiss: "Ignoră",
+      dismissed: "Alerta e ascunsă până când prețurile se mai schimbă.",
+    },
+    threshold: {
+      title: "Prag de alertă",
+      description:
+        "Te anunțăm când totalul unui deviz trimis s-ar schimba cel puțin cu atât la prețurile de azi.",
+      label: "Pragul de alertă",
+      off: "Oprite",
+      adminOnly: "Doar administratorii firmei pot schimba pragul.",
+      saved: "Pragul e salvat. Devizele trimise se verifică din nou.",
+    },
+    products: {
+      title: "Produse alese",
+      description:
+        "Produsele din magazine pe care le cumpără firma. Prețurile citite din paginile magazinelor se actualizează zilnic.",
+      product: "Produs",
+      price: "Preț cu TVA (lei)",
+      change: "Schimbare",
+      checked: "Verificat",
+      forMaterial: "{store} · pentru {material}",
+      unknownMaterial: "un material șters",
+      perUnit: "{price}\u00a0lei/{unit} fără TVA",
+      typed: "Preț introdus de firmă",
+      unavailable: "Nu mai e pe site",
+      before: "Înainte: {price}\u00a0lei",
+      emptyTitle: "Niciun produs ales",
+      emptyDescription:
+        "Alege produse în coșul unui deviz. Le găsești apoi aici, cu prețul la zi.",
+    },
+    how: {
+      title: "Cum țin prețurile la zi",
+      read: "Citim zilnic pagina fiecărui produs ales, câte o pagină o dată și doar unde magazinul permite.",
+      check:
+        "În fiecare dimineață calculăm devizele trimise și acceptate la prețurile de azi.",
+      never:
+        "Un deviz trimis nu se schimbă singur. Alerta îți arată impactul, iar tu decizi dacă faci o revizie.",
+    },
     basket: {
       title: "Coș de cumpărături",
       open: "Coș de cumpărături",
@@ -1654,7 +1724,7 @@ export default {
         checkedAt: "Preț citit la {date}",
         typedAt: "Preț scris la {date}",
         price: "{price} lei cu TVA pentru o bucată",
-        perUnit: "{price} lei/{unit} fără TVA",
+        perUnit: "{price}\u00a0lei/{unit} fără TVA",
         units: "O bucată conține",
         unitsInvalid: "Scrie un număr mai mare ca 0.",
         save: "Salvează",

@@ -22,6 +22,8 @@ export default {
     catalog: "Catalog",
     clients: "Clients",
     rates: "Rates",
+    prices: "Prices",
+    priceAlerts: "Price alerts: {count}",
     settings: "Settings",
     admin: "Admin",
     openMenu: "Open menu",
@@ -1564,6 +1566,74 @@ export default {
     archived: "Archived",
   },
   prices: {
+    title: "Prices",
+    description:
+      "The store products your firm buys, at today's prices, and the sent estimates those prices change.",
+    alerts: {
+      title: "Price alerts",
+      description:
+        "Sent or accepted estimates whose total would change by at least {percent} at today's prices. We check them every morning.",
+      off: "Alerts are off. Choose a threshold to learn when prices change a sent estimate.",
+      checkNow: "Check now",
+      checking:
+        "Checking the sent estimates ({count}). Alerts show up here in a few seconds.",
+      checkedRecently: "The estimates were checked a few minutes ago.",
+      noneTitle: "No alerts",
+      noneDescription:
+        "At today's prices, no sent estimate changes beyond the threshold.",
+      dismissedCount:
+        "Dismissed alerts: {count}. They come back if prices move by another {percent}.",
+      up: "Dearer by {percent}",
+      down: "Cheaper by {percent}",
+      total: "Total with VAT",
+      direct: "Direct costs",
+      profit: "Profit",
+      profitHint: "If the client pays the price you sent.",
+      fromTo: "{from} → {to}\u00a0lei",
+      changes: "Biggest changes",
+      change: "{from} → {to}\u00a0lei/{unit}",
+      impact: "{impact}\u00a0lei",
+      more: "And {count} more resources with a new price.",
+      checked: "Checked {date}",
+      open: "Open the estimate",
+      dismiss: "Dismiss",
+      dismissed: "The alert is hidden until prices move again.",
+    },
+    threshold: {
+      title: "Alert threshold",
+      description:
+        "We tell you when a sent estimate's total would change by at least this much at today's prices.",
+      label: "Alert threshold",
+      off: "Off",
+      adminOnly: "Only the firm's admins can change the threshold.",
+      saved: "Threshold saved. The sent estimates are checked again.",
+    },
+    products: {
+      title: "Chosen products",
+      description:
+        "The store products your firm buys. Prices read from the stores' pages are updated daily.",
+      product: "Product",
+      price: "Price with VAT (lei)",
+      change: "Change",
+      checked: "Checked",
+      forMaterial: "{store} · for {material}",
+      unknownMaterial: "a deleted material",
+      perUnit: "{price}\u00a0lei/{unit} without VAT",
+      typed: "Price typed by the firm",
+      unavailable: "No longer on the site",
+      before: "Before: {price}\u00a0lei",
+      emptyTitle: "No chosen products",
+      emptyDescription:
+        "Choose products in an estimate's shopping basket. You'll find them here, at today's prices.",
+    },
+    how: {
+      title: "How prices stay current",
+      read: "We read each chosen product's page daily, one page at a time and only where the store allows it.",
+      check:
+        "Every morning we price the sent and accepted estimates at today's prices.",
+      never:
+        "A sent estimate never changes by itself. The alert shows you the impact, and you decide whether to make a revision.",
+    },
     basket: {
       title: "Shopping basket",
       open: "Shopping basket",
@@ -1662,7 +1732,7 @@ export default {
         checkedAt: "Price read on {date}",
         typedAt: "Price typed on {date}",
         price: "{price} lei with VAT for one item",
-        perUnit: "{price} lei/{unit} without VAT",
+        perUnit: "{price}\u00a0lei/{unit} without VAT",
         units: "One item holds",
         unitsInvalid: "Type a number above 0.",
         save: "Save",

@@ -4,6 +4,7 @@ import {
   listingSource,
   listingStatus,
   matchMethod,
+  priceChange,
   readStatus,
   store,
 } from "./validators";
@@ -41,11 +42,15 @@ export const priceTables = {
     matchMethod: v.optional(matchMethod),
     status: listingStatus,
     checkedAt: v.number(),
+    // When Devize reads the store's page again: set while a firm chose the
+    // product, so its price stays fresh (docs/adr/0010).
+    refreshAfter: v.optional(v.number()),
   })
     .index("by_productId_and_status", ["productId", "status"])
     .index("by_organizationId_and_productId", ["organizationId", "productId"])
     .index("by_organizationId_and_resourceId", ["organizationId", "resourceId"])
     .index("by_store_and_externalId", ["store", "externalId"])
+    .index("by_store_and_refreshAfter", ["store", "refreshAfter"])
     .index("by_url", ["url"]),
 
   // Every price a listing had, for charts, forecasts and price alerts.
@@ -74,6 +79,7 @@ export const priceTables = {
   })
     .index("by_organizationId_and_productId", ["organizationId", "productId"])
     .index("by_organizationId_and_resourceId", ["organizationId", "resourceId"])
+    .index("by_organizationId_and_updatedAt", ["organizationId", "updatedAt"])
     .index("by_listingId", ["listingId"]),
 
   // Citiri la cerere: each read of a store's product page, what asked for it
@@ -132,6 +138,44 @@ export const priceTables = {
         freeFrom: v.optional(v.number()),
       }),
     ),
+    // The change of a sent Deviz's total, in percent, from which the firm
+    // gets an Alertă de preț; 0 turns alerts off. Unset means 5.
+    alertPercent: v.optional(v.number()),
+    // When someone last asked for the firm's devize to be checked.
+    alertsCheckedAt: v.optional(v.number()),
     updatedAt: v.number(),
   }).index("by_organizationId", ["organizationId"]),
+
+  // Alerte de preț: a sent or accepted Deviz whose total would change by at
+  // least the firm's threshold at today's prices. The Deviz itself never
+  // changes; the alert says what the change does to its costs and profit.
+  // One row per Deviz, written by the daily check (alerts.ts).
+  priceAlerts: defineTable({
+    organizationId: v.id("organizations"),
+    estimateId: v.id("estimates"),
+    // The Deviz's total with VAT as sent, and at today's prices.
+    sentTotal: v.number(),
+    currentTotal: v.number(),
+    // How much the total changed, in percent of the total sent.
+    percent: v.number(),
+    // Its direct costs, without VAT, as sent and at today's prices.
+    sentDirect: v.number(),
+    currentDirect: v.number(),
+    // The profit in the Deviz, and what is left of it when the client pays
+    // the price sent and the direct costs are today's.
+    sentProfit: v.number(),
+    profitLeft: v.number(),
+    // The resources whose price moved most, by what they add to the direct
+    // costs, and how many changed in all.
+    changes: v.array(priceChange),
+    changeCount: v.number(),
+    checkedAt: v.number(),
+    // Dismissed, with the change it had then; it comes back when the change
+    // moves by the threshold again.
+    dismissedAt: v.optional(v.number()),
+    dismissedPercent: v.optional(v.number()),
+  })
+    .index("by_organizationId_and_checkedAt", ["organizationId", "checkedAt"])
+    .index("by_estimateId", ["estimateId"])
+    .index("by_checkedAt", ["checkedAt"]),
 };

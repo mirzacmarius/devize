@@ -4,6 +4,20 @@ import { canEditManufacturer } from "../lib/access";
 import { invalid, notFound } from "../lib/errors";
 import { unitsPerSale } from "./units";
 
+// A store product a firm chose is read from the store's page again after a
+// day, so its price stays fresh (docs/adr/0010).
+export const REFRESH_MS = 24 * 60 * 60_000;
+
+/** A store's product page every firm may use, which Devize can read again. */
+export function canRefresh(listing: Doc<"listings">): boolean {
+  return (
+    listing.source === "retailer" &&
+    listing.organizationId === undefined &&
+    listing.url !== undefined &&
+    listing.status === "active"
+  );
+}
+
 /** A material a firm prices: a catalog product, or a generic resource. */
 export type Material =
   | { productId: Id<"products">; resourceId?: undefined }
@@ -101,7 +115,8 @@ export async function choicesFor(
 /**
  * Makes `listingId` the firm's product for a material at the listing's store,
  * replacing the one chosen there before. Keeps a conversion a person checked
- * while the listing stays the same.
+ * while the listing stays the same. A store page every firm may use is then
+ * read again daily.
  */
 export async function choose(
   ctx: MutationCtx,
@@ -122,6 +137,11 @@ export async function choose(
   const existing = (await choicesFor(ctx, organizationId, material)).find(
     (choice) => choice.store === store,
   );
+  if (canRefresh(listing) && listing.refreshAfter === undefined) {
+    await ctx.db.patch("listings", listing._id, {
+      refreshAfter: listing.checkedAt + REFRESH_MS,
+    });
+  }
   const now = Date.now();
   if (existing) {
     const keep =
