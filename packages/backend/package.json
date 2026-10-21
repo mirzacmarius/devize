@@ -1,23 +1,23 @@
 {
-  "name": "@v1/backend",
+  "name": "@devize/backend",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "description": "Convex backend: database, auth, storage and server functions",
   "scripts": {
     "dev": "convex dev --tail-logs",
-    "setup": "convex dev --once && convex env set VALIDATE_ENV=true",
-    "seed": "convex dev --once && convex run init"
+    "setup": "convex dev --once && bun scripts/link-app-env.ts",
+    "typecheck": "tsc --noEmit -p convex",
+    "lint": "biome lint"
   },
   "type": "module",
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@auth/core": "0.37.0",
-    "@convex-dev/auth": "^0.0.80",
-    "@convex-dev/polar": "npm:@erquhart/convex-polar@0.2.0-alpha.5",
-    "@polar-sh/sdk": "^0.26.1",
-    "convex": "^1.19.2",
-    "convex-helpers": "^0.1.63",
-    "openai": "^4.61.1",
-    "standardwebhooks": "^1.0.0"
+    "@auth/core": "0.41.3",
+    "@convex-dev/auth": "^0.0.96",
+    "convex": "^1.46.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.3",
+    "typescript": "^5.9.3"
   }
 }

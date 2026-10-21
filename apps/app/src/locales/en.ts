@@ -1,37 +1,72 @@
+import type { Dictionary } from "./types";
+
 export default {
-  dashboard: {
-    title: "Create your App",
+  common: {
+    appName: "Devize",
+    appDescription:
+      "Construction estimates with manufacturers' norms and up-to-date store prices.",
+  },
+  navigation: {
+    home: "Dashboard",
+    settings: "Settings",
+    accountMenu: "Account menu",
+    theme: "Theme",
+    language: "Language",
+    signOut: "Sign out",
+  },
+  theme: {
+    light: "Light",
+    dark: "Dark",
+    system: "System",
+  },
+  login: {
+    title: "Sign in to Devize",
     description:
-      "Build your app on top of Convex SaaS, explore the documentation and start your journey.",
-    bodyTitle: "Get Started",
-    bodyDescription:
-      "Explore the Dashboard and get started with your first app.",
-    bodyTip: "TIP: Try changing the language!",
-    headerTitle: "Dashboard",
-    headerDescription: "Manage your apps and view your usage.",
-    documentationLink: "Explore Documentation",
+      "Build estimates with manufacturers' norms and up-to-date prices.",
+    google: "Continue with Google",
+  },
+  username: {
+    label: "Username",
+    placeholder: "e.g. ionpopescu",
+    rules: "3 to 32 letters or digits, no spaces.",
+    invalid: "Use 3 to 32 letters or digits, with no spaces or other symbols.",
+  },
+  onboarding: {
+    title: "Welcome!",
+    description: "Choose a username to get started.",
+    continue: "Continue",
+    hint: "You can change it at any time in your settings.",
+  },
+  dashboard: {
+    title: "Your estimates",
+    description: "This is where you'll create and track your job estimates.",
+    emptyTitle: "You have no estimates yet",
+    emptyDescription:
+      "The estimate builder is coming soon: manufacturers' norms, store prices and the official forms, all in one place.",
   },
   settings: {
     title: "Settings",
-    headerTitle: "Settings",
-    headerDescription: "Manage your account settings.",
+    description: "Manage your account.",
+    general: "General",
     avatar: {
-      title: "Your Avatar",
-      description: "This is your avatar. It will be displayed on your profile.",
-      uploadHint: "Click on the avatar to upload a custom one from your files.",
-      resetButton: "Reset",
+      title: "Your photo",
+      description: "It's shown in your account menu.",
+      change: "Change photo",
+      uploadHint: "Click the photo to upload another from your files.",
+      reset: "Remove",
+    },
+    username: {
+      title: "Your username",
+      description: "This is how you appear in Devize.",
+      save: "Save",
     },
     deleteAccount: {
-      title: "Delete Account",
+      title: "Delete account",
       description:
-        "Permanently delete your Convex SaaS account, all of your projects, links and their respective stats.",
-      warning: "This action cannot be undone, proceed with caution.",
-      deleteButton: "Delete Account",
-      confirmButton: "Are you sure?",
-    },
-    sidebar: {
-      general: "General",
-      billing: "Billing",
+        "Your Devize account and all of its data will be permanently deleted.",
+      warning: "This can't be undone.",
+      button: "Delete account",
+      confirm: "Are you sure? Click again",
     },
   },
-} as const;
+} as const satisfies Dictionary;

@@ -1,28 +1,22 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { asyncMap } from "convex-helpers";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
-import { action, internalMutation, mutation, query } from "./_generated/server";
-import { polar } from "./subscriptions";
+import { mutation, query } from "./_generated/server";
 import { username } from "./utils/validators";
 
 export const getUser = query({
+  args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return;
+      return null;
     }
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get("users", userId);
     if (!user) {
-      return;
+      return null;
     }
-    const subscription = await polar.getCurrentSubscription(ctx, {
-      userId: user._id,
-    });
     return {
       ...user,
       name: user.username || user.name,
-      subscription,
       avatarUrl: user.imageId
         ? await ctx.storage.getUrl(user.imageId)
         : undefined,
@@ -44,7 +38,7 @@ export const updateUsername = mutation({
     if (!validatedUsername.success) {
       throw new Error(validatedUsername.error.message);
     }
-    await ctx.db.patch(userId, { username: validatedUsername.data });
+    await ctx.db.patch("users", userId, { username: validatedUsername.data });
   },
 });
 
@@ -68,7 +62,11 @@ export const updateUserImage = mutation({
     if (!userId) {
       return;
     }
-    ctx.db.patch(userId, { imageId: args.imageId });
+    const user = await ctx.db.get("users", userId);
+    if (user?.imageId && user.imageId !== args.imageId) {
+      await ctx.storage.delete(user.imageId);
+    }
+    await ctx.db.patch("users", userId, { imageId: args.imageId });
   },
 });
 
@@ -79,53 +77,56 @@ export const removeUserImage = mutation({
     if (!userId) {
       return;
     }
-    ctx.db.patch(userId, { imageId: undefined, image: undefined });
+    const user = await ctx.db.get("users", userId);
+    if (user?.imageId) {
+      await ctx.storage.delete(user.imageId);
+    }
+    await ctx.db.patch("users", userId, {
+      imageId: undefined,
+      image: undefined,
+    });
   },
 });
 
-export const deleteUserAccount = internalMutation({
-  args: {
-    userId: v.id("users"),
-  },
-  handler: async (ctx, args) => {
-    await asyncMap(
-      ["google" /* add other providers as needed */],
-      async (provider) => {
-        const authAccount = await ctx.db
-          .query("authAccounts")
-          .withIndex("userIdAndProvider", (q) =>
-            q.eq("userId", args.userId).eq("provider", provider),
-          )
-          .unique();
-        if (!authAccount) {
-          return;
-        }
-        await ctx.db.delete(authAccount._id);
-      },
-    );
-    await ctx.db.delete(args.userId);
-  },
-});
-
-export const deleteCurrentUserAccount = action({
+/**
+ * Deletes the signed-in user with their sign-in accounts, sessions and avatar.
+ * The client signs out afterwards.
+ */
+export const deleteCurrentUserAccount = mutation({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       return;
     }
-    const subscription = await polar.getCurrentSubscription(ctx, {
-      userId,
-    });
-    if (!subscription) {
-      console.error("No subscription found");
-    } else {
-      await polar.cancelSubscription(ctx, {
-        revokeImmediately: true,
-      });
+    const user = await ctx.db.get("users", userId);
+    if (user?.imageId) {
+      await ctx.storage.delete(user.imageId);
     }
-    await ctx.runMutation(internal.users.deleteUserAccount, {
-      userId,
-    });
+    const accounts = ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) => q.eq("userId", userId));
+    for await (const account of accounts) {
+      const codes = ctx.db
+        .query("authVerificationCodes")
+        .withIndex("accountId", (q) => q.eq("accountId", account._id));
+      for await (const code of codes) {
+        await ctx.db.delete("authVerificationCodes", code._id);
+      }
+      await ctx.db.delete("authAccounts", account._id);
+    }
+    const sessions = ctx.db
+      .query("authSessions")
+      .withIndex("userId", (q) => q.eq("userId", userId));
+    for await (const session of sessions) {
+      const refreshTokens = ctx.db
+        .query("authRefreshTokens")
+        .withIndex("sessionId", (q) => q.eq("sessionId", session._id));
+      for await (const token of refreshTokens) {
+        await ctx.db.delete("authRefreshTokens", token._id);
+      }
+      await ctx.db.delete("authSessions", session._id);
+    }
+    await ctx.db.delete("users", userId);
   },
 });

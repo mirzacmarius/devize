@@ -13,15 +13,13 @@ coverage
 out/
 next-env.d.ts
 
-# expo
-.expo/
-dist/
-
 # production
 build
+dist/
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 
 # debug
@@ -32,7 +30,8 @@ yarn-error.log*
 
 # local env files
 .env
-.env*.local
+.env.*
+!.env.example
 
 # vercel
 .vercel
@@ -43,12 +42,5 @@ yarn-error.log*
 # turbo
 .turbo
 
-# react-email
-.react-email
-packages/email/public
-!packages/email/public/.gitkeep
-!packages/email/.react-email/.gitkeep
-
-# Storybook
-storybook-static
-tailwind.css
+# local Convex backend state (convex dev --local)
+.convex

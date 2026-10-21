@@ -1,9 +1,10 @@
-export async function register() {
-  if (process.env.NEXT_RUNTIME === "nodejs") {
-    await import("../sentry.server.config");
-  }
+import * as Sentry from "@sentry/nextjs";
+import { sentryOptions } from "@/lib/sentry";
 
-  if (process.env.NEXT_RUNTIME === "edge") {
-    await import("../sentry.edge.config");
-  }
+/** The server and edge runtimes report to Sentry like the browser does. */
+export function register() {
+  Sentry.init(sentryOptions);
 }
+
+// Errors from Server Components, route handlers and the proxy.
+export const onRequestError = Sentry.captureRequestError;

@@ -1,12 +1,17 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import { Wordmark } from "@/components/wordmark";
+import { getScopedI18n } from "@/locales/server";
 
-export default async function Layout({
-  children,
-}: { children: React.ReactNode }) {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getScopedI18n("onboarding");
+  return { title: t("title") };
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex h-screen w-full bg-card">
       <div className="absolute left-1/2 top-8 mx-auto -translate-x-1/2 transform justify-center">
-        <Image src="/logo.png" alt="logo" width={100} height={100} />
+        <Wordmark className="text-2xl" />
       </div>
       <div className="z-10 h-screen w-screen">{children}</div>
       <div className="base-grid fixed h-screen w-screen opacity-40" />
