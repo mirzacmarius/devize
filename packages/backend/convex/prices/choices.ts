@@ -3,9 +3,15 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 import { mutation, query } from "../_generated/server";
 import { requireFirmDoc, requireMember } from "../lib/access";
-import { invalid } from "../lib/errors";
-import { choicesFor, choose, materialOf, requireMaterial } from "./materials";
-import { listingUnitPrice } from "./resolve";
+import { invalid, notFound } from "../lib/errors";
+import {
+  choicesFor,
+  choose,
+  guessUnits,
+  materialOf,
+  requireMaterial,
+} from "./materials";
+import { isPublicListing, listingUnitPrice } from "./resolve";
 import { productPage, retailVat } from "./stores";
 import { store } from "./validators";
 
@@ -72,6 +78,49 @@ export const forMaterial = query({
       }
     }
     return result;
+  },
+});
+
+/**
+ * Makes a store product the firm's choice for a material, such as one the
+ * Coș found by its EAN, with how many of the material's units an item holds
+ * when a person said so.
+ */
+export const pick = mutation({
+  args: {
+    organizationId: v.id("organizations"),
+    listingId: v.id("listings"),
+    productId: v.optional(v.id("products")),
+    resourceId: v.optional(v.id("resources")),
+    unitsPerSale: v.optional(v.number()),
+  },
+  returns: v.id("storeChoices"),
+  handler: async (ctx, args) => {
+    const { userId } = await requireMember(ctx, args.organizationId);
+    const material = materialOf(args);
+    const { unit } = await requireMaterial(ctx, args.organizationId, material);
+    const listing = await ctx.db.get("listings", args.listingId);
+    if (
+      listing?.source !== "retailer" ||
+      listing.status !== "active" ||
+      !(
+        isPublicListing(listing) ||
+        listing.organizationId === args.organizationId
+      )
+    ) {
+      throw notFound("listing");
+    }
+    if (args.unitsPerSale !== undefined) {
+      checkUnits(args.unitsPerSale);
+    }
+    return await choose(ctx, {
+      organizationId: args.organizationId,
+      material,
+      listing,
+      unitsPerSale: args.unitsPerSale ?? guessUnits(listing, material, unit),
+      unitsChecked: args.unitsPerSale !== undefined,
+      userId,
+    });
   },
 });
 

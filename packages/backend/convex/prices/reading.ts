@@ -14,7 +14,7 @@ import { invalid } from "../lib/errors";
 import {
   choicesFor,
   choose,
-  type Material,
+  guessUnits,
   materialOf,
   requireMaterial,
 } from "./materials";
@@ -115,18 +115,6 @@ async function deleteOldReads(ctx: MutationCtx, now: number) {
   for (const read of old) {
     await ctx.db.delete("storeReads", read._id);
   }
-}
-
-/** The units of the material one item of the listing holds, as a guess. */
-function guessUnits(
-  listing: Doc<"listings">,
-  material: Material,
-  unit: string,
-): number {
-  if (material.productId && listing.productId === material.productId) {
-    return listing.unitsPerSale;
-  }
-  return unitsPerSale(listing.title, unit) ?? 1;
 }
 
 /**

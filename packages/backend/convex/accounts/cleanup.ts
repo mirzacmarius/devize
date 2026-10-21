@@ -113,6 +113,18 @@ async function deleteSome(
   if (reads.length > 0) {
     return reads.length;
   }
+  const priceSettings = await ctx.db
+    .query("priceSettings")
+    .withIndex("by_organizationId", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of priceSettings) {
+    await ctx.db.delete("priceSettings", row._id);
+  }
+  if (priceSettings.length > 0) {
+    return priceSettings.length;
+  }
   for (const status of [
     "draft",
     "review",
