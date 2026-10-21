@@ -31,6 +31,8 @@ import type * as ai_tables from "../ai/tables.js";
 import type * as ai_validators from "../ai/validators.js";
 import type * as auth from "../auth.js";
 import type * as catalog_access from "../catalog/access.js";
+import type * as catalog_baseCatalog from "../catalog/baseCatalog.js";
+import type * as catalog_baseNorms from "../catalog/baseNorms.js";
 import type * as catalog_norms from "../catalog/norms.js";
 import type * as catalog_products from "../catalog/products.js";
 import type * as catalog_publishing from "../catalog/publishing.js";
@@ -120,6 +122,8 @@ declare const fullApi: ApiFromModules<{
   "ai/validators": typeof ai_validators;
   auth: typeof auth;
   "catalog/access": typeof catalog_access;
+  "catalog/baseCatalog": typeof catalog_baseCatalog;
+  "catalog/baseNorms": typeof catalog_baseNorms;
   "catalog/norms": typeof catalog_norms;
   "catalog/products": typeof catalog_products;
   "catalog/publishing": typeof catalog_publishing;

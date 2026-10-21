@@ -909,6 +909,7 @@ export default {
     nav: {
       label: "Secțiunile administrării",
       manufacturers: "Producători",
+      catalog: "Catalog de bază",
       outreach: "Emailuri de aprobat",
       settings: "Setări",
     },
@@ -1212,6 +1213,34 @@ export default {
       empty: "Nimic de aprobat.",
       open: "Deschide",
       problems: "Probleme: {count}",
+    },
+    catalog: {
+      title: "Catalogul de bază",
+      description:
+        "Normele de bază ale Devize, fără marcă, scrise de echipa Devize. Vin odată cu codul aplicației, iar de aici le publici în catalogul pe care îl văd toate firmele.",
+      edition: "Ediția {edition}",
+      editionDescription:
+        "Publicarea adaugă normele noi și face câte o versiune nouă din normele schimbate. Devizele făcute deja păstrează versiunea cu care au fost calculate.",
+      publish: "Publică",
+      waiting: "Normele noi și cele schimbate apar în catalog după publicare.",
+      upToDate: "Toate normele ediției sunt publicate.",
+      counts: {
+        new: "Noi: {count}",
+        changed: "Schimbate: {count}",
+        unchanged: "Publicate: {count}",
+      },
+      norms: "Normele ediției",
+      columns: {
+        code: "Cod",
+        title: "Normă",
+        unit: "UM",
+        state: "Stare",
+      },
+      states: {
+        new: "Nouă",
+        changed: "Schimbată față de v{version}",
+        unchanged: "Publicată, v{version}",
+      },
     },
     settings: {
       title: "Setări",
