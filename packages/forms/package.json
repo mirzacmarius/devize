@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./pdf": "./src/pdf/index.ts",
     "./sheet": "./src/sheet.ts",
-    "./workbook": "./src/workbook/index.ts"
+    "./workbook": "./src/workbook/index.ts",
+    "./xlsx": "./src/xlsx/index.ts"
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",

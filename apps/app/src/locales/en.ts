@@ -659,10 +659,15 @@ export default {
     title: "Documents",
     empty: "Add line items to download documents.",
     failed: "The PDF couldn't be made. Try again.",
+    failedExcel: "The Excel file couldn't be made. Try again.",
     deviz: {
       title: "Estimate for the client",
-      hint: "A PDF with your letterhead, the line items and the summary, ready to send.",
-      download: "Download PDF",
+      hint: "With your letterhead, the line items and the summary, as a PDF ready to send or in Excel.",
+      download: {
+        pdf: "Download the estimate as a PDF",
+        xlsx: "Download the estimate in Excel",
+      },
+      formats: { pdf: "PDF", xlsx: "Excel" },
     },
     forms: {
       title: "Official forms",
@@ -670,7 +675,7 @@ export default {
       open: "Choose",
       sheetTitle: "Official forms",
       sheetDescription:
-        "The lists the tender documentation asks for, in one PDF, each form on a new page. Forms are in Romanian, as tenders require.",
+        "The lists the tender documentation asks for, in one PDF, each form on a new page, or in one Excel file, a sheet for each form. Forms are in Romanian, as tenders require.",
       choose: "Forms",
       kinds: {
         OF: {
@@ -801,6 +806,7 @@ export default {
       designerHint: "Optional, when the design isn't your firm's.",
       none: "Choose at least one form.",
       download: "Download PDF",
+      downloadExcel: "Download Excel",
       fileTitle: "Official forms",
       checks: {
         title: "Checking the forms",

@@ -656,10 +656,15 @@ export default {
     title: "Documente",
     empty: "Adaugă articole ca să poți descărca documente.",
     failed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
+    failedExcel: "Fișierul Excel nu a putut fi făcut. Încearcă din nou.",
     deviz: {
       title: "Devizul pentru client",
-      hint: "PDF cu antetul firmei, articolele și Recapitulația, gata de trimis.",
-      download: "Descarcă PDF",
+      hint: "Cu antetul firmei, articolele și Recapitulația, în PDF gata de trimis sau în Excel.",
+      download: {
+        pdf: "Descarcă devizul în PDF",
+        xlsx: "Descarcă devizul în Excel",
+      },
+      formats: { pdf: "PDF", xlsx: "Excel" },
     },
     forms: {
       title: "Formulare oficiale",
@@ -667,7 +672,7 @@ export default {
       open: "Alege",
       sheetTitle: "Formulare oficiale",
       sheetDescription:
-        "Listele pe care le cere documentația de atribuire, într-un singur PDF. Fiecare formular începe pe o pagină nouă.",
+        "Listele pe care le cere documentația de atribuire, într-un singur PDF, fiecare formular de la o pagină nouă, sau într-un fișier Excel, cu o foaie pentru fiecare formular.",
       choose: "Formulare",
       kinds: {
         OF: {
@@ -797,6 +802,7 @@ export default {
       designerHint: "Opțional, când proiectul nu este al firmei tale.",
       none: "Alege cel puțin un formular.",
       download: "Descarcă PDF",
+      downloadExcel: "Descarcă Excel",
       fileTitle: "Formulare oficiale",
       checks: {
         title: "Verificarea formularelor",

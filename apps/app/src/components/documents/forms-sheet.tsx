@@ -46,7 +46,10 @@ import {
   writeChoices,
   writeSigner,
 } from "./stored-choices";
-import { useDownloadDocuments } from "./use-download-documents";
+import {
+  type DocumentsFormat,
+  useDownloadDocuments,
+} from "./use-download-documents";
 
 // The official forms one PDF can hold, in the order they print.
 type FormKind = Exclude<DocumentKind, "DEVIZ">;
@@ -174,7 +177,8 @@ function FormsForm({
     };
   });
   const [error, setError] = useState<string>();
-  const [downloading, setDownloading] = useState(false);
+  // The file being made, PDF or Excel.
+  const [downloading, setDownloading] = useState<DocumentsFormat>();
 
   const toggle = (kind: FormKind, on: boolean) => {
     const next = new Set(chosen);
@@ -301,14 +305,13 @@ function FormsForm({
   // F6's fields, which hold the duration when F6 is chosen.
   const schedule = chosen.has("F6") && categories.length > 0;
 
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
+  const save = async (format: DocumentsFormat) => {
     const kinds = formKinds.filter((kind) => chosen.has(kind));
     if (kinds.length === 0) {
       setError(t("none"));
       return;
     }
-    setDownloading(true);
+    setDownloading(format);
     const done = await download(
       kinds,
       {
@@ -322,8 +325,9 @@ function FormsForm({
         offer: offerOptions,
       },
       t("fileTitle"),
+      format,
     );
-    setDownloading(false);
+    setDownloading(undefined);
     if (done) {
       writeChoices(estimate._id, {
         kinds,
@@ -347,6 +351,11 @@ function FormsForm({
       }
       onDone();
     }
+  };
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    void save("pdf");
   };
 
   return (
@@ -504,12 +513,25 @@ function FormsForm({
 
       <FormChecks checks={checks} value={value} onFix={fix} />
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-wrap justify-end gap-3">
         <Button type="button" variant="ghost" onClick={onDone}>
           {tc("cancel")}
         </Button>
-        <Button type="submit" disabled={downloading}>
-          {downloading && <Icons.Loader className="animate-spin" aria-hidden />}
+        <Button
+          type="button"
+          variant="outline"
+          disabled={downloading !== undefined}
+          onClick={() => save("xlsx")}
+        >
+          {downloading === "xlsx" && (
+            <Icons.Loader className="animate-spin" aria-hidden />
+          )}
+          {t("downloadExcel")}
+        </Button>
+        <Button type="submit" disabled={downloading !== undefined}>
+          {downloading === "pdf" && (
+            <Icons.Loader className="animate-spin" aria-hidden />
+          )}
           {t("download")}
         </Button>
       </div>

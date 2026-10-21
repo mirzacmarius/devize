@@ -87,7 +87,7 @@ A Licitație's list of the works to price, formularul F3: for each position its 
 _Avoid_: Antemăsurătoare (the Constructor's own measuring)
 
 **Formulare oficiale** (official forms):
-The forms a Licitație requires: the F series (F1–F6, DG, DO, used with HG 907/2016) and the C series of Ordinul 1014/2001 (C4–C5 quantity lists, C6–C9 resource lists). Numbering differs between contracting authorities, so each form is a configurable template.
+The forms a Licitație requires: the F series (F1–F6, DG, DO, used with HG 907/2016) and the C series of Ordinul 1014/2001 (C4–C5 quantity lists, C6–C9 resource lists). Numbering differs between contracting authorities, so each form is a configurable template. Devize downloads them as one PDF, or as one Excel workbook with a sheet for each form. See `docs/adr/0009` and `docs/adr/0025`.
 _Avoid_: Reports, templates (for the forms themselves)
 
 **Deviz general** (general estimate) and **Devizul obiectului** (object estimate):
