@@ -12,6 +12,7 @@ import { PageHeader } from "@devize/ui/page-header";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
@@ -141,6 +142,7 @@ export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
             editable={editable}
             open={setPanel}
           />
+          <DocumentsCard estimate={estimate} />
           <DetailsCard
             estimate={estimate}
             editable={editable}

@@ -582,6 +582,72 @@ export default {
       inUse: "The AI is already working on a proposal for this estimate.",
     },
   },
+  documents: {
+    title: "Documents",
+    empty: "Add line items to download documents.",
+    failed: "The PDF couldn't be made. Try again.",
+    deviz: {
+      title: "Estimate for the client",
+      hint: "A PDF with your letterhead, the line items and the summary, ready to send.",
+      download: "Download PDF",
+    },
+    forms: {
+      title: "Official forms",
+      hint: "F3, C5 and the C6–C9 resource lists, for tenders.",
+      open: "Choose",
+      sheetTitle: "Official forms",
+      sheetDescription:
+        "The lists the tender documentation asks for, in one PDF, each form on a new page. Forms are in Romanian, as tenders require.",
+      choose: "Forms",
+      kinds: {
+        F3: {
+          title: "F3 · Bill of quantities",
+          hint: "One for each category of works (HG 907/2016).",
+        },
+        C5: {
+          title: "C5 · Detailed bill of quantities",
+          hint: "Prices and amounts for materials, labour, equipment and transport (Order 1014/2001).",
+        },
+        C6: {
+          title: "C6 · Materials consumed",
+          hint: "With the store each price comes from.",
+        },
+        C7: {
+          title: "C7 · Labour consumed",
+          hint: "The hours of each trade.",
+        },
+        C8: {
+          title: "C8 · Equipment hours",
+          hint: "The equipment and its rates.",
+        },
+        C9: {
+          title: "C9 · Transport consumed",
+          hint: "The transport and its rates.",
+        },
+      },
+      rename: "Rename the forms",
+      renameDone: "Done renaming",
+      label: "The name of form {form} in the tender documentation",
+      withValues: "With prices and amounts",
+      withValuesHint:
+        "Without them, the lists look as the designer publishes them in the tender documentation.",
+      scope: "Resource lists",
+      scopeHint:
+        "For the whole estimate, for each object or for each category of works.",
+      scopes: {
+        estimate: "Per estimate",
+        object: "Per object",
+        category: "Per category",
+      },
+      beneficiary: "Beneficiary",
+      beneficiaryHint: "The contracting authority or the client.",
+      designer: "Designer",
+      designerHint: "Optional, when the design isn't your firm's.",
+      none: "Choose at least one form.",
+      download: "Download PDF",
+      fileTitle: "Official forms",
+    },
+  },
   catalog: {
     title: "Catalog",
     description:

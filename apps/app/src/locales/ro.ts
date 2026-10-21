@@ -577,6 +577,72 @@ export default {
       inUse: "AI-ul lucrează deja la o propunere pentru acest deviz.",
     },
   },
+  documents: {
+    title: "Documente",
+    empty: "Adaugă articole ca să poți descărca documente.",
+    failed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
+    deviz: {
+      title: "Devizul pentru client",
+      hint: "PDF cu antetul firmei, articolele și Recapitulația, gata de trimis.",
+      download: "Descarcă PDF",
+    },
+    forms: {
+      title: "Formulare oficiale",
+      hint: "F3, C5 și listele de resurse C6–C9, pentru licitații.",
+      open: "Alege",
+      sheetTitle: "Formulare oficiale",
+      sheetDescription:
+        "Listele pe care le cere documentația de atribuire, într-un singur PDF. Fiecare formular începe pe o pagină nouă.",
+      choose: "Formulare",
+      kinds: {
+        F3: {
+          title: "F3 · Lista cu cantități de lucrări",
+          hint: "Câte una pentru fiecare categorie de lucrări (HG 907/2016).",
+        },
+        C5: {
+          title: "C5 · Lista cantităților de lucrări, detaliată",
+          hint: "Prețuri și valori pe materiale, manoperă, utilaj și transport (Ordinul 1014/2001).",
+        },
+        C6: {
+          title: "C6 · Consumurile de resurse materiale",
+          hint: "Cu magazinul din care vine fiecare preț.",
+        },
+        C7: {
+          title: "C7 · Consumurile cu mâna de lucru",
+          hint: "Orele fiecărei meserii.",
+        },
+        C8: {
+          title: "C8 · Orele de funcționare a utilajelor",
+          hint: "Utilajele și tarifele lor.",
+        },
+        C9: {
+          title: "C9 · Consumurile privind transporturile",
+          hint: "Transporturile și tarifele lor.",
+        },
+      },
+      rename: "Redenumește formularele",
+      renameDone: "Gata cu denumirile",
+      label: "Numele formularului {form} în documentația de atribuire",
+      withValues: "Cu prețuri și valori",
+      withValuesHint:
+        "Fără ele, listele arată ca în documentația publicată de proiectant.",
+      scope: "Listele de resurse",
+      scopeHint:
+        "Pentru tot devizul, pentru fiecare obiect sau pentru fiecare categorie de lucrări.",
+      scopes: {
+        estimate: "Pe deviz",
+        object: "Pe obiect",
+        category: "Pe categorie",
+      },
+      beneficiary: "Beneficiar",
+      beneficiaryHint: "Autoritatea contractantă sau clientul.",
+      designer: "Proiectant",
+      designerHint: "Opțional, când proiectul nu este al firmei tale.",
+      none: "Alege cel puțin un formular.",
+      download: "Descarcă PDF",
+      fileTitle: "Formulare oficiale",
+    },
+  },
   catalog: {
     title: "Catalog",
     description:
