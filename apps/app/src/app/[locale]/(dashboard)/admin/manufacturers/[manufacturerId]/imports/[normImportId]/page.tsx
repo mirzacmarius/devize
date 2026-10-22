@@ -7,7 +7,7 @@ import { Input } from "@devize/ui/input";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -34,6 +34,15 @@ const normTone: Record<string, Tone> = {
   approved: "success",
   rejected: "neutral",
 };
+
+const consentInputId = "consent_note";
+
+/** Brings the consent field into view and puts the cursor in it. */
+function focusConsent() {
+  const input = document.getElementById(consentInputId);
+  input?.scrollIntoView({ behavior: "smooth", block: "center" });
+  input?.focus({ preventScroll: true });
+}
 
 export default function NormImportPage() {
   const t = useScopedI18n("admin.import");
@@ -138,7 +147,8 @@ export default function NormImportPage() {
 
 /**
  * The manufacturer's written agreement to publish the document's norms, which
- * a super admin records before anything goes into the catalog.
+ * a super admin records before anything goes into the catalog. Until it's on
+ * record the form stands out, since publishing waits on it.
  */
 function Consent({
   normImport,
@@ -183,7 +193,10 @@ function Consent({
   }
   return (
     <form
-      className="flex max-w-2xl flex-col gap-2"
+      className={cn(
+        "flex max-w-2xl flex-col gap-2",
+        !consent && "rounded-md bg-amber-500/10 p-3",
+      )}
       onSubmit={(event) => {
         event.preventDefault();
         run(async () => {
@@ -192,9 +205,15 @@ function Consent({
         });
       }}
     >
-      <Field label={t("label")} htmlFor="consent_note">
+      {!consent && (
+        <p className="flex items-center gap-2 text-sm font-medium text-amber-900 dark:text-amber-200">
+          <TriangleAlert className="size-4 shrink-0" aria-hidden />
+          {t("missing")}
+        </p>
+      )}
+      <Field label={t("label")} htmlFor={consentInputId}>
         <Input
-          id="consent_note"
+          id={consentInputId}
           value={note}
           maxLength={500}
           required
@@ -279,7 +298,13 @@ function Publish({
           {t("button", { count: waiting.length })}
         </Button>
         {!consented && articles.length > 0 && (
-          <span className="text-sm text-primary/60">{t("needsConsent")}</span>
+          <button
+            type="button"
+            className="text-sm text-primary/60 underline underline-offset-2 hover:text-primary"
+            onClick={focusConsent}
+          >
+            {t("needsConsent")}
+          </button>
         )}
         {result && (
           <span className="text-sm text-primary/60" role="status">

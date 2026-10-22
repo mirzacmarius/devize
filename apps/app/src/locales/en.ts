@@ -2312,6 +2312,7 @@ export default {
         review: "Review",
         retry: "Retry",
         remove: "Delete",
+        noConsent: "No consent to publish",
       },
       jobs: {
         title: "AI jobs",
@@ -2357,9 +2358,11 @@ export default {
         button: "Publish to the catalog ({count})",
         result:
           "Published: {published}. Skipped, already in the catalog: {skipped}.",
-        needsConsent: "Record the manufacturer's consent first.",
+        needsConsent: "Record the manufacturer's consent first",
       },
       consent: {
+        missing:
+          "Record the manufacturer's consent here to publish the norms to the catalog.",
         label: "The manufacturer's consent",
         hint: "We only publish norms the manufacturer sent us and agreed in writing to show in Devize. Write who agreed, when, and where the agreement is.",
         placeholder: "For example: the technical office's email of 21.10.2026",

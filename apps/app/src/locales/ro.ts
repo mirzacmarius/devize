@@ -2301,6 +2301,7 @@ export default {
         review: "Revizuiește",
         retry: "Reia",
         remove: "Șterge",
+        noConsent: "Fără acord de publicare",
       },
       jobs: {
         title: "Joburi AI",
@@ -2345,9 +2346,11 @@ export default {
       publish: {
         button: "Publică în catalog ({count})",
         result: "Publicate: {published}. Sărite, deja în catalog: {skipped}.",
-        needsConsent: "Înregistrează întâi acordul producătorului.",
+        needsConsent: "Înregistrează întâi acordul producătorului",
       },
       consent: {
+        missing:
+          "Înregistrează aici acordul producătorului ca să poți publica normele în catalog.",
         label: "Acordul producătorului",
         hint: "Publicăm doar normele pe care producătorul ni le-a trimis și a acceptat în scris să apară în Devize. Scrie cine și-a dat acordul, când și unde îl găsim.",
         placeholder: "De exemplu: emailul biroului tehnic din 21.10.2026",
