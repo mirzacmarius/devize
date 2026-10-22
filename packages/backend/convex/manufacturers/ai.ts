@@ -14,6 +14,7 @@ import {
   UsageMeter,
 } from "../ai/claude";
 import { finalText, webEvidence } from "../ai/messages";
+import { webTools } from "../ai/models";
 import { cleanFindings, emailsInPage } from "./lib/findings";
 import { batchArticles, normsFromArticle } from "./lib/norms";
 import {
@@ -44,24 +45,8 @@ const extractionSliceMs = 3 * 60_000;
 // enough that the answer is never cut off.
 const variantsPerBatch = 8;
 
-const researchTools: Anthropic.ToolUnion[] = [
-  {
-    type: "web_search_20260209",
-    name: "web_search",
-    max_uses: 12,
-    user_location: {
-      type: "approximate",
-      country: "RO",
-      timezone: "Europe/Bucharest",
-    },
-  },
-  {
-    type: "web_fetch_20260209",
-    name: "web_fetch",
-    max_uses: 12,
-    max_content_tokens: 30_000,
-  },
-];
+// Searches and page reads one research job may make.
+const researchWebLimits = { maxUses: 12, maxContentTokens: 30_000 };
 
 /**
  * A page's HTML, to confirm an address is really on it. Only pages research
@@ -115,7 +100,7 @@ export const research = internalAction({
           model: job.model,
           max_tokens: 32_000,
           system: researchSystemPrompt,
-          tools: researchTools,
+          tools: webTools(job.model, researchWebLimits),
           messages: [
             { role: "user", content: researchRequest(job.manufacturer) },
           ],
