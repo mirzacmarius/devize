@@ -216,7 +216,7 @@ export const extractNorms = internalAction({
       });
       const run = { deadline: started + actionBudgetMs, meter };
 
-      let { articles, laborRate } = state;
+      let { articles } = state;
       if (articles.length === 0) {
         const index = await structuredOutput(
           client,
@@ -249,12 +249,11 @@ export const extractNorms = internalAction({
         if (articles.length === 0) {
           throw new AiJobError("no_articles");
         }
-        laborRate = index.laborRate ?? undefined;
         await ctx.runMutation(internal.manufacturers.normImports.saveIndex, {
           normImportId: state.normImportId,
           articles,
           edition: index.edition?.trim() || undefined,
-          laborRate,
+          laborRate: index.laborRate ?? undefined,
         });
       }
 
@@ -307,7 +306,7 @@ export const extractNorms = internalAction({
         await ctx.runMutation(internal.manufacturers.normImports.saveNorms, {
           normImportId: state.normImportId,
           norms: extraction.articles.flatMap((article) =>
-            normsFromArticle(article, { laborRate }),
+            normsFromArticle(article),
           ),
           articlesDone: done,
         });

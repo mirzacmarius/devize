@@ -1,7 +1,12 @@
 // Turning a norms document's articles into one Normă per variant, and the
 // checks that tell a reviewer whether the extraction read the tables right.
 
-import { isHourUnit, isKnownUnit, normalizeUnit } from "../../lib/text";
+import {
+  isHourUnit,
+  isKnownUnit,
+  isPercentUnit,
+  normalizeUnit,
+} from "../../lib/text";
 
 export type ResourceKind = "material" | "labor" | "equipment" | "transport";
 
@@ -37,8 +42,7 @@ export type NormIssue = {
     | "quantity_invalid"
     | "unit_unknown"
     | "labor_sum"
-    | "no_labor"
-    | "price_total";
+    | "no_labor";
   level: "error" | "warning" | "info";
   detail?: string;
 };
@@ -73,12 +77,11 @@ function round(value: number, digits = 4) {
 /**
  * The checks on one extracted Normă. The labour sum is the strongest: every
  * trade's hours must add up to the printed "Total manoperă", which they do
- * exactly when the columns were read right. Printed prices often no longer
- * match the unit prices, so that difference is only reported.
+ * exactly when the columns were read right. The printed price is compared
+ * when the document is reviewed, by `checkPrintedTotal`.
  */
 export function checkNorm(
-  norm: Pick<NormRow, "resources" | "totalLaborHours" | "totalPrice">,
-  options: { laborRate?: number } = {},
+  norm: Pick<NormRow, "resources" | "totalLaborHours">,
 ): NormIssue[] {
   const issues: NormIssue[] = [];
   if (norm.resources.length === 0) {
@@ -123,44 +126,60 @@ export function checkNorm(
       });
     }
   }
-
-  if (norm.totalPrice !== undefined && norm.totalPrice > 0) {
-    let computed = 0;
-    let priced = true;
-    for (const resource of norm.resources) {
-      const price =
-        resource.unitPrice ??
-        (resource.kind === "labor" && isHourUnit(resource.unit)
-          ? options.laborRate
-          : undefined);
-      if (price === undefined) {
-        priced = false;
-        break;
-      }
-      computed += resource.quantity * price;
-    }
-    if (priced) {
-      const relative = (computed - norm.totalPrice) / norm.totalPrice;
-      if (Math.abs(relative) > 0.01) {
-        issues.push({
-          code: "price_total",
-          level: "info",
-          detail: `${round(computed, 2)} / ${round(norm.totalPrice, 2)} (${relative > 0 ? "+" : ""}${round(relative * 100, 1)}%)`,
-        });
-      }
-    }
-  }
   return issues;
+}
+
+export type PrintedTotalCheck = {
+  // What the quantities and unit prices add up to, in lei.
+  computed: number;
+  // How far that is from the printed total, as a fraction of it.
+  difference: number;
+  matches: boolean;
+};
+
+/**
+ * A Normă's printed total against its own quantities and unit prices, labour
+ * at the document's hourly rate where a row has no price. Sundries in "%" are
+ * a share of the other resources rather than a priced quantity, so they're
+ * left out. A document that worked out its totals with other prices differs
+ * on most variants; a misread quantity shows on one. Null without a printed
+ * total or a price for every resource.
+ */
+export function checkPrintedTotal(
+  norm: Pick<NormRow, "resources" | "totalPrice">,
+  laborRate: number | undefined,
+): PrintedTotalCheck | null {
+  if (norm.totalPrice === undefined || norm.totalPrice <= 0) {
+    return null;
+  }
+  let computed = 0;
+  for (const resource of norm.resources) {
+    if (isPercentUnit(resource.unit)) {
+      continue;
+    }
+    const price =
+      resource.unitPrice ??
+      (resource.kind === "labor" && isHourUnit(resource.unit)
+        ? laborRate
+        : undefined);
+    if (price === undefined) {
+      return null;
+    }
+    computed += resource.quantity * price;
+  }
+  const difference = (computed - norm.totalPrice) / norm.totalPrice;
+  return {
+    computed: round(computed, 2),
+    difference: round(difference, 4),
+    matches: Math.abs(difference) <= 0.01,
+  };
 }
 
 /**
  * One Normă per variant of an extracted article: TST10 with variants A01 and
  * B01 gives TST10A01 and TST10B01, titled "<article>, <variant>".
  */
-export function normsFromArticle(
-  article: ExtractedArticle,
-  options: { laborRate?: number } = {},
-): NormRow[] {
+export function normsFromArticle(article: ExtractedArticle): NormRow[] {
   const baseCode = article.baseCode.replace(/\s+/g, "");
   const articleTitle = article.title.trim().replace(/[:;,.\s]+$/, "");
   const unit = normalizeUnit(article.unit);
@@ -203,7 +222,7 @@ export function normsFromArticle(
       ...(article.excludes ? { excludes: article.excludes } : {}),
       resources,
       ...totals,
-      checks: checkNorm({ resources, ...totals }, options),
+      checks: checkNorm({ resources, ...totals }),
     });
   }
   return rows;
