@@ -2048,7 +2048,6 @@ export default {
       unit_unknown: "Unitate necunoscută: {detail}.",
       labor_sum: "Meseriile nu dau totalul de manoperă: {detail}.",
       no_labor: "Nu are manoperă.",
-      price_total: "Totalul tipărit diferă de cel calculat: {detail}.",
       claim_link_mismatch:
         "Linkul de revendicare e pentru {detail}, nu pentru destinatar. Apasă „Refă din șablon” ca să-l faci pentru adresa nouă.",
       already_claimed:
@@ -2333,6 +2332,12 @@ export default {
       excludes: "Nu include",
       totalLabor: "Total manoperă tipărit: {hours} h",
       totalPrice: "Total tipărit: {price} lei",
+      computedPrice:
+        "Din cantități și prețuri unitare: {price} lei ({difference})",
+      totalsDiffer: {
+        most: "Variante la care totalul tipărit nu iese din cantitățile și prețurile unitare ale documentului: {count} din {total}. Când diferă la majoritatea, cel mai probabil documentul și-a calculat totalurile cu alte prețuri decât cele din tabel. Dacă prețurile unitare de mai jos sunt cele din PDF, diferența e a documentului, nu a citirii. Devize nu folosește totalurile tipărite.",
+        few: "Variante la care totalul tipărit nu iese din cantitățile și prețurile unitare ale documentului: {count} din {total}. Verifică pe PDF rândurile lor, marcate mai jos: poate fi o cantitate citită greșit.",
+      },
       pending: "Încă nu e extras.",
       columns: {
         kind: "Tip",

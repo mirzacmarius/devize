@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   batchArticles,
   checkNorm,
+  checkPrintedTotal,
   type ExtractedArticle,
   normsFromArticle,
 } from "./norms";
@@ -77,7 +78,7 @@ const article: ExtractedArticle = {
 };
 
 describe("normsFromArticle", () => {
-  const [first, second] = normsFromArticle(article, { laborRate: 20 });
+  const [first, second] = normsFromArticle(article);
 
   test("makes one Normă per variant, with the article's code and title", () => {
     expect(first.code).toBe("TST10A01");
@@ -136,12 +137,6 @@ describe("checkNorm", () => {
     ]);
   });
 
-  test("only reports a printed price that differs from the unit prices", () => {
-    expect(checkNorm({ resources, totalPrice: 75 })).toEqual([
-      { code: "price_total", level: "info", detail: "68 / 75 (-9.3%)" },
-    ]);
-  });
-
   test("rejects a missing or non-positive quantity", () => {
     expect(checkNorm({ resources: [] })).toEqual([
       { code: "no_resources", level: "error" },
@@ -162,6 +157,59 @@ describe("checkNorm", () => {
       { code: "unit_unknown", level: "warning", detail: "pachet" },
       { code: "no_labor", level: "info" },
     ]);
+  });
+});
+
+describe("checkPrintedTotal", () => {
+  const [first, second] = normsFromArticle(article);
+
+  test("adds up quantities times unit prices against the printed total", () => {
+    expect(checkPrintedTotal(first, undefined)).toEqual({
+      computed: 68,
+      difference: 0,
+      matches: true,
+    });
+    expect(checkPrintedTotal({ ...first, totalPrice: 75 }, undefined)).toEqual({
+      computed: 68,
+      difference: -0.0933,
+      matches: false,
+    });
+  });
+
+  test("prices labour without a price at the document's rate", () => {
+    const resources = first.resources.map((resource) =>
+      resource.kind === "labor"
+        ? { ...resource, unitPrice: undefined }
+        : resource,
+    );
+    expect(checkPrintedTotal({ resources, totalPrice: 68 }, 20)).toMatchObject({
+      computed: 68,
+      matches: true,
+    });
+    expect(checkPrintedTotal({ resources, totalPrice: 68 }, undefined)).toBe(
+      null,
+    );
+  });
+
+  test("leaves out sundries in %, which are a share and not a price", () => {
+    const resources = [
+      ...first.resources,
+      {
+        kind: "material" as const,
+        name: "Material mărunt",
+        unit: "%",
+        unitRaw: "%",
+        quantity: 3,
+      },
+    ];
+    expect(
+      checkPrintedTotal({ resources, totalPrice: 68 }, undefined),
+    ).toMatchObject({ computed: 68, matches: true });
+  });
+
+  test("needs a printed total and a price for every resource", () => {
+    expect(checkPrintedTotal(second, 20)).toBe(null);
+    expect(checkPrintedTotal({ ...second, totalPrice: 50 }, 20)).toBe(null);
   });
 });
 

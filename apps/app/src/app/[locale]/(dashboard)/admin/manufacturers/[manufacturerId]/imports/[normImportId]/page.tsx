@@ -47,6 +47,7 @@ function focusConsent() {
 export default function NormImportPage() {
   const t = useScopedI18n("admin.import");
   const tAdmin = useScopedI18n("admin");
+  const format = useFormat();
   const params = useParams<{ manufacturerId: string; normImportId: string }>();
   const normImportId = params.normImportId as Id<"normImports">;
   const data = useQuery(api.manufacturers.normImports.get, { normImportId });
@@ -70,6 +71,13 @@ export default function NormImportPage() {
   const count = (status: Norm["status"]) =>
     norms.filter((norm) => norm.status === status).length;
   const published = norms.filter((norm) => norm.publishedAt !== null).length;
+  const compared = norms.filter((norm) => norm.printedTotal !== null).length;
+  const differing = norms.filter(
+    (norm) => norm.printedTotal && !norm.printedTotal.matches,
+  ).length;
+  // Totals that mostly disagree with the document's own unit prices were
+  // worked out with other prices; a few point to misread rows.
+  const mostDiffer = differing * 2 > compared;
 
   return (
     <div className="flex w-full flex-col gap-6">
@@ -93,7 +101,9 @@ export default function NormImportPage() {
             <span>{t("edition", { edition: normImport.edition })}</span>
           )}
           {normImport.laborRate !== undefined && (
-            <span>{t("laborRate", { rate: normImport.laborRate })}</span>
+            <span>
+              {t("laborRate", { rate: format.number(normImport.laborRate) })}
+            </span>
           )}
           <span>
             {t("summary", {
@@ -110,6 +120,14 @@ export default function NormImportPage() {
           )}
         </div>
         <p className="text-sm text-primary/50">{t("catalogNote")}</p>
+        {differing > 0 && (
+          <p className="max-w-3xl rounded-md bg-primary/5 p-3 text-sm text-primary/70">
+            {t(mostDiffer ? "totalsDiffer.most" : "totalsDiffer.few", {
+              count: differing,
+              total: compared,
+            })}
+          </p>
+        )}
         <Consent normImport={normImport} consentBy={consentBy} />
         <Publish
           normImportId={normImport._id}
@@ -126,6 +144,7 @@ export default function NormImportPage() {
               normImportId={normImport._id}
               article={article}
               norms={byArticle.get(article.baseCode) ?? []}
+              mostDiffer={mostDiffer}
               onShowPage={setPage}
             />
           ))}
@@ -321,11 +340,13 @@ function Article({
   normImportId,
   article,
   norms,
+  mostDiffer,
   onShowPage,
 }: {
   normImportId: Id<"normImports">;
   article: ImportData["normImport"]["articles"][number];
   norms: Norm[];
+  mostDiffer: boolean;
   onShowPage: (page: number) => void;
 }) {
   const t = useScopedI18n("admin.import");
@@ -464,7 +485,7 @@ function Article({
                         {resource.name}
                       </td>
                       <td className="px-2 py-1 text-right font-mono">
-                        {resource.quantity}
+                        {format.number(resource.quantity)}
                       </td>
                       <td
                         className={cn(
@@ -477,25 +498,57 @@ function Article({
                         {resource.unit}
                       </td>
                       <td className="px-2 py-1 text-right font-mono text-primary/60">
-                        {resource.unitPrice ?? ""}
+                        {resource.unitPrice === undefined
+                          ? ""
+                          : format.number(resource.unitPrice)}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="flex flex-wrap gap-x-4 text-xs text-primary/50">
-              {norm.totalLaborHours !== undefined && (
-                <span>{t("totalLabor", { hours: norm.totalLaborHours })}</span>
-              )}
-              {norm.totalPrice !== undefined && (
-                <span>{t("totalPrice", { price: norm.totalPrice })}</span>
-              )}
-            </div>
+            <NormTotals norm={norm} mostDiffer={mostDiffer} />
             {norm.checks.length > 0 && <IssueList issues={norm.checks} />}
           </div>
         ))
       )}
     </section>
+  );
+}
+
+/**
+ * A norm's printed totals, and what its own quantities and unit prices add up
+ * to when that's different. Marked when only a few variants differ, since
+ * then it's more likely a misread row than the document's pricing.
+ */
+function NormTotals({ norm, mostDiffer }: { norm: Norm; mostDiffer: boolean }) {
+  const t = useScopedI18n("admin.import");
+  const format = useFormat();
+  const check = norm.printedTotal;
+  const computed =
+    check && !check.matches
+      ? t("computedPrice", {
+          price: format.lei(check.computed),
+          difference: format.change(check.difference),
+        })
+      : null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-primary/50">
+      {norm.totalLaborHours !== undefined && (
+        <span>
+          {t("totalLabor", { hours: format.number(norm.totalLaborHours) })}
+        </span>
+      )}
+      {norm.totalPrice !== undefined && (
+        <span>{t("totalPrice", { price: format.lei(norm.totalPrice) })}</span>
+      )}
+      {computed &&
+        (mostDiffer ? (
+          <span>{computed}</span>
+        ) : (
+          <Pill tone="warning">{computed}</Pill>
+        ))}
+    </div>
   );
 }

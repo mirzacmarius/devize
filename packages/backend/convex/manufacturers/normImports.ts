@@ -8,6 +8,7 @@ import { aiModel, defaultModel } from "../ai/models";
 import { aiUsage } from "../ai/validators";
 import { requireSuperAdmin } from "../lib/roles";
 import { deleteNormImport } from "./admin";
+import { checkPrintedTotal } from "./lib/norms";
 import { issue, normImportArticle, normResource } from "./validators";
 
 // A PDF is sent to the model as base64, a third larger, and a request may not
@@ -172,6 +173,10 @@ export const get = query({
       norms: await Promise.all(
         norms.map(async (norm) => ({
           ...norm,
+          // Rows extracted before 22 October 2026 kept this comparison as a
+          // check; it's made here now, from the document's labour rate.
+          checks: norm.checks.filter((check) => check.code !== "price_total"),
+          printedTotal: checkPrintedTotal(norm, normImport.laborRate),
           publishedAt: await publishedAt(ctx, norm),
         })),
       ),
@@ -282,7 +287,6 @@ export const begin = internalMutation({
       manufacturerName: v.string(),
       articles: v.array(normImportArticle),
       articlesDone: v.number(),
-      laborRate: v.optional(v.number()),
     }),
   ),
   handler: async (ctx, args) => {
@@ -311,7 +315,6 @@ export const begin = internalMutation({
       manufacturerName: manufacturer.name,
       articles: normImport.articles,
       articlesDone: normImport.articlesDone,
-      laborRate: normImport.laborRate,
     };
   },
 });

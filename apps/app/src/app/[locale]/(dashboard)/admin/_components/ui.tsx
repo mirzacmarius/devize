@@ -248,6 +248,11 @@ export function ErrorText({ error }: { error: string | null }) {
 export function useFormat() {
   const locale = useCurrentLocale();
   const tag = locale === "ro" ? "ro-RO" : "en-GB";
+  const money = (value: number) =>
+    new Intl.NumberFormat(tag, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
   return {
     date: (timestamp: number) =>
       new Intl.DateTimeFormat(tag, {
@@ -256,11 +261,15 @@ export function useFormat() {
       }).format(timestamp),
     number: (value: number) =>
       new Intl.NumberFormat(tag, { maximumFractionDigits: 4 }).format(value),
-    usd: (value: number) =>
+    usd: money,
+    lei: money,
+    // A change as a fraction, signed: 0.035 is "+3,5 %".
+    change: (fraction: number) =>
       new Intl.NumberFormat(tag, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(value),
+        style: "percent",
+        maximumFractionDigits: 1,
+        signDisplay: "exceptZero",
+      }).format(fraction),
   };
 }
 
@@ -307,7 +316,6 @@ const issueCodes = [
   "unit_unknown",
   "labor_sum",
   "no_labor",
-  "price_total",
 ];
 
 /** Explains a problem found in a draft or an extracted norm. */

@@ -2057,7 +2057,6 @@ export default {
       unit_unknown: "Unknown unit: {detail}.",
       labor_sum: "The trades don't add up to the labour total: {detail}.",
       no_labor: "It has no labour.",
-      price_total: "The printed total differs from the computed one: {detail}.",
       claim_link_mismatch:
         "The claim link is for {detail}, not for the recipient. Press “Rebuild from template” to make one for the new address.",
       already_claimed:
@@ -2344,6 +2343,12 @@ export default {
       excludes: "Excludes",
       totalLabor: "Printed labour total: {hours} h",
       totalPrice: "Printed total: {price} lei",
+      computedPrice:
+        "From quantities and unit prices: {price} lei ({difference})",
+      totalsDiffer: {
+        most: "Variants whose printed total doesn't follow from the document's quantities and unit prices: {count} of {total}. When most differ, the document most likely worked out its totals with other prices than those in its table. If the unit prices below are the ones in the PDF, the difference is the document's, not a misreading. Devize doesn't use the printed totals.",
+        few: "Variants whose printed total doesn't follow from the document's quantities and unit prices: {count} of {total}. Check their rows, marked below, against the PDF: a quantity may have been misread.",
+      },
       pending: "Not extracted yet.",
       columns: {
         kind: "Kind",
