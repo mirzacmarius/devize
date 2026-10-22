@@ -111,6 +111,9 @@ export function ImportsPanel({
                     )}
                     {tAdmin(`status.import.${normImport.status}`)}
                   </Pill>
+                  {normImport.articlesDone > 0 && !normImport.consent && (
+                    <Pill tone="warning">{t("noConsent")}</Pill>
+                  )}
                 </div>
                 <p className="text-xs text-primary/50">
                   {format.date(normImport._creationTime)}
