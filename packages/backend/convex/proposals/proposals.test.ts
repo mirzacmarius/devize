@@ -6,6 +6,7 @@ import {
   firmOwner,
   publishedBaseNorm,
   setup,
+  signIn,
   type TestConvex,
 } from "../test.helper";
 
@@ -542,6 +543,48 @@ describe("proposals", () => {
         fileIds: [],
       }),
     ).rejects.toThrow(/rate_limited/);
+  });
+
+  test("a person may start only a few an hour, across all their firms", async () => {
+    const t = setup();
+    const { firm, estimateId } = await estimateFor(t);
+    const otherFirmId = await firm.as.mutation(
+      api.accounts.organizations.create,
+      { name: "Ana Renovări SRL" },
+    );
+    // Tender imports and omission checks started in another firm use the
+    // same allowance.
+    await t.run(async (ctx) => {
+      for (let i = 0; i < 6; i++) {
+        await ctx.db.insert("aiJobs", {
+          kind: i % 2 === 0 ? "tender_import" : "omission_check",
+          status: "succeeded",
+          model: defaultModel,
+          organizationId: otherFirmId,
+          createdBy: firm.userId,
+        });
+      }
+    });
+    const start = (as: Firm["as"]) =>
+      as.mutation(api.proposals.proposals.start, {
+        estimateId,
+        text: "baie",
+        fileIds: [],
+      });
+    await expect(start(firm.as)).rejects.toThrow(/rate_limited/);
+
+    // A colleague in the same firm can still start one.
+    const colleague = await signIn(t, { name: "Bianca" });
+    await t.run(async (ctx) => {
+      await ctx.db.insert("memberships", {
+        organizationId: firm.organizationId,
+        userId: colleague.userId,
+        role: "member",
+        lastActiveAt: Date.now(),
+      });
+    });
+    await start(colleague.as);
+    await t.finishAllScheduledFunctions(() => {});
   });
 
   test("another firm can't see or change them", async () => {

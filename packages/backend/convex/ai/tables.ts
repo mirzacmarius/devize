@@ -20,6 +20,8 @@ export const aiTables = {
     model: v.optional(v.string()),
     usage: v.optional(aiUsage),
     costUsd: v.optional(v.number()),
+    // Whose AI allowance the job uses: the person who started it, or for a
+    // client's question, the one who sent the Ofertă.
     createdBy: v.optional(v.id("users")),
     startedAt: v.optional(v.number()),
     finishedAt: v.optional(v.number()),
@@ -27,5 +29,6 @@ export const aiTables = {
     .index("by_status", ["status"])
     .index("by_organizationId", ["organizationId"])
     .index("by_manufacturerId", ["manufacturerId"])
-    .index("by_normImportId", ["normImportId"]),
+    .index("by_normImportId", ["normImportId"])
+    .index("by_createdBy_and_kind", ["createdBy", "kind"]),
 };

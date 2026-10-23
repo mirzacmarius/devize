@@ -6,12 +6,16 @@ import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
 import { Label } from "@devize/ui/label";
 import { type FormEvent, useEffect, useState } from "react";
+import { Turnstile } from "@/components/turnstile";
+import { env } from "@/env.mjs";
 import { useScopedI18n } from "@/locales/client";
 
 // Matches the backend's emailSignIn.ts.
 const PROVIDER = "email-code";
 const CODE_LENGTH = 8;
 const RESEND_AFTER_SECONDS = 30;
+// Set where a code goes only to someone Cloudflare Turnstile let through.
+const TURNSTILE_SITE_KEY = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 /**
  * Sign-in with a code sent by email: the address first, then the 8 digits
@@ -27,6 +31,13 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
   const [wait, setWait] = useState(0);
+  // Turnstile's token, good for one code, and its challenge, started afresh
+  // after each code asked for.
+  const [check, setCheck] = useState<string | null>(null);
+  const [checkFailed, setCheckFailed] = useState(false);
+  const [round, setRound] = useState(0);
+  const checking = TURNSTILE_SITE_KEY !== undefined && check === null;
+  const shownError = error ?? (checkFailed ? t("checkFailed") : undefined);
 
   // Counts down to when another code can be asked for.
   useEffect(() => {
@@ -41,20 +52,45 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
     setBusy(true);
     setError(undefined);
     try {
-      await signIn(PROVIDER, { email: address });
+      await signIn(
+        PROVIDER,
+        check ? { email: address, turnstileToken: check } : { email: address },
+      );
       setSentTo(address);
       setCode("");
       setWait(RESEND_AFTER_SECONDS);
     } catch (cause) {
+      const message = String(cause);
       setError(
-        String(cause).includes("rate_limited")
-          ? t("tooManyCodes")
-          : t("sendFailed"),
+        message.includes("turnstile")
+          ? t("checkFailed")
+          : message.includes("rate_limited")
+            ? t("tooManyCodes")
+            : t("sendFailed"),
       );
     } finally {
       setBusy(false);
+      if (TURNSTILE_SITE_KEY) {
+        setCheck(null);
+        setRound((value) => value + 1);
+      }
     }
   };
+
+  // Each form has its own challenge: moving one would reload its frame.
+  const turnstile = TURNSTILE_SITE_KEY && (
+    <Turnstile
+      key={`${sentTo ? "code" : "email"}-${round}`}
+      siteKey={TURNSTILE_SITE_KEY}
+      onToken={(token) => {
+        setCheck(token);
+        if (token) {
+          setCheckFailed(false);
+        }
+      }}
+      onError={() => setCheckFailed(true)}
+    />
+  );
 
   const submitEmail = (event: FormEvent) => {
     event.preventDefault();
@@ -101,20 +137,21 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder={t("emailPlaceholder")}
-            aria-invalid={error !== undefined}
-            aria-describedby={error ? "sign-in-error" : undefined}
+            aria-invalid={shownError !== undefined}
+            aria-describedby={shownError ? "sign-in-error" : undefined}
           />
         </div>
-        {error && (
+        {shownError && (
           <p
             id="sign-in-error"
             role="alert"
             className="m-0 text-meta text-danger"
           >
-            {error}
+            {shownError}
           </p>
         )}
-        <Button type="submit" disabled={busy} className="w-full">
+        {turnstile}
+        <Button type="submit" disabled={busy || checking} className="w-full">
           {busy && <Icons.Loader className="animate-spin" aria-hidden />}
           {t("sendCode")}
         </Button>
@@ -139,18 +176,18 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
           onChange={(event) => setCode(event.target.value)}
           placeholder="12345678"
           className="font-mono tracking-[0.2em]"
-          aria-invalid={error !== undefined}
-          aria-describedby={error ? "sign-in-error" : undefined}
+          aria-invalid={shownError !== undefined}
+          aria-describedby={shownError ? "sign-in-error" : undefined}
           autoFocus
         />
       </div>
-      {error && (
+      {shownError && (
         <p
           id="sign-in-error"
           role="alert"
           className="m-0 text-meta text-danger"
         >
-          {error}
+          {shownError}
         </p>
       )}
       <Button type="submit" disabled={busy} className="w-full">
@@ -171,12 +208,13 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
         <Button
           type="button"
           variant="link"
-          disabled={busy || wait > 0}
+          disabled={busy || wait > 0 || checking}
           onClick={() => void sendCode(sentTo)}
         >
           {wait > 0 ? t("resendIn", { seconds: wait }) : t("resend")}
         </Button>
       </div>
+      {turnstile}
     </form>
   );
 }

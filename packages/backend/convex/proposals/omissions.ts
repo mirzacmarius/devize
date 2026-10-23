@@ -71,7 +71,7 @@ export const start = mutation({
       throw appError("in_use", "proposal");
     }
     await setAsideOpen(ctx, estimate._id, OMISSIONS);
-    await checkQuota(ctx, estimate.organizationId);
+    await checkQuota(ctx, estimate.organizationId, userId);
     const aiJobId = await createJob(
       ctx,
       {

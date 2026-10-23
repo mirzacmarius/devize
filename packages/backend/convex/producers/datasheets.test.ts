@@ -473,6 +473,41 @@ describe("a norm read from a data sheet", () => {
     await t.finishAllScheduledFunctions(() => {});
   });
 
+  test("a person has at most ten read an hour, across all their firms", async () => {
+    const t = setup();
+    const producer = await claimedProducer(t);
+    const fileId = await uploadFile(t, producerFirm(producer));
+    const otherFirmId = await producer.ana.as.mutation(
+      api.accounts.organizations.create,
+      { name: "Ana Consult SRL" },
+    );
+    await t.run(async (ctx) => {
+      for (let i = 0; i < 10; i++) {
+        await ctx.db.insert("aiJobs", {
+          kind: "datasheet_norm",
+          status: "succeeded",
+          model: defaultModel,
+          organizationId: otherFirmId,
+          createdBy: producer.ana.userId,
+        });
+      }
+    });
+    const start = () =>
+      producer.ana.as.mutation(api.producers.datasheets.start, {
+        organizationId: producer.organizationId,
+        fileId,
+      });
+    await expect(start()).rejects.toThrow(/rate_limited/);
+
+    setSystemTime(new Date(Date.now() + 60 * 60 * 1000 + 1000));
+    try {
+      await start();
+    } finally {
+      setSystemTime();
+    }
+    await t.finishAllScheduledFunctions(() => {});
+  });
+
   test("a firm's readings go with it", async () => {
     const t = setup();
     const { organizationId, importId } = await readDraft(t);
