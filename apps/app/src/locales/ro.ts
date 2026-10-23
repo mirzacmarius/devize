@@ -58,6 +58,7 @@ export default {
     otherEmail: "Altă adresă",
     resend: "Trimite alt cod",
     resendIn: "Alt cod în {seconds} s",
+    privacy: "Politica de confidențialitate",
   },
   username: {
     label: "Nume de utilizator",
@@ -1450,6 +1451,7 @@ export default {
         "Ai răspuns deja la ofertă. Pentru alte întrebări, contactează firma.",
     },
     footer: "Ofertă trimisă cu Devize",
+    privacy: "Politica de confidențialitate",
     errors: {
       locked:
         "Oferta nu mai poate fi schimbată: a fost retrasă, a expirat sau ai răspuns deja.",
@@ -2052,6 +2054,8 @@ export default {
         "Linkul de revendicare e pentru {detail}, nu pentru destinatar. Apasă „Refă din șablon” ca să-l faci pentru adresa nouă.",
       already_claimed:
         "Profilul a fost revendicat între timp, așa că linkul din mulțumire nu mai merge.",
+      missing_controller:
+        "Pagina de confidențialitate nu spune încă cine răspunde de date. Completează operatorul în Setări.",
     },
     manufacturers: {
       title: "Producători",
@@ -2259,7 +2263,7 @@ export default {
       email: {
         title: "Primul email",
         notice:
-          "Devize nu trimite emailuri. Aprobi ciorna, o trimiți din căsuța ta, apoi o marchezi trimisă.",
+          "Devize nu trimite emailuri. Deschizi ciorna în aplicația ta de email sau în Gmail, o trimiți de acolo, apoi o marchezi trimisă.",
         none: "Ciorna apare după cercetare.",
         to: "Către",
         subject: "Subiect",
@@ -2274,7 +2278,14 @@ export default {
         mailto: "Deschide în aplicația de email",
         copy: "Copiază textul",
         copied: "Copiat.",
+        copyFailed:
+          "Nu am putut copia textul. Selectează-l și copiază-l de mână.",
         markSent: "Am trimis-o",
+        opensApprove:
+          "Când deschizi sau copiezi ciorna, o aprobi. După ce o trimiți, apasă „Am trimis-o”.",
+        saveFirst: "Salvează modificările, apoi deschide emailul.",
+        fixFirst:
+          "Emailul se deschide după ce rezolvi problemele care îl blochează.",
         approvedAt: "Aprobat pe {date}",
         sentAt: "Trimis pe {date}",
         rules: "Respectă toate regulile.",
@@ -2415,7 +2426,22 @@ export default {
         firstName: "Prenume",
         lastName: "Nume",
         phone: "Telefon",
-        privacyUrl: "Pagina de confidențialitate",
+        save: "Salvează",
+        saved: "Salvat.",
+      },
+      privacy: {
+        title: "Politica de confidențialitate",
+        description:
+          "Emailurile trimit la pagina de confidențialitate din Devize, care spune cine răspunde de date. Trece aici firma care operează Devize: fără denumire și email, ciornele nu se pot aproba.",
+        name: "Denumirea operatorului",
+        namePlaceholder: "Exemplu SRL",
+        registration: "CUI și nr. de înregistrare",
+        registrationPlaceholder: "RO12345678, J40/1234/2020",
+        address: "Sediul",
+        email: "Email pentru date personale",
+        url: "Altă pagină de confidențialitate",
+        urlHint: "Lasă gol ca emailurile să trimită la pagina din Devize.",
+        open: "Vezi pagina",
         save: "Salvează",
         saved: "Salvat.",
       },
@@ -2804,6 +2830,108 @@ export default {
     pendingFrom: "invitat de {name}",
     orCreate: "Sau creează-ți propria firmă",
     menuLabel: "Invitații",
+  },
+  privacy: {
+    title: "Politica de confidențialitate",
+    description:
+      "Ce date personale folosește Devize, de unde le are, de ce, cât timp le păstrează și ce drepturi aveți.",
+    updated: "Actualizată pe 23 octombrie 2026",
+    intro:
+      "Devize este o aplicație web în care firmele de construcții își fac devizele, cu norme de la producători și prețuri din magazine. Aici scrie ce date personale folosim, de unde le avem, de ce, cât timp le păstrăm și ce drepturi aveți.",
+    labels: {
+      data: "Ce date",
+      source: "De unde le avem",
+      purpose: "De ce",
+      basis: "Temeiul legal",
+      retention: "Cât le păstrăm",
+      optOut: "Dacă nu mai vreți mesaje",
+    },
+    controller: {
+      title: "Cine răspunde de date",
+      intro: "Operatorul datelor personale din Devize este:",
+      name: "Denumire",
+      registration: "Înregistrare",
+      address: "Sediu",
+      email: "Email",
+      contact:
+        "Scrieți-ne la această adresă pentru orice întrebare sau cerere despre datele dumneavoastră.",
+      missing:
+        "Datele operatorului se completează înainte de lansarea Devize. Până atunci, ne puteți scrie răspunzând la emailul primit de la noi.",
+    },
+    producers: {
+      title: "Producătorii cărora le scriem",
+      intro:
+        "Construim un catalog de norme de deviz pentru produsele producătorilor de materiale de construcții. Ca să le cerem normele, le scriem la adresele de contact publicate pe site-urile lor.",
+      data: "adresa de email de serviciu (de obicei una generală, ca office@ sau tehnic@, uneori a unei persoane), funcția, dacă apare pe site, pagina pe care am găsit-o și mesajele schimbate cu noi.",
+      source:
+        "site-ul firmei. Le găsește asistentul Claude, care caută pe web și citește paginile publice ale firmei, sau le trece un om din echipa Devize. Nu ghicim adrese și nu cumpărăm liste.",
+      purpose:
+        "ca să cerem firmei normele de deviz și acordul de a le folosi în Devize, cu firma menționată ca sursă, și ca să îi oferim gratuit un profil de producător.",
+      basis:
+        "interesul nostru legitim de a construi un catalog de norme corecte, cu datele producătorilor (art. 6 alin. (1) lit. f) din GDPR). Fiecare email îl aprobă și îl trimite un om, către o singură firmă.",
+      optOut:
+        "răspundeți „stop” și nu vă mai scriem. Păstrăm doar adresa, pe lista de excludere, ca să nu vă scriem din nou.",
+      retention:
+        "cât discutăm cu firma. Dacă nu primim răspuns, ștergem adresele persoanelor în cel mult 6 luni de la ultimul mesaj.",
+    },
+    users: {
+      title: "Cei care folosesc Devize",
+      data: "adresa de email, numele și poza de profil, dacă intrați cu Google; datele firmei (denumire, CUI, adresă, email, telefon), colegii și invitațiile; ce creați în aplicație: devize, oferte, clienții firmei și fișierele încărcate (fotografii, liste de cantități, fișe tehnice).",
+      purpose:
+        "ca să vă dăm aplicația: contul, firma, devizele, formularele și ofertele.",
+      basis:
+        "contractul cu dumneavoastră (art. 6 alin. (1) lit. b) din GDPR) și interesul nostru legitim de a ține aplicația sigură, de exemplu limitând câte coduri și invitații pleacă spre aceeași adresă (art. 6 alin. (1) lit. f)).",
+      retention:
+        "cât aveți cont. Ne puteți cere oricând să ștergem contul și datele firmei; păstrăm doar ce ne obligă legea să păstrăm.",
+    },
+    clients: {
+      title: "Clienții firmelor",
+      body: "Când o firmă vă trimite o ofertă prin Devize, firma răspunde de datele dumneavoastră, iar Devize le prelucrează în numele ei: numele și datele de contact trecute de firmă, când ați deschis linkul ofertei, ce ați ales în ea, întrebările puse și semnătura, dacă o acceptați. Pentru aceste date, scrieți întâi firmei care v-a trimis oferta.",
+    },
+    ai: {
+      title: "Inteligența artificială",
+      body: "Unele funcții trimit către Claude, modelul de inteligență artificială al Anthropic, ce le dați: descrierea sau fotografiile unei lucrări, listele de cantități, fișele tehnice și, dacă firma a pornit asistentul ofertei, întrebările clienților. Anthropic nu își antrenează modelele cu datele primite astfel.",
+      dictation:
+        "Dictarea folosește recunoașterea vocală a browserului: sunetul îl prelucrează furnizorul browserului, iar Devize primește doar textul.",
+    },
+    processors: {
+      title: "Cine mai primește datele",
+      intro:
+        "Nu vindem date personale și nu le folosim pentru reclame. Le primesc doar furnizorii care ne ajută să rulăm Devize, fiecare pentru partea lui:",
+      convex: "Convex: baza de date și funcțiile aplicației",
+      vercel: "Vercel: găzduirea paginilor",
+      anthropic:
+        "Anthropic: Claude, pentru funcțiile de inteligență artificială",
+      resend:
+        "Resend: emailurile automate ale aplicației, cum sunt codurile de intrare, invitațiile și notificările",
+      google: "Google: intrarea cu contul Google, dacă o alegeți",
+      sentry: "Sentry: rapoartele de erori, fără date care să vă identifice",
+      outreach:
+        "Emailurile către producători le trimitem din căsuța noastră de email, nu din aplicație.",
+      transfers:
+        "Unii dintre acești furnizori prelucrează datele în Statele Unite. Pentru aceste transferuri folosim garanțiile cerute de GDPR: clauzele contractuale standard ale Comisiei Europene sau Cadrul de confidențialitate a datelor UE–SUA.",
+      authorities: "Dăm date autorităților doar când legea ne obligă.",
+    },
+    cookies: {
+      title: "Cookie-uri",
+      body: "Folosim doar cookie-urile fără de care aplicația nu merge: cele care vă țin conectat și cel care ține minte limba aleasă. Tema luminoasă sau întunecată o păstrează browserul. Nu folosim cookie-uri de analiză sau de reclamă.",
+    },
+    rights: {
+      title: "Drepturile dumneavoastră",
+      body: "Puteți cere să vedeți datele pe care le avem despre dumneavoastră, să le corectăm sau să le ștergem, să le restricționăm folosirea ori să le primiți într-un fișier. Vă puteți opune oricând folosirii lor pe baza interesului nostru legitim; pentru emailurile noastre ajunge să răspundeți „stop”.",
+      contact:
+        "Ne scrieți la adresa de la „Cine răspunde de date” și vă răspundem în cel mult o lună.",
+      complaint:
+        "Dacă răspunsul nostru nu vă mulțumește, puteți face plângere la Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP), pe dataprotection.ro.",
+    },
+    security: {
+      title: "Siguranța datelor",
+      body: "Totul circulă criptat. Datele unei firme le văd doar membrii ei, iar echipa Devize are acces doar la ce îi trebuie ca să administreze aplicația.",
+    },
+    changes: {
+      title: "Schimbări",
+      body: "Când schimbăm această politică, actualizăm data de sus.",
+    },
   },
   errors: {
     unknown: "Ceva n-a mers. Încearcă din nou.",

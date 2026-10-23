@@ -1,5 +1,5 @@
-// Links that open an approved email ready to send from the sender's own
-// mailbox. Devize itself never sends outreach email.
+// Links that open an email ready to send from the sender's own mailbox.
+// Devize itself never sends outreach email.
 
 type Email = { to?: string; subject: string; body: string };
 

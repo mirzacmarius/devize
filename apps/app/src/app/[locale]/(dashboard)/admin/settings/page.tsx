@@ -1,11 +1,11 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Button } from "@devize/ui/button";
+import { Button, buttonVariants } from "@devize/ui/button";
 import { Input } from "@devize/ui/input";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { Loader2 } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import { ErrorText, Field, Panel, useFormat, useRun } from "../_components/ui";
@@ -14,16 +14,19 @@ const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
 export default function AdminSettingsPage() {
   const t = useScopedI18n("admin.settings");
-  const sender = useQuery(api.manufacturers.outreach.getSettings);
+  const settings = useQuery(api.manufacturers.outreach.getSettings);
 
   return (
     <div className="flex w-full flex-col gap-6">
       <h1 className="text-3xl font-medium text-primary/80">{t("title")}</h1>
       <ClaudeStatus />
-      {sender === undefined ? (
+      {settings === undefined ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
       ) : (
-        <SenderForm sender={sender} />
+        <>
+          <SenderForm settings={settings} />
+          <PrivacyForm settings={settings} />
+        </>
       )}
       <SuppressionList />
     </div>
@@ -66,17 +69,16 @@ function ClaudeStatus() {
   );
 }
 
-function SenderForm({
-  sender,
-}: {
-  sender: FunctionReturnType<typeof api.manufacturers.outreach.getSettings>;
-}) {
+type Settings = FunctionReturnType<
+  typeof api.manufacturers.outreach.getSettings
+>;
+
+function SenderForm({ settings }: { settings: Settings }) {
   const t = useScopedI18n("admin.settings.sender");
   const updateSettings = useMutation(api.manufacturers.outreach.updateSettings);
-  const [firstName, setFirstName] = useState(sender.firstName ?? "");
-  const [lastName, setLastName] = useState(sender.lastName ?? "");
-  const [phone, setPhone] = useState(sender.phone ?? "");
-  const [privacyUrl, setPrivacyUrl] = useState(sender.privacyUrl ?? "");
+  const [firstName, setFirstName] = useState(settings.firstName ?? "");
+  const [lastName, setLastName] = useState(settings.lastName ?? "");
+  const [phone, setPhone] = useState(settings.phone ?? "");
   const [saved, setSaved] = useState(false);
   const { run, error, pending } = useRun();
 
@@ -87,9 +89,7 @@ function SenderForm({
         onSubmit={async (event) => {
           event.preventDefault();
           setSaved(
-            await run(() =>
-              updateSettings({ firstName, lastName, phone, privacyUrl }),
-            ),
+            await run(() => updateSettings({ firstName, lastName, phone })),
           );
         }}
       >
@@ -115,13 +115,114 @@ function SenderForm({
             onChange={(event) => setPhone(event.target.value)}
           />
         </Field>
-        <Field label={t("privacyUrl")} htmlFor="sender_privacy">
+        <div className="flex items-center gap-3 sm:col-span-2">
+          <Button type="submit" size="sm" disabled={pending}>
+            {t("save")}
+          </Button>
+          {saved && (
+            <span className="text-sm text-primary/60">{t("saved")}</span>
+          )}
+          <ErrorText error={error} />
+        </div>
+      </form>
+    </Panel>
+  );
+}
+
+/**
+ * Who the privacy page names as answering for the data. The emails link to
+ * that page unless another one is set here.
+ */
+function PrivacyForm({ settings }: { settings: Settings }) {
+  const t = useScopedI18n("admin.settings.privacy");
+  const updatePrivacy = useMutation(api.manufacturers.outreach.updatePrivacy);
+  const { controller } = settings;
+  const [controllerName, setName] = useState(controller.name ?? "");
+  const [controllerRegistration, setRegistration] = useState(
+    controller.registration ?? "",
+  );
+  const [controllerAddress, setAddress] = useState(controller.address ?? "");
+  const [controllerEmail, setEmail] = useState(controller.email ?? "");
+  const [privacyUrl, setPrivacyUrl] = useState(settings.privacyUrl ?? "");
+  const [saved, setSaved] = useState(false);
+  const { run, error, pending } = useRun();
+
+  return (
+    <Panel
+      title={t("title")}
+      description={t("description")}
+      actions={
+        <a
+          href="/confidentialitate"
+          target="_blank"
+          rel="noreferrer"
+          className={buttonVariants({ size: "sm", variant: "outline" })}
+        >
+          {t("open")}
+          <ExternalLink aria-hidden />
+        </a>
+      }
+    >
+      <form
+        className="grid gap-4 sm:grid-cols-2"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          setSaved(
+            await run(() =>
+              updatePrivacy({
+                controllerName,
+                controllerRegistration,
+                controllerAddress,
+                controllerEmail,
+                privacyUrl,
+              }),
+            ),
+          );
+        }}
+      >
+        <Field label={t("name")} htmlFor="privacy_name">
           <Input
-            id="sender_privacy"
+            id="privacy_name"
+            value={controllerName}
+            placeholder={t("namePlaceholder")}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </Field>
+        <Field label={t("registration")} htmlFor="privacy_registration">
+          <Input
+            id="privacy_registration"
+            value={controllerRegistration}
+            placeholder={t("registrationPlaceholder")}
+            onChange={(event) => setRegistration(event.target.value)}
+          />
+        </Field>
+        <Field label={t("address")} htmlFor="privacy_address">
+          <Input
+            id="privacy_address"
+            value={controllerAddress}
+            onChange={(event) => setAddress(event.target.value)}
+          />
+        </Field>
+        <Field label={t("email")} htmlFor="privacy_email">
+          <Input
+            id="privacy_email"
+            type="email"
+            value={controllerEmail}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </Field>
+        <Field label={t("url")} htmlFor="privacy_url">
+          <Input
+            id="privacy_url"
             type="url"
             value={privacyUrl}
+            placeholder={settings.privacyPage ?? undefined}
+            aria-describedby="privacy_url_hint"
             onChange={(event) => setPrivacyUrl(event.target.value)}
           />
+          <p id="privacy_url_hint" className="text-xs text-primary/50">
+            {t("urlHint")}
+          </p>
         </Field>
         <div className="flex items-center gap-3 sm:col-span-2">
           <Button type="submit" size="sm" disabled={pending}>

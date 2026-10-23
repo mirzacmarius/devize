@@ -1,6 +1,7 @@
 import { ConvexError } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { getController, namesController, privacyPageUrl } from "../privacy";
 import { createClaimLink } from "../producers/claimLinks";
 import { isSuppressed } from "./admin";
 import {
@@ -19,13 +20,17 @@ import {
   onCompanyDomain,
 } from "./lib/text";
 
+/**
+ * The signature, and the privacy page the emails link to: Devize's own,
+ * unless the settings name another.
+ */
 export async function getSender(ctx: QueryCtx): Promise<Sender> {
   const settings = await ctx.db.query("outreachSettings").first();
   return {
     firstName: settings?.firstName,
     lastName: settings?.lastName,
     phone: settings?.phone,
-    privacyUrl: settings?.privacyUrl,
+    privacyUrl: settings?.privacyUrl ?? privacyPageUrl() ?? undefined,
   };
 }
 
@@ -34,7 +39,8 @@ export async function getSender(ctx: QueryCtx): Promise<Sender> {
  * the recipient: whether the address was read on a page (or added by a
  * person) and whether it is on the manufacturer's own domain. A thank-you
  * goes to whoever sent the norms, so only its claim link is checked against
- * the recipient.
+ * the recipient. Devize's privacy page, which the emails link to, must name
+ * its controller first.
  */
 export async function checkEmail(
   ctx: QueryCtx,
@@ -48,6 +54,14 @@ export async function checkEmail(
   },
 ): Promise<EmailIssue[]> {
   const issues = lintEmail(email);
+  const privacyPage = privacyPageUrl();
+  if (
+    privacyPage &&
+    email.body.includes(privacyPage) &&
+    !namesController(await getController(ctx))
+  ) {
+    issues.push({ code: "missing_controller", level: "error" });
+  }
   const to =
     email.to && isEmail(email.to) ? normalizeEmail(email.to) : undefined;
   const manufacturer = await ctx.db.get("manufacturers", manufacturerId);

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
 import { env } from "@/env.mjs";
 import { getScopedI18n } from "@/locales/server";
@@ -23,6 +24,12 @@ export default async function Page() {
           <p className="m-0 text-body text-ink-2">{t("description")}</p>
         </div>
         <SignInOptions withGoogle={withGoogle} />
+        <Link
+          href="/confidentialitate"
+          className="text-meta text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
+        >
+          {t("privacy")}
+        </Link>
       </div>
     </div>
   );

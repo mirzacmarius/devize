@@ -27,8 +27,11 @@ const inEveryLanguage = (paths: string[]) =>
   ]);
 
 const isSignInPage = createRouteMatcher(inEveryLanguage(["/login"]));
-// An Ofertă's link, which the firm's client opens without an account.
-const isPublicPage = createRouteMatcher(inEveryLanguage(["/o/:token"]));
+// An Ofertă's link, which the firm's client opens without an account, and the
+// privacy page, which emails to producers link to.
+const isPublicPage = createRouteMatcher(
+  inEveryLanguage(["/o/:token", "/confidentialitate"]),
+);
 
 export const proxy = convexAuthNextjsMiddleware(
   async (request, { convexAuth }) => {

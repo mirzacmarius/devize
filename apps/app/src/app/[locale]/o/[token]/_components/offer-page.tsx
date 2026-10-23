@@ -5,6 +5,7 @@ import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Card, CardContent } from "@devize/ui/card";
 import { StatusPill } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouteParam } from "@/components/use-route-param";
 import { estimateCode, formatCalendarDate, formatDay } from "@/lib/format";
@@ -191,7 +192,15 @@ export function OpenOffer({
             />
           </aside>
         </div>
-        <p className="m-0 text-center text-meta text-ink-3">{t("footer")}</p>
+        <p className="m-0 text-center text-meta text-ink-3">
+          {t("footer")} ·{" "}
+          <Link
+            href="/confidentialitate"
+            className="underline-offset-2 hover:text-ink-2 hover:underline"
+          >
+            {t("privacy")}
+          </Link>
+        </p>
       </main>
       {open && (
         <>

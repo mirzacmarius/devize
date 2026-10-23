@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useScopedI18n } from "@/locales/client";
-import { gmailComposeUrl } from "../_components/email-links";
+import { gmailComposeUrl, mailtoUrl } from "../_components/email-links";
 import {
   confidenceTone,
   ErrorText,
@@ -138,10 +138,16 @@ function MessageRow({ message }: { message: QueuedMessage }) {
         {message.status === "approved" && (
           <>
             <a
+              href={mailtoUrl(message)}
+              className={buttonVariants({ size: "sm" })}
+            >
+              {tEmail("mailto")}
+            </a>
+            <a
               href={gmailComposeUrl(message)}
               target="_blank"
               rel="noreferrer noopener"
-              className={buttonVariants({ size: "sm" })}
+              className={buttonVariants({ size: "sm", variant: "outline" })}
             >
               {tEmail("gmail")}
             </a>
