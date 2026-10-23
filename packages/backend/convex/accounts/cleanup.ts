@@ -3,6 +3,7 @@ import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { internalMutation } from "../_generated/server";
+import { deleteFirmNormRequests } from "../catalog/aiNorms";
 import { deletePackagingRows } from "../materials/packagings";
 import { deleteFirmDatasheets } from "../producers/datasheets";
 import { deleteDetails } from "../producers/details";
@@ -64,6 +65,10 @@ async function deleteSome(
   const datasheets = await deleteFirmDatasheets(ctx, organizationId, limit);
   if (datasheets > 0) {
     return datasheets;
+  }
+  const normRequests = await deleteFirmNormRequests(ctx, organizationId, limit);
+  if (normRequests > 0) {
+    return normRequests;
   }
   const files = await ctx.db
     .query("files")
