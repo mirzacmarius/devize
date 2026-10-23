@@ -2,7 +2,7 @@ import type { Infer } from "convex/values";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
-import type { MutationCtx } from "../_generated/server";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { env, internalMutation, query } from "../_generated/server";
 import { requireSuperAdmin } from "../lib/roles";
 import { aiModel } from "./models";
@@ -12,6 +12,42 @@ import { type aiConfidence, type aiJobKind, aiUsage } from "./validators";
 // A job still queued or running after this long is dead: its action hit the
 // platform's time limit or crashed before it could record the failure.
 export const JOB_TIMEOUT_MS = 20 * 60 * 1000;
+
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
+/**
+ * Whether a person has used up an allowance of AI jobs of `kinds` in the
+ * last hour or day, counting every firm they work in. Features give a person
+ * the same allowance as a firm, so creating more firms buys no more AI work.
+ */
+export async function personLimitReached(
+  ctx: QueryCtx,
+  userId: Id<"users">,
+  kinds: readonly Infer<typeof aiJobKind>[],
+  limits: { perHour?: number; perDay: number },
+): Promise<boolean> {
+  const now = Date.now();
+  let lastDay = 0;
+  let lastHour = 0;
+  for (const kind of kinds) {
+    const jobs = await ctx.db
+      .query("aiJobs")
+      .withIndex("by_createdBy_and_kind", (q) =>
+        q
+          .eq("createdBy", userId)
+          .eq("kind", kind)
+          .gt("_creationTime", now - DAY_MS),
+      )
+      .take(limits.perDay);
+    lastDay += jobs.length;
+    lastHour += jobs.filter((job) => job._creationTime > now - HOUR_MS).length;
+  }
+  return (
+    lastDay >= limits.perDay ||
+    (limits.perHour !== undefined && lastHour >= limits.perHour)
+  );
+}
 
 /** Queues a job and schedules the watchdog that fails it if it never ends. */
 export async function createJob(

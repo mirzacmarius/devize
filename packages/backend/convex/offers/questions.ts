@@ -3,7 +3,13 @@ import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { internalMutation, mutation, query } from "../_generated/server";
-import { createJob, failJob, finishJob, startJob } from "../ai/jobs";
+import {
+  createJob,
+  failJob,
+  finishJob,
+  personLimitReached,
+  startJob,
+} from "../ai/jobs";
 import { aiModel } from "../ai/models";
 import { aiUsage } from "../ai/validators";
 import { requireFirmDoc } from "../lib/access";
@@ -28,8 +34,9 @@ const MAX_REPLY = 2000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // Questions a link takes in a day, and that the assistant answers for a firm
-// in a day, so a prank or a loop can't run up the bill. Over the firm's
-// limit, questions go to the firm until the next day.
+// in a day, or across all the Oferte one person sent, so a prank or a loop
+// can't run up the bill. Over either limit, questions go to the firm until
+// the next day.
 export const QUESTIONS_PER_LINK = 20;
 export const QUESTIONS_PER_FIRM = 200;
 
@@ -105,7 +112,12 @@ export const ask = mutation({
           .gt("_creationTime", now - DAY_MS),
       )
       .take(QUESTIONS_PER_FIRM);
-    const assistant = offer.assistant && firmToday.length < QUESTIONS_PER_FIRM;
+    const assistant =
+      offer.assistant &&
+      firmToday.length < QUESTIONS_PER_FIRM &&
+      !(await personLimitReached(ctx, offer.createdBy, ["offer_question"], {
+        perDay: QUESTIONS_PER_FIRM,
+      }));
 
     const questionId = await ctx.db.insert("offerQuestions", {
       organizationId: offer.organizationId,
@@ -122,6 +134,7 @@ export const ask = mutation({
           kind: "offer_question",
           model: aiModel(),
           organizationId: offer.organizationId,
+          createdBy: offer.createdBy,
         },
         ANSWER_TIMEOUT_MS,
       );

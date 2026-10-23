@@ -8,6 +8,7 @@ import {
   failJob,
   finishJob,
   JOB_TIMEOUT_MS,
+  personLimitReached,
   startJob,
 } from "../ai/jobs";
 import { aiModel, defaultModel } from "../ai/models";
@@ -24,15 +25,20 @@ import {
 } from "./lib/datasheetFile";
 import { datasheetCondition } from "./validators";
 
-// Readings a producer's firm can start: enough for a product range in an
-// afternoon, few enough to keep a mistake from costing much.
+// Readings a producer's firm can start, and a person across all their firms:
+// enough for a product range in an afternoon, few enough to keep a mistake
+// from costing much.
 const PER_HOUR = 10;
 const PER_DAY = 40;
 const HOUR_MS = 60 * 60 * 1000;
 // Readings a profile lists.
 const MAX_LISTED = 20;
 
-async function checkQuota(ctx: QueryCtx, organizationId: Id<"organizations">) {
+async function checkQuota(
+  ctx: QueryCtx,
+  organizationId: Id<"organizations">,
+  userId: Id<"users">,
+) {
   const now = Date.now();
   const lastDay = await ctx.db
     .query("datasheetImports")
@@ -43,7 +49,14 @@ async function checkQuota(ctx: QueryCtx, organizationId: Id<"organizations">) {
     )
     .take(PER_DAY);
   const lastHour = lastDay.filter((row) => row._creationTime > now - HOUR_MS);
-  if (lastDay.length >= PER_DAY || lastHour.length >= PER_HOUR) {
+  if (
+    lastDay.length >= PER_DAY ||
+    lastHour.length >= PER_HOUR ||
+    (await personLimitReached(ctx, userId, ["datasheet_norm"], {
+      perHour: PER_HOUR,
+      perDay: PER_DAY,
+    }))
+  ) {
     throw appError("rate_limited", "datasheets");
   }
 }
@@ -113,7 +126,7 @@ export const start = mutation({
     if (work && work.length > MAX_DATASHEET_WORK) {
       throw invalid("length");
     }
-    await checkQuota(ctx, args.organizationId);
+    await checkQuota(ctx, args.organizationId, userId);
     const aiJobId = await queueReading(ctx, {
       organizationId: args.organizationId,
       manufacturerId,
@@ -211,7 +224,7 @@ export const retry = mutation({
     if (firm?.manufacturerId !== row.manufacturerId) {
       throw forbidden("manufacturer");
     }
-    await checkQuota(ctx, row.organizationId);
+    await checkQuota(ctx, row.organizationId, userId);
     const aiJobId = await queueReading(ctx, {
       organizationId: row.organizationId,
       manufacturerId: row.manufacturerId,

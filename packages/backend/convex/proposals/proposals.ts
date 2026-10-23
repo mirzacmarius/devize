@@ -3,7 +3,7 @@ import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { internalMutation, mutation, query } from "../_generated/server";
-import { createJob } from "../ai/jobs";
+import { createJob, personLimitReached } from "../ai/jobs";
 import { aiModel } from "../ai/models";
 import { isUsableBy } from "../catalog/access";
 import { readNormResources } from "../catalog/norms";
@@ -50,10 +50,16 @@ const APPLY_BATCH = 100;
 // A line item's title; a tender position's full text stays in tenderRef.
 const MAX_TITLE = 500;
 
-// Proposals a firm may start, so a loop or a slip can't run up the AI bill.
+// Proposals a firm may start, so a loop or a slip can't run up the AI bill,
+// and a person too, across all their firms.
 const PER_HOUR = 6;
 const PER_DAY = 30;
 const HOUR_MS = 60 * 60 * 1000;
+const PROPOSAL_JOBS = [
+  "estimate_proposal",
+  "tender_import",
+  "omission_check",
+] as const;
 
 // The drafting action takes ten minutes at most; a job still running after
 // twelve has died, and its proposal shows as failed. A tender import runs in
@@ -391,6 +397,7 @@ export async function setAsideOpen(
 export async function checkQuota(
   ctx: QueryCtx,
   organizationId: Id<"organizations">,
+  userId: Id<"users">,
 ) {
   const now = Date.now();
   const lastDay = await ctx.db
@@ -404,7 +411,14 @@ export async function checkQuota(
   const lastHour = lastDay.filter(
     (proposal) => proposal._creationTime > now - HOUR_MS,
   );
-  if (lastDay.length >= PER_DAY || lastHour.length >= PER_HOUR) {
+  if (
+    lastDay.length >= PER_DAY ||
+    lastHour.length >= PER_HOUR ||
+    (await personLimitReached(ctx, userId, PROPOSAL_JOBS, {
+      perHour: PER_HOUR,
+      perDay: PER_DAY,
+    }))
+  ) {
     throw appError("rate_limited", "proposals");
   }
 }
@@ -435,7 +449,7 @@ export const start = mutation({
     }
     await checkPhotos(ctx, estimate, args.fileIds);
     await setAsideOpen(ctx, estimate._id, DRAFTING);
-    await checkQuota(ctx, estimate.organizationId);
+    await checkQuota(ctx, estimate.organizationId, userId);
     const aiJobId = await createJob(
       ctx,
       {
@@ -527,7 +541,7 @@ export const startTender = mutation({
     );
     await checkTenderFiles(ctx, estimate, args.fileIds);
     await setAsideOpen(ctx, estimate._id, DRAFTING);
-    await checkQuota(ctx, estimate.organizationId);
+    await checkQuota(ctx, estimate.organizationId, userId);
     const aiJobId = await createJob(
       ctx,
       {

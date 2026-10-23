@@ -144,8 +144,9 @@ describe("offer questions", () => {
       status: "failed",
       error: "missing_api_key",
       organizationId: firm.organizationId,
+      // It counts toward the AI allowance of whoever sent the Ofertă.
+      createdBy: firm.userId,
     });
-    expect(job?.createdBy).toBeUndefined();
     const [asked] = await t.query(api.offers.questions.forLink, { token });
     expect(asked?.status).toBe("waiting");
     expect(sent).toHaveLength(1);
@@ -390,6 +391,36 @@ describe("offer questions", () => {
     const questionId = await t.mutation(api.offers.questions.ask, {
       token: link.token,
       question: "Ce vopsea folosiți?",
+    });
+    const question = await t.run((ctx) =>
+      ctx.db.get("offerQuestions", questionId),
+    );
+    expect(question?.status).toBe("waiting");
+    expect(question?.aiJobId).toBeUndefined();
+  });
+
+  test("the assistant answers a day's questions across all the Oferte one person sent", async () => {
+    const t = setup();
+    const { firm, token } = await linkFor(t);
+    // Answers to the Oferte the same person sent from another firm.
+    const otherFirmId = await firm.as.mutation(
+      api.accounts.organizations.create,
+      { name: "Ana Renovări SRL" },
+    );
+    await t.run(async (ctx) => {
+      for (let i = 0; i < QUESTIONS_PER_FIRM; i++) {
+        await ctx.db.insert("aiJobs", {
+          kind: "offer_question",
+          status: "succeeded",
+          model: defaultModel,
+          organizationId: otherFirmId,
+          createdBy: firm.userId,
+        });
+      }
+    });
+    const questionId = await t.mutation(api.offers.questions.ask, {
+      token,
+      question: "Ce gresie folosiți?",
     });
     const question = await t.run((ctx) =>
       ctx.db.get("offerQuestions", questionId),
