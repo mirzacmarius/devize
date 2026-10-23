@@ -365,6 +365,17 @@ export default {
         warning:
           "Propuse de AI și neconfirmate: {count}. Le confirmi din meniul fiecărui articol.",
       },
+      labor: {
+        title: "Manoperă peste minimul legal",
+        passed:
+          "Fiecare oră de manoperă e cel puțin {floor} lei, minimul legal în construcții.",
+        warningTitle: "Manoperă sub minimul legal",
+        warning:
+          "Sub {floor} lei pe oră, cât înseamnă salariul minim în construcții de {monthly} lei brut pe lună, înainte de CAM: {names}.",
+        warningMore:
+          "Sub {floor} lei pe oră, cât înseamnă salariul minim în construcții de {monthly} lei brut pe lună, înainte de CAM: {names} și încă {count}.",
+        fix: "Vezi tarifele",
+      },
       client: {
         title: "Client ales",
         warningTitle: "Fără client",
@@ -377,7 +388,7 @@ export default {
         passedNotPayer: "Fără TVA; firma nu e plătitoare.",
         warningTitle: "TVA 0%",
         warning:
-          "Firma e plătitoare de TVA. 0% e corect doar cu taxare inversă.",
+          "Firma e plătitoare de TVA, iar lucrările de construcții din țară se facturează cu TVA. 0% e corect doar la operațiuni scutite sau cu taxare inversă, cum sunt livrările intracomunitare.",
         failedTitle: "TVA în plus",
         failed: "Firma nu e plătitoare de TVA, dar devizul adaugă {vat}.",
         fix: "Modifică cotele",
@@ -1764,6 +1775,9 @@ export default {
       transport: "Transport",
     },
     noRates: "Niciun tarif: normele folosesc prețurile lor de referință.",
+    laborFloor:
+      "Minimul legal în construcții: {monthly} lei brut pe lună, adică {floor} lei pe oră înainte de CAM (OUG 156/2024).",
+    belowFloor: "Sub minimul legal de {floor} lei pe oră",
     forAll: "Pentru toate resursele socotite în {unit}",
     forResource: "Pentru o singură resursă",
     edit: "Editează {name}",
@@ -3004,19 +3018,19 @@ export default {
   markups: {
     cam: {
       label: "CAM",
-      hint: "Contribuția asiguratorie pentru muncă, din manoperă.",
+      hint: "Contribuția asiguratorie pentru muncă, din manoperă: 2,25% prin lege.",
     },
     indirect: {
       label: "Cheltuieli indirecte",
-      hint: "Din costurile directe.",
+      hint: "Din costurile directe. Fără procent legal; reperul uzual e 10%.",
     },
     profit: {
       label: "Profit",
-      hint: "Din costurile directe și cele indirecte.",
+      hint: "Din costurile directe și cele indirecte. Fără procent legal; reperul uzual e 5–8%.",
     },
     vat: {
       label: "TVA",
-      hint: "Din totalul fără TVA; 0% dacă firma nu e plătitoare.",
+      hint: "Din totalul fără TVA: 21% din august 2025; 0% dacă firma nu e plătitoare.",
     },
   },
   resources: {

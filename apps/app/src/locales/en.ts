@@ -368,6 +368,17 @@ export default {
         warning:
           "Proposed by AI and not confirmed: {count}. Confirm each from its menu.",
       },
+      labor: {
+        title: "Labour above the legal minimum",
+        passed:
+          "Every hour of labour is at least {floor} lei, the legal minimum in construction.",
+        warningTitle: "Labour below the legal minimum",
+        warning:
+          "Under {floor} lei an hour, what the construction minimum wage of {monthly} lei gross a month comes to, before CAM: {names}.",
+        warningMore:
+          "Under {floor} lei an hour, what the construction minimum wage of {monthly} lei gross a month comes to, before CAM: {names} and {count} more.",
+        fix: "See the rates",
+      },
       client: {
         title: "Client chosen",
         warningTitle: "No client",
@@ -380,7 +391,7 @@ export default {
         passedNotPayer: "No VAT; the company isn't VAT registered.",
         warningTitle: "VAT 0%",
         warning:
-          "The company is VAT registered. 0% is only right with reverse charge.",
+          "The company is VAT registered, and construction works in Romania are invoiced with VAT. 0% is only right for exempt operations or reverse-charge supplies, such as intra-community deliveries.",
         failedTitle: "VAT added",
         failed:
           "The company isn't VAT registered, but the estimate adds {vat}.",
@@ -1768,6 +1779,9 @@ export default {
       transport: "Transport",
     },
     noRates: "No rates: norms use their reference prices.",
+    laborFloor:
+      "The legal minimum in construction: {monthly} lei gross a month, that is {floor} lei an hour before CAM (OUG 156/2024).",
+    belowFloor: "Below the legal minimum of {floor} lei an hour",
     forAll: "For every resource counted in {unit}",
     forResource: "For one resource",
     edit: "Edit {name}",
@@ -3013,19 +3027,19 @@ export default {
   markups: {
     cam: {
       label: "CAM",
-      hint: "The employer's work insurance contribution, on labour.",
+      hint: "The employer's work insurance contribution, on labour: 2.25% by law.",
     },
     indirect: {
       label: "Indirect costs",
-      hint: "On the direct costs.",
+      hint: "On the direct costs. No legal percentage; the usual reference is 10%.",
     },
     profit: {
       label: "Profit",
-      hint: "On the direct and indirect costs.",
+      hint: "On the direct and indirect costs. No legal percentage; the usual reference is 5–8%.",
     },
     vat: {
       label: "VAT",
-      hint: "On the total without VAT; 0% if the company isn't registered.",
+      hint: "On the total without VAT: 21% since August 2025; 0% if the company isn't registered.",
     },
   },
   resources: {
