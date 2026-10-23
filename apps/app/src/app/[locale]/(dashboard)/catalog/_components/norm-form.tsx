@@ -276,7 +276,9 @@ export function NormForm({
     );
     setSaving(false);
     if (result.ok) {
-      router.push(`/catalog/${result.value}`);
+      // In place of the form, so Back doesn't return to it filled in: Next.js
+      // keeps the pages someone leaves as they were (ADR 0029).
+      router.replace(`/catalog/${result.value}`);
     }
   };
 

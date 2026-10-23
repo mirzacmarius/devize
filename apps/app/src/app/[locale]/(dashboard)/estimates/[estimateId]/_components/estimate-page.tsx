@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { useRouteParam } from "@/components/use-route-param";
 import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { PackagingCard } from "../_materials/packaging-card";
@@ -43,7 +44,8 @@ import type { Panel } from "./types";
  * A Deviz: its line items by section, the Recapitulație and, on the right,
  * the checks to pass before it goes to the client. A sent Deviz is read-only.
  */
-export function EstimatePage({ estimateId }: { estimateId: Id<"estimates"> }) {
+export function EstimatePage() {
+  const estimateId = useRouteParam("estimateId") as Id<"estimates">;
   const t = useScopedI18n("estimate");
   const tc = useScopedI18n("common");
   const locale = useCurrentLocale();

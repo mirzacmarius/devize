@@ -8,15 +8,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ token: string }>;
-}) {
-  const { token } = await params;
+export default function Page() {
   return (
     <StandalonePage>
-      <InvitationPage token={token} />
+      <InvitationPage />
     </StandalonePage>
   );
 }

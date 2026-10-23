@@ -28,6 +28,7 @@ import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
 import { SegmentedControl } from "@/components/segmented-control";
+import { useRouteParam } from "@/components/use-route-param";
 import {
   formatAmount,
   formatCount,
@@ -47,11 +48,8 @@ import type { Stats } from "./types";
  * accepted with them, how much of its products those hold and where. Never
  * which firm.
  */
-export function StatsPage({
-  manufacturerId,
-}: {
-  manufacturerId: Id<"manufacturers">;
-}) {
+export function StatsPage() {
+  const manufacturerId = useRouteParam("manufacturerId") as Id<"manufacturers">;
   const t = useScopedI18n("producers");
   const tc = useScopedI18n("common");
   const profile = useQuery(api.producers.profiles.get, { manufacturerId });

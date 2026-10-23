@@ -14,6 +14,7 @@ import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
+import { useRouteParam } from "@/components/use-route-param";
 import { formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { AboutCard } from "./about-card";
@@ -30,7 +31,8 @@ import { VersionsCard } from "./versions-card";
  * drafts are edited, published and versioned from here; a catalog norm is
  * copied into the firm's own norms to adjust it.
  */
-export function NormPage({ normId }: { normId: Id<"norms"> }) {
+export function NormPage() {
+  const normId = useRouteParam("normId") as Id<"norms">;
   const t = useScopedI18n("norm");
   const tCatalog = useScopedI18n("catalog");
   const locale = useCurrentLocale();

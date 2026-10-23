@@ -43,13 +43,13 @@ export function NewEstimateDialog({
           <DialogTitle>{t("newTitle")}</DialogTitle>
           <DialogDescription>{t("newDescription")}</DialogDescription>
         </DialogHeader>
-        {open && <NewEstimateForm onCancel={() => onOpenChange(false)} />}
+        {open && <NewEstimateForm onClose={() => onOpenChange(false)} />}
       </DialogContent>
     </Dialog>
   );
 }
 
-function NewEstimateForm({ onCancel }: { onCancel: () => void }) {
+function NewEstimateForm({ onClose }: { onClose: () => void }) {
   const t = useScopedI18n("estimates");
   const tc = useScopedI18n("common");
   const { firm } = useFirm();
@@ -86,6 +86,9 @@ function NewEstimateForm({ onCancel }: { onCancel: () => void }) {
       }),
     );
     if (result.ok) {
+      // The list stays mounted, hidden, for Back (ADR 0029), so the dialog
+      // closes rather than wait there open.
+      onClose();
       router.push(`/estimates/${result.value}`);
     } else {
       setSaving(false);
@@ -162,7 +165,7 @@ function NewEstimateForm({ onCancel }: { onCancel: () => void }) {
           />
         </Field>
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="ghost" onClick={onCancel}>
+          <Button type="button" variant="ghost" onClick={onClose}>
             {tc("cancel")}
           </Button>
           <Button type="submit" disabled={saving}>

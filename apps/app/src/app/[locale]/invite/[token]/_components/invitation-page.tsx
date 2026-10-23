@@ -10,6 +10,7 @@ import type { FunctionReturnType } from "convex/server";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
+import { useRouteParam } from "@/components/use-route-param";
 import { useRun } from "@/components/use-run";
 import { signInPath } from "@/lib/return-path";
 import { useScopedI18n } from "@/locales/client";
@@ -24,7 +25,8 @@ type Busy = "accept" | "decline" | "open" | "switch";
  * turns it down; someone signed in with another address is told whom it's
  * for, and signs in again with that address to come back here.
  */
-export function InvitationPage({ token }: { token: string }) {
+export function InvitationPage() {
+  const token = useRouteParam("token");
   const t = useScopedI18n("invite");
   const router = useRouter();
   const run = useRun();

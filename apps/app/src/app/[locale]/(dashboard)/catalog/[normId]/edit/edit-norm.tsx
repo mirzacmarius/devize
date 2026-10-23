@@ -7,11 +7,13 @@ import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { useRouteParam } from "@/components/use-route-param";
 import { useScopedI18n } from "@/locales/client";
 import { NormForm } from "../../_components/norm-form";
 
 /** The editor for a draft; a published norm changes only through a new version. */
-export function EditNorm({ normId }: { normId: Id<"norms"> }) {
+export function EditNorm() {
+  const normId = useRouteParam("normId") as Id<"norms">;
   const t = useScopedI18n("norm");
   const norm = useQuery(api.catalog.norms.get, { normId });
   if (norm === undefined) {

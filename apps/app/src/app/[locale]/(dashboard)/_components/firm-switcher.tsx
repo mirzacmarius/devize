@@ -19,6 +19,7 @@ import {
 import { Icons } from "@devize/ui/icons";
 import { useMutation, useQuery } from "convex/react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FirmForm } from "@/components/firm-form";
@@ -101,17 +102,16 @@ export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
                 {tInvite("menuLabel")}
               </DropdownMenuLabel>
               {invitations.map((invitation) => (
-                <DropdownMenuItem
-                  key={invitation._id}
-                  onSelect={() => {
-                    router.push(`/invite/${invitation.token}`);
-                    onNavigate?.();
-                  }}
-                >
-                  <Icons.Assign className="size-4" aria-hidden />
-                  <span className="min-w-0 flex-1 truncate">
-                    {invitation.organizationName}
-                  </span>
+                <DropdownMenuItem key={invitation._id} asChild>
+                  <Link
+                    href={`/invite/${invitation.token}`}
+                    onClick={onNavigate}
+                  >
+                    <Icons.Assign className="size-4" aria-hidden />
+                    <span className="min-w-0 flex-1 truncate">
+                      {invitation.organizationName}
+                    </span>
+                  </Link>
                 </DropdownMenuItem>
               ))}
             </>
