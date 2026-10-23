@@ -53,11 +53,11 @@ The percentages a Recapitulație adds on top of the direct costs: CAM (contribu�
 _Avoid_: Rates (a rate is a price per hour), fees
 
 **Antemăsurătoare** (quantity take-off):
-The measured quantities behind a Deviz's Articole: rows of count × length × width × height, with the openings deducted, typed by hand or written from the Deviz's Camere, so an Articol's quantity is the sum of its rows and the Anexa Antemăsurătoare prints them after the Deviz. Devize AI writes rows too, from plans, photos or dictation. In code: `takeoffs`, `takeoffs/`. See `docs/adr/0032`.
+The measured quantities behind a Deviz's Articole: rows of count × length × width × height, with the openings deducted, typed by hand or written from the Deviz's Camere, so an Articol's quantity is the sum of its rows and the Anexa Antemăsurătoare prints them after the Deviz. Devize AI writes rows too, from plans, photos or dictation. In code: `takeoffs`, `takeoffs/`. See `docs/adr/0033`.
 _Avoid_: Measurement, survey
 
 **Cameră** (room):
-One space of a Deviz's site, measured once: its name and level, its length, width and height, or a floor area and a perimeter for an irregular shape, and its openings (doors, windows, others) with their count and size. Devize works out its floor, ceiling, walls with the openings deducted, perimeter, skirting with the doors deducted, and openings; an Articol's Antemăsurătoare takes the measure that fits its unit (floor and walls in mp, perimeter and skirting in m, doors and windows in buc) and follows the Cameră when it changes. In code: `rooms`, `takeoffs/measures.ts`. See `docs/adr/0032`.
+One space of a Deviz's site, measured once: its name and level, its length, width and height, or a floor area and a perimeter for an irregular shape, and its openings (doors, windows, others) with their count and size. Devize works out its floor, ceiling, walls with the openings deducted, perimeter, skirting with the doors deducted, and openings; an Articol's Antemăsurătoare takes the measure that fits its unit (floor and walls in mp, perimeter and skirting in m, doors and windows in buc) and follows the Cameră when it changes. In code: `rooms`, `takeoffs/measures.ts`. See `docs/adr/0033`.
 _Avoid_: Încăpere, spațiu, zone
 
 **Mod de montaj** (laying method):
