@@ -12,6 +12,7 @@ import { priceTables } from "./prices/tables";
 import { producerTables } from "./producers/tables";
 import { proposalTables } from "./proposals/tables";
 import { systemTables } from "./systems/tables";
+import { takeoffTables } from "./takeoffs/tables";
 
 export default defineSchema({
   ...authTables,
@@ -48,4 +49,5 @@ export default defineSchema({
   ...proposalTables,
   ...materialTables,
   ...systemTables,
+  ...takeoffTables,
 });

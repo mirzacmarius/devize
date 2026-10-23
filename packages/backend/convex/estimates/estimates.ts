@@ -13,6 +13,7 @@ import { invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import { store } from "../prices/validators";
 import { deleteProposals } from "../proposals/proposals";
+import { copyTakeoffs } from "../takeoffs/helpers";
 import {
   changeStatus,
   pricedFields,
@@ -483,6 +484,8 @@ export const duplicate = mutation({
         }),
       });
     }
+    // The Antemăsurătoare: the rooms and the takeoffs behind the quantities.
+    await copyTakeoffs(ctx, source, estimateId, itemIds);
     return estimateId;
   },
 });
@@ -517,7 +520,12 @@ export const deleteRows = internalMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     let deleted = 0;
-    for (const table of ["lineItems", "sections", "variants"] as const) {
+    for (const table of [
+      "lineItems",
+      "sections",
+      "variants",
+      "rooms",
+    ] as const) {
       const rows = await ctx.db
         .query(table)
         .withIndex("by_estimateId_and_position", (q) =>

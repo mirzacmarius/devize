@@ -12,6 +12,7 @@ import {
   markups,
   priceSource,
   recap,
+  roomMeasure,
   sectionKind,
   takeoffMethod,
   takeoffRow,
@@ -128,7 +129,10 @@ export const estimateTables = {
     .index("by_sectionId_and_position", ["sectionId", "position"])
     .index("by_normId", ["normId"]),
 
-  // Antemăsurători: the measurements behind a line item's quantity.
+  // Antemăsurători: the measurements behind a line item's quantity. The
+  // rows are in metres and pieces; `total` is in the line item's unit, so a
+  // "100 mp" item measures 2,432 for 243,2 mp of rows. A line item's
+  // quantity follows the sum of its takeoffs (takeoffs/takeoffs.ts).
   takeoffs: defineTable({
     organizationId: v.id("organizations"),
     estimateId: v.id("estimates"),
@@ -138,10 +142,16 @@ export const estimateTables = {
     unit: v.string(),
     rows: v.array(takeoffRow),
     total: v.number(),
+    // Generated from the Deviz's Camere: which measure of which rooms. Its
+    // rows are written again whenever one of the rooms changes.
+    rooms: v.optional(
+      v.object({ measure: roomMeasure, roomIds: v.array(v.id("rooms")) }),
+    ),
     fileId: v.optional(v.id("_storage")),
     aiJobId: v.optional(v.id("aiJobs")),
     confidence: v.optional(aiConfidence),
     createdBy: v.id("users"),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_estimateId", ["estimateId"])
     .index("by_lineItemId", ["lineItemId"]),
