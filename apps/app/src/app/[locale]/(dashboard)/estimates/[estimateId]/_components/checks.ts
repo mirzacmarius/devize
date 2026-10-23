@@ -1,3 +1,5 @@
+import { belowLaborFloor, laborFloor } from "@devize/backend/convex/lib/labor";
+
 // The checks a Deviz should pass before it goes to a client, always in this
 // order. Each one says what is wrong in numbers, so the person can fix it.
 
@@ -28,6 +30,13 @@ export type Check =
     }
   | { id: "prices"; state: "passed" | "failed"; missing: string[] }
   | {
+      id: "labor";
+      state: "passed" | "warning";
+      // Labour by the hour priced under the legal minimum.
+      names: string[];
+      floor: number;
+    }
+  | {
       id: "current";
       state: "passed" | "warning" | "pending";
       count: number;
@@ -39,8 +48,9 @@ export type Check =
   | { id: "client"; state: "passed" | "warning"; name?: string }
   | {
       id: "vat";
-      // A VAT payer at 0% is only a warning: construction work between VAT
-      // payers is invoiced with taxare inversă, at 0%.
+      // A VAT payer at 0% is only a warning: exempt operations and
+      // reverse-charge supplies exist, though construction works in Romania
+      // carry VAT.
       state: "passed" | "warning" | "failed" | "pending";
       vat: number;
       vatPayer?: boolean;
@@ -49,7 +59,13 @@ export type Check =
 export type CheckInput = {
   lineItems: readonly {
     confidence?: unknown;
-    resources: readonly { name: string; priceSource: string }[];
+    resources: readonly {
+      name: string;
+      priceSource: string;
+      kind: string;
+      unit: string;
+      unitPrice: number;
+    }[];
   }[];
   tender: boolean;
   // The newest omissions check: null when there is none, undefined while
@@ -135,6 +151,13 @@ export function runChecks(input: CheckInput): Check[] {
       ),
     ),
   ];
+  const underpaid = [
+    ...new Set(
+      input.lineItems.flatMap((item) =>
+        item.resources.filter(belowLaborFloor).map((resource) => resource.name),
+      ),
+    ),
+  ];
   const proposed = input.lineItems.filter(
     (item) => item.confidence !== undefined,
   ).length;
@@ -148,6 +171,12 @@ export function runChecks(input: CheckInput): Check[] {
     },
     omissionsCheck(input),
     { id: "prices", state: missing.length > 0 ? "failed" : "passed", missing },
+    {
+      id: "labor",
+      state: underpaid.length > 0 ? "warning" : "passed",
+      names: underpaid,
+      floor: laborFloor.hourly,
+    },
     {
       id: "current",
       state: !updates

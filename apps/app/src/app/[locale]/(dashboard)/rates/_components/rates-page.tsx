@@ -23,9 +23,10 @@ import {
 import { useMutation, useQuery } from "convex/react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Fragment, useState } from "react";
+import { belowLaborFloor, laborFloor } from "@devize/backend/convex/lib/labor";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
-import { formatMoney, formatUnit } from "@/lib/format";
+import { formatAmount, formatMoney, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { MarkupsCard } from "./markups-card";
 import { RateDialog } from "./rate-dialog";
@@ -104,6 +105,22 @@ export function RatesPage() {
                           {t(`kinds.${kind}`)}
                         </TableCell>
                       </TableRow>
+                      {kind === "labor" && (
+                        <TableRow className="hover:bg-transparent">
+                          <TableCell
+                            colSpan={canEdit ? 4 : 3}
+                            className="h-auto pb-2 pt-0 text-meta text-ink-3"
+                          >
+                            {t("laborFloor", {
+                              monthly: formatAmount(
+                                laborFloor.monthlyGross,
+                                locale,
+                              ),
+                              floor: formatMoney(laborFloor.hourly, locale),
+                            })}
+                          </TableCell>
+                        </TableRow>
+                      )}
                       {rates !== undefined && ofKind.length === 0 && (
                         <TableRow className="hover:bg-transparent">
                           <TableCell
@@ -128,6 +145,20 @@ export function RatesPage() {
                                       unit: formatUnit(rate.unit, locale),
                                     })}
                               </span>
+                              {belowLaborFloor({
+                                kind: rate.kind,
+                                unit: rate.unit,
+                                unitPrice: rate.price,
+                              }) && (
+                                <span className="text-meta text-warning">
+                                  {t("belowFloor", {
+                                    floor: formatMoney(
+                                      laborFloor.hourly,
+                                      locale,
+                                    ),
+                                  })}
+                                </span>
+                              )}
                             </div>
                           </TableCell>
                           <TableCell>{formatUnit(rate.unit, locale)}</TableCell>
