@@ -3,7 +3,7 @@ import { convexAuth } from "@convex-dev/auth/server";
 import type { MutationCtx } from "./_generated/server";
 import {
   adoptUnverifiedUsers,
-  EMAIL_CODE_PROVIDER,
+  CODE_SENDER,
   EmailCode,
   recordCodeSent,
 } from "./emailSignIn";
@@ -18,7 +18,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       // working.
       if (
         type === "email" &&
-        provider.id === EMAIL_CODE_PROVIDER &&
+        provider.id === CODE_SENDER &&
         profile.email !== undefined
       ) {
         await recordCodeSent(db, profile.email);

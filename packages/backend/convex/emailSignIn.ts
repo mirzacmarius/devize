@@ -1,16 +1,32 @@
+import { ConvexCredentials } from "@convex-dev/auth/providers/ConvexCredentials";
 import { Email } from "@convex-dev/auth/providers/Email";
-import type { Id } from "./_generated/dataModel";
+import { createAccount, signInViaProvider } from "@convex-dev/auth/server";
+import type { DataModel, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
+import { env } from "./_generated/server";
 import { emailHtml, sendEmail } from "./lib/email";
-import { appError } from "./lib/errors";
+import { appError, forbidden, invalid } from "./lib/errors";
 
 // Sign-in with a code sent by email. The person types the code into the page
 // they asked from, so it works on every address the app is served at, unlike
 // a link in the email or Google's redirect, which go back to SITE_URL.
 
 export const EMAIL_CODE_PROVIDER = "email-code";
+// The Email provider inside it, which sends and checks the codes. Clients
+// can't call it, so every code they ask for goes through EmailCode's checks.
+export const CODE_SENDER = "email-code-sender";
 export const CODE_LENGTH = 8;
 export const CODE_MINUTES = 15;
+
+// Once TURNSTILE_SECRET_KEY is set, a code goes out only after Cloudflare
+// Turnstile tells a person from a script; the sign-in page then shows the
+// widget for NEXT_PUBLIC_TURNSTILE_SITE_KEY. Without the secret, codes go out
+// as before.
+const TURNSTILE_VERIFY_URL =
+  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+// The widget's action on the sign-in page.
+export const TURNSTILE_ACTION = "sign-in";
+const MAX_TURNSTILE_TOKEN = 2048;
 
 // At most one code every 30 seconds and five an hour per address, so nobody
 // can flood an inbox from the sign-in page.
@@ -140,18 +156,90 @@ export async function adoptUnverifiedUsers(
 }
 
 /**
- * The provider for `signIn("email-code", { email })`, then
- * `signIn("email-code", { email, code })`. The code only works with the
- * address it was sent to, and Convex Auth stops accepting guesses for an
- * address after 10 wrong ones in an hour.
+ * Whether Cloudflare confirms the sign-in page's challenge was solved for
+ * `token`, which works once, or true when Turnstile isn't set up.
  */
-export const EmailCode = Email({
-  id: EMAIL_CODE_PROVIDER,
+export async function passedTurnstile(token: unknown): Promise<boolean> {
+  const secret = env.TURNSTILE_SECRET_KEY?.trim();
+  if (!secret) {
+    return true;
+  }
+  if (
+    typeof token !== "string" ||
+    !token ||
+    token.length > MAX_TURNSTILE_TOKEN
+  ) {
+    return false;
+  }
+  try {
+    const response = await fetch(TURNSTILE_VERIFY_URL, {
+      method: "POST",
+      body: new URLSearchParams({ secret, response: token }),
+    });
+    const result = (await response.json()) as {
+      success?: unknown;
+      action?: unknown;
+    };
+    return result.success === true && result.action === TURNSTILE_ACTION;
+  } catch {
+    // With Cloudflare out of reach no code goes out, and the page says to
+    // try again.
+    return false;
+  }
+}
+
+/** Sends the codes and checks them, for EmailCode only. */
+const CodeSender = Email({
+  id: CODE_SENDER,
   maxAge: CODE_MINUTES * 60,
   async generateVerificationToken() {
     return randomDigits(CODE_LENGTH);
   },
   async sendVerificationRequest({ identifier, token }) {
     await sendEmail(identifier, codeEmail(token));
+  },
+});
+
+/**
+ * The provider for `signIn("email-code", { email, turnstileToken })`, then
+ * `signIn("email-code", { email, code })`. A code goes out only to someone
+ * who passed Turnstile, once it is set up. The code only works with the
+ * address it was sent to, and Convex Auth stops accepting guesses for an
+ * address after 10 wrong ones in an hour. Accounts keep this provider's id,
+ * so everyone who signed in with a code before signs in to the same user.
+ */
+export const EmailCode = ConvexCredentials<DataModel>({
+  id: EMAIL_CODE_PROVIDER,
+  extraProviders: [CodeSender],
+  async authorize(params, ctx) {
+    const { email, code } = params;
+    if (typeof email !== "string" || !email) {
+      throw invalid("email");
+    }
+    if (code !== undefined) {
+      if (typeof code !== "string") {
+        throw invalid("code");
+      }
+      return await signInViaProvider(ctx, CodeSender, {
+        params: { email, code },
+      });
+    }
+    if (!(await passedTurnstile(params.turnstileToken))) {
+      throw forbidden("turnstile");
+    }
+    // A new address gets its user and account now, as asking for a code
+    // always did.
+    const { account } = await createAccount(ctx, {
+      provider: EMAIL_CODE_PROVIDER,
+      account: { id: email },
+      profile: { email },
+      shouldLinkViaEmail: true,
+    });
+    await signInViaProvider(ctx, CodeSender, {
+      accountId: account._id,
+      params: { email },
+    });
+    // Signed in once the code comes back.
+    return null;
   },
 });

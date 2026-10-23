@@ -50,6 +50,8 @@ export default {
       "Nu am putut trimite codul. Verifică adresa sau încearcă din nou peste un minut.",
     tooManyCodes:
       "Ai cerut prea multe coduri. Încearcă din nou peste câteva minute.",
+    checkFailed:
+      "Verificarea anti-robot nu a reușit. Încearcă din nou sau reîncarcă pagina.",
     codeSent: "Am trimis un cod de 8 cifre la {email}. Expiră în 15 minute.",
     code: "Codul din email",
     codeLength: "Codul are 8 cifre.",

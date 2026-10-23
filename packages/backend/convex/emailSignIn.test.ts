@@ -22,7 +22,16 @@ const variables = [
   "JWT_PRIVATE_KEY",
   "AUTH_RESEND_KEY",
   "AUTH_EMAIL_FROM",
+  "TURNSTILE_SECRET_KEY",
 ] as const;
+const TURNSTILE_URL =
+  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+const TURNSTILE_SECRET = "turnstile-test-secret";
+// What Cloudflare says of the tokens the tests send; any other is refused.
+const turnstileAnswers: Record<string, { success: boolean; action: string }> = {
+  "token-solved": { success: true, action: "sign-in" },
+  "token-other-page": { success: true, action: "contact" },
+};
 let sent: SentEmail[] = [];
 
 beforeEach(() => {
@@ -34,8 +43,17 @@ beforeEach(() => {
     .export({ type: "pkcs8", format: "pem" })
     .toString();
   process.env.AUTH_RESEND_KEY = "re_test";
-  // Resend answers in memory; nothing leaves the test.
+  // Resend and Cloudflare answer in memory; nothing leaves the test.
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (String(input) === TURNSTILE_URL) {
+      const form = new URLSearchParams(String(init?.body));
+      const answer = turnstileAnswers[form.get("response") ?? ""];
+      return Response.json(
+        form.get("secret") === TURNSTILE_SECRET && answer
+          ? answer
+          : { success: false, "error-codes": ["invalid-input-response"] },
+      );
+    }
     if (String(input) !== "https://api.resend.com/emails") {
       throw new Error(`Unexpected request to ${String(input)}`);
     }
@@ -52,10 +70,15 @@ afterEach(() => {
   setSystemTime();
 });
 
-async function requestCode(t: TestConvex, email: string) {
+async function requestCode(
+  t: TestConvex,
+  email: string,
+  turnstileToken?: string,
+) {
   return await t.action(api.auth.signIn, {
     provider: "email-code",
-    params: { email },
+    params:
+      turnstileToken === undefined ? { email } : { email, turnstileToken },
   });
 }
 
@@ -213,12 +236,108 @@ describe("email sign-in", () => {
     expect(users).toHaveLength(1);
   });
 
+  test("signs in to the user an address had before codes passed Turnstile", async () => {
+    const t = setup();
+    // A user and account as the Email provider stored them.
+    const userId = await t.run(async (ctx) => {
+      const id = await ctx.db.insert("users", {
+        email: "ana@example.com",
+        emailVerificationTime: Date.now(),
+        username: "ana",
+      });
+      await ctx.db.insert("authAccounts", {
+        userId: id,
+        provider: "email-code",
+        providerAccountId: "ana@example.com",
+        emailVerified: "ana@example.com",
+      });
+      return id;
+    });
+    await requestCode(t, "ana@example.com");
+    const result = await t.action(api.auth.signIn, {
+      provider: "email-code",
+      params: { email: "ana@example.com", code: codeIn(sent[0]) },
+    });
+    expect(result.tokens?.token).toBeString();
+    const stored = await t.run(async (ctx) => ({
+      users: await ctx.db.query("users").collect(),
+      accounts: await ctx.db.query("authAccounts").collect(),
+      sessions: await ctx.db.query("authSessions").collect(),
+    }));
+    expect(stored.users.map((user) => user._id)).toEqual([userId]);
+    expect(stored.accounts).toHaveLength(1);
+    expect(stored.sessions.map((session) => session.userId)).toEqual([userId]);
+  });
+
   test("says which variable is missing when there is no Resend key", async () => {
     delete process.env.AUTH_RESEND_KEY;
     const t = setup();
     await expect(requestCode(t, "ana@example.com")).rejects.toThrow(
       /AUTH_RESEND_KEY/,
     );
+    expect(sent).toHaveLength(0);
+  });
+});
+
+describe("email sign-in with Turnstile set up", () => {
+  beforeEach(() => {
+    process.env.TURNSTILE_SECRET_KEY = TURNSTILE_SECRET;
+  });
+
+  test("sends a code once Cloudflare confirms the sign-in page's challenge", async () => {
+    const t = setup();
+    await expect(requestCode(t, "ana@example.com")).rejects.toThrow(
+      /turnstile/,
+    );
+    await expect(
+      requestCode(t, "ana@example.com", "token-made-up"),
+    ).rejects.toThrow(/turnstile/);
+    // A challenge solved for another page doesn't count.
+    await expect(
+      requestCode(t, "ana@example.com", "token-other-page"),
+    ).rejects.toThrow(/turnstile/);
+    // Nothing is sent or stored for a refused request.
+    expect(sent).toHaveLength(0);
+    expect(await t.run(async (ctx) => ctx.db.query("users").collect())).toEqual(
+      [],
+    );
+
+    await requestCode(t, "ana@example.com", "token-solved");
+    expect(sent).toHaveLength(1);
+    // The code itself signs in, with no second challenge.
+    const result = await t.action(api.auth.signIn, {
+      provider: "email-code",
+      params: { email: "ana@example.com", code: codeIn(sent[0]) },
+    });
+    expect(result.tokens?.token).toBeString();
+  });
+
+  test("sends no code while Cloudflare is out of reach", async () => {
+    const t = setup();
+    const answering = globalThis.fetch;
+    globalThis.fetch = (async (
+      input: RequestInfo | URL,
+      init?: RequestInit,
+    ) => {
+      if (String(input) === TURNSTILE_URL) {
+        throw new TypeError("fetch failed");
+      }
+      return answering(input, init);
+    }) as typeof fetch;
+    await expect(
+      requestCode(t, "ana@example.com", "token-solved"),
+    ).rejects.toThrow(/turnstile/);
+    expect(sent).toHaveLength(0);
+  });
+
+  test("can't be skipped by asking the provider that sends the codes", async () => {
+    const t = setup();
+    await expect(
+      t.action(api.auth.signIn, {
+        provider: "email-code-sender",
+        params: { email: "ana@example.com" },
+      }),
+    ).rejects.toThrow(/not configured/);
     expect(sent).toHaveLength(0);
   });
 });

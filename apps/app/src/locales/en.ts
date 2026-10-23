@@ -53,6 +53,7 @@ export default {
       "We couldn't send the code. Check the address or try again in a minute.",
     tooManyCodes:
       "You've asked for too many codes. Try again in a few minutes.",
+    checkFailed: "The bot check didn't pass. Try again, or reload the page.",
     codeSent: "We sent an 8-digit code to {email}. It expires in 15 minutes.",
     code: "Code from the email",
     codeLength: "The code has 8 digits.",
