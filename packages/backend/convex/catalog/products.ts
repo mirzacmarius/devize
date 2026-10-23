@@ -21,7 +21,8 @@ const editableFields = {
   attributes: v.optional(v.array(productAttribute)),
   massPerUnit: v.optional(v.number()),
   embodiedCarbon: v.optional(v.number()),
-  datasheetId: v.optional(v.id("_storage")),
+  // A data sheet is a link. One uploaded goes among the firm's files
+  // (accounts/files.ts), which make sure it's the firm's own.
   datasheetUrl: v.optional(v.string()),
   epdUrl: v.optional(v.string()),
 };
@@ -64,12 +65,7 @@ export const get = query({
     if (!product || !(await canRead(ctx, product))) {
       throw notFound("product");
     }
-    return {
-      ...product,
-      datasheetFileUrl: product.datasheetId
-        ? await ctx.storage.getUrl(product.datasheetId)
-        : null,
-    };
+    return product;
   },
 });
 

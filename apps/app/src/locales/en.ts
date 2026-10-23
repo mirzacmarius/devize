@@ -2969,6 +2969,8 @@ export default {
     inUseMember: "This person is already a member of the company.",
     invalidEmail: "That email address isn't valid.",
     invalidLogo: "The logo must be a PNG, JPG or WebP image of up to 5 MB.",
+    invalidAvatar:
+      "The photo must be a PNG, JPG, WebP or GIF image of up to 5 MB.",
     invalidOrganizations: "You can be a member of at most 20 companies.",
     invalidInvitations:
       "The company already has 50 invitations waiting. Cancel some first.",

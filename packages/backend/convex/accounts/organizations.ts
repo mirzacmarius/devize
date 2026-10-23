@@ -7,6 +7,7 @@ import { mutation, query } from "../_generated/server";
 import { markups } from "../estimates/validators";
 import { getMembership, requireMember, requireUserId } from "../lib/access";
 import { appError, invalid, notFound } from "../lib/errors";
+import { unclaimedUpload } from "./files";
 import { cleanCui, optionalText } from "./identifiers";
 import { memberRole, organizationKind } from "./validators";
 
@@ -253,9 +254,9 @@ export const update = mutation({
 });
 
 /**
- * Sets the firm's logo to an uploaded PNG, JPEG or WebP picture, or removes
- * it, deleting the logo it replaces. A file registered as one of the firm's
- * documents can't become the logo, since replacing the logo deletes it.
+ * Sets the firm's logo to a PNG, JPEG or WebP picture just uploaded, or
+ * removes it, deleting the logo it replaces. A file registered as one of a
+ * firm's documents can't become the logo, since replacing the logo deletes it.
  */
 export const setLogo = mutation({
   args: {
@@ -271,17 +272,7 @@ export const setLogo = mutation({
     }
     const storageId = args.storageId;
     if (storageId && storageId !== firm.logoId) {
-      const stored = await ctx.db.system.get("_storage", storageId);
-      if (!stored) {
-        throw notFound("file");
-      }
-      const registered = await ctx.db
-        .query("files")
-        .withIndex("by_storageId", (q) => q.eq("storageId", storageId))
-        .first();
-      if (registered) {
-        throw appError("in_use", "file");
-      }
+      const stored = await unclaimedUpload(ctx, storageId);
       if (
         !LOGO_TYPES.includes(stored.contentType ?? "") ||
         stored.size > MAX_LOGO_BYTES
