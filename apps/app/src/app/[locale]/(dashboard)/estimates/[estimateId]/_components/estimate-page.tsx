@@ -24,6 +24,7 @@ import { OmissionsSheet } from "../_proposal/omissions-sheet";
 import { ProposalBanner } from "../_proposal/proposal-banner";
 import { ProposalSheet } from "../_proposal/proposal-sheet";
 import { CompatibilityCard } from "../_systems/compatibility-card";
+import { TakeoffCard } from "../_takeoff/takeoff-card";
 import { AddNormSheet } from "./add-norm-sheet";
 import { runChecks } from "./checks";
 import { ChecksCard } from "./checks-card";
@@ -152,6 +153,7 @@ export function EstimatePage() {
             open={setPanel}
           />
           <CompatibilityCard estimate={estimate} editable={editable} />
+          <TakeoffCard estimate={estimate} />
           <OfferCard estimate={estimate} />
           <DocumentsCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />

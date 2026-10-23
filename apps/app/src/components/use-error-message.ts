@@ -54,6 +54,11 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     contexts: "invalidContexts",
     unpublished: "invalidUnpublished",
     systems: "invalidSystems",
+    rows: "invalidRows",
+    room: "invalidRoom",
+    rooms: "invalidRooms",
+    measure: "invalidMeasure",
+    takeoffs: "invalidTakeoffs",
   },
   not_found: {
     invitation: "notFoundInvitation",

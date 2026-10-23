@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -9,6 +10,7 @@ import {
   TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
+import { useQuery } from "convex/react";
 import { type ReactNode, useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./export-data";
@@ -26,8 +28,14 @@ import {
 export function DocumentsCard({ estimate }: { estimate: Estimate }) {
   const t = useScopedI18n("documents");
   const download = useDownloadDocuments(estimate);
-  // The client's Deviz being made, as a PDF or in Excel.
-  const [downloading, setDownloading] = useState<DocumentsFormat>();
+  // The client's Deviz or its Antemăsurătoare being made, as a PDF or in Excel.
+  const [downloading, setDownloading] =
+    useState<`${"DEVIZ" | "AM"}:${DocumentsFormat}`>();
+  const takeoff = useQuery(api.takeoffs.page.summary, {
+    estimateId: estimate._id,
+  });
+  const measured =
+    takeoff !== undefined && (takeoff.rooms > 0 || takeoff.takeoffs > 0);
   const [formsOpen, setFormsOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const empty = estimate.lineItems.length === 0;
@@ -36,8 +44,13 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
   const tender = estimate.lineItems.some((item) => item.tenderRef);
 
   const downloadDeviz = async (format: DocumentsFormat) => {
-    setDownloading(format);
+    setDownloading(`DEVIZ:${format}`);
     await download(["DEVIZ"], { withValues: true }, estimate.title, format);
+    setDownloading(undefined);
+  };
+  const downloadAppendix = async (format: DocumentsFormat) => {
+    setDownloading(`AM:${format}`);
+    await download(["AM"], { withValues: true }, t("appendix.title"), format);
     setDownloading(undefined);
   };
 
@@ -65,7 +78,7 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
                   disabled={empty || downloading !== undefined}
                   onClick={() => downloadDeviz(format)}
                 >
-                  {downloading === format && (
+                  {downloading === `DEVIZ:${format}` && (
                     <Icons.Loader className="animate-spin" aria-hidden />
                   )}
                   {t(`deviz.formats.${format}`)}
@@ -73,6 +86,32 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
               ))}
             </div>
           </DocumentRow>
+          {measured && (
+            <DocumentRow
+              icon={<Icons.Survey aria-hidden />}
+              title={t("appendix.title")}
+              hint={t("appendix.hint")}
+            >
+              <div className="flex shrink-0 gap-2">
+                {(["pdf", "xlsx"] as const).map((format) => (
+                  <Button
+                    key={format}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-label={t(`appendix.download.${format}`)}
+                    disabled={downloading !== undefined}
+                    onClick={() => downloadAppendix(format)}
+                  >
+                    {downloading === `AM:${format}` && (
+                      <Icons.Loader className="animate-spin" aria-hidden />
+                    )}
+                    {t(`deviz.formats.${format}`)}
+                  </Button>
+                ))}
+              </div>
+            </DocumentRow>
+          )}
           <DocumentRow
             icon={<Icons.OfficialForms aria-hidden />}
             title={t("forms.title")}
