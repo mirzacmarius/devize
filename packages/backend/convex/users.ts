@@ -4,7 +4,14 @@ import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
+import { unclaimedUpload } from "./accounts/files";
+import { invalid } from "./lib/errors";
 import { username } from "./utils/validators";
+
+// A photo for the account menu: a picture every browser shows, and not a big
+// one.
+const AVATAR_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 
 export const getUser = query({
   args: {},
@@ -56,6 +63,11 @@ export const generateUploadUrl = mutation({
   },
 });
 
+/**
+ * Sets the account's photo to a picture just uploaded, deleting the one it
+ * replaces. Only a fresh upload qualifies, so nobody can show, then delete,
+ * someone else's file by its id.
+ */
 export const updateUserImage = mutation({
   args: {
     imageId: v.id("_storage"),
@@ -66,7 +78,17 @@ export const updateUserImage = mutation({
       return;
     }
     const user = await ctx.db.get("users", userId);
-    if (user?.imageId && user.imageId !== args.imageId) {
+    if (user?.imageId === args.imageId) {
+      return;
+    }
+    const stored = await unclaimedUpload(ctx, args.imageId);
+    if (
+      !AVATAR_TYPES.includes(stored.contentType ?? "") ||
+      stored.size > MAX_AVATAR_BYTES
+    ) {
+      throw invalid("avatar");
+    }
+    if (user?.imageId) {
       await ctx.storage.delete(user.imageId);
     }
     await ctx.db.patch("users", userId, { imageId: args.imageId });

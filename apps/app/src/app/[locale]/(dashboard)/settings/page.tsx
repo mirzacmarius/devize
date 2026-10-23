@@ -20,6 +20,7 @@ import { cn, useDoubleCheck } from "@devize/ui/utils";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
+import { useRun } from "@/components/use-run";
 import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
 
@@ -37,13 +38,16 @@ export default function DashboardSettings() {
     api.users.deleteCurrentUserAccount,
   );
   const { doubleCheck, getButtonProps } = useDoubleCheck();
+  const run = useRun();
 
   const handleUpdateUserImage = (uploaded: UploadedFile[]) => {
     const [file] = uploaded;
     if (!file) {
       return;
     }
-    return updateUserImage({ imageId: file.storageId as Id<"_storage"> });
+    return run(() =>
+      updateUserImage({ imageId: file.storageId as Id<"_storage"> }),
+    );
   };
 
   const handleDeleteAccount = async () => {
@@ -81,7 +85,7 @@ export default function DashboardSettings() {
           <UploadInput
             id="avatar_field"
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg,image/webp,image/gif"
             className="peer sr-only"
             required
             tabIndex={user ? -1 : 0}

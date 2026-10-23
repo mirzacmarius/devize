@@ -34,6 +34,7 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     resourceId: "invalidResourceRate",
     email: "invalidEmail",
     logo: "invalidLogo",
+    avatar: "invalidAvatar",
     organizations: "invalidOrganizations",
     invitations: "invalidInvitations",
     domain: "invalidDomain",

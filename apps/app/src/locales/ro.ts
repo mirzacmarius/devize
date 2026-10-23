@@ -2961,6 +2961,8 @@ export default {
     invalidEmail: "Adresa de email nu e validă.",
     invalidLogo:
       "Logo-ul trebuie să fie o imagine PNG, JPG sau WebP de cel mult 5 MB.",
+    invalidAvatar:
+      "Fotografia trebuie să fie o imagine PNG, JPG, WebP sau GIF de cel mult 5 MB.",
     invalidOrganizations: "Poți face parte din cel mult 20 de firme.",
     invalidInvitations:
       "Firma are deja 50 de invitații în așteptare. Anulează câteva întâi.",
