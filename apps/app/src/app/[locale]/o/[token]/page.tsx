@@ -1,6 +1,8 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";
 import type { Metadata } from "next";
+import { connection } from "next/server";
+import { Suspense } from "react";
 import { getScopedI18n } from "@/locales/server";
 import { OfferPage } from "./_components/offer-page";
 
@@ -16,7 +18,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const t = await getScopedI18n("offerPage");
   const { token } = await params;
-  // A preview in a chat names the firm; anything else falls back to a plain title.
+  // A preview in a chat names the firm; anything else falls back to a plain
+  // title. Like every Convex read on the server, it waits for the request
+  // (lib/convex-server.ts).
+  await connection();
   const offer = await fetchQuery(api.offers.public.view, { token }).catch(
     () => null,
   );
@@ -31,11 +36,22 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ token: string }>;
-}) {
-  const { token } = await params;
-  return <OfferPage token={token} />;
+export default function Page() {
+  return (
+    <>
+      <OfferPage />
+      <Suspense>
+        <AtRequest />
+      </Suspense>
+    </>
+  );
+}
+
+/**
+ * Nothing to show: it tells Next.js the page renders for each request, which
+ * it asks for when a page's title does (ADR 0029).
+ */
+async function AtRequest() {
+  await connection();
+  return null;
 }

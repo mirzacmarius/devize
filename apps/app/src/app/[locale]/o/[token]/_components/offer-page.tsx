@@ -6,6 +6,7 @@ import { Card, CardContent } from "@devize/ui/card";
 import { StatusPill } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
+import { useRouteParam } from "@/components/use-route-param";
 import { estimateCode, formatCalendarDate, formatDay } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { AcceptDialog } from "./accept-dialog";
@@ -72,7 +73,8 @@ function useSaveChoice(token: string, choice: Choice | null, enabled: boolean) {
  * answer, signed. The page never prices anything: every total is the
  * server's, for the choice on screen.
  */
-export function OfferPage({ token }: { token: string }) {
+export function OfferPage() {
+  const token = useRouteParam("token");
   const t = useScopedI18n("offerPage");
   // Null until the client changes something: until then, the server's stands.
   const [choice, setChoice] = useState<Choice | null>(null);

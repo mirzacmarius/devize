@@ -20,6 +20,7 @@ import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { useNormSource } from "@/components/norm-source";
@@ -48,14 +49,18 @@ function matches(norm: NormRow, words: readonly string[]) {
  * and the firm's own norms with their drafts. Both search by code or by the
  * words of the work.
  */
-export function CatalogPage({ initialView }: { initialView: CatalogView }) {
+export function CatalogPage() {
   const t = useScopedI18n("catalog");
   const tc = useScopedI18n("common");
   const tNorms = useScopedI18n("norms");
   const locale = useCurrentLocale();
   const normSource = useNormSource();
   const { firm } = useFirm();
-  const [view, setView] = useState(initialView);
+  // The list shown is in the address: Back from a norm's page returns to it,
+  // and links to "?view=own" open the firm's own norms even on a page kept
+  // from an earlier visit (ADR 0029).
+  const view: CatalogView =
+    useSearchParams().get("view") === "own" ? "own" : "catalog";
   const [text, setText] = useState("");
   const search = useDeferredValue(text.trim());
   const isOwn = view === "own";
@@ -87,9 +92,7 @@ export function CatalogPage({ initialView }: { initialView: CatalogView }) {
   const columns = isOwn ? 4 : 3;
 
   const changeView = (next: CatalogView) => {
-    setView(next);
     setText("");
-    // Back from a norm's page returns to the same list.
     window.history.replaceState(
       null,
       "",

@@ -1,8 +1,32 @@
 import { withSentryConfig } from "@sentry/nextjs/config";
 import "./src/env.mjs";
 
+// Sections without a page of their own open their first one, with or without
+// the language the proxy puts in front (src/locales/locale.ts). A redirect here
+// answers before anything renders, which a page streaming into its shell can't.
+const sections = [
+  // The devize are the app's home until there is an overview to show.
+  ["/", "/estimates"],
+  ["/admin", "/admin/manufacturers"],
+];
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  // Instant navigations (ADR 0029): each <Link> prefetches its route's App
+  // Shell, so a click shows the next page at once and its data streams in.
+  cacheComponents: true,
+  partialPrefetching: true,
+  async redirects() {
+    return sections.flatMap(([source, destination]) => [
+      { source, destination, permanent: false },
+      {
+        source: `/:locale(ro|en)${source === "/" ? "" : source}`,
+        destination: `/:locale${destination}`,
+        permanent: false,
+      },
+    ]);
+  },
+};
 
 // Uploads source maps for readable stack traces when SENTRY_AUTH_TOKEN is set
 // (with SENTRY_ORG and SENTRY_PROJECT), then deletes them so they aren't served.

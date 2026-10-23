@@ -7,11 +7,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ view?: string }>;
-}) {
-  const { view } = await searchParams;
-  return <CatalogPage initialView={view === "own" ? "own" : "catalog"} />;
+export default function Page() {
+  return <CatalogPage />;
 }

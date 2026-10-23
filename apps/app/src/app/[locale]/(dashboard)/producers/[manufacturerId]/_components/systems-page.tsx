@@ -29,6 +29,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useRouteParam } from "@/components/use-route-param";
 import { useRun } from "@/components/use-run";
 import { formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -52,11 +53,8 @@ const tones: Record<ProducerSystem["status"], StatusPillProps["tone"]> = {
  * Devize staff write and publish them. Published, they complete and check
  * the devize that use part of them.
  */
-export function SystemsPage({
-  manufacturerId,
-}: {
-  manufacturerId: Id<"manufacturers">;
-}) {
+export function SystemsPage() {
+  const manufacturerId = useRouteParam("manufacturerId") as Id<"manufacturers">;
   const t = useScopedI18n("compatibility.producerSystems");
   const tProducers = useScopedI18n("producers");
   const tc = useScopedI18n("common");

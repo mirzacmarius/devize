@@ -16,6 +16,7 @@ import {
   type FirmChoice,
   NEW_FIRM,
 } from "@/components/claim-firm-select";
+import { useRouteParam } from "@/components/use-route-param";
 import { useRun } from "@/components/use-run";
 import { signInPath } from "@/lib/return-path";
 import { useScopedI18n } from "@/locales/client";
@@ -29,7 +30,8 @@ type ClaimLink = NonNullable<
  * sent the link to. That person claims it for one of their Producător firms or
  * a new one; anyone else is told whom it's for.
  */
-export function ClaimPage({ token }: { token: string }) {
+export function ClaimPage() {
+  const token = useRouteParam("token");
   const t = useScopedI18n("claim");
   const live = useQuery(api.producers.claimLinks.get, { token });
   // Claiming uses the link up, so it stays on screen while the profile opens.

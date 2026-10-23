@@ -31,6 +31,7 @@ import Link from "next/link";
 import { type ReactNode, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { NormStatusPill } from "@/components/norm-status";
+import { useRouteParam } from "@/components/use-route-param";
 import { useRun } from "@/components/use-run";
 import { formatDay, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -47,11 +48,8 @@ import type { Profile, Reading } from "./types";
  * from here, or asks Devize to take it down; once claimed, the producer's
  * firm writes its norms and its details from here.
  */
-export function ProfilePage({
-  manufacturerId,
-}: {
-  manufacturerId: Id<"manufacturers">;
-}) {
+export function ProfilePage() {
+  const manufacturerId = useRouteParam("manufacturerId") as Id<"manufacturers">;
   const t = useScopedI18n("producers");
   const tc = useScopedI18n("common");
   const { firm } = useFirm();

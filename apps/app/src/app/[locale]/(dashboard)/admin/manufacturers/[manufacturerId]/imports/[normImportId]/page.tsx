@@ -9,8 +9,8 @@ import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { ArrowLeft, Loader2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { useState } from "react";
+import { useRouteParam } from "@/components/use-route-param";
 import { useScopedI18n } from "@/locales/client";
 import {
   ErrorText,
@@ -48,8 +48,7 @@ export default function NormImportPage() {
   const t = useScopedI18n("admin.import");
   const tAdmin = useScopedI18n("admin");
   const format = useFormat();
-  const params = useParams<{ manufacturerId: string; normImportId: string }>();
-  const normImportId = params.normImportId as Id<"normImports">;
+  const normImportId = useRouteParam("normImportId") as Id<"normImports">;
   const data = useQuery(api.manufacturers.normImports.get, { normImportId });
   const [page, setPage] = useState<number | undefined>();
 

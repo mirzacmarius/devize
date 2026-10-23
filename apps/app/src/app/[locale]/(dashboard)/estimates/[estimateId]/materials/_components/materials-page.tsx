@@ -15,6 +15,7 @@ import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouteParam } from "@/components/use-route-param";
 import { estimateCode } from "@/lib/format";
 import { useScopedI18n } from "@/locales/client";
 import { LayoutCard } from "./layout-card";
@@ -28,7 +29,8 @@ import type { ListRow } from "./types";
  * and rolls, with what is left over, and the Mod de montaj of the Articole
  * that lay a covering, whose losses change what there is to buy.
  */
-export function MaterialsPage({ estimateId }: { estimateId: Id<"estimates"> }) {
+export function MaterialsPage() {
+  const estimateId = useRouteParam("estimateId") as Id<"estimates">;
   const t = useScopedI18n("materials");
   const tEstimate = useScopedI18n("estimate");
   const tc = useScopedI18n("common");

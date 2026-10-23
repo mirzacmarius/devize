@@ -21,6 +21,7 @@ import {
 import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { useMutation } from "convex/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useRun } from "@/components/use-run";
@@ -174,15 +175,15 @@ export function EstimateActions({
               )}
             </>
           )}
-          <DropdownMenuItem
-            onSelect={() => router.push(`/estimates/${estimateId}/basket`)}
-          >
-            {tBasket("open")}
+          <DropdownMenuItem asChild>
+            <Link href={`/estimates/${estimateId}/basket`}>
+              {tBasket("open")}
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => router.push(`/estimates/${estimateId}/materials`)}
-          >
-            {tMaterials("open")}
+          <DropdownMenuItem asChild>
+            <Link href={`/estimates/${estimateId}/materials`}>
+              {tMaterials("open")}
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => copy(false)}>
             {t("actions.copy")}

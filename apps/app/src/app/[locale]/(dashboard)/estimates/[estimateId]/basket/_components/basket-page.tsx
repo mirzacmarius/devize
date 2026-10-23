@@ -22,6 +22,7 @@ import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouteParam } from "@/components/use-route-param";
 import { estimateCode } from "@/lib/format";
 import { useScopedI18n } from "@/locales/client";
 import { linesOf } from "./basket-view";
@@ -37,7 +38,8 @@ import type { BasketPanel } from "./types";
  * The Coș: a Deviz's materials with each store's price, and the cheapest way
  * to buy them, delivery included. Leaving a store out plans again at once.
  */
-export function BasketPage({ estimateId }: { estimateId: Id<"estimates"> }) {
+export function BasketPage() {
+  const estimateId = useRouteParam("estimateId") as Id<"estimates">;
   const t = useScopedI18n("prices.basket");
   const tEstimate = useScopedI18n("estimate");
   const tc = useScopedI18n("common");

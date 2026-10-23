@@ -7,7 +7,8 @@ import { useDoubleCheck } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useRouteParam } from "@/components/use-route-param";
 import { useScopedI18n } from "@/locales/client";
 import {
   ErrorText,
@@ -30,8 +31,7 @@ export default function ManufacturerPage() {
   const t = useScopedI18n("admin.manufacturer");
   const tAdmin = useScopedI18n("admin");
   const router = useRouter();
-  const params = useParams<{ manufacturerId: string }>();
-  const manufacturerId = params.manufacturerId as Id<"manufacturers">;
+  const manufacturerId = useRouteParam("manufacturerId") as Id<"manufacturers">;
   const data = useQuery(api.manufacturers.admin.get, { manufacturerId });
   const startResearch = useMutation(api.manufacturers.admin.startResearch);
   const remove = useMutation(api.manufacturers.admin.remove);
