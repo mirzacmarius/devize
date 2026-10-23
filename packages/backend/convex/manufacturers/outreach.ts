@@ -3,12 +3,8 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { mutation, query } from "../_generated/server";
 import { requireSuperAdmin } from "../lib/roles";
-import {
-  checkEmail,
-  draftThanksEmail,
-  getSender,
-  rerenderDraft,
-} from "./drafts";
+import { getController, privacyPageUrl } from "../privacy";
+import { checkEmail, draftThanksEmail, rerenderDraft } from "./drafts";
 import { hasBlockingIssue } from "./lib/emailTemplate";
 import { isEmail, normalizeEmail } from "./lib/text";
 
@@ -290,46 +286,114 @@ export const getSettings = query({
   args: {},
   handler: async (ctx) => {
     await requireSuperAdmin(ctx);
-    return await getSender(ctx);
+    const settings = await ctx.db.query("outreachSettings").first();
+    return {
+      firstName: settings?.firstName,
+      lastName: settings?.lastName,
+      phone: settings?.phone,
+      privacyUrl: settings?.privacyUrl,
+      // The page the emails link to while privacyUrl is empty.
+      privacyPage: privacyPageUrl(),
+      controller: await getController(ctx),
+    };
   },
 });
 
+type SettingsFields = Partial<
+  Omit<Doc<"outreachSettings">, "_id" | "_creationTime" | "updatedBy">
+>;
+
 /**
- * The sender's name, phone and privacy page for the signature. Drafts nobody
- * edited are rendered again with them.
+ * Saves some of the settings. Drafts nobody edited are rendered again with
+ * them, and the edited ones are checked again.
  */
+async function saveSettings(
+  ctx: MutationCtx,
+  adminId: Id<"users">,
+  fields: SettingsFields,
+) {
+  const existing = await ctx.db.query("outreachSettings").first();
+  if (existing) {
+    await ctx.db.patch("outreachSettings", existing._id, {
+      ...fields,
+      updatedBy: adminId,
+    });
+  } else {
+    await ctx.db.insert("outreachSettings", { ...fields, updatedBy: adminId });
+  }
+  const drafts = await ctx.db
+    .query("outreachMessages")
+    .withIndex("by_status", (q) => q.eq("status", "draft"))
+    .take(200);
+  for (const draft of drafts) {
+    if (draft.edited) {
+      await ctx.db.patch("outreachMessages", draft._id, {
+        issues: await checkEmail(ctx, draft.manufacturerId, draft),
+      });
+    } else {
+      await rerenderDraft(ctx, draft, adminId);
+    }
+  }
+}
+
+/** The sender's name and phone for the signature. */
 export const updateSettings = mutation({
   args: {
     firstName: v.string(),
     lastName: v.string(),
     phone: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const admin = await requireSuperAdmin(ctx);
+    await saveSettings(ctx, admin._id, {
+      firstName: args.firstName.trim() || undefined,
+      lastName: args.lastName.trim() || undefined,
+      phone: args.phone.trim() || undefined,
+    });
+    return null;
+  },
+});
+
+function isWebAddress(value: string) {
+  try {
+    const { protocol } = new URL(value);
+    return protocol === "https:" || protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Who Devize's privacy page names as answering for the data, and another
+ * page for the emails to link to instead of that one.
+ */
+export const updatePrivacy = mutation({
+  args: {
+    controllerName: v.string(),
+    controllerRegistration: v.string(),
+    controllerAddress: v.string(),
+    controllerEmail: v.string(),
     privacyUrl: v.string(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     const admin = await requireSuperAdmin(ctx);
-    const fields = {
-      firstName: args.firstName.trim() || undefined,
-      lastName: args.lastName.trim() || undefined,
-      phone: args.phone.trim() || undefined,
-      privacyUrl: args.privacyUrl.trim() || undefined,
-      updatedBy: admin._id,
-    };
-    const existing = await ctx.db.query("outreachSettings").first();
-    if (existing) {
-      await ctx.db.replace("outreachSettings", existing._id, fields);
-    } else {
-      await ctx.db.insert("outreachSettings", fields);
+    const controllerEmail = normalizeEmail(args.controllerEmail) || undefined;
+    if (controllerEmail && !isEmail(controllerEmail)) {
+      throw new ConvexError({ code: "invalid", field: "controllerEmail" });
     }
-    const drafts = await ctx.db
-      .query("outreachMessages")
-      .withIndex("by_status", (q) => q.eq("status", "draft"))
-      .take(200);
-    for (const draft of drafts) {
-      if (!draft.edited) {
-        await rerenderDraft(ctx, draft, admin._id);
-      }
+    const privacyUrl = args.privacyUrl.trim() || undefined;
+    if (privacyUrl && !isWebAddress(privacyUrl)) {
+      throw new ConvexError({ code: "invalid", field: "privacyUrl" });
     }
+    await saveSettings(ctx, admin._id, {
+      controllerName: args.controllerName.trim() || undefined,
+      controllerRegistration: args.controllerRegistration.trim() || undefined,
+      controllerAddress: args.controllerAddress.trim() || undefined,
+      controllerEmail,
+      privacyUrl,
+    });
     return null;
   },
 });

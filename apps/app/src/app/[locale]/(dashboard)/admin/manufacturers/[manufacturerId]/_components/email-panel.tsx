@@ -3,6 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button, buttonVariants } from "@devize/ui/button";
 import { Input } from "@devize/ui/input";
+import { toast } from "@devize/ui/sonner";
 import { useMutation } from "convex/react";
 import { useId, useState } from "react";
 import { useScopedI18n } from "@/locales/client";
@@ -95,7 +96,11 @@ export function MessageHistory({ history }: { history: Message[] }) {
   );
 }
 
-/** Edits, approves and records the sending of one email. */
+/**
+ * Edits one email, opens it to send from the person's own mailbox and records
+ * that it was sent. Opening or copying a draft approves it, once it breaks no
+ * rule.
+ */
 export function EmailEditor({
   message,
   contacts,
@@ -114,16 +119,23 @@ export function EmailEditor({
   const [to, setTo] = useState(message.to ?? "");
   const [subject, setSubject] = useState(message.subject);
   const [body, setBody] = useState(message.body);
-  const [copied, setCopied] = useState(false);
   const { run, error, pending } = useRun();
 
-  const editable = message.status === "draft" || message.status === "approved";
+  const draft = message.status === "draft";
+  const editable = draft || message.status === "approved";
   const changed =
     to !== (message.to ?? "") ||
     subject !== message.subject ||
     body !== message.body;
   const blocked = message.issues.some((issue) => issue.level === "error");
   const messageId = message._id;
+  const caption = changed
+    ? t("saveFirst")
+    : draft && blocked
+      ? t("fixFirst")
+      : draft
+        ? t("opensApprove")
+        : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -185,15 +197,27 @@ export function EmailEditor({
             {t("save")}
           </Button>
         )}
-        {message.status === "draft" && !changed && (
+        {editable && (
+          <SendButtons
+            email={message}
+            disabled={changed || (draft && blocked)}
+            onOpen={() => {
+              if (draft && !pending) {
+                run(() => approve({ messageId }));
+              }
+            }}
+          />
+        )}
+        {message.status === "approved" && !changed && (
           <Button
-            disabled={pending || blocked}
-            onClick={() => run(() => approve({ messageId }))}
+            variant="secondary"
+            disabled={pending}
+            onClick={() => run(() => markSent({ messageId }))}
           >
-            {t("approve")}
+            {t("markSent")}
           </Button>
         )}
-        {message.status === "draft" && (
+        {draft && (
           <Button
             variant="outline"
             disabled={pending}
@@ -201,42 +225,6 @@ export function EmailEditor({
           >
             {t("rerender")}
           </Button>
-        )}
-        {message.status === "approved" && !changed && (
-          <>
-            <a
-              href={gmailComposeUrl(message)}
-              target="_blank"
-              rel="noreferrer noopener"
-              className={buttonVariants()}
-            >
-              {t("gmail")}
-            </a>
-            <a
-              href={mailtoUrl(message)}
-              className={buttonVariants({ variant: "outline" })}
-            >
-              {t("mailto")}
-            </a>
-            <Button
-              variant="outline"
-              onClick={async () => {
-                await navigator.clipboard.writeText(
-                  `${message.subject}\n\n${message.body}`,
-                );
-                setCopied(true);
-              }}
-            >
-              {copied ? t("copied") : t("copy")}
-            </Button>
-            <Button
-              variant="secondary"
-              disabled={pending}
-              onClick={() => run(() => markSent({ messageId }))}
-            >
-              {t("markSent")}
-            </Button>
-          </>
         )}
         {editable && (
           <Button
@@ -248,6 +236,7 @@ export function EmailEditor({
           </Button>
         )}
       </div>
+      {caption && <p className="text-xs text-primary/50">{caption}</p>}
 
       {message.approvedAt && message.status === "approved" && (
         <p className="text-xs text-primary/50">
@@ -260,5 +249,68 @@ export function EmailEditor({
         </p>
       )}
     </div>
+  );
+}
+
+/**
+ * The email in the person's own email app or in Gmail, with recipient,
+ * subject and text filled in, or its text to paste in a contact form.
+ * `onOpen` runs as they open or copy it.
+ */
+function SendButtons({
+  email,
+  disabled,
+  onOpen,
+}: {
+  email: { to?: string; subject: string; body: string };
+  disabled: boolean;
+  onOpen: () => void;
+}) {
+  const t = useScopedI18n("admin.manufacturer.email");
+  if (disabled) {
+    return (
+      <>
+        <Button disabled>{t("mailto")}</Button>
+        <Button variant="outline" disabled>
+          {t("gmail")}
+        </Button>
+        <Button variant="outline" disabled>
+          {t("copy")}
+        </Button>
+      </>
+    );
+  }
+  return (
+    <>
+      <a href={mailtoUrl(email)} onClick={onOpen} className={buttonVariants()}>
+        {t("mailto")}
+      </a>
+      <a
+        href={gmailComposeUrl(email)}
+        target="_blank"
+        rel="noreferrer noopener"
+        onClick={onOpen}
+        className={buttonVariants({ variant: "outline" })}
+      >
+        {t("gmail")}
+      </a>
+      <Button
+        variant="outline"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(
+              `${email.subject}\n\n${email.body}`,
+            );
+          } catch {
+            toast.error(t("copyFailed"));
+            return;
+          }
+          toast.success(t("copied"));
+          onOpen();
+        }}
+      >
+        {t("copy")}
+      </Button>
+    </>
   );
 }

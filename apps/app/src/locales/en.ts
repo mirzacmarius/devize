@@ -62,6 +62,7 @@ export default {
     otherEmail: "Use another address",
     resend: "Send another code",
     resendIn: "Another code in {seconds} s",
+    privacy: "Privacy policy",
   },
   username: {
     label: "Username",
@@ -1455,6 +1456,7 @@ export default {
         "You have already answered the offer. For other questions, contact the firm.",
     },
     footer: "Offer sent with Devize",
+    privacy: "Privacy policy",
     errors: {
       locked:
         "The offer can no longer change: it was withdrawn, it expired or you already answered.",
@@ -2061,6 +2063,8 @@ export default {
         "The claim link is for {detail}, not for the recipient. Press “Rebuild from template” to make one for the new address.",
       already_claimed:
         "The profile was claimed in the meantime, so the link in the thank-you no longer works.",
+      missing_controller:
+        "The privacy page doesn't say yet who answers for the data. Fill in the controller in Settings.",
     },
     manufacturers: {
       title: "Manufacturers",
@@ -2270,7 +2274,7 @@ export default {
       email: {
         title: "First email",
         notice:
-          "Devize doesn't send email. You approve the draft, send it from your own mailbox, then mark it sent.",
+          "Devize doesn't send email. You open the draft in your email app or Gmail, send it from there, then mark it sent.",
         none: "The draft appears after research.",
         to: "To",
         subject: "Subject",
@@ -2285,7 +2289,12 @@ export default {
         mailto: "Open in your email app",
         copy: "Copy text",
         copied: "Copied.",
+        copyFailed: "Couldn't copy the text. Select it and copy it by hand.",
         markSent: "I sent it",
+        opensApprove:
+          "Opening or copying the draft approves it. Once you've sent it, press “I sent it”.",
+        saveFirst: "Save your changes, then open the email.",
+        fixFirst: "The email opens once you fix the problems that block it.",
         approvedAt: "Approved on {date}",
         sentAt: "Sent on {date}",
         rules: "It follows every rule.",
@@ -2427,7 +2436,22 @@ export default {
         firstName: "First name",
         lastName: "Last name",
         phone: "Phone",
-        privacyUrl: "Privacy page",
+        save: "Save",
+        saved: "Saved.",
+      },
+      privacy: {
+        title: "Privacy policy",
+        description:
+          "The emails link to Devize's privacy page, which says who answers for the data. Enter the firm that runs Devize here: without a name and an email, drafts can't be approved.",
+        name: "Controller's name",
+        namePlaceholder: "Example SRL",
+        registration: "CUI and registration number",
+        registrationPlaceholder: "RO12345678, J40/1234/2020",
+        address: "Registered office",
+        email: "Email for personal data",
+        url: "Another privacy page",
+        urlHint: "Leave it empty for the emails to link to Devize's page.",
+        open: "See the page",
         save: "Save",
         saved: "Saved.",
       },
@@ -2816,6 +2840,107 @@ export default {
     pendingFrom: "invited by {name}",
     orCreate: "Or create your own company",
     menuLabel: "Invitations",
+  },
+  privacy: {
+    title: "Privacy policy",
+    description:
+      "What personal data Devize uses, where it gets it, why, how long it keeps it and what your rights are.",
+    updated: "Updated on 23 October 2026",
+    intro:
+      "Devize is a web app where construction firms build their estimates, with norms from manufacturers and prices from stores. This page says what personal data we use, where we get it, why, how long we keep it and what your rights are.",
+    labels: {
+      data: "What data",
+      source: "Where we get it",
+      purpose: "Why",
+      basis: "Legal basis",
+      retention: "How long we keep it",
+      optOut: "If you want no more messages",
+    },
+    controller: {
+      title: "Who answers for the data",
+      intro: "The controller of the personal data in Devize is:",
+      name: "Name",
+      registration: "Registration",
+      address: "Registered office",
+      email: "Email",
+      contact:
+        "Write to this address with any question or request about your data.",
+      missing:
+        "The controller's details are filled in before Devize launches. Until then, you can write to us by replying to the email you got from us.",
+    },
+    producers: {
+      title: "Manufacturers we write to",
+      intro:
+        "We are building a catalog of estimate norms for the products of building material manufacturers. To ask them for their norms, we write to the contact addresses published on their websites.",
+      data: "the work email address (usually a general one, such as office@ or tehnic@, sometimes a person's), the job title if the site gives it, the page where we found it and the messages exchanged with us.",
+      source:
+        "the firm's website. The Claude assistant finds them by searching the web and reading the firm's public pages, or someone on the Devize team enters them. We don't guess addresses and we don't buy lists.",
+      purpose:
+        "to ask the firm for its estimate norms and its consent to use them in Devize, crediting the firm as the source, and to offer it a free manufacturer profile.",
+      basis:
+        "our legitimate interest in building a catalog of correct norms, with the manufacturers' data (Art. 6(1)(f) GDPR). A person approves and sends each email, to one firm.",
+      optOut:
+        "reply “stop” and we won't write again. We keep only the address, on our exclusion list, so we never write to it again.",
+      retention:
+        "while we are in touch with the firm. If we get no answer, we delete people's addresses within 6 months of the last message.",
+    },
+    users: {
+      title: "People who use Devize",
+      data: "your email address, and your name and profile picture if you sign in with Google; your firm's details (name, CUI, address, email, phone), your colleagues and invitations; what you create in the app: estimates, offers, the firm's clients and uploaded files (photos, bills of quantities, data sheets).",
+      purpose:
+        "to give you the app: your account, firm, estimates, forms and offers.",
+      basis:
+        "our contract with you (Art. 6(1)(b) GDPR) and our legitimate interest in keeping the app secure, for example by limiting how many codes and invitations go to one address (Art. 6(1)(f)).",
+      retention:
+        "while you have an account. You can ask us at any time to delete your account and your firm's data; we keep only what the law requires us to keep.",
+    },
+    clients: {
+      title: "Firms' clients",
+      body: "When a firm sends you an offer through Devize, the firm answers for your data and Devize processes it on the firm's behalf: the name and contact details the firm entered, when you opened the offer's link, what you chose in it, the questions you asked and your signature if you accept it. For this data, write to the firm that sent you the offer first.",
+    },
+    ai: {
+      title: "Artificial intelligence",
+      body: "Some features send what you give them to Claude, Anthropic's AI model: the description or photos of a job, bills of quantities, data sheets and, if the firm turned on the offer's assistant, clients' questions. Anthropic doesn't train its models on data it receives this way.",
+      dictation:
+        "Dictation uses the browser's speech recognition: the browser's maker processes the sound, and Devize gets only the text.",
+    },
+    processors: {
+      title: "Who else gets the data",
+      intro:
+        "We don't sell personal data or use it for advertising. Only the providers that help us run Devize get it, each for its own part:",
+      convex: "Convex: the app's database and functions",
+      vercel: "Vercel: hosting the pages",
+      anthropic: "Anthropic: Claude, for the AI features",
+      resend:
+        "Resend: the app's automatic emails, such as sign-in codes, invitations and notifications",
+      google: "Google: signing in with a Google account, if you choose it",
+      sentry: "Sentry: error reports, without data that identifies you",
+      outreach:
+        "We send our emails to manufacturers from our own mailbox, not from the app.",
+      transfers:
+        "Some of these providers process data in the United States. For these transfers we rely on the safeguards the GDPR requires: the European Commission's standard contractual clauses or the EU–US Data Privacy Framework.",
+      authorities: "We give data to authorities only when the law requires it.",
+    },
+    cookies: {
+      title: "Cookies",
+      body: "We use only the cookies the app can't work without: those that keep you signed in and the one that remembers your language. Your browser keeps your light or dark theme. We use no analytics or advertising cookies.",
+    },
+    rights: {
+      title: "Your rights",
+      body: "You can ask to see the data we have about you, to have it corrected or deleted, to restrict its use or to receive it in a file. You can object at any time to its use based on our legitimate interest; for our emails, replying “stop” is enough.",
+      contact:
+        "Write to the address under “Who answers for the data” and we will answer within a month.",
+      complaint:
+        "If our answer doesn't satisfy you, you can complain to Romania's data protection authority, ANSPDCP, at dataprotection.ro.",
+    },
+    security: {
+      title: "Keeping data safe",
+      body: "Everything travels encrypted. Only a firm's members see its data, and the Devize team has access only to what it needs to run the app.",
+    },
+    changes: {
+      title: "Changes",
+      body: "When we change this policy, we update the date at the top.",
+    },
   },
   errors: {
     unknown: "Something went wrong. Try again.",

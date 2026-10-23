@@ -213,7 +213,8 @@ export type EmailIssue = {
     | "unverified_recipient"
     | "recipient_other_domain"
     | "claim_link_mismatch"
-    | "already_claimed";
+    | "already_claimed"
+    | "missing_controller";
   level: "error" | "warning";
   detail?: string;
 };

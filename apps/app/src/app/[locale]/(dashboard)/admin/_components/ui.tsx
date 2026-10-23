@@ -311,6 +311,7 @@ const issueCodes = [
   "recipient_other_domain",
   "claim_link_mismatch",
   "already_claimed",
+  "missing_controller",
   "no_resources",
   "quantity_invalid",
   "unit_unknown",

@@ -111,6 +111,7 @@ import type * as prices_stores from "../prices/stores.js";
 import type * as prices_tables from "../prices/tables.js";
 import type * as prices_units from "../prices/units.js";
 import type * as prices_validators from "../prices/validators.js";
+import type * as privacy from "../privacy.js";
 import type * as producers_access from "../producers/access.js";
 import type * as producers_admin from "../producers/admin.js";
 import type * as producers_anaf from "../producers/anaf.js";
@@ -265,6 +266,7 @@ declare const fullApi: ApiFromModules<{
   "prices/tables": typeof prices_tables;
   "prices/units": typeof prices_units;
   "prices/validators": typeof prices_validators;
+  privacy: typeof privacy;
   "producers/access": typeof producers_access;
   "producers/admin": typeof producers_admin;
   "producers/anaf": typeof producers_anaf;

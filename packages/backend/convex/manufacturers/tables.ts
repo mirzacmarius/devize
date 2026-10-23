@@ -104,7 +104,15 @@ export const manufacturerTables = {
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
     phone: v.optional(v.string()),
+    // Another privacy page than Devize's own /confidentialitate.
     privacyUrl: v.optional(v.string()),
+    // Who answers for the personal data in Devize (the GDPR controller), as
+    // the privacy page names them: a legal name, its CUI and registration
+    // number, its registered office and an address for privacy requests.
+    controllerName: v.optional(v.string()),
+    controllerRegistration: v.optional(v.string()),
+    controllerAddress: v.optional(v.string()),
+    controllerEmail: v.optional(v.string()),
     updatedBy: v.id("users"),
   }),
 

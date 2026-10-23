@@ -257,7 +257,6 @@ describe("draftThanks", () => {
       firstName: "Ioana",
       lastName: "Pop",
       phone: "0711 111 111",
-      privacyUrl: "https://devize.example/confidentialitate",
     });
     expect((await messageOf(t, messageId))?.body).toContain(
       "Ioana Pop\nFondator, Devize · 0711 111 111",
