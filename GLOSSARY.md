@@ -56,6 +56,10 @@ _Avoid_: Total, breakdown
 The percentages a Recapitulație adds on top of the direct costs: CAM (contribuția asiguratorie pentru muncă) on labour, indirect costs on the direct costs, profit on direct plus indirect costs, and VAT on the total. Each Deviz copies them from its Firmă's defaults. In code: `markups`.
 _Avoid_: Rates (a rate is a price per hour), fees
 
+**Revizie** (revision) and **Comparare revizii** (revision comparison):
+A new version of a Deviz under the same number, made from the estimate's menu after the client asked for changes: DVZ-0142-R2 is the second. Its Articole remember the ones they were copied from, so Comparare revizii pairs them and shows what each change did to the Recapitulație and to each Articol, with a summary to send the client. In code: `estimates.duplicate` with `asRevision`, `lineItems.originId`, `estimates/diff.ts`, at `/estimates/<id>/compare`. See `docs/adr/0048`.
+_Avoid_: Version, Copie (a copy gets a new number)
+
 **Șablon de deviz** (estimate template):
 What a new Deviz starts from instead of an empty page. A Firmă saves any Deviz as one, keeping its Capitole and Articole with their quantities and Resurse but not its client, site, Cote or prices, which the new Deviz takes from the day it starts. Devize also ships its own (Baie, Bucătărie, Zugrăveli apartament, Termosistem, Acoperiș), written with the Norme de bază, that work out each quantity from a few measurements. In code: `estimateTemplates`, `estimateTemplateContents`, `templates/`, `templates/starters.ts`. See `docs/adr/0040`.
 _Avoid_: Model, preset, Copie (a copy of one Deviz, with its client and prices)
