@@ -1,6 +1,7 @@
 import { ConvexCredentials } from "@convex-dev/auth/providers/ConvexCredentials";
 import { Email } from "@convex-dev/auth/providers/Email";
 import { createAccount, signInViaProvider } from "@convex-dev/auth/server";
+import { createLocalJWKSet, decodeJwt, jwtVerify } from "jose";
 import type { DataModel, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { env } from "./_generated/server";
@@ -18,15 +19,26 @@ export const CODE_SENDER = "email-code-sender";
 export const CODE_LENGTH = 8;
 export const CODE_MINUTES = 15;
 
-// Once TURNSTILE_SECRET_KEY is set, a code goes out only after Cloudflare
-// Turnstile tells a person from a script; the sign-in page then shows the
-// widget for NEXT_PUBLIC_TURNSTILE_SITE_KEY. Without the secret, codes go out
-// as before.
-const TURNSTILE_VERIFY_URL =
-  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-// The widget's action on the sign-in page.
-export const TURNSTILE_ACTION = "sign-in";
-const MAX_TURNSTILE_TOKEN = 2048;
+// A code goes out only for a request Vercel BotID let through (docs/adr/0052).
+// The app's /api/sign-in-code asks BotID about the page's request, then passes
+// on the OIDC token Vercel gives that function, which nobody outside the app's
+// functions on Vercel can have. BOTID_CHECK=off turns the check off, for a
+// development deployment whose sign-in page runs on a laptop.
+const VERCEL_TEAM = "orvibo";
+const VERCEL_PROJECT = "devize";
+// Vercel signs as the team, or as itself under the "global" issuer mode.
+const VERCEL_ISSUERS = [
+  `https://oidc.vercel.com/${VERCEL_TEAM}`,
+  "https://oidc.vercel.com",
+];
+const VERCEL_AUDIENCE = `https://vercel.com/${VERCEL_TEAM}`;
+// The app's production and preview functions; a laptop's `vercel env pull`
+// gets a token for "development".
+const VERCEL_SUBJECTS = ["production", "preview"].map(
+  (environment) =>
+    `owner:${VERCEL_TEAM}:project:${VERCEL_PROJECT}:environment:${environment}`,
+);
+const MAX_OIDC_TOKEN = 8192;
 
 // At most one code every 30 seconds and five an hour per address, so nobody
 // can flood an inbox from the sign-in page.
@@ -156,34 +168,43 @@ export async function adoptUnverifiedUsers(
 }
 
 /**
- * Whether Cloudflare confirms the sign-in page's challenge was solved for
- * `token`, which works once, or true when Turnstile isn't set up.
+ * Whether `token` is an OIDC token Vercel signed for the app's production or
+ * preview functions, which pass one on only for a request BotID let through,
+ * or true when the check is off.
  */
-export async function passedTurnstile(token: unknown): Promise<boolean> {
-  const secret = env.TURNSTILE_SECRET_KEY?.trim();
-  if (!secret) {
+export async function passedBotId(token: unknown): Promise<boolean> {
+  if (env.BOTID_CHECK?.trim() === "off") {
     return true;
   }
-  if (
-    typeof token !== "string" ||
-    !token ||
-    token.length > MAX_TURNSTILE_TOKEN
-  ) {
+  if (typeof token !== "string" || !token || token.length > MAX_OIDC_TOKEN) {
     return false;
   }
   try {
-    const response = await fetch(TURNSTILE_VERIFY_URL, {
-      method: "POST",
-      body: new URLSearchParams({ secret, response: token }),
-    });
-    const result = (await response.json()) as {
-      success?: unknown;
-      action?: unknown;
-    };
-    return result.success === true && result.action === TURNSTILE_ACTION;
+    // Keys are only ever fetched from Vercel.
+    const { iss } = decodeJwt(token);
+    if (typeof iss !== "string" || !VERCEL_ISSUERS.includes(iss)) {
+      return false;
+    }
+    const response = await fetch(`${iss}/.well-known/jwks`);
+    if (!response.ok) {
+      return false;
+    }
+    const { payload } = await jwtVerify(
+      token,
+      createLocalJWKSet(await response.json()),
+      {
+        issuer: iss,
+        audience: VERCEL_AUDIENCE,
+        algorithms: ["RS256"],
+        clockTolerance: 60,
+      },
+    );
+    return (
+      typeof payload.sub === "string" && VERCEL_SUBJECTS.includes(payload.sub)
+    );
   } catch {
-    // With Cloudflare out of reach no code goes out, and the page says to
-    // try again.
+    // A token that isn't Vercel's, or Vercel's keys out of reach: no code
+    // goes out, and the page says to try again.
     return false;
   }
 }
@@ -201,12 +222,13 @@ const CodeSender = Email({
 });
 
 /**
- * The provider for `signIn("email-code", { email, turnstileToken })`, then
- * `signIn("email-code", { email, code })`. A code goes out only to someone
- * who passed Turnstile, once it is set up. The code only works with the
- * address it was sent to, and Convex Auth stops accepting guesses for an
- * address after 10 wrong ones in an hour. Accounts keep this provider's id,
- * so everyone who signed in with a code before signs in to the same user.
+ * The provider for `signIn("email-code", { email, oidcToken })`, which the
+ * app's /api/sign-in-code sends, then `signIn("email-code", { email, code })`.
+ * A code goes out only for a request Vercel BotID let through. The code only
+ * works with the address it was sent to, and Convex Auth stops accepting
+ * guesses for an address after 10 wrong ones in an hour. Accounts keep this
+ * provider's id, so everyone who signed in with a code before signs in to the
+ * same user.
  */
 export const EmailCode = ConvexCredentials<DataModel>({
   id: EMAIL_CODE_PROVIDER,
@@ -224,8 +246,8 @@ export const EmailCode = ConvexCredentials<DataModel>({
         params: { email, code },
       });
     }
-    if (!(await passedTurnstile(params.turnstileToken))) {
-      throw forbidden("turnstile");
+    if (!(await passedBotId(params.oidcToken))) {
+      throw forbidden("bot");
     }
     // A new address gets its user and account now, as asking for a code
     // always did.

@@ -3543,13 +3543,11 @@ export default {
         "Nu vindem date personale și nu le folosim pentru reclame. Le primesc furnizorii care ne ajută să rulăm Devize, fiecare pentru partea lui:",
       convex: "Convex: baza de date și funcțiile aplicației",
       vercel:
-        "Vercel: găzduirea site-ului de prezentare și a aplicației, cu jurnalele tehnice ale vizitelor",
+        "Vercel: găzduirea site-ului de prezentare și a aplicației, cu jurnalele tehnice ale vizitelor, și verificarea anti-robot (BotID) de pe pagina de intrare, care deosebește oamenii de programele automate înainte să trimitem un cod pe email; pentru ea folosește adresa IP și câteva date tehnice ale browserului",
       anthropic:
         "Anthropic: Claude, pentru funcțiile de inteligență artificială",
       resend:
         "Resend: emailurile automate ale aplicației, cum sunt codurile de intrare, invitațiile, notificările și confirmarea unei oferte acceptate",
-      cloudflare:
-        "Cloudflare: verificarea anti-robot (Turnstile) de pe pagina de intrare, care deosebește oamenii de programele automate înainte să trimitem un cod pe email. Primește adresa IP și câteva date tehnice ale browserului; adresa de email nu i-o trimitem.",
       google:
         "Google: intrarea cu contul Google, dacă o alegeți; poza de profil Google a unui coleg o încarcă browserul direct de la Google",
       sentry: "Sentry: rapoartele de erori, fără date care să vă identifice",
@@ -3562,7 +3560,7 @@ export default {
     },
     cookies: {
       title: "Cookie-uri",
-      body: "Folosim doar cookie-urile fără de care aplicația nu merge: cele care vă țin conectat, cele de câteva minute care verifică intrarea cu Google și cel care ține minte limba aleasă. Tot în browser, aplicația mai păstrează sesiunea, tema luminoasă sau întunecată și, pentru formularele unui deviz, ultimele alegeri, inclusiv numele beneficiarului, al proiectantului și al celui care semnează oferta, ca să nu le scrieți din nou; acestea rămân pe dispozitivul dumneavoastră. Pe pagina de intrare rulează verificarea anti-robot Cloudflare Turnstile, care citește câteva date tehnice ale browserului ca să deosebească oamenii de programele automate. Nu folosim cookie-uri de analiză sau de reclamă.",
+      body: "Folosim doar cookie-urile fără de care aplicația nu merge: cele care vă țin conectat, cele de câteva minute care verifică intrarea cu Google și cel care ține minte limba aleasă. Tot în browser, aplicația mai păstrează sesiunea, tema luminoasă sau întunecată și, pentru formularele unui deviz, ultimele alegeri, inclusiv numele beneficiarului, al proiectantului și al celui care semnează oferta, ca să nu le scrieți din nou; acestea rămân pe dispozitivul dumneavoastră. Pe pagina de intrare rulează verificarea anti-robot Vercel BotID, care citește câteva date tehnice ale browserului și poate păstra un cookie tehnic, ca să deosebească oamenii de programele automate. Nu folosim cookie-uri de analiză sau de reclamă.",
     },
     rights: {
       title: "Drepturile dumneavoastră",
