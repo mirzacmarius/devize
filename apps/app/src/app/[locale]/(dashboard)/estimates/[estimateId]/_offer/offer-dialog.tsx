@@ -152,6 +152,7 @@ function OfferForm({
   const [consumer, setConsumer] = useState(estimate.client?.kind === "person");
   const [optional, setOptional] = useState<Optional[]>([]);
   const [assistant, setAssistant] = useState(true);
+  const [showEur, setShowEur] = useState(true);
   // Every Variantă goes on the link until the firm unticks one.
   const [left, setLeft] = useState<Id<"variants">[]>([]);
   const offered = (variants?.variants ?? []).filter(
@@ -268,6 +269,7 @@ function OfferForm({
         consumer,
         optionalItems: optional,
         assistant,
+        showEur,
         variantIds: offered.map((variant) => variant._id),
         baseLabel:
           offered.length > 0
@@ -589,6 +591,22 @@ function OfferForm({
           </span>
           <span className="text-meta text-ink-3">
             {t("dialog.assistantHint")}
+          </span>
+        </label>
+      </div>
+      <div className="flex items-start gap-3">
+        <Switch
+          id="offer-eur"
+          checked={showEur}
+          className="mt-0.5"
+          onCheckedChange={setShowEur}
+        />
+        <label htmlFor="offer-eur" className="grid cursor-pointer gap-0.5">
+          <span className="text-body font-medium text-ink">
+            {t("dialog.showEur")}
+          </span>
+          <span className="text-meta text-ink-3">
+            {t("dialog.showEurHint")}
           </span>
         </label>
       </div>

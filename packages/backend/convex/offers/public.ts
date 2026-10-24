@@ -8,6 +8,7 @@ import {
   readLineItems,
   readSections,
 } from "../estimates/helpers";
+import { latestRateOf } from "../exchange/rates";
 import { forbidden, invalid } from "../lib/errors";
 import { sha256Hex } from "../lib/sha256";
 import { type Choice, checkChoice, priceChoice } from "./choice";
@@ -85,6 +86,8 @@ export const view = query({
           : ("declined" as const),
       ...head,
       ...content,
+      // The euro beside the lei while the client decides, if the firm asked.
+      eur: open && offer.showEur ? await latestRateOf(ctx, "EUR") : null,
       accepted:
         offer.status === "accepted" && offer.signature
           ? {

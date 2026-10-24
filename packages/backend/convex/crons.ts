@@ -21,4 +21,14 @@ crons.cron(
   {},
 );
 
+// Reads BNR's reference rates, published around 13:00 in Romania on banking
+// days; the second run catches a late publication. Weekends read Friday's
+// rate again, which is kept once (docs/adr/0042).
+crons.cron(
+  "read BNR exchange rates",
+  "15 11,14 * * *",
+  internal.exchange.rates.refresh,
+  {},
+);
+
 export default crons;

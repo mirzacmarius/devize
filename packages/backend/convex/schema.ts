@@ -5,6 +5,7 @@ import { accountTables } from "./accounts/tables";
 import { aiTables } from "./ai/tables";
 import { catalogTables } from "./catalog/tables";
 import { estimateTables } from "./estimates/tables";
+import { exchangeTables } from "./exchange/tables";
 import { invoiceTables } from "./invoices/tables";
 import { manufacturerTables } from "./manufacturers/tables";
 import { materialTables } from "./materials/tables";
@@ -56,4 +57,5 @@ export default defineSchema({
   ...progressTables,
   ...invoiceTables,
   ...templateTables,
+  ...exchangeTables,
 });

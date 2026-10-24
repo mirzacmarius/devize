@@ -64,6 +64,10 @@ _Avoid_: Model, preset, Copie (a copy of one Deviz, with its client and prices)
 The price a client wants to pay, with or without VAT, and the Deviz brought to it through its profit rate or through all its labour prices by the same factor, never below what it costs with no profit or no labour. The dialog shows the margin left and flags labour under the legal minimum before it applies. In code: `estimates/target.ts`, `estimates/targetPrice.ts`. See `docs/adr/0041`.
 _Avoid_: Budget, discount (a reduction shown to the client)
 
+**Curs BNR** (BNR exchange rate):
+The National Bank of Romania's reference rate for the euro, read each day, at which the Deviz and, when the firm chooses, the client's Ofertă show their total in EUR beside the lei. The price stays in lei; the euros are a comparison, with the rate and its day. In code: `exchangeRates`, `exchange/`, `offers.showEur`. See `docs/adr/0042`.
+_Avoid_: Curs valutar (any exchange rate), conversion
+
 **Antemăsurătoare** (quantity take-off):
 The measured quantities behind a Deviz's Articole: rows of count × length × width × height, with the openings deducted, typed by hand or written from the Deviz's Camere, so an Articol's quantity is the sum of its rows and the Anexa Antemăsurătoare prints them after the Deviz. Devize AI writes rows too, from plans, photos or dictation. In code: `takeoffs`, `takeoffs/`. See `docs/adr/0033`.
 _Avoid_: Measurement, survey

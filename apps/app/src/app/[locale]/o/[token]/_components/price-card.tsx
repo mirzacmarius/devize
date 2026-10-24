@@ -12,6 +12,7 @@ import {
 } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useState } from "react";
+import { EurAmount } from "@/components/eur-amount";
 import { useTriggerWords } from "@/components/payment-schedule";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -140,6 +141,9 @@ export function PriceCard({
           </div>
         </dl>
         {!hasVat && <p className="m-0 text-meta text-ink-3">{t("noVat")}</p>}
+        {offer.eur && (
+          <EurAmount lei={totals.total} rate={offer.eur} paidInLei />
+        )}
         {schedule.length > 0 && (
           <div className="grid gap-1 border-t border-border pt-3">
             <span className="text-meta font-medium text-ink-3">
