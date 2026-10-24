@@ -15,7 +15,10 @@ import { estimateCode, formatDay, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./types";
 
-/** The other revisions of the same Deviz number, once there is more than one. */
+/**
+ * The other revisions of the same Deviz number, once there is more than one,
+ * each with a link to compare it with this one.
+ */
 export function RevisionsCard({ estimate }: { estimate: Estimate }) {
   const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
@@ -64,7 +67,18 @@ export function RevisionsCard({ estimate }: { estimate: Estimate }) {
                     })}
                   </span>
                 </div>
-                <EstimateStatusPill status={revision.status} />
+                <div className="flex shrink-0 items-center gap-3">
+                  {!current && (
+                    <Link
+                      href={`/estimates/${estimate._id}/compare?with=${revision._id}`}
+                      aria-label={t("revisions.compareWith", { code })}
+                      className="rounded-xs text-meta text-ink-2 underline underline-offset-[3px] hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {t("revisions.compare")}
+                    </Link>
+                  )}
+                  <EstimateStatusPill status={revision.status} />
+                </div>
               </li>
             );
           })}

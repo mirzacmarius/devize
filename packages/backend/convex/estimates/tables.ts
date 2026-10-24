@@ -93,6 +93,9 @@ export const estimateTables = {
     origin: lineItemOrigin,
     // The norm version the item was copied from.
     normId: v.optional(v.id("norms")),
+    // In a revision, the item of the first revision this one descends from,
+    // so Comparare revizii pairs it with its earlier self.
+    originId: v.optional(v.id("lineItems")),
     code: v.string(),
     title: v.string(),
     unit: v.string(),

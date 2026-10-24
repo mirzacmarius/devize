@@ -74,6 +74,8 @@ import type * as catalog_tables from "../catalog/tables.js";
 import type * as catalog_validators from "../catalog/validators.js";
 import type * as crons from "../crons.js";
 import type * as emailSignIn from "../emailSignIn.js";
+import type * as estimates_compare from "../estimates/compare.js";
+import type * as estimates_diff from "../estimates/diff.js";
 import type * as estimates_estimates from "../estimates/estimates.js";
 import type * as estimates_helpers from "../estimates/helpers.js";
 import type * as estimates_lineItems from "../estimates/lineItems.js";
@@ -311,6 +313,8 @@ declare const fullApi: ApiFromModules<{
   "catalog/validators": typeof catalog_validators;
   crons: typeof crons;
   emailSignIn: typeof emailSignIn;
+  "estimates/compare": typeof estimates_compare;
+  "estimates/diff": typeof estimates_diff;
   "estimates/estimates": typeof estimates_estimates;
   "estimates/helpers": typeof estimates_helpers;
   "estimates/lineItems": typeof estimates_lineItems;

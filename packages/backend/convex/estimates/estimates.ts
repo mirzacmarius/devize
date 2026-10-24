@@ -234,7 +234,9 @@ export const revisions = query({
     return sameNumber
       .map((revision) => ({
         _id: revision._id,
+        number: revision.number,
         revision: revision.revision,
+        title: revision.title,
         status: revision.status,
         total: revision.totals.total,
         updatedAt: revision.updatedAt,
@@ -491,6 +493,8 @@ export const duplicate = mutation({
           sectionId: fields.sectionId
             ? sectionIds.get(fields.sectionId)
             : undefined,
+          // A copy starts afresh; a revision remembers where it came from.
+          originId: args.asRevision ? (fields.originId ?? oldId) : undefined,
           updatedAt: now,
         }),
       );
