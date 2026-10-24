@@ -7,6 +7,8 @@ import {
   chit,
   chitEpoxidic,
   cuie,
+  dibluCui,
+  dibluTamplarie,
   dulgher,
   faianta,
   faiantar,
@@ -23,10 +25,17 @@ import {
   profilFaianta,
   silicon,
   siliconSanitar,
+  sistemNivelare,
   smallMaterials,
 } from "./resources";
 
 const category = "Placaje";
+
+const baghetaLemn = material(
+  "Baghetă din lemn pentru colțuri și margini",
+  "m",
+  5,
+);
 
 const faiantaMare = material("Faianță format mare, de la 30 × 60 cm", "mp", 75);
 const mozaic = material("Mozaic din sticlă pe plasă", "mp", 160);
@@ -144,6 +153,7 @@ export const placaje: BaseNorm[] = [
       adezivC2TES1(5),
       chit(0.3),
       profilFaianta(0.3),
+      sistemNivelare(11),
       smallMaterials(2),
       faiantar(1.2),
       necalificat(0.3),
@@ -165,6 +175,7 @@ export const placaje: BaseNorm[] = [
       adezivC2TES1(5.5),
       chit(0.3),
       profilFaianta(0.3),
+      sistemNivelare(6),
       smallMaterials(2),
       faiantar(1.25),
       necalificat(0.3),
@@ -196,8 +207,10 @@ export const placaje: BaseNorm[] = [
     unit: "mp",
     includes:
       "Curățarea rosturilor, aplicarea chitului epoxidic, emulsionarea și spălarea resturilor.",
+    excludes:
+      "Chitul de rosturi de ciment din norma placajului, care se scoate din acea normă când se folosește aceasta.",
     measurement: "Suprafața placajului rostuit.",
-    resources: [chitEpoxidic(0.5), faiantar(0.35)],
+    resources: [chitEpoxidic(0.5), faiantar(0.2)],
   },
   {
     code: "DV-PLC-07",
@@ -370,6 +383,7 @@ export const placaje: BaseNorm[] = [
     resources: [
       lambriuTermotratat(1.1),
       cherestea(0.006),
+      dibluTamplarie(4),
       surubInoxFatada(20),
       dulgher(0.9),
       necalificat(0.3),
@@ -387,7 +401,9 @@ export const placaje: BaseNorm[] = [
     resources: [
       lambriuInterior(1.1),
       cherestea(0.004),
+      dibluCui(4),
       cuie(0.05),
+      baghetaLemn(0.6),
       dulgher(0.6),
       necalificat(0.15),
     ],

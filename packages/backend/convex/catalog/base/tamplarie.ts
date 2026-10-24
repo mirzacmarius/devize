@@ -58,7 +58,7 @@ const usaAntiefractie = material(
   3200,
 );
 const usaAntifoc = material(
-  "Ușă metalică rezistentă la foc EI60, cu toc",
+  "Ușă metalică rezistentă la foc EI60, cu toc și dispozitiv de autoînchidere",
   "buc",
   2800,
 );
@@ -106,6 +106,11 @@ const jaluzele = material(
 const pervazLemn = material("Pervaz interior din lemn", "m", 70);
 const glafTabla = material("Glaf exterior din tablă vopsită", "m", 28);
 const geamTripan = material("Geam termoizolant tripan", "mp", 350);
+const baghetaGeam = material(
+  "Baghetă din PVC pentru geam termoizolant",
+  "m",
+  6,
+);
 const scaraPod = material("Scară escamotabilă de pod, cu chepeng", "buc", 900);
 const pereteSticla = material(
   "Perete despărțitor din sticlă securizată cu profile de aluminiu",
@@ -309,7 +314,8 @@ export const tamplarie: BaseNorm[] = [
   {
     code: "DV-TAM-12",
     category,
-    title: "Ușă metalică rezistentă la foc EI60, cu toc, cu montaj",
+    title:
+      "Ușă metalică rezistentă la foc EI60, cu toc și autoînchidere, cu montaj",
     unit: "buc",
     includes:
       "Fixarea tocului cu ancore, umplerea tocului cu mortar, montarea foii, reglarea și verificarea închiderii automate.",
@@ -452,10 +458,16 @@ export const tamplarie: BaseNorm[] = [
       "Înlocuirea geamului termoizolant cu geam tripan, în tâmplăria existentă",
     unit: "mp",
     includes:
-      "Scoaterea baghetelor și a geamului vechi, așezarea geamului nou pe cale, remontarea baghetelor.",
-    excludes: "Evacuarea geamului vechi.",
+      "Scoaterea baghetelor și a geamului vechi, așezarea geamului nou pe cale, montarea baghetelor noi potrivite grosimii geamului și reglarea cercevelei.",
+    excludes:
+      "Evacuarea geamului vechi. Se aplică numai la profilele care primesc grosimea geamului tripan.",
     measurement: "Suprafața geamului.",
-    resources: [geamTripan(1), smallMaterials(2), montatorTamplarie(0.8)],
+    resources: [
+      geamTripan(1),
+      baghetaGeam(4.5),
+      smallMaterials(2),
+      montatorTamplarie(0.8),
+    ],
   },
   {
     code: "DV-TAM-23",

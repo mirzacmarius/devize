@@ -2,11 +2,13 @@ import type { BaseNorm } from "./norm";
 import {
   aerCald,
   amorsaBituminoasa,
+  amorsaSape,
   bandaColturi,
   betoniera,
   betonist,
   dibluCui,
   emulsieBituminoasa,
+  equipment,
   fierar,
   foliePolietilena,
   gazPropan,
@@ -28,6 +30,12 @@ import {
 } from "./resources";
 
 const category = "Hidroizolații";
+
+const lamaSudura = equipment(
+  "Aparat de sudură cu lamă încălzită pentru benzi de rost",
+  "ora",
+  10,
+);
 
 const membranaPvc = material("Membrană PVC pentru terase, 1,5 mm", "mp", 42);
 const dibluMembrana = material(
@@ -284,6 +292,7 @@ export const hidroizolatii: BaseNorm[] = [
     excludes: "Placajul.",
     measurement: "Suprafața hidroizolată, cu racordurile pe pereți.",
     resources: [
+      amorsaSape(0.15),
       membranaLichida(1.5),
       bandaColturi(0.6),
       manseta(0.3),
@@ -298,16 +307,10 @@ export const hidroizolatii: BaseNorm[] = [
       "Gură de scurgere pentru terase, cu parafrunzar, racordată la hidroizolație",
     unit: "buc",
     includes:
-      "Montarea gurii de scurgere în gol, racordarea ei la coloana pluvială, lipirea gulerului în hidroizolație și parafrunzarul.",
+      "Montarea gurii de scurgere în gol, racordarea ei la coloana pluvială, lipirea gulerului în hidroizolație (petecul de întărire din jur e cuprins în norma hidroizolației) și parafrunzarul.",
     excludes: "Golul în placă; coloana pluvială.",
     measurement: "Numărul de guri de scurgere.",
-    resources: [
-      guraScurgere(1),
-      membranaSbs4(1),
-      gazPropan(0.1),
-      izolator(1),
-      instalator(0.5),
-    ],
+    resources: [guraScurgere(1), izolator(1), instalator(0.5)],
   },
   {
     code: "DV-HDR-14",
@@ -316,14 +319,14 @@ export const hidroizolatii: BaseNorm[] = [
       "Bandă de etanșare din PVC în rosturile de lucru ale betonului, montată înainte de turnare",
     unit: "m",
     includes:
-      "Așezarea benzii în poziție, fixarea ei de armătură și sudarea îmbinărilor cu aer cald.",
+      "Așezarea benzii în poziție, fixarea ei de armătură și sudarea cap la cap a îmbinărilor cu lama încălzită.",
     measurement: "Lungimea rosturilor etanșate.",
     resources: [
       waterstop(1.05),
       smallMaterials(3),
       fierar(0.15),
       izolator(0.1),
-      aerCald(0.05),
+      lamaSudura(0.05),
     ],
   },
   {
@@ -409,18 +412,19 @@ export const hidroizolatii: BaseNorm[] = [
     code: "DV-HDR-20",
     category,
     title:
-      "Racordul hidroizolației la atice și pereți, cu întoarcere de 30 cm, profil de închidere și mastic",
+      "Închiderea racordului hidroizolației la atice și pereți, cu profil din aluminiu și mastic",
     unit: "m",
     includes:
-      "Scafa, lipirea fâșiei de membrană pe perete, profilul de închidere din aluminiu fixat cu dibluri și masticul la partea de sus.",
-    measurement: "Lungimea racordului.",
+      "Profilul de închidere din aluminiu fixat cu dibluri la marginea de sus a întoarcerii și masticul de etanșare de deasupra lui.",
+    excludes:
+      "Scafa și întoarcerea hidroizolației pe perete, cuprinse în norma hidroizolației.",
+    measurement:
+      "Lungimea racordului. Întoarcerea hidroizolației pe perete se măsoară cu suprafața ei, în norma hidroizolației.",
     resources: [
-      membranaSbs4(0.5),
-      gazPropan(0.06),
       profilAluminiu(1.05),
       dibluCui(3),
       masticBituminos(0.1),
-      izolator(0.3),
+      izolator(0.15),
     ],
   },
 ];

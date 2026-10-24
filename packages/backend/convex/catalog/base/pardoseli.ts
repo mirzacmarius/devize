@@ -93,6 +93,7 @@ const adezivCovor = material(
   14,
 );
 const cordonSudura = material("Cordon de sudură pentru pardoseli PVC", "m", 2);
+const cordonLinoleum = material("Cordon de sudură pentru linoleum", "m", 3);
 const lvt = material("Pardoseală vinilică LVT lipită", "mp", 85);
 const mocheta = material("Mochetă de trafic intens", "mp", 60);
 const linoleum = material("Linoleum natural, 2,5 mm", "mp", 90);
@@ -266,14 +267,13 @@ export const pardoseli: BaseNorm[] = [
     title: "Șapă din anhidrit autonivelantă de 4 cm, pompată",
     unit: "mp",
     includes:
-      "Folia de separare, banda perimetrală, amorsarea, turnarea șapei pompate și dezaerarea cu bara, protejarea de curenți de aer.",
+      "Folia de separare, banda perimetrală, turnarea șapei pompate și dezaerarea cu bara, protejarea de curenți de aer.",
     excludes:
       "Termoizolația; șlefuirea laptelui de anhidrit înainte de finisaj.",
     measurement: "Suprafața șapei, între pereți.",
     resources: [
       foliePolietilena(1.1),
       bandaPerimetrala(0.6),
-      amorsaSape(0.1),
       sapaAnhidrit(0.042),
       betonist(0.12),
       necalificat(0.08),
@@ -581,7 +581,7 @@ export const pardoseli: BaseNorm[] = [
     resources: [
       linoleum(1.08),
       adezivCovor(0.35),
-      cordonSudura(0.8),
+      cordonLinoleum(0.8),
       parchetar(0.5),
       necalificat(0.1),
       aerCald(0.1),

@@ -12,7 +12,6 @@ import {
   eps80,
   foliePolietilena,
   gazPropan,
-  geotextil,
   izolator,
   masinaInsuflat,
   material,
@@ -406,33 +405,22 @@ export const termoizolatii: BaseNorm[] = [
     title:
       "Termoizolație de 10 cm din polistiren expandat EPS 100 sub șapă, pe planșee",
     unit: "mp",
-    includes:
-      "Așezarea plăcilor cu rosturi decalate și a foliei de separare de deasupra, cu petreceri de 10 cm.",
-    excludes: "Hidroizolația plăcii; șapa.",
+    includes: "Așezarea plăcilor cu rosturi decalate.",
+    excludes:
+      "Hidroizolația plăcii; folia de separare și șapa (normele șapei).",
     measurement: "Suprafața izolată.",
-    resources: [
-      eps100(1.05),
-      foliePolietilena(1.15),
-      izolator(0.12),
-      necalificat(0.05),
-    ],
+    resources: [eps100(1.05), izolator(0.12), necalificat(0.05)],
   },
   {
     code: "DV-TRM-17",
     category,
-    title:
-      "Termoizolație de 10 cm din polistiren extrudat XPS pe terase, cu geotextil de separare",
+    title: "Termoizolație de 10 cm din polistiren extrudat XPS pe terase",
     unit: "mp",
-    includes:
-      "Așezarea plăcilor cu rosturi decalate, cu falț, și a geotextilului de separare de deasupra, cu petreceri.",
-    excludes: "Hidroizolația; stratul de protecție sau lestare.",
+    includes: "Așezarea plăcilor cu rosturi decalate, cu falț.",
+    excludes:
+      "Hidroizolația; stratul de protecție sau lestare, cu stratul lui de separare (DV-HDR-17, DV-HDR-18).",
     measurement: "Suprafața izolată.",
-    resources: [
-      xps10(1.05),
-      geotextil(1.15),
-      izolator(0.12),
-      necalificat(0.05),
-    ],
+    resources: [xps10(1.05), izolator(0.12), necalificat(0.05)],
   },
   {
     code: "DV-TRM-18",
@@ -477,16 +465,10 @@ export const termoizolatii: BaseNorm[] = [
     title:
       "Izolație fonică și termică de 3 cm din vată bazaltică de pardoseală, sub șapă flotantă",
     unit: "mp",
-    includes:
-      "Așezarea plăcilor cu rosturile strânse și a foliei de separare de deasupra, cu petreceri de 10 cm.",
-    excludes: "Banda perimetrală și șapa.",
+    includes: "Așezarea plăcilor cu rosturile strânse.",
+    excludes: "Folia de separare, banda perimetrală și șapa (normele șapei).",
     measurement: "Suprafața izolată.",
-    resources: [
-      vataPardoseala(1.05),
-      foliePolietilena(1.15),
-      izolator(0.1),
-      necalificat(0.05),
-    ],
+    resources: [vataPardoseala(1.05), izolator(0.1), necalificat(0.05)],
   },
   {
     code: "DV-TRM-21",

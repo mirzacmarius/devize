@@ -362,6 +362,11 @@ export const tencuieli: BaseNorm[] = [
       "Amorsarea, aplicarea manuală a tencuielii de ipsos, nivelarea și netezirea ei.",
     excludes: "Gletul.",
     measurement: "Suprafața tencuită, fără goluri.",
-    resources: [tencuialaIpsosManuala(10), tencuitor(0.55), necalificat(0.15)],
+    resources: [
+      punteAderenta(0.2),
+      tencuialaIpsosManuala(10),
+      tencuitor(0.55),
+      necalificat(0.15),
+    ],
   },
 ];
