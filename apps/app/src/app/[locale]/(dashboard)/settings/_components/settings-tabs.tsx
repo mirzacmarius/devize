@@ -13,6 +13,7 @@ export function SettingsTabs() {
     { href: "/settings", label: t("tabs.account") },
     { href: "/settings/firm", label: t("tabs.firm") },
     { href: "/settings/members", label: t("tabs.members") },
+    { href: "/settings/billing", label: t("tabs.billing") },
   ];
   return (
     <TabsNav aria-label={t("sections")}>

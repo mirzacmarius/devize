@@ -7,9 +7,10 @@ import { internalMutation, mutation, query } from "../_generated/server";
 import { optionalText } from "../accounts/identifiers";
 import { checkMarkups } from "../accounts/organizations";
 import { latestPublishedVersion } from "../catalog/norms";
+import { deleteDraftInvoices, hasIssuedInvoice } from "../invoices/invoices";
 import { requireFirmDoc, requireMember } from "../lib/access";
 import { checkDate, romanianDate } from "../lib/dates";
-import { invalid, notFound } from "../lib/errors";
+import { appError, invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import { store } from "../prices/validators";
 import { deleteProgressRows } from "../progress/cleanup";
@@ -516,6 +517,10 @@ export const remove = mutation({
       args.estimateId,
       "admin",
     );
+    // A Deviz with an issued invoice stays: the invoice is a fiscal document.
+    if (await hasIssuedInvoice(ctx, estimate._id)) {
+      throw appError("in_use", "invoices");
+    }
     await ctx.db.delete("estimates", estimate._id);
     await ctx.scheduler.runAfter(0, internal.estimates.estimates.deleteRows, {
       estimateId: estimate._id,
@@ -562,6 +567,11 @@ export const deleteRows = internalMutation({
     deleted += await deleteProposals(
       ctx,
       { estimateId: args.estimateId },
+      Math.max(BATCH - deleted, 0),
+    );
+    deleted += await deleteDraftInvoices(
+      ctx,
+      args.estimateId,
       Math.max(BATCH - deleted, 0),
     );
     deleted += await deleteProgressRows(

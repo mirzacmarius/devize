@@ -42,6 +42,7 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ApproveDialog } from "./approve-dialog";
 import { AttachmentDialog } from "./attachment-dialog";
 import { StatementDialog } from "./statement-dialog";
+import { StatementInvoice } from "./statement-invoice";
 import { statementTone } from "./statement-status";
 import type { Statement, StatementRow, Works } from "./types";
 import { useDownloadProgress } from "./use-download-progress";
@@ -177,6 +178,9 @@ export function StatementCard({
               >
                 {t("approve")}
               </Button>
+            )}
+            {statement.status === "approved" && (
+              <StatementInvoice statementId={statementId} />
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

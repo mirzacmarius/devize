@@ -90,6 +90,7 @@ export function SidebarContent({
         {item("/estimates", Icons.Deviz, t("estimates"))}
         {item("/catalog", Icons.Catalog, t("catalog"))}
         {item("/clients", Icons.Clients, t("clients"))}
+        {item("/invoices", Icons.Invoice, t("invoices"))}
         {item("/rates", Icons.Rates, t("rates"))}
         {item("/prices", Icons.Prices, t("prices"), {
           value: priceAlerts ?? 0,
