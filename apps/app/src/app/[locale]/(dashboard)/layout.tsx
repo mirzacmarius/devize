@@ -8,6 +8,7 @@ import { convexToken } from "@/lib/convex-server";
 import { CommandMenuProvider } from "./_components/command-menu";
 import { MobileNav } from "./_components/mobile-nav";
 import { SidebarContent } from "./_components/sidebar-content";
+import { TermsNotice } from "./_components/terms-notice";
 
 /**
  * The app's frame. Its user and firms come from Convex on every request, so
@@ -59,6 +60,7 @@ async function Dashboard({ children }: { children: React.ReactNode }) {
               preloadedUser={preloadedUser}
               isSuperAdmin={isSuperAdmin}
             />
+            <TermsNotice />
             {children}
           </AppMain>
         </AppShell>

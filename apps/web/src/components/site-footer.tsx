@@ -30,6 +30,12 @@ const groups = [
         label: "Revendică un profil de producător",
         external: true,
       },
+      { href: appLinks.terms, label: "Termeni de utilizare", external: true },
+      {
+        href: appLinks.dpa,
+        label: "Acordul de prelucrare a datelor",
+        external: true,
+      },
       {
         href: appLinks.privacy,
         label: "Politica de confidențialitate",

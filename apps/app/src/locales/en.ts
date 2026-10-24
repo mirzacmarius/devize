@@ -101,7 +101,8 @@ export default {
     otherEmail: "Use another address",
     resend: "Send another code",
     resendIn: "Another code in {seconds} s",
-    privacy: "Privacy policy",
+    legal:
+      "By signing in, you accept the {terms} and confirm that you have read the {privacy}.",
   },
   username: {
     label: "Username",
@@ -2328,6 +2329,17 @@ export default {
       phone: "Phone",
       phonePlaceholder: "e.g. 0722 123 456",
       saved: "The company details were saved.",
+      termsTitle: "Devize terms",
+      termsDescription:
+        "The company's contract with Devize: the {terms} and the {dpa}.",
+      termsAccepted:
+        "{name} accepted the version of {version} on the company's behalf on {date}.",
+      termsAcceptedFormer:
+        "A former member accepted the version of {version} on the company's behalf on {date}.",
+      termsNewer:
+        "There is a new version, of {version}. An owner or admin accepts it from the notice at the top.",
+      termsNone:
+        "The company hasn't accepted the terms yet. An owner or admin accepts them from the notice at the top.",
     },
     billing: {
       seriesTitle: "Invoice series",
@@ -3118,6 +3130,8 @@ export default {
     vatPayer: "Registered for VAT",
     vatPayerHint:
       "Estimates add 21% VAT. Turn this off if the company isn't registered for VAT.",
+    terms: "On the company's behalf, I accept the {terms} and the {dpa}.",
+    termsRequired: "Tick that you accept the terms to create the company.",
     create: "Create the company",
     switch: "Switch company",
     yourFirms: "Your companies",
@@ -3501,7 +3515,7 @@ export default {
     },
     users: {
       title: "People who use Devize",
-      data: "your email address; your name and profile picture, from your Google account or chosen by you in Settings (your firm's colleagues see them, and your name also appears in the invitations you send); your firm's details (name, CUI, address, email, phone) and its billing details (bank account, bank, share capital); your colleagues and invitations; what you create in the app: estimates, offers, progress statements, reception reports, invoices and payments, the firm's clients and uploaded files (photos, bills of quantities, tender documents, data sheets).",
+      data: "your email address; your name and profile picture, from your Google account or chosen by you in Settings (your firm's colleagues see them, and your name also appears in the invitations you send); your firm's details (name, CUI, address, email, phone) and its billing details (bank account, bank, share capital); your colleagues and invitations; what you create in the app: estimates, offers, progress statements, reception reports, invoices and payments, the firm's clients and uploaded files (photos, bills of quantities, tender documents, data sheets); who accepted the terms of use on the firm's behalf, and when.",
       purpose:
         "to give you the app: your account, firm, estimates, forms, offers, progress statements and invoices. From estimates we also count, without showing which firm, how often a manufacturer's norms and products appear, to give it monthly statistics; a county appears only when the data comes from at least three firms.",
       basis:
@@ -3514,6 +3528,7 @@ export default {
       body: "When a firm works with you through Devize, the firm answers for your data and Devize processes it on the firm's behalf. For an offer: the name and contact details the firm entered, the work's address, when you opened the offer's link, what you chose in it, the questions you asked and your reason if you decline it. If you accept it: the name you typed, the signature you drew, the moment, a fingerprint of what you accepted, what your browser says about itself (type, language, time zone, screen) and the IP address you sent the acceptance from; if the firm entered your email, we send you the confirmation. For invoices: your name, your CUI or, if you gave it to the firm, your CNP, address, email and phone, what you were invoiced for and the payments the firm recorded; we keep them while the firm is on Devize. If you are a firm, your name, registered office and registration number may come from ANAF's public register. For this data, write to the firm first.",
       others:
         "Also on the firm's behalf we keep the name, role and firm or institution of the people named in reception reports (the committee members, the site supervisor, the designer, the guests), the work's location and the name of whoever confirmed a progress statement. The firm enters them, and the firm downloads and sends the documents.",
+      dpa: "What Devize does with this data on the firm's behalf, with which providers and how it deletes it, is in the {dpa}, which the firm accepts together with the {terms}.",
     },
     visitors: {
       title: "People who visit the website or the app",
@@ -3574,6 +3589,354 @@ export default {
       body: "When we change this policy, we update the date at the top.",
     },
   },
+  legal: {
+    version: "Version of {date}",
+    draftTitle: "Draft",
+    draft:
+      "The Devize team wrote this text, and a lawyer will review it before launch. Until then it may change, and we ask firms to accept each new version again.",
+    translation:
+      "This English translation is for information only: the Romanian text is the one that applies.",
+    contents: "Contents",
+    documents: "Devize documents",
+    terms: "Terms of use",
+    dpa: "Data processing agreement",
+    privacy: "Privacy policy",
+    express:
+      "Accepting includes, expressly, the clauses on liability, suspension and termination, changes to the terms, governing law and the competent court (Art. 1203 of the Romanian Civil Code).",
+  },
+  terms: {
+    title: "Terms of use",
+    description:
+      "The contract between Devize and the firms that build their estimates in the app: what we offer, who answers for what and how it is concluded.",
+    intro:
+      "These terms are the contract between Devize and the firm that opens an account in the app. We wrote them as simply as we could. The {dpa} is part of them, and the {privacy} says what personal data we use for ourselves and why.",
+    provider: {
+      title: "Who offers Devize",
+      intro: "Devize is offered by:",
+      missing:
+        "The provider's details (name, registration, registered office and email address) are filled in before launch.",
+      contact:
+        "For any question about these terms, write to us at this address.",
+    },
+    acceptance: {
+      title: "Who accepts the terms",
+      who: "The terms apply to the firm that uses Devize (“the firm”) and to everyone who signs in for it. They are accepted on the firm's behalf by whoever creates the firm in Devize, ticking that they have read them, or by an owner or admin of the firm when the app asks them to accept a new version. Whoever accepts them declares that they may bind the firm.",
+      professionals:
+        "Devize is made for professionals: companies, authorised self-employed persons and sole or family businesses, who use it in their trade. We do not offer it to consumers.",
+      clients:
+        "A firm's client who opens an offer on its link has no account and does not accept these terms: their relationship is with the firm that sent them the offer.",
+      contract:
+        "The contract is concluded electronically, in Romanian, when the firm accepts the terms. We keep which version the firm accepted, who accepted it and when, for as long as the firm exists in Devize. We send you the text of any version if you ask for it.",
+    },
+    service: {
+      title: "What Devize does",
+      body: "Devize is a web app for construction estimates. The firm builds its estimates with estimate norms (the base norms written by the Devize team, the manufacturers' norms and its own), with prices read from stores and with its own rates. From its estimates it produces the official forms for public tenders, offers on a link that the client accepts with their signature, progress statements, reception reports and invoices, with the e-Factura file. Some features use artificial intelligence (Devize AI). Manufacturers publish their norms and products on their profiles.",
+      changes:
+        "The app changes: we add and improve features and, rarely, remove one. We remove a feature the firm uses only after announcing it in good time, unless the law or a provider forces us to.",
+    },
+    account: {
+      title: "The account and the firm",
+      access:
+        "Each person has their own account, which they sign in to with a code received by email or with their Google account. Don't share your account with anyone, and keep access to your email address safe. If you find out that someone signed in to your account without the right to, write to us at once.",
+      roles:
+        "Everything you do in Devize belongs to a firm. Its owners and admins invite colleagues, give them roles and remove them from the firm, so they answer for who has access. What a member does in the app, they do on the firm's behalf.",
+      details:
+        "The firm's details (name, CUI, address and invoicing details) must be correct: they appear on estimates, offers, forms and invoices.",
+    },
+    content: {
+      title: "The firm's data stays the firm's",
+      ownership:
+        "The estimates, clients, documents, files, own norms and everything else the firm puts in Devize remain the firm's. It only gives us the right to keep, process and show them as far as we need to offer it Devize: to the firm's members, to those it sends something to (for example the client, on the offer's link) and to the providers in the {dpa}. Only the firm sees its own norms.",
+      statistics:
+        "From the estimates, we count, without showing which firm, how a manufacturer's norms and products end up in estimates: how often they are added, how many estimates with them are sent and accepted, what quantities they hold, what the accepted part is worth, how often a client chose another manufacturer's product and in which counties. The manufacturer sees these statistics monthly, and a county appears only when the data comes from at least three firms. Otherwise, we use the firm's data only to offer it Devize, and we give it to others only when the firm asks us to or the law requires it.",
+      rights:
+        "The firm answers for the data it puts in Devize having a legal basis and not infringing anyone's rights, for example the copyright in the documents it uploads.",
+    },
+    estimates: {
+      title: "Norms, prices and calculations",
+      norms:
+        "The Devize team writes the base norms, with indicative consumptions for ordinary works. Manufacturers publish their norms and answer for them, and the firm writes its own norms, on its own or with Devize AI.",
+      prices:
+        "Store prices are those the store showed on the product's page when we read them; in store or when ordering they may differ. The norms' reference prices are indicative.",
+      checks:
+        "Devize works out the markups, VAT, totals and forms from the firm's data and flags some frequent mistakes, such as labour below the construction minimum wage. It does not replace a specialist, though, and gives no legal, tax or technical advice. The firm checks every estimate, offer, form and invoice before sending it and answers for what it sends.",
+      forms:
+        "The official forms follow the models in HG 907/2016 and Order 1014/2001. When a tender's documentation asks for something else, the documentation prevails.",
+    },
+    ai: {
+      title: "Devize AI",
+      features:
+        "Some features use Claude, Anthropic's artificial intelligence model: the estimate written from a description, photos or dictation, importing bills of quantities, new norms written from a few lines or from a data sheet, the omissions check and the offer assistant.",
+      proposals:
+        "What Devize AI writes is a proposal and may be wrong: a member of the firm checks it before it goes into the estimate or the firm's catalog. The offer assistant answers the client only from what the offer shows, the client sees they are talking to an AI assistant, and the firm can turn it off for each link.",
+      limits:
+        "Each firm and each person has a limit on requests to Devize AI per hour and per day, so the service stays available to everyone. Anthropic does not train its models on the data sent this way.",
+    },
+    offers: {
+      title: "The firm's offers and clients",
+      contract:
+        "The offer, its prices, its payment terms and the contract with the client are the firm's. Devize is not a party to the contract between the firm and its client and does not answer for the works.",
+      consumers:
+        "When the client is a consumer, the offer's page shows them their rights and the withdrawal form (OUG 34/2014), and Devize emails them the confirmation if the firm gave their address. The firm answers for this information being correct and complete for its contract.",
+      signature:
+        "The client's signature on the link is a simple electronic signature. Devize keeps the evidence of the signing, but it is not a qualified electronic signature: for public tenders and for documents that require one, use a qualified signature.",
+    },
+    invoices: {
+      title: "Invoices and e-Factura",
+      responsibility:
+        "The firm answers for its invoices: their details, numbering and VAT, and for sending them to e-Factura within the legal deadline. Devize writes the XML file and checks it against ANAF's rules, but does not send it to SPV: the firm downloads it and uploads it itself.",
+      archive:
+        "Devize is not the firm's accounting archive. The firm keeps its invoices and other accounting documents for as long as the law requires (Accounting Law 82/1991, art. 25). From the Invoices page, with “Download the invoice archive”, it can download its issued invoices at any time, with each one's PDF and XML and an Excel register.",
+      deletion:
+        "When the firm is deleted, its invoices are deleted too. Before that, Devize shows how many invoices the firm has and offers their archive.",
+    },
+    producers: {
+      title: "The manufacturer profile",
+      accuracy:
+        "The firm that takes over a manufacturer's profile answers for the norms, products, data sheets and what the profile says being correct, and for having the right to publish them.",
+      license:
+        "It gives us the right, free of charge, to publish them in the Devize catalog, to show them to everyone who uses Devize and to leave them in the estimates made with them, even after it takes its profile down. New norms are checked by the Devize team before they reach the catalog, and those we don't publish we send back with an explanation.",
+    },
+    use: {
+      title: "What you may not do",
+      intro: "When you use Devize, you may not:",
+      illegal:
+        "use it for anything illegal or to deceive anyone, for example with false offers, forms or invoices;",
+      content:
+        "upload content you have no right to use, or personal data without a legal basis;",
+      access:
+        "try to reach other firms' accounts or data, or get around security measures or limits, such as those on Devize AI;",
+      scraping:
+        "copy the norms catalog or the prices in bulk with automated programs, or use them to build a competing service;",
+      spam: "send unsolicited messages through Devize;",
+      abuse: "overload or attack the service.",
+      outro:
+        "If you break these rules, we may suspend access, as “Suspension and termination” says.",
+    },
+    reports: {
+      title: "How to report illegal content",
+      body: "If you see content in Devize that you believe is illegal, for example on a manufacturer's profile or in an offer you received, write to the provider's address saying what the content is, where you saw it and why you believe it is illegal. We answer you, and if we remove the content or restrict an account, we also tell whoever published it why.",
+      contact:
+        "The same address is the point of contact for authorities and for those who use Devize, as Regulation (EU) 2022/2065 on digital services requires. You may write to us in Romanian or in English.",
+    },
+    price: {
+      title: "Price",
+      body: "Devize is free for now and has no plan limits. If we introduce paid plans, we publish their prices and announce them at least 30 days before they apply. A firm pays only if it chooses a plan.",
+    },
+    availability: {
+      title: "Availability",
+      body: "We work to keep Devize running all the time, but we can't guarantee it will run without interruptions or errors: we need maintenance, and our providers can have outages. We announce major maintenance in advance when we can.",
+      copies:
+        "Keep copies of important documents: you can download estimates, offers and forms at any time as PDF or Excel, and invoices also as XML.",
+    },
+    liability: {
+      title: "Liability",
+      indirect:
+        "Devize is offered as it is. As far as the law allows, we are not liable for indirect damage, such as lost profit or a lost tender or client, for lost data the firm could have downloaded, nor for mistakes in estimates, offers, forms and invoices the firm did not check.",
+      cap: "For any other damage, our total liability to the firm is at most what the firm paid for Devize in the 12 months before the damage, but no less than 500 lei.",
+      exceptions:
+        "We do not limit or exclude liability for damage caused intentionally or through gross negligence, for harm to life, bodily integrity or health, nor in other cases where the law does not allow it. Liability for the personal data of the firm's clients is in the {dpa}.",
+      firm: "The firm is liable to us for the damage it causes us by using Devize in breach of the law, of these terms or of others' rights.",
+    },
+    termination: {
+      title: "Suspension and termination",
+      firm: "The firm may stop using Devize at any time. It is deleted when its last member deletes their account, from Settings. We then delete all the firm's data, including its invoices, as the {dpa} says. Before that, its documents and the invoices' archive can be downloaded.",
+      suspension:
+        "We may suspend the access of a person or a firm that breaks these terms or the law, or to stop an attack or fraud. We tell you why and, when it isn't urgent, first give you the chance to put it right.",
+      ending:
+        "We may end the contract with a firm with at least 30 days' notice, during which the firm can download its data, or at once if the firm seriously breaks these terms. If we shut Devize down altogether, we announce it at least 60 days in advance.",
+      survival:
+        "What these terms say about liability, the firm's data and disputes remains in force after the contract ends.",
+    },
+    property: {
+      title: "What is ours",
+      body: "The app, the website, the Devize brand, the base catalog, the Devize templates and the materials' compatibility rules are ours or our licensors'. The firm may use them in its estimates, offers and documents, including those sent to clients and authorities, and also after it stops using Devize, for the documents made until then. Manufacturer norms belong to the manufacturers.",
+      feedback:
+        "We may use the ideas and suggestions you send us to improve Devize, with no obligation to you.",
+    },
+    privacy: {
+      title: "Confidentiality and personal data",
+      confidential:
+        "The firm's data is confidential: the firm's members and those the firm sends something to see it. The Devize team does not see it in the app; only those who maintain Devize have technical access to the database, for maintenance, incidents and the firm's requests.",
+      personal:
+        "The {privacy} says what personal data we use for ourselves, for example for accounts and the app's security. We process the personal data of the firm's clients and of the others named in its documents on the firm's behalf, under the {dpa}, which is part of these terms.",
+    },
+    changes: {
+      title: "Changes to the terms",
+      notice:
+        "We may change these terms. We announce a new version in the app and by email to the firm's owners at least 30 days before it applies. Changes the law requires and those that concern only new features may apply sooner.",
+      acceptance:
+        "An owner or admin of the firm accepts the new version in the app. If the firm does not agree with it, it may stop using Devize and download its data before it applies.",
+    },
+    law: {
+      title: "Governing law and disputes",
+      body: "These terms are governed by Romanian law. We first try to settle a disagreement amicably, within 30 days of your writing to us about it. If we don't manage, the competent courts at the provider's registered office decide it.",
+    },
+    express: {
+      title: "Clauses accepted expressly",
+      body: "By accepting these terms, the firm expressly accepts, within the meaning of Art. 1203 of the Romanian Civil Code, the clauses on the limitation of our liability (“Liability”), the suspension of access and the termination of the contract by us (“Suspension and termination”), changes to the terms (“Changes to the terms”), and the governing law and competent court (“Governing law and disputes”).",
+    },
+  },
+  dpa: {
+    title: "Data processing agreement",
+    description:
+      "How Devize processes, on firms' behalf, the personal data of their clients, under Article 28 GDPR.",
+    intro:
+      "When a firm keeps its clients, offers, invoices and works documents in Devize, the personal data in them is the firm's: the firm is its controller, and Devize processes it on the firm's behalf, as its processor. This agreement says how, as Article 28 of Regulation (EU) 2016/679 (GDPR) requires. It is part of the {terms} and is accepted with them.",
+    parties: {
+      title: "The parties",
+      body: "The controller is the firm that uses Devize (“the firm”). The processor is the provider of Devize (“we”):",
+      missing: "The provider's details are filled in before launch.",
+    },
+    scope: {
+      title: "What data it covers",
+      body: "This agreement covers the personal data that the firm and its members put in Devize, or that Devize receives for the firm, about people other than the firm's members: its clients and their contact persons, those who open and accept an offer on its link and those named in the works documents. What data, about whom, what we do with it and for how long is in Annex 1.",
+      excluded:
+        "It does not cover the data for which Devize is the controller: the accounts of the firm's members, the app's security and the messages to manufacturers, which the {privacy} covers. The statistics for manufacturers contain no personal data.",
+    },
+    instructions: {
+      title: "The firm's instructions",
+      body: "We process the data only on the firm's instructions. The instructions are this agreement, the {terms} and what the firm's members do in the app: for example, when they send an offer, ask Devize AI for a proposal, validate an invoice with ANAF or delete a client.",
+      purpose:
+        "We use the data for no other purpose. If the law requires us to process it otherwise, we tell the firm first, unless the law forbids that.",
+      unlawful:
+        "If we think an instruction infringes the GDPR or another data protection law, we tell the firm at once.",
+    },
+    confidentiality: {
+      title: "Confidentiality",
+      body: "Only the people on the Devize team who need the data to maintain the app, resolve incidents or answer the firm's requests have access to it, and only if they have committed to confidentiality or are bound to it by law.",
+    },
+    security: {
+      title: "Security",
+      body: "We take the technical and organisational measures in Annex 2, appropriate to the risks of the processing (Art. 32 GDPR). We may change them, but without lowering the level of protection.",
+    },
+    subprocessors: {
+      title: "Sub-processors",
+      authorization:
+        "The firm gives us a general authorisation to engage the providers in Annex 3 as sub-processors.",
+      changes:
+        "Before we add or replace one, we update Annex 3 and tell the firm's owners, in the app or by email, at least 30 days in advance. The firm may object on data protection grounds. If we can't find a solution together, the firm may end the contract before the change applies.",
+      obligations:
+        "Each provider is bound to us by a contract with the data protection obligations Art. 28 GDPR requires, and we are liable to the firm for how it meets them.",
+    },
+    transfers: {
+      title: "Transfers outside the European Economic Area",
+      body: "Some providers in Annex 3 also process the data in the United States. We transfer it only with the safeguards of Chapter V GDPR: the adequacy decision for the EU–US Data Privacy Framework, for certified providers, or the European Commission's standard contractual clauses.",
+    },
+    requests: {
+      title: "Data subjects' requests",
+      firm: "The firm handles its clients' requests (for access, rectification, erasure, restriction, portability or objection). In the app, the firm can find, correct and delete a client's data and download the documents it appears in. A client with issued invoices stays, with the invoiced estimates, because the firm keeps its invoices for its accounts. Where that isn't enough, we help it, as far as the nature of the processing allows.",
+      direct:
+        "If someone writes to us directly about data a firm holds, we don't answer them in the firm's place: we pass the request on to the firm without undue delay and tell the person to contact the firm.",
+    },
+    breaches: {
+      title: "Personal data breaches",
+      notice:
+        "If we become aware of a breach of the firm's data, we tell the firm's owners by email without undue delay and, where possible, within 48 hours, so the firm can notify ANSPDCP within 72 hours when it must (Art. 33 GDPR).",
+      content:
+        "We tell them what happened, what data and how many people are affected, what the consequences may be and what we did to limit them. What we don't know yet, we send as we find out.",
+    },
+    assistance: {
+      title: "Help with the firm's obligations",
+      body: "With the information we have, we help the firm meet its obligations on the security of processing, data protection impact assessments and prior consultation of ANSPDCP (Art. 32–36 GDPR).",
+    },
+    deletion: {
+      title: "Returning and deleting the data",
+      export:
+        "The firm can take its data at any time by downloading it: estimates, offers and documents as PDF or Excel, and invoices in an archive with each one's PDF and XML and an Excel register.",
+      firm: "When the firm is deleted, that is when its last member deletes their account, we delete all its data: its clients, estimates, offers with their signing evidence, works documents, files and issued invoices. Before that, the app shows how many invoices the firm has, offers their archive and asks for confirmation that they will be deleted. Deletion starts at once and usually finishes within minutes.",
+      backups:
+        "Database backups, if any, keep deleted data until they expire on their own; we use them only to restore data after an incident.",
+      law: "After the firm is deleted, we keep data of it only if the law requires us to.",
+    },
+    audits: {
+      title: "Information and audits",
+      body: "On request, we give the firm the information it needs to show that the processing complies with Art. 28 GDPR, and we allow audits, including inspections, by the firm or an auditor it mandates. We agree on an audit at least 30 days in advance, at most once a year, except after a data breach or at ANSPDCP's request, and the auditor keeps confidentiality. The firm bears the audit's costs.",
+    },
+    firm: {
+      title: "What the firm answers for",
+      body: "The firm answers for the data it puts in Devize having a legal basis, for informing its clients about the processing (Art. 13 and 14 GDPR) and for not putting special categories of data (Art. 9 GDPR) or more data than it needs in Devize. It enters a client's personal numeric code (CNP) only when it needs it.",
+    },
+    term: {
+      title: "Duration and liability",
+      duration:
+        "The agreement applies for as long as we process data for the firm and ends once we have deleted it.",
+      liability:
+        "Towards data subjects and authorities, each party is liable as Art. 82 GDPR says. Between us and the firm, the “Liability” section of the {terms} applies, without limiting what the law does not allow to be limited.",
+      precedence:
+        "If this agreement and the {terms} say different things about personal data, this agreement prevails.",
+    },
+    details: {
+      title: "Annex 1. Details of the processing",
+      subjectsLabel: "About whom",
+      subjects:
+        "the firm's clients who are individuals, and the representatives or contact persons of clients that are firms or institutions; those who open, accept or decline an offer on its link; members of reception committees, the site supervisor, the designer, guests and the others named in the works documents; those who confirm a progress statement; people who appear in photos or documents the firm uploads.",
+      dataLabel: "What data",
+      data: "name, email address, phone and address, including the site's; CUI and, if the firm enters it, the personal numeric code (CNP); what the client was offered and invoiced and the payments recorded; for the offer on a link, when it was opened, what the client chose, their questions and the reason for a decline; for an acceptance, the typed name, the drawn signature, the moment, the fingerprint of the document accepted, browser details (type, language, time zone, screen) and the IP address; the name, role and firm or institution of those in reception reports; uploaded photos and documents. No special categories of data are expected.",
+      natureLabel: "What we do with it",
+      nature:
+        "we store it and show it to the firm's members; put it in the documents the firm downloads or sends; show the client the offer on its link and email them the acceptance confirmation; send it to Devize AI when a member uses an AI feature or when the offer assistant answers the client; at a member's request, send ANAF an invoice's XML file for validation and a client's CUI to fetch their details from the public register; delete it when the firm deletes it or when the firm is deleted.",
+      purposeLabel: "Why",
+      purpose: "to offer the firm Devize, under the {terms}.",
+      durationLabel: "How long",
+      duration:
+        "for as long as the firm keeps it in Devize: what the firm deletes we delete at once, and the rest when the firm is deleted. An uploaded file that is never used we delete within three hours.",
+      frequencyLabel: "How often",
+      frequency: "continuously, for as long as the firm uses Devize.",
+    },
+    measures: {
+      title: "Annex 2. Security measures",
+      intro: "The technical and organisational measures we take now:",
+      encryption:
+        "Encryption: data travels encrypted (HTTPS), and the database and files, hosted by Convex, are also encrypted at rest.",
+      access:
+        "Access: only a firm's members see its data. Every function that touches a firm's data first checks that the person belongs to it, and reports another firm's data as missing. The owner, admin and member roles limit who changes the firm's details, its members and its invoicing settings.",
+      signIn:
+        "Signing in: with an 8-digit code sent by email, valid for 15 minutes, with limits on the codes requested and on wrong attempts, or with a Google account. A session ends after 30 days.",
+      links:
+        "Links: those of offers, invitations and claims carry a random 192-bit secret. Only someone signed in with the invited address can use an invitation, within a week, and the firm can withdraw an offer's link at any time.",
+      files:
+        "Files: an uploaded file can be attached to a firm only in its first 10 minutes, and one left unattached is deleted within three hours.",
+      app: "The app: security headers that stop its pages from being shown inside other sites; entered text is shown as text, unable to run code.",
+      minimization:
+        "As little data as possible: error reports hold no user, IP address, cookies, request contents or link secrets, and what signing in leaves behind is deleted on its own.",
+      limits:
+        "Limits: on the codes, invitations and Devize AI requests a person or a firm can send, so the app can't be abused.",
+      staff:
+        "People: the Devize team does not see firms' data in the app; only those who maintain Devize have technical access to the database.",
+      testing:
+        "Checks: the access rules have automated tests, which run on every change to the code.",
+      incidents:
+        "Incidents: we monitor the app's errors and tell firms as “Personal data breaches” says.",
+    },
+    vendors: {
+      title: "Annex 3. Sub-processors",
+      intro: "The providers that process the firm's data for us:",
+      name: "Provider",
+      role: "What it does",
+      country: "Country",
+      usa: "USA",
+      convex: "the app's database, files and functions",
+      vercel:
+        "hosting the app, including the offer's page, with the technical logs of visits",
+      anthropic: "Claude, for the Devize AI features and the offer assistant",
+      resend:
+        "automatic emails, such as the accepted offer's confirmation to the client and the notices to the firm about clients' answers and questions",
+      sentry: "error reports, with no data that identifies anyone",
+      anaf: "Separately, at a member's request, we send ANAF an invoice's XML file for validation and a client's CUI to fetch their details from the public register. ANAF does not process the data for us: it is a public authority that receives it as a recipient.",
+    },
+  },
+  termsNotice: {
+    newTitle: "Accept the Devize terms for {firm}",
+    newBody:
+      "The company uses Devize under the {terms} and the {dpa}. An owner or admin accepts them once, for the whole company.",
+    updatedTitle: "The Devize terms have changed",
+    updatedBody:
+      "There is a new version, of {date}: the {terms} and the {dpa}. It applies to {firm} once an owner or admin accepts it.",
+    accept: "Accept for the company",
+    accepted: "You accepted the terms for {firm}.",
+    ask: "Ask an owner or admin of the company to accept them.",
+  },
   errors: {
     unknown: "Something went wrong. Try again.",
     unauthenticated: "Your session has expired. Sign in again.",
@@ -3583,6 +3946,8 @@ export default {
     locked: "This can no longer be changed.",
     inUse: "It's used elsewhere, so it can't be deleted.",
     invalidCui: "This CUI fails the control digit check.",
+    invalidTerms:
+      "The terms changed meanwhile. Reload the page and read them again.",
     invalidName: "Enter a name.",
     invalidTitle: "Enter a title.",
     invalidUnit: "This unit of measure isn't valid.",

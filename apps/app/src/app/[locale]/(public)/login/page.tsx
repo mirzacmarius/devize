@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
 import { env } from "@/env.mjs";
 import { getScopedI18n } from "@/locales/server";
+import { legalLinks } from "../_components/legal-page";
 import { SignInOptions } from "./sign-in-options";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -12,6 +12,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Page() {
   const t = await getScopedI18n("login");
+  const links = await legalLinks(
+    "underline underline-offset-2 hover:text-ink-2",
+  );
   // Google sends people back to one fixed address, so on preview deployments,
   // each with its own address and backend, only the emailed code works.
   const withGoogle = env.VERCEL_ENV !== "preview";
@@ -24,12 +27,9 @@ export default async function Page() {
           <p className="m-0 text-body text-ink-2">{t("description")}</p>
         </div>
         <SignInOptions withGoogle={withGoogle} />
-        <Link
-          href="/confidentialitate"
-          className="text-meta text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
-        >
-          {t("privacy")}
-        </Link>
+        <p className="m-0 text-meta text-ink-3">
+          {t("legal", { terms: links.terms, privacy: links.privacy })}
+        </p>
       </div>
     </div>
   );

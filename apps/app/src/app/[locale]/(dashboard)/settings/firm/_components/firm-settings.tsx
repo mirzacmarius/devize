@@ -2,6 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { TERMS_VERSION } from "@devize/backend/convex/accounts/terms";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -27,11 +28,13 @@ import type { FunctionReturnType } from "convex/server";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { Field } from "@/components/field";
 import { useFirm } from "@/components/firm-provider";
+import { LegalLink } from "@/components/legal-link";
 import { useRun } from "@/components/use-run";
 import { counties } from "@/lib/counties";
+import { formatCalendarDate, formatDay } from "@/lib/format";
 import { initials } from "@/lib/initials";
 import { isValidCui } from "@/lib/validation";
-import { useScopedI18n } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 type FirmDetails = FunctionReturnType<typeof api.accounts.organizations.get>;
 
@@ -44,7 +47,8 @@ const footer = "justify-between gap-4 border-t bg-sunken py-3";
 
 /**
  * The Firmă's logo and the details its devize, offers and official forms
- * print. Members see them; owners and admins change them.
+ * print, and the terms it accepted. Members see them; owners and admins
+ * change them.
  */
 export function FirmSettings() {
   const { firm } = useFirm();
@@ -60,7 +64,51 @@ export function FirmSettings() {
       <LogoCard firm={details} canEdit={canEdit} />
       {/* A new form for another firm. */}
       <DetailsForm key={details._id} firm={details} canEdit={canEdit} />
+      <TermsCard terms={details.terms} />
     </>
+  );
+}
+
+/** Which version of the terms the firm accepted, who accepted it and when. */
+function TermsCard({ terms }: { terms: FirmDetails["terms"] }) {
+  const t = useScopedI18n("settings.firm");
+  const locale = useCurrentLocale();
+  const version = (value: string) => formatCalendarDate(value, locale, "long");
+  return (
+    <Card>
+      <CardHeader className="grid justify-stretch gap-1">
+        <CardTitle>{t("termsTitle")}</CardTitle>
+        <CardDescription>
+          {t("termsDescription", {
+            terms: <LegalLink document="terms" />,
+            dpa: <LegalLink document="dpa" />,
+          })}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-2 text-body text-ink-2">
+        {terms ? (
+          <p className="m-0">
+            {terms.acceptedBy
+              ? t("termsAccepted", {
+                  version: version(terms.version),
+                  name: terms.acceptedBy,
+                  date: formatDay(terms.acceptedAt, locale),
+                })
+              : t("termsAcceptedFormer", {
+                  version: version(terms.version),
+                  date: formatDay(terms.acceptedAt, locale),
+                })}
+          </p>
+        ) : (
+          <p className="m-0">{t("termsNone")}</p>
+        )}
+        {terms && terms.version !== TERMS_VERSION && (
+          <p className="m-0">
+            {t("termsNewer", { version: version(TERMS_VERSION) })}
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

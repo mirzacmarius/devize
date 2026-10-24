@@ -212,6 +212,10 @@ _Avoid_: Tenant, team, workspace
 How a Firmă's owners and admins ask a colleague to join it, as a member or an admin: a link for one email address, which only someone signed in with that address can accept, within a week. In code: `invitations`.
 _Avoid_: Invite code, join request
 
+**Termenii Devize** (terms):
+The contract between Devize and a Firmă: the Termeni de utilizare and the Acord de prelucrare a datelor, under which Devize processes the personal data of the Firmă's clients on its behalf (GDPR art. 28). They share one version, named after the day their text last changed in meaning. Whoever creates a Firmă accepts them for it by ticking a box; a Firmă made without them, and every Firmă after a new version, is asked from a notice above every page until an owner or admin accepts. Each acceptance keeps the version, who and when, while the Firmă exists. In code: `TERMS_VERSION` and `termsAcceptances`, at `/termeni` and `/acord-prelucrare-date`. See `docs/adr/0051`.
+_Avoid_: ToS, EULA, consent (consent is a basis for processing data; the terms are a contract)
+
 **Constructor** (contractor):
 A Firmă or tradesperson who builds devize for their jobs.
 _Avoid_: Builder, user (when meaning a contractor)

@@ -98,7 +98,8 @@ export default {
     otherEmail: "Altă adresă",
     resend: "Trimite alt cod",
     resendIn: "Alt cod în {seconds} s",
-    privacy: "Politica de confidențialitate",
+    legal:
+      "Intrând în cont, accepți {terms} și confirmi că ai citit {privacy}.",
   },
   username: {
     label: "Nume de utilizator",
@@ -2320,6 +2321,16 @@ export default {
       phone: "Telefon",
       phonePlaceholder: "ex. 0722 123 456",
       saved: "Datele firmei au fost salvate.",
+      termsTitle: "Termenii Devize",
+      termsDescription: "Contractul firmei cu Devize: {terms} și {dpa}.",
+      termsAccepted:
+        "Versiunea din {version} a acceptat-o {name}, pe {date}, în numele firmei.",
+      termsAcceptedFormer:
+        "Versiunea din {version} a acceptat-o, pe {date}, un fost membru al firmei.",
+      termsNewer:
+        "A apărut o versiune nouă, din {version}. O acceptă un proprietar sau un administrator, din anunțul de sus.",
+      termsNone:
+        "Firma nu a acceptat încă termenii. Îi acceptă un proprietar sau un administrator, din anunțul de sus.",
     },
     billing: {
       seriesTitle: "Serii de facturi",
@@ -3111,6 +3122,8 @@ export default {
     vatPayer: "Plătitoare de TVA",
     vatPayerHint:
       "Devizele adaugă TVA 21%. Oprește dacă firma nu e plătitoare de TVA.",
+    terms: "Accept, în numele firmei, {terms} și {dpa}.",
+    termsRequired: "Bifează că accepți termenii ca să creezi firma.",
     create: "Creează firma",
     switch: "Schimbă firma",
     yourFirms: "Firmele tale",
@@ -3493,7 +3506,7 @@ export default {
     },
     users: {
       title: "Cei care folosesc Devize",
-      data: "adresa de email; numele și poza de profil, din contul Google sau alese de dumneavoastră în Setări (le văd colegii din firmă, iar numele apare și în invitațiile pe care le trimiteți); datele firmei (denumire, CUI, adresă, email, telefon) și datele ei de facturare (contul bancar, banca, capitalul social); colegii și invitațiile; ce creați în aplicație: devize, oferte, situații de lucrări, procese-verbale de recepție, facturi și încasări, clienții firmei și fișierele încărcate (fotografii, liste de cantități, documente de licitație, fișe tehnice).",
+      data: "adresa de email; numele și poza de profil, din contul Google sau alese de dumneavoastră în Setări (le văd colegii din firmă, iar numele apare și în invitațiile pe care le trimiteți); datele firmei (denumire, CUI, adresă, email, telefon) și datele ei de facturare (contul bancar, banca, capitalul social); colegii și invitațiile; ce creați în aplicație: devize, oferte, situații de lucrări, procese-verbale de recepție, facturi și încasări, clienții firmei și fișierele încărcate (fotografii, liste de cantități, documente de licitație, fișe tehnice); cine a acceptat, în numele firmei, termenii de utilizare și când.",
       purpose:
         "ca să vă dăm aplicația: contul, firma, devizele, formularele, ofertele, situațiile de lucrări și facturile. Din devize mai numărăm, fără să arătăm care firmă, cât de des apar normele și produsele unui producător, ca să îi dăm statistici lunare; un județ apare doar dacă datele vin de la cel puțin trei firme.",
       basis:
@@ -3506,6 +3519,7 @@ export default {
       body: "Când o firmă lucrează cu dumneavoastră prin Devize, firma răspunde de datele dumneavoastră, iar Devize le prelucrează în numele ei. Pentru ofertă: numele și datele de contact trecute de firmă, adresa lucrării, când ați deschis linkul ofertei, ce ați ales în ea, întrebările puse și motivul, dacă o refuzați. Dacă o acceptați: numele scris, semnătura desenată, momentul, o amprentă a ceea ce ați acceptat, ce spune browserul despre el (tipul, limba, fusul orar, ecranul) și adresa IP de la care ați trimis acceptarea; dacă firma v-a trecut emailul, vă trimitem confirmarea. Pentru facturi: numele, CUI-ul sau, dacă l-ați dat firmei, CNP-ul, adresa, emailul și telefonul, ce vi s-a facturat și plățile înregistrate de firmă; le păstrăm cât există firma în Devize. Dacă sunteți firmă, denumirea, sediul și numărul de înregistrare pot fi preluate din registrul public al ANAF. Pentru aceste date, scrieți întâi firmei.",
       others:
         "Tot în numele firmei păstrăm numele, rolul și firma sau instituția celor trecuți în procesele-verbale de recepție (membrii comisiei, dirigintele de șantier, proiectantul, invitații), locul lucrării și numele celui care a confirmat o situație de lucrări. Le trece firma, iar documentele le descarcă și le trimite tot ea.",
+      dpa: "Ce face Devize cu aceste date în numele firmei, cu ce furnizori și cum le șterge scrie în {dpa}, pe care firma îl acceptă odată cu {terms}.",
     },
     visitors: {
       title: "Cei care vizitează site-ul sau aplicația",
@@ -3567,6 +3581,354 @@ export default {
       body: "Când schimbăm această politică, actualizăm data de sus.",
     },
   },
+  legal: {
+    version: "Versiunea din {date}",
+    draftTitle: "Ciornă",
+    draft:
+      "Textul l-a scris echipa Devize și urmează să-l verifice un avocat înainte de lansare. Până atunci se poate schimba, iar fiecare versiune nouă le-o cerem firmelor s-o accepte din nou.",
+    translation:
+      "Traducerea în engleză e doar informativă: se aplică textul în limba română.",
+    contents: "Cuprins",
+    documents: "Documentele Devize",
+    terms: "Termenii de utilizare",
+    dpa: "Acordul de prelucrare a datelor",
+    privacy: "Politica de confidențialitate",
+    express:
+      "Acceptarea cuprinde, în mod expres, clauzele despre răspundere, suspendare și încetare, schimbarea termenilor, legea aplicabilă și instanța competentă (art. 1203 din Codul civil).",
+  },
+  terms: {
+    title: "Termeni de utilizare",
+    description:
+      "Contractul dintre Devize și firmele care își fac devizele în aplicație: ce oferim, de ce răspunde fiecare și cum se încheie.",
+    intro:
+      "Acești termeni sunt contractul dintre Devize și firma care își face cont în aplicație. I-am scris cât de simplu am putut. {dpa} face parte din ei, iar {privacy} spune ce date personale folosim pentru noi și de ce.",
+    provider: {
+      title: "Cine oferă Devize",
+      intro: "Devize este oferit de:",
+      missing:
+        "Datele furnizorului (denumirea, înregistrarea, sediul și adresa de email) se completează înainte de lansare.",
+      contact:
+        "Pentru orice întrebare despre acești termeni, scrieți-ne la această adresă.",
+    },
+    acceptance: {
+      title: "Cine acceptă termenii",
+      who: "Termenii se aplică firmei care folosește Devize („firma”) și fiecărei persoane care intră în cont pentru ea. Îi acceptă, în numele firmei, cine creează firma în Devize, bifând că i-a citit, sau un proprietar ori un administrator al firmei, când aplicația îi cere să accepte o versiune nouă. Cine îi acceptă declară că are dreptul să angajeze firma.",
+      professionals:
+        "Devize e făcut pentru profesioniști: societăți, persoane fizice autorizate și întreprinderi individuale sau familiale, care îl folosesc în activitatea lor. Nu îl oferim consumatorilor.",
+      clients:
+        "Clientul firmei care deschide o ofertă pe link nu își face cont și nu acceptă acești termeni: relația lui e cu firma care i-a trimis oferta.",
+      contract:
+        "Contractul se încheie electronic, în limba română, când firma acceptă termenii. Păstrăm ce versiune a acceptat firma, cine a acceptat-o și când, cât timp există firma în Devize. Textul oricărei versiuni vi-l trimitem dacă ni-l cereți.",
+    },
+    service: {
+      title: "Ce face Devize",
+      body: "Devize este o aplicație web pentru devize de construcții. Firma își face devizele cu norme de deviz (normele de bază, scrise de echipa Devize, normele producătorilor și normele ei proprii), cu prețuri citite din magazine și cu tarifele ei. Din devize scoate formularele oficiale pentru licitații, oferte pe link pe care clientul le acceptă cu semnătura lui, situații de lucrări, procese-verbale de recepție și facturi, cu fișierul pentru e-Factura. Unele funcții folosesc inteligența artificială (Devize AI). Producătorii își publică pe profil normele și produsele.",
+      changes:
+        "Aplicația se schimbă: adăugăm și îmbunătățim funcții și, rar, scoatem câte una. O funcție pe care firma o folosește o scoatem doar după ce o anunțăm din timp, în afară de cazul în care ne obligă legea sau un furnizor.",
+    },
+    account: {
+      title: "Contul și firma",
+      access:
+        "Fiecare persoană are contul ei, în care intră cu un cod primit pe email sau cu contul Google. Nu vă împărțiți contul cu altcineva și păstrați în siguranță accesul la adresa de email. Dacă aflați că cineva a intrat în cont fără drept, scrieți-ne imediat.",
+      roles:
+        "Tot ce faceți în Devize ține de o firmă. Proprietarii și administratorii ei invită colegii, le dau roluri și îi scot din firmă, așa că ei răspund de cine are acces. Ce face un membru în aplicație face în numele firmei.",
+      details:
+        "Datele firmei (denumirea, CUI-ul, adresa și datele de facturare) trebuie să fie corecte: apar pe devize, oferte, formulare și facturi.",
+    },
+    content: {
+      title: "Datele firmei rămân ale firmei",
+      ownership:
+        "Devizele, clienții, documentele, fișierele, normele proprii și tot ce pune firma în Devize rămân ale ei. Ne dă doar dreptul să le păstrăm, să le prelucrăm și să le arătăm cât ne trebuie ca să îi oferim Devize: membrilor firmei, celor cărora le trimite ea ceva (de exemplu clientului, pe linkul ofertei) și furnizorilor din {dpa}. Normele proprii ale firmei le vede doar firma.",
+      statistics:
+        "Din devize numărăm, fără să arătăm care firmă, cum ajung normele și produsele unui producător în devize: de câte ori sunt adăugate, câte devize cu ele sunt trimise și acceptate, ce cantități cuprind, cât valorează partea acceptată, de câte ori un client a ales produsul altui producător și în ce județe. Producătorul vede aceste statistici lunar, iar un județ apare doar dacă datele vin de la cel puțin trei firme. În rest, folosim datele firmei doar ca să îi oferim Devize și le dăm altcuiva doar când ne cere firma sau ne obligă legea.",
+      rights:
+        "Firma răspunde ca datele pe care le pune în Devize să aibă un temei legal și să nu încalce drepturile altcuiva, de exemplu dreptul de autor asupra documentelor pe care le încarcă.",
+    },
+    estimates: {
+      title: "Norme, prețuri și calcule",
+      norms:
+        "Normele de bază le scrie echipa Devize, cu consumuri orientative pentru lucrări obișnuite. Normele de producător le publică producătorii, care răspund de ele, iar normele proprii le scrie firma, singură sau cu Devize AI.",
+      prices:
+        "Prețurile din magazine sunt cele afișate de magazin pe pagina produsului când le-am citit; în magazin sau la comandă pot fi altele. Prețurile de referință ale normelor sunt orientative.",
+      checks:
+        "Devize calculează cotele, TVA-ul, totalurile și formularele din datele firmei și semnalează unele greșeli frecvente, cum e manopera sub salariul minim din construcții. Nu ține însă locul unui specialist și nu dă consultanță juridică, fiscală sau tehnică. Firma verifică fiecare deviz, ofertă, formular și factură înainte să le trimită și răspunde de ce trimite.",
+      forms:
+        "Formularele oficiale urmează modelele din HG nr. 907/2016 și din Ordinul nr. 1014/2001. Când documentația unei licitații cere altceva, are întâietate documentația.",
+    },
+    ai: {
+      title: "Devize AI",
+      features:
+        "Unele funcții folosesc Claude, modelul de inteligență artificială al Anthropic: devizul scris din descriere, fotografii sau dictare, importul listelor de cantități, normele noi scrise din câteva rânduri sau din fișa tehnică, detectorul de omisiuni și asistentul ofertei.",
+      proposals:
+        "Ce scrie Devize AI e o propunere și poate greși: un membru al firmei o verifică înainte să intre în deviz sau în catalogul firmei. Asistentul ofertei îi răspunde clientului doar din ce arată oferta, clientul vede că vorbește cu un asistent AI, iar firma îl poate opri pentru fiecare link.",
+      limits:
+        "Fiecare firmă și fiecare persoană are o limită de cereri către Devize AI pe oră și pe zi, ca serviciul să rămână disponibil pentru toți. Anthropic nu își antrenează modelele cu datele trimise astfel.",
+    },
+    offers: {
+      title: "Ofertele și clienții firmei",
+      contract:
+        "Oferta, prețurile, condițiile de plată și contractul cu clientul sunt ale firmei. Devize nu este parte la contractul dintre firmă și clientul ei și nu răspunde de lucrări.",
+      consumers:
+        "Când clientul e consumator, pagina ofertei îi arată drepturile și formularul de retragere (OUG nr. 34/2014), iar Devize îi trimite confirmarea pe email, dacă firma i-a trecut adresa. Firma răspunde ca informațiile să fie corecte și complete pentru contractul ei.",
+      signature:
+        "Semnătura clientului pe link este o semnătură electronică simplă. Devize păstrează dovezile semnării, dar ea nu este o semnătură electronică calificată: pentru licitații și pentru actele care o cer, folosiți o semnătură calificată.",
+    },
+    invoices: {
+      title: "Facturile și e-Factura",
+      responsibility:
+        "Firma răspunde de facturile ei: de date, de numerotare, de TVA și de trimiterea lor în e-Factura în termenul legal. Devize scrie fișierul XML și îl verifică după regulile ANAF, dar nu îl trimite în SPV: firma îl descarcă și îl încarcă ea.",
+      archive:
+        "Devize nu este arhiva contabilă a firmei. Firma păstrează facturile și celelalte documente contabile cât cere legea (Legea contabilității nr. 82/1991, art. 25). Din pagina Facturi, cu „Descarcă arhiva facturilor”, le poate descărca oricând pe cele emise, cu PDF-ul și XML-ul fiecăreia și un registru Excel.",
+      deletion:
+        "Când firma e ștearsă, se șterg și facturile ei. Înainte, Devize arată câte facturi are firma și oferă arhiva lor.",
+    },
+    producers: {
+      title: "Profilul de producător",
+      accuracy:
+        "Firma care preia profilul unui producător răspunde ca normele, produsele, fișele tehnice și ce scrie pe profil să fie corecte și ca ea să aibă dreptul să le publice.",
+      license:
+        "Ne dă dreptul, fără plată, să le publicăm în catalogul Devize, să le arătăm tuturor celor care folosesc Devize și să le lăsăm în devizele făcute cu ele, și după ce își scoate profilul. Normele noi trec prin verificarea echipei Devize înainte să ajungă în catalog, iar pe cele pe care nu le publicăm le trimitem înapoi cu o explicație.",
+    },
+    use: {
+      title: "Ce nu aveți voie",
+      intro: "Când folosiți Devize, nu aveți voie:",
+      illegal:
+        "să îl folosiți pentru ceva ilegal sau ca să înșelați pe cineva, de exemplu cu oferte, formulare sau facturi false;",
+      content:
+        "să încărcați conținut pe care nu aveți dreptul să îl folosiți ori date personale fără temei legal;",
+      access:
+        "să încercați să ajungeți la conturile sau la datele altor firme ori să ocoliți măsurile de securitate sau limitele, cum sunt cele pentru Devize AI;",
+      scraping:
+        "să copiați în masă, cu programe automate, catalogul de norme sau prețurile, ori să le folosiți ca să faceți un serviciu concurent;",
+      spam: "să trimiteți prin Devize mesaje nesolicitate;",
+      abuse: "să suprasolicitați sau să atacați serviciul.",
+      outro:
+        "Dacă încălcați aceste reguli, putem suspenda accesul, cum scrie la „Suspendarea și încetarea”.",
+    },
+    reports: {
+      title: "Cum ne semnalați un conținut ilegal",
+      body: "Dacă vedeți în Devize un conținut pe care îl credeți ilegal, de exemplu pe profilul unui producător sau într-o ofertă primită, scrieți-ne la adresa furnizorului ce conținut e, unde l-ați văzut și de ce îl credeți ilegal. Vă răspundem, iar dacă scoatem conținutul sau restricționăm un cont, îi spunem și celui care l-a publicat de ce.",
+      contact:
+        "Aceeași adresă este punctul de contact pentru autorități și pentru cei care folosesc Devize, cum cere Regulamentul (UE) 2022/2065 privind serviciile digitale. Ne puteți scrie în română sau în engleză.",
+    },
+    price: {
+      title: "Prețul",
+      body: "Acum Devize e gratuit și nu are limite de plan. Dacă introducem planuri plătite, publicăm prețurile și le anunțăm cu cel puțin 30 de zile înainte să se aplice. Firma plătește doar dacă alege un plan.",
+    },
+    availability: {
+      title: "Disponibilitatea",
+      body: "Ne străduim ca Devize să meargă tot timpul, dar nu putem garanta că va merge fără întreruperi sau fără erori: avem nevoie de lucrări de întreținere, iar furnizorii noștri pot avea pene. Lucrările mari le anunțăm din timp, când se poate.",
+      copies:
+        "Păstrați copii ale documentelor importante: devizele, ofertele și formularele le puteți descărca oricând ca PDF sau Excel, iar facturile și ca XML.",
+    },
+    liability: {
+      title: "Răspunderea",
+      indirect:
+        "Devize este oferit așa cum este. În măsura în care legea permite, nu răspundem pentru prejudiciile indirecte, cum sunt beneficiul nerealizat sau pierderea unei licitații ori a unui client, pentru datele pierdute pe care firma le putea descărca și nici pentru greșelile din devizele, ofertele, formularele și facturile pe care firma nu le-a verificat.",
+      cap: "Pentru orice alt prejudiciu, răspunderea noastră totală față de firmă este de cel mult cât a plătit firma pentru Devize în cele 12 luni de dinaintea prejudiciului, dar cel puțin 500 de lei.",
+      exceptions:
+        "Nu limităm și nu excludem răspunderea pentru prejudiciile cauzate cu intenție sau din culpă gravă, pentru vătămarea vieții, a integrității corporale sau a sănătății, nici în alte cazuri în care legea nu permite. Răspunderea pentru datele personale ale clienților firmei e în {dpa}.",
+      firm: "Firma răspunde față de noi pentru prejudiciile pe care ni le cauzează folosind Devize cu încălcarea legii, a acestor termeni sau a drepturilor altcuiva.",
+    },
+    termination: {
+      title: "Suspendarea și încetarea",
+      firm: "Firma poate înceta oricând să folosească Devize. Ea se șterge când ultimul ei membru își șterge contul, din Setări. Atunci ștergem toate datele firmei, inclusiv facturile, cum scrie în {dpa}. Înainte, documentele și arhiva facturilor se pot descărca.",
+      suspension:
+        "Putem suspenda accesul unei persoane sau al unei firme care încalcă acești termeni ori legea, sau ca să oprim un atac ori o fraudă. Vă spunem de ce și, când nu e urgent, vă dăm întâi ocazia să remediați.",
+      ending:
+        "Putem înceta contractul cu o firmă cu un preaviz de cel puțin 30 de zile, în care firma își poate descărca datele, sau imediat, dacă firma încalcă grav acești termeni. Dacă oprim Devize de tot, anunțăm cu cel puțin 60 de zile înainte.",
+      survival:
+        "Ce scrie despre răspundere, despre datele firmei și despre litigii rămâne valabil și după ce contractul încetează.",
+    },
+    property: {
+      title: "Ce este al nostru",
+      body: "Aplicația, site-ul, marca Devize, catalogul de bază, șabloanele Devize și regulile de compatibilitate ale materialelor sunt ale noastre sau ale celor de la care avem licență. Firma le poate folosi în devizele, ofertele și documentele ei, inclusiv în cele trimise clienților și autorităților, și după ce nu mai folosește Devize, pentru documentele făcute până atunci. Normele de producător sunt ale producătorilor.",
+      feedback:
+        "Ideile și propunerile pe care ni le trimiteți le putem folosi ca să îmbunătățim Devize, fără obligații față de dumneavoastră.",
+    },
+    privacy: {
+      title: "Confidențialitate și date personale",
+      confidential:
+        "Datele firmei sunt confidențiale: le văd membrii firmei și cei cărora firma le trimite ceva. Echipa Devize nu le vede în aplicație; acces tehnic la baza de date au doar cei care întrețin Devize, pentru întreținere, incidente și cererile firmei.",
+      personal:
+        "Ce date personale folosim pentru noi, de exemplu pentru conturi și pentru siguranța aplicației, scrie în {privacy}. Datele personale ale clienților firmei și ale celorlalți trecuți în documentele ei le prelucrăm în numele firmei, după {dpa}, care face parte din acești termeni.",
+    },
+    changes: {
+      title: "Schimbarea termenilor",
+      notice:
+        "Putem schimba acești termeni. O versiune nouă o anunțăm în aplicație și pe email proprietarilor firmei, cu cel puțin 30 de zile înainte să se aplice. Schimbările cerute de lege și cele care privesc doar funcții noi se pot aplica mai repede.",
+      acceptance:
+        "Un proprietar sau un administrator al firmei acceptă versiunea nouă în aplicație. Dacă firma nu e de acord cu ea, poate înceta să folosească Devize și își poate descărca datele înainte să se aplice.",
+    },
+    law: {
+      title: "Legea aplicabilă și litigiile",
+      body: "Acești termeni sunt guvernați de legea română. O neînțelegere încercăm întâi să o rezolvăm amiabil, în 30 de zile de când ne-o scrieți. Dacă nu reușim, o judecă instanțele competente de la sediul furnizorului.",
+    },
+    express: {
+      title: "Clauze acceptate în mod expres",
+      body: "Acceptând acești termeni, firma acceptă în mod expres, în sensul art. 1203 din Codul civil, clauzele despre limitarea răspunderii noastre („Răspunderea”), suspendarea accesului și încetarea contractului de către noi („Suspendarea și încetarea”), schimbarea termenilor („Schimbarea termenilor”), legea aplicabilă și instanța competentă („Legea aplicabilă și litigiile”).",
+    },
+  },
+  dpa: {
+    title: "Acordul de prelucrare a datelor",
+    description:
+      "Cum prelucrează Devize, în numele firmelor, datele personale ale clienților lor, după articolul 28 din GDPR.",
+    intro:
+      "Când o firmă își ține în Devize clienții, ofertele, facturile și documentele lucrărilor, datele personale din ele sunt ale firmei: firma este operatorul lor, iar Devize le prelucrează în numele ei, ca persoană împuternicită de operator. Acest acord spune cum, așa cum cere articolul 28 din Regulamentul (UE) 2016/679 (GDPR). Face parte din {terms} și se acceptă odată cu ei.",
+    parties: {
+      title: "Părțile",
+      body: "Operatorul este firma care folosește Devize („firma”). Persoana împuternicită de operator este furnizorul Devize („noi”):",
+      missing: "Datele furnizorului se completează înainte de lansare.",
+    },
+    scope: {
+      title: "Ce date acoperă",
+      body: "Acordul acoperă datele personale pe care firma și membrii ei le pun în Devize, sau pe care Devize le primește pentru firmă, despre alte persoane decât membrii firmei: clienții ei și persoanele lor de contact, cei care deschid și acceptă o ofertă pe link și cei trecuți în documentele lucrărilor. Ce date sunt, despre cine, ce facem cu ele și cât timp scrie în Anexa 1.",
+      excluded:
+        "Nu acoperă datele pentru care Devize este operator: conturile membrilor firmei, siguranța aplicației și mesajele către producători, despre care scrie în {privacy}. Statisticile pentru producători nu conțin date personale.",
+    },
+    instructions: {
+      title: "Instrucțiunile firmei",
+      body: "Prelucrăm datele doar după instrucțiunile firmei. Instrucțiunile sunt acest acord, {terms} și ce fac membrii firmei în aplicație: de exemplu, când trimit o ofertă, cer o propunere de la Devize AI, validează o factură la ANAF sau șterg un client.",
+      purpose:
+        "Nu folosim datele în alte scopuri. Dacă legea ne obligă să le prelucrăm altfel, îi spunem firmei înainte, în afară de cazul în care legea ne interzice.",
+      unlawful:
+        "Dacă o instrucțiune ni se pare că încalcă GDPR sau altă lege privind protecția datelor, îi spunem imediat firmei.",
+    },
+    confidentiality: {
+      title: "Confidențialitatea",
+      body: "La date au acces doar oamenii din echipa Devize care au nevoie de ele ca să întrețină aplicația, să rezolve incidente sau să răspundă cererilor firmei, și doar dacă s-au angajat să păstreze confidențialitatea sau au această obligație prin lege.",
+    },
+    security: {
+      title: "Securitatea",
+      body: "Luăm măsurile tehnice și organizatorice din Anexa 2, potrivite riscurilor prelucrării (art. 32 din GDPR). Le putem schimba, dar fără să scadă nivelul de protecție.",
+    },
+    subprocessors: {
+      title: "Alte persoane împuternicite",
+      authorization:
+        "Firma ne autorizează în general să folosim, ca alte persoane împuternicite, furnizorii din Anexa 3.",
+      changes:
+        "Înainte să adăugăm sau să înlocuim unul, actualizăm Anexa 3 și îi anunțăm pe proprietarii firmei, în aplicație sau pe email, cu cel puțin 30 de zile înainte. Firma se poate opune, cu motive legate de protecția datelor. Dacă nu găsim împreună o soluție, firma poate înceta contractul înainte ca schimbarea să se aplice.",
+      obligations:
+        "Fiecare furnizor e legat de noi printr-un contract cu obligațiile de protecție a datelor cerute de art. 28 din GDPR, iar față de firmă răspundem noi de felul în care le respectă.",
+    },
+    transfers: {
+      title: "Transferurile în afara Spațiului Economic European",
+      body: "Unii furnizori din Anexa 3 prelucrează datele și în Statele Unite. Le transferăm doar cu garanțiile din capitolul V al GDPR: decizia de adecvare pentru Cadrul de confidențialitate a datelor UE–SUA, pentru furnizorii certificați, sau clauzele contractuale standard ale Comisiei Europene.",
+    },
+    requests: {
+      title: "Cererile persoanelor vizate",
+      firm: "Cererile clienților firmei (de acces, rectificare, ștergere, restricționare, portabilitate sau opoziție) le rezolvă firma. Din aplicație, firma poate găsi, corecta și șterge datele unui client și poate descărca documentele în care apar. Un client cu facturi emise rămâne, cu devizele facturate, pentru că firma păstrează facturile pentru contabilitate. Când asta nu ajunge, o ajutăm, cât ne permite natura prelucrării.",
+      direct:
+        "Dacă o persoană ne scrie direct despre datele ținute de o firmă, nu îi răspundem în locul firmei: îi transmitem cererea firmei fără întârzieri nejustificate și îi spunem persoanei să se adreseze firmei.",
+    },
+    breaches: {
+      title: "Încălcarea securității datelor",
+      notice:
+        "Dacă aflăm de o încălcare a securității datelor firmei, îi anunțăm pe proprietarii firmei pe email, fără întârzieri nejustificate și, dacă se poate, în cel mult 48 de ore, ca firma să poată anunța ANSPDCP în 72 de ore, când trebuie (art. 33 din GDPR).",
+      content:
+        "Le spunem ce s-a întâmplat, ce date și câte persoane sunt atinse, ce urmări pot fi și ce am făcut ca să le limităm. Ce nu știm încă le trimitem pe măsură ce aflăm.",
+    },
+    assistance: {
+      title: "Ajutorul pentru obligațiile firmei",
+      body: "Cu informațiile pe care le avem, ajutăm firma să își îndeplinească obligațiile privind securitatea prelucrării, evaluarea impactului asupra protecției datelor și consultarea prealabilă a ANSPDCP (art. 32–36 din GDPR).",
+    },
+    deletion: {
+      title: "Returnarea și ștergerea datelor",
+      export:
+        "Firma își poate lua datele oricând, descărcându-le: devizele, ofertele și documentele ca PDF sau Excel, iar facturile într-o arhivă cu PDF-ul și XML-ul fiecăreia și un registru Excel.",
+      firm: "Când firma e ștearsă, adică atunci când ultimul ei membru își șterge contul, ștergem toate datele ei: clienții, devizele, ofertele cu dovezile semnării, documentele lucrărilor, fișierele și facturile emise. Înainte, aplicația arată câte facturi are firma, oferă arhiva lor și cere confirmarea că se vor șterge. Ștergerea începe imediat și se termină, de obicei, în câteva minute.",
+      backups:
+        "Copiile de siguranță ale bazei de date, dacă există, păstrează datele șterse până expiră singure; le folosim doar ca să refacem datele după un incident.",
+      law: "După ștergerea firmei păstrăm date ale ei doar dacă ne obligă legea.",
+    },
+    audits: {
+      title: "Informațiile și auditul",
+      body: "Îi dăm firmei, la cerere, informațiile de care are nevoie ca să arate că prelucrarea respectă art. 28 din GDPR și permitem audituri, inclusiv inspecții, făcute de firmă sau de un auditor mandatat de ea. Un audit îl convenim cu cel puțin 30 de zile înainte, cel mult o dată pe an, în afară de cazul unei încălcări a securității datelor sau al unei cereri a ANSPDCP, iar auditorul păstrează confidențialitatea. Costurile auditului le suportă firma.",
+    },
+    firm: {
+      title: "Ce răspunde firma",
+      body: "Firma răspunde ca datele pe care le pune în Devize să aibă un temei legal, să își informeze clienții despre prelucrare (art. 13 și 14 din GDPR) și să nu pună în Devize date sensibile (art. 9 din GDPR) sau mai multe date decât îi trebuie. CNP-ul unui client îl trece doar când are nevoie de el.",
+    },
+    term: {
+      title: "Durata și răspunderea",
+      duration:
+        "Acordul se aplică cât timp prelucrăm date pentru firmă și încetează după ce le-am șters.",
+      liability:
+        "Față de persoanele vizate și de autorități, fiecare răspunde cum spune art. 82 din GDPR. Între noi și firmă se aplică ce scrie la „Răspunderea” în {terms}, fără să limiteze ce legea nu permite să fie limitat.",
+      precedence:
+        "Dacă acest acord și {terms} spun lucruri diferite despre datele personale, are întâietate acest acord.",
+    },
+    details: {
+      title: "Anexa 1. Detaliile prelucrării",
+      subjectsLabel: "Despre cine",
+      subjects:
+        "clienții firmei, persoane fizice, și reprezentanții sau persoanele de contact ale clienților care sunt firme ori instituții; cei care deschid, acceptă sau refuză o ofertă pe link; membrii comisiilor de recepție, dirigintele de șantier, proiectantul, invitații și ceilalți trecuți în documentele lucrărilor; cei care confirmă o situație de lucrări; persoanele care apar în fotografiile sau în documentele încărcate de firmă.",
+      dataLabel: "Ce date",
+      data: "numele, adresa de email, telefonul și adresa, inclusiv a lucrării; CUI-ul și, dacă firma îl trece, CNP-ul; ce i s-a oferit și facturat clientului și plățile înregistrate; pentru oferta pe link, când a fost deschisă, ce a ales clientul, întrebările lui și motivul unui refuz; pentru acceptare, numele scris, semnătura desenată, momentul, amprenta documentului acceptat, datele browserului (tipul, limba, fusul orar, ecranul) și adresa IP; numele, rolul și firma sau instituția celor din procesele-verbale; fotografiile și documentele încărcate. Nu sunt prevăzute date sensibile.",
+      natureLabel: "Ce facem cu ele",
+      nature:
+        "le păstrăm și le arătăm membrilor firmei; le punem în documentele pe care firma le descarcă sau le trimite; îi arătăm clientului oferta pe link și îi trimitem pe email confirmarea acceptării; le trimitem la Devize AI când un membru folosește o funcție AI sau când asistentul ofertei îi răspunde clientului; la cererea unui membru, trimitem la ANAF fișierul XML al unei facturi, pentru validare, și CUI-ul unui client, ca să preluăm datele lui din registrul public; le ștergem când le șterge firma sau când firma e ștearsă.",
+      purposeLabel: "De ce",
+      purpose: "ca să îi oferim firmei Devize, după {terms}.",
+      durationLabel: "Cât timp",
+      duration:
+        "cât le ține firma în Devize: ce șterge firma ștergem imediat, iar restul, când firma e ștearsă. Un fișier încărcat și nefolosit îl ștergem în cel mult trei ore.",
+      frequencyLabel: "Cât de des",
+      frequency: "continuu, cât timp firma folosește Devize.",
+    },
+    measures: {
+      title: "Anexa 2. Măsurile de securitate",
+      intro: "Măsurile tehnice și organizatorice pe care le luăm acum:",
+      encryption:
+        "Criptarea: datele circulă criptat (HTTPS), iar baza de date și fișierele, găzduite la Convex, sunt criptate și pe disc.",
+      access:
+        "Accesul: datele unei firme le văd doar membrii ei. Fiecare funcție care atinge datele unei firme verifică întâi că persoana face parte din ea, iar datele altei firme le raportează ca inexistente. Rolurile de proprietar, administrator și membru limitează cine schimbă datele firmei, membrii ei și setările de facturare.",
+      signIn:
+        "Intrarea în cont: cu un cod de 8 cifre trimis pe email, valabil 15 minute, cu limite pentru codurile cerute și pentru încercările greșite, sau cu contul Google. O sesiune se încheie după 30 de zile.",
+      links:
+        "Linkurile: cele ale ofertelor, ale invitațiilor și ale revendicărilor au un cod secret aleatoriu de 192 de biți. O invitație o poate folosi doar cine intră în cont cu adresa invitată, în cel mult o săptămână, iar linkul unei oferte firma îl poate retrage oricând.",
+      files:
+        "Fișierele: un fișier încărcat se poate lega de o firmă doar în primele 10 minute, iar unul rămas nelegat se șterge în cel mult trei ore.",
+      app: "Aplicația: antete de securitate care împiedică afișarea paginilor ei în alte site-uri; textele introduse se afișează ca text, fără să poată rula cod.",
+      minimization:
+        "Date cât mai puține: rapoartele de erori nu cuprind utilizatorul, adresa IP, cookie-urile, conținutul cererilor sau codurile linkurilor, iar ce rămâne în urma intrării în cont se șterge singur.",
+      limits:
+        "Limitele: pentru codurile, invitațiile și cererile către Devize AI care pleacă de la o persoană sau de la o firmă, ca aplicația să nu poată fi folosită abuziv.",
+      staff:
+        "Oamenii: echipa Devize nu vede datele firmelor în aplicație; acces tehnic la baza de date au doar cei care întrețin Devize.",
+      testing:
+        "Verificările: regulile de acces au teste automate, care rulează la fiecare schimbare a codului.",
+      incidents:
+        "Incidentele: urmărim erorile aplicației și anunțăm firmele cum scrie la „Încălcarea securității datelor”.",
+    },
+    vendors: {
+      title: "Anexa 3. Alte persoane împuternicite",
+      intro: "Furnizorii care prelucrează pentru noi datele firmei:",
+      name: "Furnizorul",
+      role: "Ce face",
+      country: "Țara",
+      usa: "SUA",
+      convex: "baza de date, fișierele și funcțiile aplicației",
+      vercel:
+        "găzduirea aplicației, inclusiv a paginii ofertei, cu jurnalele tehnice ale vizitelor",
+      anthropic: "Claude, pentru funcțiile Devize AI și asistentul ofertei",
+      resend:
+        "emailurile automate, cum sunt confirmarea ofertei acceptate, pentru client, și anunțurile către firmă despre răspunsurile și întrebările clienților",
+      sentry: "rapoartele de erori, fără date care să identifice pe cineva",
+      anaf: "Separat, la cererea unui membru al firmei, trimitem la ANAF fișierul XML al unei facturi, pentru validare, și CUI-ul unui client, ca să preluăm datele lui din registrul public. ANAF nu prelucrează datele pentru noi: este o autoritate publică, care le primește ca destinatar.",
+    },
+  },
+  termsNotice: {
+    newTitle: "Acceptă termenii Devize pentru {firm}",
+    newBody:
+      "Firma folosește Devize după {terms} și {dpa}. Un proprietar sau un administrator îi acceptă o dată, pentru toată firma.",
+    updatedTitle: "Termenii Devize s-au schimbat",
+    updatedBody:
+      "Avem o versiune nouă, din {date}: {terms} și {dpa}. Se aplică firmei {firm} după ce o acceptă un proprietar sau un administrator.",
+    accept: "Accept în numele firmei",
+    accepted: "Ai acceptat termenii pentru {firm}.",
+    ask: "Roagă un proprietar sau un administrator al firmei să îi accepte.",
+  },
   errors: {
     unknown: "Ceva n-a mers. Încearcă din nou.",
     unauthenticated: "Sesiunea a expirat. Intră din nou în cont.",
@@ -3576,6 +3938,8 @@ export default {
     locked: "Nu se mai poate modifica.",
     inUse: "E folosit în altă parte, așa că nu poate fi șters.",
     invalidCui: "CUI-ul nu trece verificarea cifrei de control.",
+    invalidTerms:
+      "Termenii s-au schimbat între timp. Reîncarcă pagina și citește-i din nou.",
     invalidName: "Scrie un nume.",
     invalidTitle: "Scrie un titlu.",
     invalidUnit: "Unitatea de măsură nu e validă.",
