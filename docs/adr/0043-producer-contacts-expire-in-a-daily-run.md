@@ -11,7 +11,7 @@ Only people's addresses. A contact research labelled `person` is a person's; so 
 Each address keeps its own clock (`retentionPlan`):
 
 - someone who asked us to stop (an address or its domain on the suppression list), or a firm we excluded: at once;
-- while the firm is in touch with us (it answered, sent norms or claimed its profile): kept. `answeredAt` keeps the first answer when the status is set back later. A firm that declined is no longer in touch;
+- while the firm is in touch with us (it answered, sent norms or claimed its profile): kept, at most 2 years after the last message (ADR 0049). `answeredAt` keeps the first answer when the status is set back later. A firm that declined is no longer in touch;
 - written to: 175 days after the last email to that address, sent or opened to send. An approved email may already be in the outbox (ADR 0006), so it counts as written. The shortest six calendar months are 181 days, which leaves room for missed runs;
 - never written to: 25 days after it was first found, so within the shortest month. `foundAt` is kept across research runs; an address typed into a draft by hand counts from `toSetAt`, when it was typed.
 
@@ -33,7 +33,7 @@ One `outreachErasures` row per rule records when and how many, with the subjects
 ## Consequences
 
 - An address erased after no answer isn't remembered, not even as a hash, which would still be personal data. Research may find it again; it then starts a new clock and a new first email carries a new notice.
-- A firm in touch has no end date beyond „cât discutăm cu firma”. If that needs one (say 24 months after the last message), it is a change here and on the page.
+- A firm in touch keeps its people's addresses at most 2 years after the last message between us (ADR 0049).
 - Deleting a manufacturer now also deletes its erasure rows and the reports on its research jobs; the jobs stay for their cost. Manufacturers deleted before this change may have left reports behind; research jobs that failed have none.
 - Notes and edited emails lose only exact addresses, not names, so the notes field asks not to hold names.
 - Convex backups, if any are kept, hold erased rows until they expire on their own.

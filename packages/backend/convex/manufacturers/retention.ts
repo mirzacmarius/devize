@@ -10,6 +10,7 @@ import {
   type AddressPlan,
   ERASED,
   type ErasureRule,
+  inTouch,
   mentions,
   messageAddresses,
   REPORT_MS,
@@ -55,7 +56,20 @@ export async function planFor(
       suppressed.add(address);
     }
   }
-  return retentionPlan({ manufacturer, contacts, messages, suppressed });
+  const lastNorms = await ctx.db
+    .query("normImports")
+    .withIndex("by_manufacturerId", (q) =>
+      q.eq("manufacturerId", manufacturer._id),
+    )
+    .order("desc")
+    .first();
+  return retentionPlan({
+    manufacturer,
+    contacts,
+    messages,
+    suppressed,
+    normsReceivedAt: lastNorms?._creationTime,
+  });
 }
 
 /** Starts the daily run over every manufacturer. */
@@ -120,6 +134,13 @@ export const review = internalMutation({
         answeredAt: now,
       });
       manufacturer = { ...manufacturer, answeredAt: now };
+    }
+    // A firm in touch from before ADR 0049, such as one that claimed its
+    // profile without writing to us, starts its 2 years now.
+    if (inTouch(manufacturer) && manufacturer.lastAnsweredAt === undefined) {
+      const lastAnsweredAt = manufacturer.answeredAt ?? now;
+      await ctx.db.patch("manufacturers", manufacturer._id, { lastAnsweredAt });
+      manufacturer = { ...manufacturer, lastAnsweredAt };
     }
     const [contacts, messages] = await Promise.all([
       ctx.db
@@ -248,7 +269,10 @@ async function eraseAddresses(
       // stop, or to an excluded firm.
       const stop =
         message.status === "approved" &&
-        involved.some((address) => due.get(address) !== "no_answer");
+        involved.some((address) => {
+          const rule = due.get(address);
+          return rule === "opt_out" || rule === "excluded";
+        });
       await ctx.db.patch("outreachMessages", message._id, {
         to,
         vars: scrubVars(message.vars, erased, true),
@@ -419,6 +443,7 @@ const erasureSummary = v.object({
     v.literal("not_written"),
     v.literal("opt_out"),
     v.literal("excluded"),
+    v.literal("inactive"),
   ),
   erasedAt: v.number(),
   addresses: v.number(),

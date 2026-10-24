@@ -106,8 +106,11 @@ export async function grantClaim(
       manufacturerId: manufacturer._id,
     });
   }
+  // Claiming is an answer: its people's addresses stay another 2 years
+  // (ADR 0049).
   await ctx.db.patch("manufacturers", manufacturer._id, {
     claimStatus: "claimed",
+    lastAnsweredAt: now,
   });
   const decision = {
     status: "approved" as const,

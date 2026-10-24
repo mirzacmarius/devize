@@ -121,9 +121,11 @@ describe("claiming with a link", () => {
       manufacturerId,
       role: "owner",
     });
-    expect((await manufacturerDoc(t, manufacturerId))?.claimStatus).toBe(
-      "claimed",
-    );
+    const claimedDoc = await manufacturerDoc(t, manufacturerId);
+    expect(claimedDoc?.claimStatus).toBe("claimed");
+    // Claiming counts as an answer for how long its people's addresses
+    // stay (ADR 0049).
+    expect(claimedDoc?.lastAnsweredAt).toBeGreaterThan(0);
     const claims = await t.run(
       async (ctx) => await ctx.db.query("manufacturerClaims").collect(),
     );
