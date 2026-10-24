@@ -34,3 +34,34 @@ export const choiceArgs = {
   variantId: v.optional(v.id("variants")),
   excludedItemIds: v.optional(v.array(v.id("lineItems"))),
 };
+
+// When a part of the price is due: at signing (the deposit), when the works
+// start, with each Situație de lucrări, at the Recepție at the end of the
+// works, or after it, with the Recepție finală.
+export const paymentTrigger = v.union(
+  v.literal("signing"),
+  v.literal("start"),
+  v.literal("statement"),
+  v.literal("completion"),
+  v.literal("final"),
+);
+
+// One part of the price and when it is due: a share of the total with VAT or
+// a fixed sum in lei, never both. See docs/adr/0038.
+export const paymentStage = v.object({
+  stage: v.string(),
+  percent: v.optional(v.number()),
+  amount: v.optional(v.number()),
+  trigger: paymentTrigger,
+});
+
+// What the browser said about itself when the client signed, and the address
+// the page's server saw: evidence next to the name, the moment and the hash
+// of what was signed.
+export const signatureEvidence = v.object({
+  userAgent: v.optional(v.string()),
+  language: v.optional(v.string()),
+  timeZone: v.optional(v.string()),
+  screen: v.optional(v.string()),
+  address: v.optional(v.string()),
+});

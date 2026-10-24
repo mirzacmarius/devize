@@ -59,6 +59,8 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     rooms: "invalidRooms",
     measure: "invalidMeasure",
     takeoffs: "invalidTakeoffs",
+    paymentSchedule: "invalidPaymentSchedule",
+    evidence: "invalidEvidence",
     period: "invalidPeriod",
     percent: "invalidPercent",
     amount: "invalidAmount",

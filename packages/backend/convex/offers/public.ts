@@ -9,9 +9,12 @@ import {
   readSections,
 } from "../estimates/helpers";
 import { forbidden, invalid } from "../lib/errors";
+import { sha256Hex } from "../lib/sha256";
 import { type Choice, checkChoice, priceChoice } from "./choice";
+import { cleanEvidence, maskEmail, withdrawalDeadline } from "./consumer";
 import { effectiveChoice, firmView, offerContent } from "./content";
 import {
+  estimateCode,
   isFirmMember,
   isOpen,
   offerByToken,
@@ -19,7 +22,7 @@ import {
   VISIT_GAP_MS,
 } from "./helpers";
 import { checkSignaturePath, checkSignerName } from "./signature";
-import { choiceArgs } from "./validators";
+import { choiceArgs, signatureEvidence } from "./validators";
 
 // The client's side of an Ofertă: everything here is reached with the link's
 // token alone, without an account. What the link shows is built field by
@@ -88,11 +91,24 @@ export const view = query({
               name: offer.signature.name,
               signedAt: offer.signature.signedAt,
               path: offer.signature.path,
+              contentHash: offer.signature.contentHash,
+              earlyStart: offer.signature.earlyStart ?? false,
+              // A consumer may still withdraw until then.
+              withdrawalUntil: offer.consumer
+                ? withdrawalDeadline(offer.signature.signedAt)
+                : undefined,
               variantName: content.variants.find(
                 (x) => x._id === choice.variantId,
               )?.name,
             }
           : null,
+      // Where the signed copy was emailed, with the address mostly hidden.
+      confirmation: offer.confirmation
+        ? {
+            email: maskEmail(offer.confirmation.email),
+            sentAt: offer.confirmation.sentAt,
+          }
+        : null,
       declined:
         offer.status === "declined"
           ? { at: offer.decidedAt, reason: offer.declineReason }
@@ -182,7 +198,9 @@ export const choose = mutation({
 /**
  * The client accepts the Ofertă as they chose it and signs it, by drawing or,
  * when they can't draw, with their typed name alone. The choice and its
- * totals are frozen, and the Deviz becomes accepted.
+ * totals are frozen, and the Deviz becomes accepted. What was accepted is
+ * hashed and kept with the browser's evidence, and the client is sent a
+ * confirmation.
  */
 export const accept = mutation({
   args: {
@@ -190,6 +208,9 @@ export const accept = mutation({
     ...choiceArgs,
     name: v.string(),
     signature: v.optional(v.string()),
+    evidence: v.optional(signatureEvidence),
+    // A consumer asks for the works to begin within the withdrawal period.
+    earlyStart: v.optional(v.boolean()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -203,20 +224,56 @@ export const accept = mutation({
       args.signature === undefined
         ? undefined
         : checkSignaturePath(args.signature);
+    const evidence = cleanEvidence(args.evidence);
     const { lines, totals } = await priceFor(ctx, estimate, choice);
     if (!lines.some((line) => line.included)) {
       throw invalid("excludedItemIds");
     }
     const now = Date.now();
+    const earlyStart = offer.consumer ? (args.earlyStart ?? false) : undefined;
+    // What the signature covers, so the signed copy can be checked later.
+    const contentHash = sha256Hex(
+      JSON.stringify({
+        estimate: estimateCode(estimate),
+        title: estimate.title,
+        variantId: choice.variantId ?? null,
+        excludedItemIds: [...choice.excludedItemIds].sort(),
+        lines: lines
+          .filter((line) => line.included)
+          .map((line) => [
+            line.item._id,
+            line.item.title,
+            line.item.unit,
+            line.item.quantity,
+            line.unitPrice,
+            line.total,
+          ]),
+        totals,
+        paymentSchedule: offer.paymentSchedule ?? null,
+        signer: name,
+        signedAt: now,
+        earlyStart: earlyStart ?? null,
+      }),
+    );
     await ctx.db.patch("offers", offer._id, {
       status: "accepted",
       decidedAt: now,
       acceptedVariantId: choice.variantId,
       choice: { ...choice, totals, updatedAt: now },
-      signature: { name, signedAt: now, path },
+      signature: {
+        name,
+        signedAt: now,
+        path,
+        contentHash,
+        evidence,
+        earlyStart,
+      },
     });
     await changeStatus(ctx, estimate, "accepted");
     await ctx.scheduler.runAfter(0, internal.offers.notify.decision, {
+      offerId: offer._id,
+    });
+    await ctx.scheduler.runAfter(0, internal.offers.notify.confirmation, {
       offerId: offer._id,
     });
     return null;
@@ -325,7 +382,34 @@ export const document = query({
         email: firm.email,
         phone: firm.phone,
       },
-      client: client ? { name: client.name } : null,
+      client: client
+        ? { name: client.name, address: client.address, email: client.email }
+        : null,
+      // The terms the Deviz prints with: how it is paid, the consumer's
+      // rights and, once accepted, the client's electronic signature.
+      offer: {
+        paymentSchedule: offer.paymentSchedule,
+        consumer: offer.consumer ?? false,
+        signature:
+          offer.status === "accepted" && offer.signature
+            ? {
+                name: offer.signature.name,
+                signedAt: offer.signature.signedAt,
+                contentHash: offer.signature.contentHash,
+                evidence: offer.signature.evidence,
+                earlyStart: offer.signature.earlyStart ?? false,
+                withdrawalUntil: offer.consumer
+                  ? withdrawalDeadline(offer.signature.signedAt)
+                  : undefined,
+              }
+            : null,
+        confirmation: offer.confirmation
+          ? {
+              email: maskEmail(offer.confirmation.email),
+              sentAt: offer.confirmation.sentAt,
+            }
+          : null,
+      },
     };
   },
 });

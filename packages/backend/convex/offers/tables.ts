@@ -1,7 +1,13 @@
 import { defineTable } from "convex/server";
 import { v } from "convex/values";
 import { recap } from "../estimates/validators";
-import { offerStatus, optionalItem, questionStatus } from "./validators";
+import {
+  offerStatus,
+  optionalItem,
+  paymentStage,
+  questionStatus,
+  signatureEvidence,
+} from "./validators";
 
 export const offerTables = {
   // Oferte: the secure link a client opens, without an account, to read a
@@ -47,13 +53,31 @@ export const offerTables = {
         imageId: v.optional(v.id("_storage")),
         // The signature as drawn: SVG path data in a 600 × 200 box.
         path: v.optional(v.string()),
+        // SHA-256, in hex, of what was accepted: the works, the prices, the
+        // payment stages and the signer. The signed copy prints it.
+        contentHash: v.optional(v.string()),
+        evidence: v.optional(signatureEvidence),
+        // A consumer asked for the works to begin within the 14 days in
+        // which they may withdraw (OUG 34/2014, art. 8).
+        earlyStart: v.optional(v.boolean()),
       }),
     ),
     declineReason: v.optional(v.string()),
     // The link of a newer revision of the Deviz, which this one leads to.
     replacedBy: v.optional(v.id("offers")),
+    // How the price is paid, stage by stage; `depositPercent` is the share
+    // due at signing, kept for the pages that show one figure.
+    paymentSchedule: v.optional(v.array(paymentStage)),
     depositPercent: v.optional(v.number()),
     depositPaidAt: v.optional(v.number()),
+    // The client is a consumer, a person rather than a firm: the link shows
+    // their rights under OUG 34/2014 and the withdrawal form, and accepting
+    // is confirmed to them by email.
+    consumer: v.optional(v.boolean()),
+    // The confirmation of the accepted Ofertă emailed to the client.
+    confirmation: v.optional(
+      v.object({ email: v.string(), sentAt: v.number() }),
+    ),
     createdBy: v.id("users"),
   })
     .index("by_token", ["token"])

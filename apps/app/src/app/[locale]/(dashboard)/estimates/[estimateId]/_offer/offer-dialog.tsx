@@ -2,6 +2,12 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import {
+  MAX_STAGES,
+  type PaymentStage,
+  type PaymentTrigger,
+  paymentTriggers,
+} from "@devize/backend/convex/offers/payments";
 import { Button } from "@devize/ui/button";
 import {
   Dialog,
@@ -23,14 +29,16 @@ import {
 import { toast } from "@devize/ui/sonner";
 import { Switch } from "@devize/ui/switch";
 import { Textarea } from "@devize/ui/textarea";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { X } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
+import { useTriggerWords } from "@/components/payment-schedule";
 import { useErrorMessage } from "@/components/use-error-message";
 import { appErrorOf } from "@/lib/errors";
-import { formatMoney, parseDecimal } from "@/lib/format";
+import { formatMoney, formatPercent, parseDecimal } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
 import { copyText, offerUrl } from "./offer-link";
@@ -46,10 +54,56 @@ const validities = [
 
 type Optional = { lineItemId: Id<"lineItems">; included: boolean };
 
+// The usual ways a private job is paid, as starting points the firm edits.
+// The stages' names come from the dictionary.
+type StageName = "deposit" | "start" | "completion" | "statements" | "rest";
+type PresetStage = {
+  name: StageName;
+  percent: number;
+  trigger: PaymentTrigger;
+};
+const presets = {
+  deposit30: [
+    { name: "deposit", percent: 30, trigger: "signing" },
+    { name: "rest", percent: 70, trigger: "completion" },
+  ],
+  thirds: [
+    { name: "deposit", percent: 30, trigger: "signing" },
+    { name: "start", percent: 40, trigger: "start" },
+    { name: "completion", percent: 30, trigger: "completion" },
+  ],
+  half: [
+    { name: "deposit", percent: 50, trigger: "signing" },
+    { name: "rest", percent: 50, trigger: "completion" },
+  ],
+  statements: [
+    { name: "deposit", percent: 20, trigger: "signing" },
+    { name: "statements", percent: 80, trigger: "statement" },
+  ],
+} satisfies Record<string, readonly PresetStage[]>;
+type Preset = "none" | keyof typeof presets | "custom";
+const presetOrder: readonly Preset[] = [
+  "none",
+  "deposit30",
+  "thirds",
+  "half",
+  "statements",
+  "custom",
+];
+
+/** A stage of payment as the person edits it, its share still a string. */
+type StageRow = {
+  key: number;
+  stage: string;
+  percent: string;
+  trigger: PaymentTrigger;
+};
+
 /**
- * Makes the client's link for a Deviz: a message, how long it is valid, the
- * deposit asked, the Variante the client chooses between and the works they
- * may leave out. A draft is sent and locked with it.
+ * Makes the client's link for a Deviz: a message, how long it is valid, how
+ * the price is paid, whether the client is a consumer, the Variante the
+ * client chooses between and the works they may leave out. A draft is sent
+ * and locked with it.
  */
 export function OfferDialog({
   estimate,
@@ -83,6 +137,7 @@ function OfferForm({
   const t = useScopedI18n("offer");
   const tc = useScopedI18n("common");
   const locale = useCurrentLocale();
+  const triggerWords = useTriggerWords();
   const create = useMutation(api.offers.offers.create);
   const variants = useQuery(api.offers.variants.forEstimate, {
     estimateId: estimate._id,
@@ -90,8 +145,11 @@ function OfferForm({
   const errorMessage = useErrorMessage();
   const [message, setMessage] = useState("");
   const [validDays, setValidDays] = useState(30);
-  const [deposit, setDeposit] = useState("");
-  const [depositError, setDepositError] = useState<string>();
+  const [preset, setPreset] = useState<Preset>("none");
+  const [stages, setStages] = useState<StageRow[]>([]);
+  const [paymentError, setPaymentError] = useState<string>();
+  // A private person has a consumer's rights unless the firm says otherwise.
+  const [consumer, setConsumer] = useState(estimate.client?.kind === "person");
   const [optional, setOptional] = useState<Optional[]>([]);
   const [assistant, setAssistant] = useState(true);
   // Every Variantă goes on the link until the firm unticks one.
@@ -111,6 +169,55 @@ function OfferForm({
     estimate.lineItems.map((item) => [item._id, item.title]),
   );
 
+  const nextKey = useRef(0);
+  const row = (
+    stage: string,
+    percent: string,
+    trigger: PaymentTrigger,
+  ): StageRow => ({ key: nextKey.current++, stage, percent, trigger });
+  const choosePreset = (next: Preset) => {
+    setPreset(next);
+    setPaymentError(undefined);
+    if (next === "none") {
+      setStages([]);
+    } else if (next === "custom") {
+      if (stages.length === 0) {
+        setStages([row(t("dialog.paymentStages.deposit"), "30", "signing")]);
+      }
+    } else {
+      setStages(
+        presets[next].map((stage) =>
+          row(
+            t(`dialog.paymentStages.${stage.name}`),
+            String(stage.percent),
+            stage.trigger,
+          ),
+        ),
+      );
+    }
+  };
+  const editStage = (key: number, patch: Partial<Omit<StageRow, "key">>) => {
+    setPreset("custom");
+    setStages(
+      stages.map((stage) =>
+        stage.key === key ? { ...stage, ...patch } : stage,
+      ),
+    );
+  };
+  const removeStage = (key: number) => {
+    setPreset("custom");
+    setStages(stages.filter((stage) => stage.key !== key));
+  };
+  const addStage = () => {
+    setPreset("custom");
+    setStages([...stages, row("", "", "completion")]);
+  };
+  const covered = stages.reduce(
+    (sum, stage) => sum + (parseDecimal(stage.percent) ?? 0),
+    0,
+  );
+  const fullyCovered = covered >= 99.995;
+
   const createError = (error: unknown) => {
     const appError = appErrorOf(error);
     if (appError?.code === "in_use") {
@@ -123,8 +230,8 @@ function OfferForm({
       if (appError.detail === "lineItems") {
         return t("errors.empty");
       }
-      if (appError.detail === "depositPercent") {
-        return t("dialog.depositInvalid");
+      if (appError.detail === "paymentSchedule") {
+        return t("dialog.paymentInvalid");
       }
     }
     return errorMessage(error);
@@ -132,26 +239,33 @@ function OfferForm({
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    let depositPercent: number | undefined;
-    if (deposit.trim()) {
-      depositPercent = parseDecimal(deposit);
-      if (
-        depositPercent === undefined ||
-        depositPercent < 1 ||
-        depositPercent > 100
-      ) {
-        setDepositError(t("dialog.depositInvalid"));
+    let paymentSchedule: PaymentStage[] | undefined;
+    if (preset !== "none") {
+      const checked: PaymentStage[] = [];
+      for (const stage of stages) {
+        const name = stage.stage.trim();
+        const percent = parseDecimal(stage.percent);
+        if (!name || percent === undefined || percent <= 0 || percent > 100) {
+          setPaymentError(t("dialog.paymentInvalid"));
+          return;
+        }
+        checked.push({ stage: name, percent, trigger: stage.trigger });
+      }
+      if (checked.length === 0 || covered > 100.005) {
+        setPaymentError(t("dialog.paymentInvalid"));
         return;
       }
+      paymentSchedule = checked;
     }
-    setDepositError(undefined);
+    setPaymentError(undefined);
     setBusy(true);
     try {
       const { token } = await create({
         estimateId: estimate._id,
         message: message.trim() || undefined,
         validDays,
-        depositPercent,
+        paymentSchedule,
+        consumer,
         optionalItems: optional,
         assistant,
         variantIds: offered.map((variant) => variant._id),
@@ -213,19 +327,121 @@ function OfferForm({
           </Select>
         </Field>
         <Field
-          label={t("dialog.deposit")}
-          htmlFor="offer-deposit"
-          hint={t("dialog.depositHint")}
-          error={depositError}
+          label={t("dialog.payment")}
+          htmlFor="offer-payment"
+          hint={t("dialog.paymentHint")}
         >
-          <DecimalInput
-            id="offer-deposit"
-            suffix="%"
-            value={deposit}
-            onChange={(event) => setDeposit(event.target.value)}
-          />
+          <Select
+            value={preset}
+            onValueChange={(next) => choosePreset(next as Preset)}
+          >
+            <SelectTrigger id="offer-payment">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {presetOrder.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {t(`dialog.paymentPresets.${option}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Field>
       </div>
+      {preset !== "none" && (
+        <fieldset className="m-0 grid min-w-0 gap-2 border-0 p-0">
+          <legend className="sr-only">{t("dialog.payment")}</legend>
+          <ul className="m-0 grid list-none gap-2 p-0">
+            {stages.map((stage) => (
+              <li key={stage.key} className="flex flex-wrap items-center gap-2">
+                <Input
+                  aria-label={t("dialog.paymentStage")}
+                  placeholder={t("dialog.paymentStagePlaceholder")}
+                  value={stage.stage}
+                  maxLength={60}
+                  className="min-w-32 flex-1"
+                  onChange={(event) =>
+                    editStage(stage.key, { stage: event.target.value })
+                  }
+                />
+                <DecimalInput
+                  aria-label={t("dialog.paymentPercent")}
+                  suffix="%"
+                  value={stage.percent}
+                  className="w-24"
+                  onChange={(event) =>
+                    editStage(stage.key, { percent: event.target.value })
+                  }
+                />
+                <Select
+                  value={stage.trigger}
+                  onValueChange={(trigger) =>
+                    editStage(stage.key, {
+                      trigger: trigger as PaymentTrigger,
+                    })
+                  }
+                >
+                  <SelectTrigger
+                    aria-label={t("dialog.paymentTrigger")}
+                    className="w-52"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {paymentTriggers.map((trigger) => (
+                      <SelectItem key={trigger} value={trigger}>
+                        {triggerWords[trigger]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  aria-label={t("dialog.paymentRemove", { stage: stage.stage })}
+                  onClick={() => removeStage(stage.key)}
+                >
+                  <X aria-hidden />
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            {stages.length < MAX_STAGES ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={addStage}
+              >
+                {t("dialog.paymentAdd")}
+              </Button>
+            ) : (
+              <span />
+            )}
+            <span
+              className={cn(
+                "text-meta tabular-nums",
+                fullyCovered ? "text-ink-3" : "text-warning",
+              )}
+            >
+              {t(
+                fullyCovered ? "dialog.paymentSum" : "dialog.paymentSumWarning",
+                {
+                  percent: formatPercent(covered, locale),
+                },
+              )}
+            </span>
+          </div>
+          {paymentError && (
+            <p role="alert" className="m-0 text-meta text-danger">
+              {paymentError}
+            </p>
+          )}
+        </fieldset>
+      )}
       {variants && variants.variants.length > 0 && (
         <fieldset className="m-0 grid min-w-0 gap-2 border-0 p-0">
           <legend className="mb-1.5 p-0 text-body font-medium text-ink">
@@ -374,6 +590,27 @@ function OfferForm({
           <span className="text-meta text-ink-3">
             {t("dialog.assistantHint")}
           </span>
+        </label>
+      </div>
+      <div className="flex items-start gap-3">
+        <Switch
+          id="offer-consumer"
+          checked={consumer}
+          className="mt-0.5"
+          onCheckedChange={setConsumer}
+        />
+        <label htmlFor="offer-consumer" className="grid cursor-pointer gap-0.5">
+          <span className="text-body font-medium text-ink">
+            {t("dialog.consumer")}
+          </span>
+          <span className="text-meta text-ink-3">
+            {t("dialog.consumerHint")}
+          </span>
+          {consumer && !estimate.client?.email && (
+            <span className="text-meta text-warning">
+              {t("dialog.consumerNoEmail")}
+            </span>
+          )}
         </label>
       </div>
       {estimate.status === "draft" && (

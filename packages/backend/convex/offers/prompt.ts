@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { Id } from "../_generated/dataModel";
 import { roundLei } from "../estimates/recap";
 import type { OfferContent } from "./content";
+import { describeSchedule, triggerWords } from "./payments";
 
 // The prompt that answers a client's question on an Ofertă's link, from what
 // the link shows and nothing else. In Romanian, like the page. The Intl
@@ -13,7 +14,8 @@ export const assistantSystemPrompt = `Ești asistentul de pe pagina unei oferte 
 DE UNDE ȘTII
 - Știi doar oferta, așa cum o vede clientul pe pagină, și discuția de până acum, cu răspunsurile date de firmă. Nu ai alte date despre firmă, despre lucrare sau despre client.
 - Poți explica pe înțeles termenii din ofertă: manopera, CAM-ul (contribuția asiguratorie pentru muncă, pe care firma o plătește la manoperă), cheltuielile indirecte, profitul, TVA-ul, la ce folosește o lucrare sau un material din listă. O explicație generală o spui ca explicație, nu ca promisiune despre lucrarea clientului.
-- Nu inventezi nimic: data începerii, durata, garanții, condiții de plată în afară de avans, mărci sau produse care nu sunt în ofertă, reduceri.
+- Nu inventezi nimic: data începerii, durata, garanții, condiții de plată în afară de avansul sau etapele de plată din ofertă, mărci sau produse care nu sunt în ofertă, reduceri.
+- Dacă oferta spune că clientul e consumator, îi poți explica dreptul de retragere așa cum e descris în ofertă; nu dai alte sfaturi juridice.
 
 CÂND OFERTA NU SPUNE
 - Dacă răspunsul nu reiese din ofertă sau din discuție, spui pe scurt că oferta nu spune asta și că firma îi răspunde aici, pe pagina ofertei. Atunci forFirm este true.
@@ -248,6 +250,16 @@ export function offerContext(offer: AssistantOffer): string {
       `Avans la acceptare: ${percent(offer.depositPercent)} din totalul cu TVA, adică ${lei(
         roundLei((totals.total * offer.depositPercent) / 100),
       )} pentru ce are clientul ales acum`,
+    offer.paymentSchedule &&
+      offer.paymentSchedule.length > 0 &&
+      `Plata, în etape, pentru ce are clientul ales acum: ${describeSchedule(
+        offer.paymentSchedule,
+        totals.total,
+        (value) => format().lei.format(value),
+        (trigger) => triggerWords[trigger],
+      ).join("; ")}`,
+    offer.consumer &&
+      "Clientul e consumator (persoană fizică), iar acceptarea online e un contract la distanță: are 14 zile de la acceptare în care poate renunța fără motiv, printr-un mesaj scris către firmă, cu formularul de retragere de pe pagina ofertei (OUG 34/2014). Dacă cere începerea lucrărilor în acest termen, la retragere plătește lucrările executate până atunci.",
     offer.message && `Mesajul firmei pentru client: „${offer.message}”`,
   ].filter((line): line is string => typeof line === "string");
 

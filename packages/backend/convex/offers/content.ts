@@ -97,6 +97,8 @@ export async function offerContent(
     message: offer.message,
     expiresAt: offer.expiresAt,
     depositPercent: offer.depositPercent,
+    paymentSchedule: offer.paymentSchedule,
+    consumer: offer.consumer ?? false,
     assistant: offer.assistant,
     client: client ? { name: client.name } : null,
     markups: estimate.markups,
