@@ -3,9 +3,14 @@
 
 type Email = { to?: string; subject: string; body: string };
 
-/** A Gmail compose window with the email filled in. */
-export function gmailComposeUrl(email: Email) {
+/**
+ * A Gmail compose window with the email filled in, in the account of the
+ * mailbox set in Admin → Setări when there is one, so it doesn't go from
+ * whichever account the browser opened first.
+ */
+export function gmailComposeUrl(email: Email, from?: string) {
   const params = new URLSearchParams({
+    ...(from ? { authuser: from } : {}),
     view: "cm",
     fs: "1",
     to: email.to ?? "",

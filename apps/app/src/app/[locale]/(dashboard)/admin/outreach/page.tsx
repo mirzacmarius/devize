@@ -2,11 +2,13 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button, buttonVariants } from "@devize/ui/button";
+import { Icons } from "@devize/ui/icons";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import { gmailComposeUrl, mailtoUrl } from "../_components/email-links";
 import { ErasureRow } from "../_components/erasure-row";
@@ -23,6 +25,10 @@ type QueuedMessage = FunctionReturnType<
   typeof api.manufacturers.outreach.queue
 >[number];
 
+type Readiness = FunctionReturnType<
+  typeof api.manufacturers.outreach.readiness
+>;
+
 function startOfToday() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -32,6 +38,7 @@ function startOfToday() {
 export default function OutreachPage() {
   const t = useScopedI18n("admin.outreach");
   const messages = useQuery(api.manufacturers.outreach.queue);
+  const readiness = useQuery(api.manufacturers.outreach.readiness);
   const mailbox = useQuery(api.manufacturers.retention.mailboxPending);
   const [since] = useState(startOfToday);
   const sentToday = useQuery(api.manufacturers.outreach.sentSince, { since });
@@ -50,6 +57,7 @@ export default function OutreachPage() {
           {t("pace", { count: sentToday ?? 0 })}
         </p>
       </div>
+      {readiness && !readiness.sent && <ReadinessPanel readiness={readiness} />}
       {mailbox && mailbox.length > 0 && (
         <Panel
           title={t("mailbox.title")}
@@ -71,10 +79,10 @@ export default function OutreachPage() {
       ) : (
         <>
           <Panel title={t("approved")}>
-            <MessageList messages={approved} />
+            <MessageList messages={approved} from={readiness?.senderEmail} />
           </Panel>
           <Panel title={t("drafts")}>
-            <MessageList messages={drafts} />
+            <MessageList messages={drafts} from={readiness?.senderEmail} />
           </Panel>
         </>
       )}
@@ -82,7 +90,145 @@ export default function OutreachPage() {
   );
 }
 
-function MessageList({ messages }: { messages: QueuedMessage[] }) {
+/**
+ * The steps before the first email, each with where it is done, until one is
+ * marked sent.
+ */
+function ReadinessPanel({ readiness }: { readiness: Readiness }) {
+  const t = useScopedI18n("admin.outreach.readiness");
+  const settings = (label: string) => (
+    <Link
+      href="/admin/settings"
+      className={buttonVariants({ size: "sm", variant: "outline" })}
+    >
+      {label}
+    </Link>
+  );
+  const manufacturers = (
+    <Link
+      href="/admin/manufacturers"
+      className={buttonVariants({ size: "sm", variant: "outline" })}
+    >
+      {t("manufacturersAction")}
+    </Link>
+  );
+  const steps: {
+    key: string;
+    done: boolean;
+    text: string;
+    detail?: string;
+    action?: ReactNode;
+  }[] = [
+    {
+      key: "key",
+      done: readiness.hasApiKey,
+      text: t("key"),
+      detail: readiness.hasApiKey ? undefined : t("keyMissing"),
+      action: settings(t("settingsAction")),
+    },
+    {
+      key: "signature",
+      done: readiness.signature,
+      text: t("signature"),
+      action: settings(t("settingsAction")),
+    },
+    {
+      key: "controller",
+      done: readiness.controller,
+      text: t("controller"),
+      action: settings(t("settingsAction")),
+    },
+    {
+      key: "mailbox",
+      done: readiness.senderEmail !== undefined,
+      text: t("mailbox"),
+      detail: readiness.senderEmail ?? t("mailboxMissing"),
+      action: settings(t("settingsAction")),
+    },
+    {
+      key: "manufacturers",
+      done: readiness.manufacturers > 0,
+      text: t("manufacturers"),
+      detail:
+        readiness.manufacturers > 0
+          ? t("manufacturersCount", { count: readiness.manufacturers })
+          : undefined,
+      action: manufacturers,
+    },
+    {
+      key: "research",
+      done: readiness.researched > 0,
+      text: t("research"),
+      detail:
+        readiness.manufacturers > 0
+          ? t("researchCount", {
+              count: readiness.researched,
+              total: readiness.manufacturers,
+            })
+          : undefined,
+      action: manufacturers,
+    },
+    {
+      key: "send",
+      done: readiness.sent,
+      text: t("send"),
+      detail: t("sendCount", {
+        drafts: readiness.drafts,
+        approved: readiness.approved,
+      }),
+    },
+  ];
+
+  return (
+    <Panel title={t("title")} description={t("description")}>
+      <ol className="m-0 grid list-none gap-4 p-0">
+        {steps.map((step, index) => (
+          <li
+            key={step.key}
+            className="grid grid-cols-[auto_minmax(0,1fr)] gap-3"
+          >
+            <span
+              aria-hidden
+              className={cn(
+                "grid size-6 place-items-center rounded-full text-xs tabular-nums",
+                step.done
+                  ? "bg-success-dot/15 text-success-dot [&_svg]:size-3.5"
+                  : "bg-primary/5 text-primary/70",
+              )}
+            >
+              {step.done ? <Icons.Check /> : index + 1}
+            </span>
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <p
+                  className={cn(
+                    "text-sm",
+                    step.done ? "text-primary/50" : "text-primary",
+                  )}
+                >
+                  {step.text}
+                  {step.done && <span className="sr-only"> {t("done")}</span>}
+                </p>
+                {step.detail && (
+                  <p className="text-xs text-primary/50">{step.detail}</p>
+                )}
+              </div>
+              {!step.done && step.action}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </Panel>
+  );
+}
+
+function MessageList({
+  messages,
+  from,
+}: {
+  messages: QueuedMessage[];
+  from?: string;
+}) {
   const t = useScopedI18n("admin.outreach");
   if (messages.length === 0) {
     return <p className="text-sm text-primary/60">{t("empty")}</p>;
@@ -90,13 +236,19 @@ function MessageList({ messages }: { messages: QueuedMessage[] }) {
   return (
     <ul className="flex flex-col divide-y divide-border">
       {messages.map((message) => (
-        <MessageRow key={message._id} message={message} />
+        <MessageRow key={message._id} message={message} from={from} />
       ))}
     </ul>
   );
 }
 
-function MessageRow({ message }: { message: QueuedMessage }) {
+function MessageRow({
+  message,
+  from,
+}: {
+  message: QueuedMessage;
+  from?: string;
+}) {
   const t = useScopedI18n("admin.outreach");
   const tAdmin = useScopedI18n("admin");
   const tEmail = useScopedI18n("admin.manufacturer.email");
@@ -162,7 +314,7 @@ function MessageRow({ message }: { message: QueuedMessage }) {
               {tEmail("mailto")}
             </a>
             <a
-              href={gmailComposeUrl(message)}
+              href={gmailComposeUrl(message, from)}
               target="_blank"
               rel="noreferrer noopener"
               className={buttonVariants({ size: "sm", variant: "outline" })}

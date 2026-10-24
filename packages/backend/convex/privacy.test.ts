@@ -144,6 +144,7 @@ describe("privacy page", () => {
       firstName: "Ioana",
       lastName: "Pop",
       phone: "0711 111 111",
+      senderEmail: undefined,
       privacyUrl: undefined,
       privacyPage: "https://app.devize.test/confidentialitate",
       controller: {

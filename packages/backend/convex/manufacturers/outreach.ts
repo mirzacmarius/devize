@@ -2,9 +2,9 @@ import { ConvexError, v } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
-import { internalMutation, mutation, query } from "../_generated/server";
+import { env, internalMutation, mutation, query } from "../_generated/server";
 import { requireSuperAdmin } from "../lib/roles";
-import { getController, privacyPageUrl } from "../privacy";
+import { getController, namesController, privacyPageUrl } from "../privacy";
 import { checkEmail, draftThanksEmail, rerenderDraft } from "./drafts";
 import { hasBlockingIssue } from "./lib/emailTemplate";
 import { scrubSender } from "./lib/retention";
@@ -51,6 +51,57 @@ export const queue = query({
         };
       }),
     );
+  },
+});
+
+/**
+ * What still stands between Devize and the first email, in the order it is
+ * done: the Claude key, the signature, who answers for the data, the mailbox,
+ * then the manufacturers, their research and the emails.
+ */
+export const readiness = query({
+  args: {},
+  returns: v.object({
+    hasApiKey: v.boolean(),
+    signature: v.boolean(),
+    controller: v.boolean(),
+    senderEmail: v.optional(v.string()),
+    manufacturers: v.number(),
+    researched: v.number(),
+    drafts: v.number(),
+    approved: v.number(),
+    sent: v.boolean(),
+  }),
+  handler: async (ctx) => {
+    await requireSuperAdmin(ctx);
+    const settings = await ctx.db.query("outreachSettings").first();
+    const manufacturers = await ctx.db.query("manufacturers").take(1000);
+    const count = async (status: "draft" | "approved") =>
+      (
+        await ctx.db
+          .query("outreachMessages")
+          .withIndex("by_status", (q) => q.eq("status", status))
+          .take(200)
+      ).length;
+    const sent = await ctx.db
+      .query("outreachMessages")
+      .withIndex("by_status", (q) => q.eq("status", "sent"))
+      .first();
+    return {
+      hasApiKey: Boolean(env.ANTHROPIC_API_KEY?.trim()),
+      signature: Boolean(
+        settings?.firstName && settings.lastName && settings.phone,
+      ),
+      controller: namesController(await getController(ctx)),
+      senderEmail: settings?.senderEmail,
+      manufacturers: manufacturers.length,
+      researched: manufacturers.filter(
+        (manufacturer) => manufacturer.researchedAt !== undefined,
+      ).length,
+      drafts: await count("draft"),
+      approved: await count("approved"),
+      sent: sent !== null,
+    };
   },
 });
 
@@ -296,6 +347,7 @@ export const getSettings = query({
       firstName: settings?.firstName,
       lastName: settings?.lastName,
       phone: settings?.phone,
+      senderEmail: settings?.senderEmail,
       privacyUrl: settings?.privacyUrl,
       // The page the emails link to while privacyUrl is empty.
       privacyPage: privacyPageUrl(),
@@ -341,20 +393,32 @@ async function saveSettings(
   }
 }
 
-/** The sender's name and phone for the signature. */
+/**
+ * The sender's name and phone for the signature, and the mailbox the emails
+ * go from; left out, the mailbox stays as it was.
+ */
 export const updateSettings = mutation({
   args: {
     firstName: v.string(),
     lastName: v.string(),
     phone: v.string(),
+    senderEmail: v.optional(v.string()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     const admin = await requireSuperAdmin(ctx);
+    const senderEmail =
+      args.senderEmail === undefined
+        ? {}
+        : { senderEmail: normalizeEmail(args.senderEmail) || undefined };
+    if (senderEmail.senderEmail && !isEmail(senderEmail.senderEmail)) {
+      throw new ConvexError({ code: "invalid", field: "senderEmail" });
+    }
     await saveSettings(ctx, admin._id, {
       firstName: args.firstName.trim() || undefined,
       lastName: args.lastName.trim() || undefined,
       phone: args.phone.trim() || undefined,
+      ...senderEmail,
       signedBy: admin._id,
     });
     return null;
@@ -362,8 +426,9 @@ export const updateSettings = mutation({
 });
 
 /**
- * Takes the signature out of the settings when the person who saved it
- * deletes their account, then clears it from the drafts a page at a time.
+ * Takes the signature and the mailbox out of the settings when the person who
+ * saved them deletes their account, then clears the signature from the drafts
+ * a page at a time.
  */
 export async function forgetSender(ctx: MutationCtx, userId: Id<"users">) {
   const settings = await ctx.db.query("outreachSettings").first();
@@ -376,6 +441,7 @@ export async function forgetSender(ctx: MutationCtx, userId: Id<"users">) {
     firstName: undefined,
     lastName: undefined,
     phone: undefined,
+    senderEmail: undefined,
     signedBy: undefined,
     ...(signed ? { forgetting: { firstName, lastName, phone } } : {}),
   });
