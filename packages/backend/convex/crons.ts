@@ -21,4 +21,13 @@ crons.cron(
   {},
 );
 
+// Erases the addresses of people at producers once the privacy page says
+// they go, and research reports older than 25 days (docs/adr/0043).
+crons.cron(
+  "erase producer contacts past their time",
+  "15 3 * * *",
+  internal.manufacturers.retention.sweep,
+  {},
+);
+
 export default crons;

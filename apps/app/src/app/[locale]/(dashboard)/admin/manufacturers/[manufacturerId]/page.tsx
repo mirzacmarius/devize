@@ -21,6 +21,7 @@ import { ClaimPanel } from "./_components/claim-panel";
 import { ContactsPanel } from "./_components/contacts-panel";
 import { DetailsPanel } from "./_components/details-panel";
 import { EmailPanel } from "./_components/email-panel";
+import { ErasuresPanel } from "./_components/erasures-panel";
 import { ExcludePanel } from "./_components/exclude-panel";
 import { FindingsPanel } from "./_components/findings-panel";
 import { ImportsPanel } from "./_components/imports-panel";
@@ -124,7 +125,11 @@ export default function ManufacturerPage() {
 
       <div className="grid w-full gap-6 lg:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-6">
-          <FindingsPanel manufacturer={manufacturer} research={data.research} />
+          <FindingsPanel
+            manufacturer={manufacturer}
+            research={data.research}
+            reportDeletedAt={data.reportDeletedAt}
+          />
           <ContactsPanel
             manufacturerId={manufacturerId}
             contacts={data.contacts}
@@ -151,6 +156,7 @@ export default function ManufacturerPage() {
         </div>
       </div>
 
+      <ErasuresPanel erasures={data.erasures} />
       <DetailsPanel manufacturer={manufacturer} />
       <JobsPanel jobs={data.jobs} />
       <ExcludePanel manufacturer={manufacturer} contacts={data.contacts} />

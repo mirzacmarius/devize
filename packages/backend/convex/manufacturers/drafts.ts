@@ -199,6 +199,11 @@ export async function draftInitialEmail(
   const variant = emailVariantFor(manufacturer);
   const { vars, to } = await templateVarsFor(ctx, manufacturer, recommended);
   const email = renderInitialEmail(variant, vars, await getSender(ctx));
+  const open =
+    latest && latest.step === "initial" && latest.status === "draft"
+      ? latest
+      : undefined;
+  const now = Date.now();
   const fields = {
     variant,
     vars,
@@ -206,11 +211,12 @@ export async function draftInitialEmail(
     ...email,
     issues: await checkEmail(ctx, manufacturer._id, { ...email, to }),
     edited: false,
-    updatedAt: Date.now(),
+    updatedAt: now,
+    ...(open && open.to === to ? {} : { toSetAt: now }),
   };
-  if (latest && latest.step === "initial" && latest.status === "draft") {
-    await ctx.db.patch("outreachMessages", latest._id, fields);
-    return latest._id;
+  if (open) {
+    await ctx.db.patch("outreachMessages", open._id, fields);
+    return open._id;
   }
   return await ctx.db.insert("outreachMessages", {
     manufacturerId: manufacturer._id,
@@ -330,13 +336,52 @@ export async function draftThanksEmail(
       (message.status === "draft" || message.status === "approved"),
   );
   if (open) {
-    await ctx.db.patch("outreachMessages", open._id, fields);
+    await ctx.db.patch("outreachMessages", open._id, {
+      ...fields,
+      ...(open.to === email ? {} : { toSetAt: fields.updatedAt }),
+    });
     return open._id;
   }
   return await ctx.db.insert("outreachMessages", {
     manufacturerId: manufacturer._id,
     step: "thanks",
     ...fields,
+    toSetAt: fields.updatedAt,
+  });
+}
+
+/**
+ * Points a first email or follow-up nobody edited at the next contact, after
+ * its recipient's address was erased (ADR 0043), and renders it again. It
+ * goes back to draft, since the new recipient wasn't approved.
+ */
+export async function redirectDraft(
+  ctx: MutationCtx,
+  manufacturer: Doc<"manufacturers">,
+  message: Doc<"outreachMessages">,
+) {
+  const { vars, to } = await templateVarsFor(ctx, manufacturer, undefined);
+  const email = renderInitialEmail(
+    message.variant ?? emailVariantFor(manufacturer),
+    vars,
+    await getSender(ctx),
+  );
+  const now = Date.now();
+  await ctx.db.patch("outreachMessages", message._id, {
+    ...email,
+    vars,
+    to,
+    toSetAt: now,
+    issues: await checkEmail(ctx, manufacturer._id, {
+      ...email,
+      to,
+      step: message.step,
+      vars,
+    }),
+    status: "draft",
+    approvedBy: undefined,
+    approvedAt: undefined,
+    updatedAt: now,
   });
 }
 

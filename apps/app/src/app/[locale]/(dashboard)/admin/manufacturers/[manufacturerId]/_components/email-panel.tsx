@@ -85,7 +85,13 @@ export function MessageHistory({ history }: { history: Message[] }) {
             <Pill tone={messageTone[old.status]}>
               {tAdmin(`status.message.${old.status}`)}
             </Pill>
-            <span className="text-primary/70">{old.to}</span>
+            <span className="text-primary/70">
+              {old.recipientErasedAt !== undefined && !old.to
+                ? t("recipientErased", {
+                    date: format.date(old.recipientErasedAt),
+                  })
+                : old.to}
+            </span>
             <span className="text-primary/50">
               {format.date(old.sentAt ?? old.updatedAt)}
             </span>

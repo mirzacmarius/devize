@@ -72,6 +72,16 @@ export const messageStatus = v.union(
   v.literal("sent"),
 );
 
+// Why a person's address was erased (ADR 0043): the firm didn't answer within
+// 175 days of the last email, nobody wrote to it within 25 days of finding it,
+// the person asked us to stop, or the firm was excluded.
+export const erasureRule = v.union(
+  v.literal("no_answer"),
+  v.literal("not_written"),
+  v.literal("opt_out"),
+  v.literal("excluded"),
+);
+
 // A: the manufacturer already has norms. B: we found none.
 export const emailVariant = v.union(v.literal("A"), v.literal("B"));
 

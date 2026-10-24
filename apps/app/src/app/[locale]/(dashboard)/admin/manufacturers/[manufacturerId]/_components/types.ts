@@ -9,3 +9,4 @@ export type Contact = ManufacturerData["contacts"][number];
 export type Message = ManufacturerData["messages"][number];
 export type NormImport = ManufacturerData["normImports"][number];
 export type Job = ManufacturerData["jobs"][number];
+export type Erasure = ManufacturerData["erasures"][number];

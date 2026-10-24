@@ -13,8 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Devize's privacy policy, which anyone can open: the emails to producers
- * link to it. The text ships with the app; who answers for the data is what
- * a super admin wrote in Admin → Setări.
+ * and the website's footer link to it. The text ships with the app; who
+ * answers for the data is what a super admin wrote in Admin → Setări.
  */
 export default async function Page() {
   const t = await getScopedI18n("privacy");
@@ -50,6 +50,7 @@ export default async function Page() {
               {t("producers.retention")}
             </Fact>
           </Facts>
+          <p className="m-0">{t("producers.claims")}</p>
         </Section>
 
         <Section id="utilizatori" title={t("users.title")}>
@@ -63,6 +64,16 @@ export default async function Page() {
 
         <Section id="clienti" title={t("clients.title")}>
           <p className="m-0">{t("clients.body")}</p>
+          <p className="m-0">{t("clients.others")}</p>
+        </Section>
+
+        <Section id="vizitatori" title={t("visitors.title")}>
+          <Facts>
+            <Fact label={t("labels.data")}>{t("visitors.data")}</Fact>
+            <Fact label={t("labels.purpose")}>{t("visitors.purpose")}</Fact>
+            <Fact label={t("labels.basis")}>{t("visitors.basis")}</Fact>
+            <Fact label={t("labels.retention")}>{t("visitors.retention")}</Fact>
+          </Facts>
         </Section>
 
         <Section id="ai" title={t("ai.title")}>
@@ -77,11 +88,13 @@ export default async function Page() {
             <li>{t("processors.vercel")}</li>
             <li>{t("processors.anthropic")}</li>
             <li>{t("processors.resend")}</li>
+            <li>{t("processors.cloudflare")}</li>
             <li>{t("processors.google")}</li>
             <li>{t("processors.sentry")}</li>
           </ul>
           <p className="m-0">{t("processors.outreach")}</p>
           <p className="m-0">{t("processors.transfers")}</p>
+          <p className="m-0">{t("processors.anaf")}</p>
           <p className="m-0">{t("processors.authorities")}</p>
         </Section>
 

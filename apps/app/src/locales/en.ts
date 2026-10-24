@@ -2522,6 +2522,24 @@ export default {
         "The profile was claimed in the meantime, so the link in the thank-you no longer works.",
       missing_controller:
         "The privacy page doesn't say yet who answers for the data. Fill in the controller in Settings.",
+      recipient_erased:
+        "The recipient's address was erased, as the privacy page promises. Choose another contact.",
+    },
+    erasures: {
+      title: "Erased data",
+      description:
+        "The addresses of people at this firm that were erased on their own. Sent emails stay in the history, without the addresses.",
+      rules: {
+        no_answer: "The firm didn't answer in 175 days",
+        not_written: "Nobody wrote to them in 25 days",
+        opt_out: "They asked us to stop",
+        excluded: "The firm was excluded",
+      },
+      addresses: "Addresses erased: {count}",
+      mailbox:
+        "Delete the emails sent to them from the mailbox too. Find them by subject: {subjects}.",
+      mailboxDone: "Deleted from the mailbox",
+      mailboxCleared: "Deleted from the mailbox too on {date}.",
     },
     manufacturers: {
       title: "Manufacturers",
@@ -2683,6 +2701,8 @@ export default {
         website: "Website",
         hints: "What we already know",
         notes: "Internal notes",
+        notesHint:
+          "Don't write people's names here: notes aren't erased on their own, only the email addresses in them.",
         save: "Save",
         saved: "Saved.",
       },
@@ -2704,6 +2724,8 @@ export default {
         report: "Full report",
         sources: "Sources seen ({count})",
         source: "source",
+        reportDeleted:
+          "The full report and sources were deleted on {date}, 25 days after research, because they name people. What research found stays above.",
       },
       contacts: {
         title: "Contacts",
@@ -2717,6 +2739,12 @@ export default {
         source: "source",
         use: "Use in email",
         suppress: "Suppress",
+        suppressConfirm: "Sure? It's erased everywhere",
+        retention:
+          "People's addresses are erased on their own: 25 days after we found them if nobody wrote to them, and 175 days after the last email sent to them if the firm doesn't answer. On “stop”, or if you exclude the firm, they go at once. The firm's general addresses stay.",
+        kept: "Kept while we talk with the firm",
+        erasesOn: "Erased on {date}",
+        erasesNow: "Erased now",
         remove: "Delete",
         add: {
           title: "Add a contact",
@@ -2756,6 +2784,7 @@ export default {
         sentAt: "Sent on {date}",
         rules: "It follows every rule.",
         history: "Earlier messages",
+        recipientErased: "Address erased on {date}",
       },
       thanks: {
         title: "Thank-you",
@@ -2855,6 +2884,11 @@ export default {
       open: "Open",
       problems: "Problems: {count}",
       thanks: "Thank-you",
+      mailbox: {
+        title: "To delete from the mailbox too",
+        description:
+          "Devize erased these people's addresses. Delete the emails sent to them from the mailbox you sent them from, then press the button.",
+      },
     },
     catalog: {
       title: "Base catalog",
@@ -3302,9 +3336,9 @@ export default {
     title: "Privacy policy",
     description:
       "What personal data Devize uses, where it gets it, why, how long it keeps it and what your rights are.",
-    updated: "Updated on 23 October 2026",
+    updated: "Updated on 24 October 2026",
     intro:
-      "Devize is a web app where construction firms build their estimates, with norms from manufacturers and prices from stores. This page says what personal data we use, where we get it, why, how long we keep it and what your rights are.",
+      "Devize is a web app where construction firms build their estimates, with norms from manufacturers and prices from stores, and a website that presents it. This page says what personal data we use, where we get it, why, how long we keep it and what your rights are.",
     labels: {
       data: "What data",
       source: "Where we get it",
@@ -3323,13 +3357,13 @@ export default {
       contact:
         "Write to this address with any question or request about your data.",
       missing:
-        "The controller's details are filled in before Devize launches. Until then, you can write to us by replying to the email you got from us.",
+        "The controller's details are filled in before Devize launches. Until then, manufacturers we wrote to can reply to the email they got from us.",
     },
     producers: {
       title: "Manufacturers we write to",
       intro:
         "We are building a catalog of estimate norms for the products of building material manufacturers. To ask them for their norms, we write to the contact addresses published on their websites.",
-      data: "the work email address (usually a general one, such as office@ or tehnic@, sometimes a person's), the job title if the site gives it, the page where we found it and the messages exchanged with us.",
+      data: "the work email address (usually a general one, such as office@ or tehnic@, sometimes a person's), the job title if the site gives it, the page where we found it, the messages exchanged with us and, if the firm agrees to our publishing its norms, who gave that consent.",
       source:
         "the firm's website. The Claude assistant finds them by searching the web and reading the firm's public pages, or someone on the Devize team enters them. We don't guess addresses and we don't buy lists.",
       purpose:
@@ -3337,50 +3371,69 @@ export default {
       basis:
         "our legitimate interest in building a catalog of correct norms, with the manufacturers' data (Art. 6(1)(f) GDPR). A person approves and sends each email, to one firm.",
       optOut:
-        "reply “stop” and we won't write again. We keep only the address, on our exclusion list, so we never write to it again.",
+        "reply “stop” and we won't write again. We then delete your address from our contacts and messages, including the emails we sent. We keep it only on our exclusion list, so we never write to it again, and if the firm consented to our publishing its norms, we also keep the proof of that consent.",
       retention:
-        "while we are in touch with the firm. If we get no answer, we delete people's addresses within 6 months of the last message.",
+        "while we are in touch with the firm. If the firm doesn't answer or declines, we delete a person's address within 6 months of the last message sent to it, and a person's address we never wrote to within a month of finding it. We keep the messages sent to the firm without these addresses, as proof that we wrote. The report in which the assistant describes what it found on the firm's site is deleted within a month.",
+      claims:
+        "If you take over your firm's profile in Devize, we keep the request as proof of who took it over and how: the email address you signed in with, what you told us about your role and the firm's CUI, which we check in ANAF's public register. We keep requests to remove a profile the same way. The name, email and phone of the contact person a firm puts on its profile are seen by everyone who uses Devize. From the firms' estimates, a manufacturer gets only monthly statistics about its norms and products, without learning which firm used them.",
     },
     users: {
       title: "People who use Devize",
-      data: "your email address, and your name and profile picture if you sign in with Google; your firm's details (name, CUI, address, email, phone), your colleagues and invitations; what you create in the app: estimates, offers, the firm's clients and uploaded files (photos, bills of quantities, data sheets).",
+      data: "your email address; your name and profile picture, from your Google account or chosen by you in Settings (your firm's colleagues see them, and your name also appears in the invitations you send); your firm's details (name, CUI, address, email, phone) and its billing details (bank account, bank, share capital); your colleagues and invitations; what you create in the app: estimates, offers, progress statements, reception reports, invoices and payments, the firm's clients and uploaded files (photos, bills of quantities, tender documents, data sheets).",
       purpose:
-        "to give you the app: your account, firm, estimates, forms and offers.",
+        "to give you the app: your account, firm, estimates, forms, offers, progress statements and invoices. From estimates we also count, without showing which firm, how often a manufacturer's norms and products appear, to give it monthly statistics; a county appears only when the data comes from at least three firms.",
       basis:
-        "our contract with you (Art. 6(1)(b) GDPR) and our legitimate interest in keeping the app secure, for example by limiting how many codes and invitations go to one address (Art. 6(1)(f)).",
+        "our contract with you (Art. 6(1)(b) GDPR) and our legitimate interest in keeping the app secure, for example by limiting how many codes and invitations go to one address and how many AI requests each person makes, or by checking that a person is asking before we send a sign-in code (Art. 6(1)(f)). The statistics for manufacturers hold no personal data.",
       retention:
         "while you have an account. You can ask us at any time to delete your account and your firm's data; we keep only what the law requires us to keep.",
     },
     clients: {
-      title: "Firms' clients",
-      body: "When a firm sends you an offer through Devize, the firm answers for your data and Devize processes it on the firm's behalf: the name and contact details the firm entered, when you opened the offer's link, what you chose in it, the questions you asked and your signature if you accept it. For this data, write to the firm that sent you the offer first.",
+      title: "Firms' clients and others named in documents",
+      body: "When a firm works with you through Devize, the firm answers for your data and Devize processes it on the firm's behalf. For an offer: the name and contact details the firm entered, the work's address, when you opened the offer's link, what you chose in it, the questions you asked and your reason if you decline it. If you accept it: the name you typed, the signature you drew, the moment, a fingerprint of what you accepted, what your browser says about itself (type, language, time zone, screen) and the IP address you sent the acceptance from; if the firm entered your email, we send you the confirmation. For invoices: your name, your CUI or, if you gave it to the firm, your CNP, address, email and phone, what you were invoiced for and the payments the firm recorded. If you are a firm, your name, registered office and registration number may come from ANAF's public register. For this data, write to the firm first.",
+      others:
+        "Also on the firm's behalf we keep the name, role and firm or institution of the people named in reception reports (the committee members, the site supervisor, the designer, the guests), the work's location and the name of whoever confirmed a progress statement. The firm enters them, and the firm downloads and sends the documents.",
+    },
+    visitors: {
+      title: "People who visit the website or the app",
+      data: "your IP address, your browser and device type, the pages you asked for and when. Vercel, which hosts the website and the app, and Convex, which the app talks to, receive them. The website asks you for no data and doesn't track you.",
+      purpose: "to send you the pages and protect them from abuse and attacks.",
+      basis:
+        "our legitimate interest in keeping the website and the app working and secure (Art. 6(1)(f) GDPR).",
+      retention:
+        "only as long as the providers keep them in their technical logs, after which they are deleted on their own.",
     },
     ai: {
       title: "Artificial intelligence",
-      body: "Some features send what you give them to Claude, Anthropic's AI model: the description or photos of a job, bills of quantities, data sheets and, if the firm turned on the offer's assistant, clients' questions. Anthropic doesn't train its models on data it receives this way.",
+      body: "Some features send what you give them to Claude, Anthropic's AI model: the description or photos of a job, bills of quantities and tender documents, data sheets, the details of the estimate you are working on (its title, description, county and items) when you ask for a new norm or the omissions check, the firm's name and the names of its rates and, if the firm turned on the offer's assistant, the offer, with the firm's contact details, the client's name and the work's address, and the client's questions. If you write the client's name or address in the estimate's title or description, they reach Claude too. Anthropic doesn't train its models on data it receives this way.",
       dictation:
         "Dictation uses the browser's speech recognition: the browser's maker processes the sound, and Devize gets only the text.",
     },
     processors: {
       title: "Who else gets the data",
       intro:
-        "We don't sell personal data or use it for advertising. Only the providers that help us run Devize get it, each for its own part:",
+        "We don't sell personal data or use it for advertising. The providers that help us run Devize get it, each for its own part:",
       convex: "Convex: the app's database and functions",
-      vercel: "Vercel: hosting the pages",
+      vercel:
+        "Vercel: hosting the website and the app, with the technical logs of visits",
       anthropic: "Anthropic: Claude, for the AI features",
       resend:
-        "Resend: the app's automatic emails, such as sign-in codes, invitations and notifications",
-      google: "Google: signing in with a Google account, if you choose it",
+        "Resend: the app's automatic emails, such as sign-in codes, invitations, notifications and the confirmation of an accepted offer",
+      cloudflare:
+        "Cloudflare: the anti-bot check (Turnstile) on the sign-in page, which tells people from automated programs before we email a code. It gets the IP address and some technical details of the browser; we don't send it your email address.",
+      google:
+        "Google: signing in with a Google account, if you choose it; a colleague's Google profile picture is loaded by the browser straight from Google",
       sentry: "Sentry: error reports, without data that identifies you",
       outreach:
-        "We send our emails to manufacturers from our own mailbox, not from the app.",
+        "We send our emails to manufacturers from our own mailbox, not from the app; the mailbox provider receives and keeps them for us. When we delete a person's address, we also delete the emails sent to it from the mailbox.",
       transfers:
         "Some of these providers process data in the United States. For these transfers we rely on the safeguards the GDPR requires: the European Commission's standard contractual clauses or the EU–US Data Privacy Framework.",
-      authorities: "We give data to authorities only when the law requires it.",
+      anaf: "Besides these providers, ANAF, Romania's tax authority, also receives data when firms make their invoices in Devize. If a firm's member presses “Validează XML la ANAF”, we send the invoice's XML file, with the firm's and the client's details on it, to ANAF's public e-Factura validator. When a draft invoice is made for a client that is a firm, or someone presses “Verifică la ANAF”, we send the client's CUI to the public register of VAT payers and take its name, registered office and VAT status from there; we check the CUI of a manufacturer whose profile is taken over the same way. Devize doesn't send invoices to SPV: the firm downloads the XML and uploads it itself.",
+      authorities:
+        "Otherwise, we give data to authorities only when the law requires it.",
     },
     cookies: {
       title: "Cookies",
-      body: "We use only the cookies the app can't work without: those that keep you signed in and the one that remembers your language. Your browser keeps your light or dark theme. We use no analytics or advertising cookies.",
+      body: "We use only the cookies the app can't work without: those that keep you signed in, short-lived ones that check a Google sign-in and the one that remembers your language. Also in your browser, the app keeps your session, your light or dark theme and, for an estimate's forms, your last choices, including the names of the beneficiary, the designer and whoever signs the offer, so you don't type them again; these stay on your device. On the sign-in page, Cloudflare's Turnstile anti-bot check reads some technical details of the browser to tell people from automated programs. We use no analytics or advertising cookies.",
     },
     rights: {
       title: "Your rights",
@@ -3392,7 +3445,7 @@ export default {
     },
     security: {
       title: "Keeping data safe",
-      body: "Everything travels encrypted. Only a firm's members see its data, and the Devize team has access only to what it needs to run the app.",
+      body: "Everything travels encrypted. Only a firm's members see its data. A manufacturer's profile is the exception: what the firm writes on it, including the technical contact person with their email and phone, is seen by everyone who uses Devize. The Devize team has access only to what it needs to run the app.",
     },
     changes: {
       title: "Changes",
