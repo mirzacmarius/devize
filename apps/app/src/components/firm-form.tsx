@@ -1,5 +1,6 @@
 "use client";
 
+import { TERMS_VERSION } from "@devize/backend/convex/accounts/terms";
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Doc, Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
@@ -19,18 +20,23 @@ import { counties } from "@/lib/counties";
 import { isValidCui } from "@/lib/validation";
 import { useScopedI18n } from "@/locales/client";
 import { Field } from "./field";
+import { LegalLink } from "./legal-link";
 import { SegmentedControl } from "./segmented-control";
 import { useRun } from "./use-run";
 
 type FirmKind = Doc<"organizations">["kind"];
 
-/** Creates a Firmă: at the firm step after sign-up, and from the firm switcher. */
+/**
+ * Creates a Firmă: at the firm step after sign-up, and from the firm switcher.
+ * Whoever creates it accepts the terms for it, by ticking a box (ADR 0051).
+ */
 export function FirmForm({
   onCreated,
 }: {
   onCreated: (organizationId: Id<"organizations">) => void;
 }) {
   const t = useScopedI18n("firm");
+  const legal = useScopedI18n("legal");
   const create = useMutation(api.accounts.organizations.create);
   const run = useRun();
   const [name, setName] = useState("");
@@ -38,7 +44,12 @@ export function FirmForm({
   const [cui, setCui] = useState("");
   const [county, setCounty] = useState("");
   const [vatPayer, setVatPayer] = useState(true);
-  const [errors, setErrors] = useState<{ name?: string; cui?: string }>({});
+  const [accepted, setAccepted] = useState(false);
+  const [errors, setErrors] = useState<{
+    name?: string;
+    cui?: string;
+    terms?: string;
+  }>({});
   const [submitting, setSubmitting] = useState(false);
 
   const submit = async (event: FormEvent) => {
@@ -46,9 +57,10 @@ export function FirmForm({
     const found = {
       name: name.trim() ? undefined : t("nameRequired"),
       cui: cui.trim() && !isValidCui(cui) ? t("cuiInvalid") : undefined,
+      terms: accepted ? undefined : t("termsRequired"),
     };
     setErrors(found);
-    if (found.name || found.cui) {
+    if (found.name || found.cui || found.terms) {
       return;
     }
     setSubmitting(true);
@@ -59,6 +71,7 @@ export function FirmForm({
         cui: cui.trim() || undefined,
         county: county || undefined,
         vatPayer,
+        termsVersion: TERMS_VERSION,
       }),
     );
     setSubmitting(false);
@@ -141,6 +154,35 @@ export function FirmForm({
           checked={vatPayer}
           onCheckedChange={setVatPayer}
         />
+      </div>
+      <div className="grid gap-1.5">
+        <label className="flex items-start gap-3 text-body text-ink">
+          <input
+            type="checkbox"
+            checked={accepted}
+            onChange={(event) => {
+              setAccepted(event.target.checked);
+              setErrors({ ...errors, terms: undefined });
+            }}
+            aria-invalid={errors.terms ? true : undefined}
+            aria-describedby="firm-terms-express"
+            className="mt-0.5 size-4 shrink-0 accent-primary"
+          />
+          <span>
+            {t("terms", {
+              terms: <LegalLink document="terms" />,
+              dpa: <LegalLink document="dpa" />,
+            })}
+          </span>
+        </label>
+        <p id="firm-terms-express" className="m-0 pl-7 text-meta text-ink-3">
+          {legal("express")}
+        </p>
+        {errors.terms && (
+          <p role="alert" className="m-0 pl-7 text-meta text-danger">
+            {errors.terms}
+          </p>
+        )}
       </div>
       <Button
         type="submit"

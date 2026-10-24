@@ -21,6 +21,7 @@ import type * as accounts_invitations from "../accounts/invitations.js";
 import type * as accounts_organizations from "../accounts/organizations.js";
 import type * as accounts_rates from "../accounts/rates.js";
 import type * as accounts_tables from "../accounts/tables.js";
+import type * as accounts_terms from "../accounts/terms.js";
 import type * as accounts_uploads from "../accounts/uploads.js";
 import type * as accounts_validators from "../accounts/validators.js";
 import type * as admin from "../admin.js";
@@ -260,6 +261,7 @@ declare const fullApi: ApiFromModules<{
   "accounts/organizations": typeof accounts_organizations;
   "accounts/rates": typeof accounts_rates;
   "accounts/tables": typeof accounts_tables;
+  "accounts/terms": typeof accounts_terms;
   "accounts/uploads": typeof accounts_uploads;
   "accounts/validators": typeof accounts_validators;
   admin: typeof admin;

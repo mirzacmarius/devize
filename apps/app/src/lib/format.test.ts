@@ -37,6 +37,15 @@ describe("formatting", () => {
     expect(formatCalendarDate("2026-10-21", "ro")).toBe("21 oct. 2026");
   });
 
+  test("writes the date of the terms with the month in full", () => {
+    expect(formatCalendarDate("2026-10-24", "ro", "long")).toBe(
+      "24 octombrie 2026",
+    );
+    expect(formatCalendarDate("2026-10-24", "en", "long")).toBe(
+      "24 October 2026",
+    );
+  });
+
   test("writes a file's size in megabytes, or kilobytes under one", () => {
     expect(formatFileSize(2.45 * 1024 * 1024, "ro")).toBe("2,5 MB");
     expect(formatFileSize(20 * 1024 * 1024, "en")).toBe("20 MB");

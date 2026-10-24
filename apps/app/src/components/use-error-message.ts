@@ -96,6 +96,7 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     city: "invalidLength",
     postalCode: "invalidLength",
     address: "invalidLength",
+    terms: "invalidTerms",
   },
   not_found: {
     invitation: "notFoundInvitation",

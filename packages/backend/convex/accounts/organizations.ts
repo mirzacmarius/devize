@@ -9,6 +9,7 @@ import { getMembership, requireMember, requireUserId } from "../lib/access";
 import { appError, invalid, notFound } from "../lib/errors";
 import { unclaimedUpload } from "./files";
 import { cleanCui, optionalText } from "./identifiers";
+import { TERMS_VERSION } from "./terms";
 import { memberRole, organizationKind } from "./validators";
 
 // CAM 2.25% on labour; 10% indirect costs and 5% profit are common starting
@@ -105,7 +106,76 @@ export async function nextActiveAt(
   );
 }
 
-/** Creates a firm with the signed-in user as its owner. */
+/**
+ * The last version of the terms a firm accepted, with who accepted it and
+ * when; null for a firm that never did, such as one made by claiming a
+ * Producător's profile.
+ */
+export async function lastTermsAcceptance(
+  ctx: QueryCtx,
+  organizationId: Id<"organizations">,
+): Promise<Doc<"termsAcceptances"> | null> {
+  // Versions are dates, so the last in the index is the newest.
+  return await ctx.db
+    .query("termsAcceptances")
+    .withIndex("by_organizationId_and_version", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .order("desc")
+    .first();
+}
+
+/**
+ * Records that `userId` accepted the current terms for the firm. The page
+ * they read sends the version it showed, so terms that changed meanwhile are
+ * read again rather than accepted unseen.
+ */
+async function acceptCurrentTerms(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">,
+  userId: Id<"users">,
+  version: string,
+) {
+  if (version !== TERMS_VERSION) {
+    throw invalid("terms");
+  }
+  const accepted = await ctx.db
+    .query("termsAcceptances")
+    .withIndex("by_organizationId_and_version", (q) =>
+      q.eq("organizationId", organizationId).eq("version", version),
+    )
+    .first();
+  if (!accepted) {
+    await ctx.db.insert("termsAcceptances", {
+      organizationId,
+      version,
+      acceptedBy: userId,
+    });
+  }
+}
+
+/** Deletes a batch of a deleted firm's acceptances; 0 when none are left. */
+export async function deleteFirmTermsAcceptances(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">,
+  limit: number,
+): Promise<number> {
+  const rows = await ctx.db
+    .query("termsAcceptances")
+    .withIndex("by_organizationId_and_version", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(limit);
+  for (const row of rows) {
+    await ctx.db.delete("termsAcceptances", row._id);
+  }
+  return rows.length;
+}
+
+/**
+ * Creates a firm with the signed-in user as its owner. `termsVersion` is the
+ * version of the terms they accepted for it at the firm step.
+ */
 export const create = mutation({
   args: {
     name: v.string(),
@@ -113,11 +183,33 @@ export const create = mutation({
     cui: v.optional(v.string()),
     county: v.optional(v.string()),
     vatPayer: v.optional(v.boolean()),
+    termsVersion: v.optional(v.string()),
   },
   returns: v.id("organizations"),
-  handler: async (ctx, args) => {
+  handler: async (ctx, { termsVersion, ...fields }) => {
     const userId = await requireUserId(ctx);
-    return await insertFirm(ctx, userId, args);
+    if (termsVersion !== undefined && termsVersion !== TERMS_VERSION) {
+      throw invalid("terms");
+    }
+    const organizationId = await insertFirm(ctx, userId, fields);
+    if (termsVersion !== undefined) {
+      await acceptCurrentTerms(ctx, organizationId, userId, termsVersion);
+    }
+    return organizationId;
+  },
+});
+
+/**
+ * An owner or admin accepts the current terms for the firm: one that never
+ * accepted them, or accepted an earlier version.
+ */
+export const acceptTerms = mutation({
+  args: { organizationId: v.id("organizations"), version: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { userId } = await requireMember(ctx, args.organizationId, "admin");
+    await acceptCurrentTerms(ctx, args.organizationId, userId, args.version);
+    return null;
   },
 });
 
@@ -137,7 +229,8 @@ export const listMine = query({
     for (const membership of memberships) {
       const firm = await ctx.db.get("organizations", membership.organizationId);
       if (firm) {
-        firms.push({ firm, membership });
+        const terms = await lastTermsAcceptance(ctx, firm._id);
+        firms.push({ firm, membership, termsVersion: terms?.version ?? null });
       }
     }
     // The firm used last comes first. nextActiveAt keeps their times apart;
@@ -147,7 +240,7 @@ export const listMine = query({
         b.membership.lastActiveAt - a.membership.lastActiveAt ||
         b.membership._creationTime - a.membership._creationTime,
     );
-    return firms.map(({ firm, membership }) => ({
+    return firms.map(({ firm, membership, termsVersion }) => ({
       _id: firm._id,
       name: firm.name,
       kind: firm.kind,
@@ -155,6 +248,8 @@ export const listMine = query({
       manufacturerId: firm.manufacturerId,
       role: membership.role,
       lastActiveAt: membership.lastActiveAt,
+      // The last version of the terms the firm accepted, if any.
+      termsVersion,
     }));
   },
 });
@@ -167,10 +262,20 @@ export const get = query({
     if (!firm) {
       throw notFound("organization");
     }
+    const terms = await lastTermsAcceptance(ctx, firm._id);
+    // Who accepted them, unless they have deleted their account since.
+    const acceptedBy = terms ? await ctx.db.get("users", terms.acceptedBy) : null;
     return {
       ...firm,
       role: membership.role,
       logoUrl: firm.logoId ? await ctx.storage.getUrl(firm.logoId) : null,
+      terms: terms && {
+        version: terms.version,
+        acceptedAt: terms._creationTime,
+        acceptedBy: acceptedBy
+          ? acceptedBy.username || acceptedBy.name || acceptedBy.email || null
+          : null,
+      },
     };
   },
 });

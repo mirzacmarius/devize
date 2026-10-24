@@ -50,6 +50,17 @@ export const accountTables = {
     .index("by_userId", ["userId"])
     .index("by_organizationId_and_userId", ["organizationId", "userId"]),
 
+  // Each version of the Termeni de utilizare and the Acord de prelucrare a
+  // datelor a Firmă accepted, who accepted it for the firm and when (the
+  // row's _creationTime). Earlier versions stay as the record of what applied
+  // until then; all go with the firm (ADR 0051).
+  termsAcceptances: defineTable({
+    organizationId: v.id("organizations"),
+    // TERMS_VERSION when it was accepted, a date: 2026-10-24.
+    version: v.string(),
+    acceptedBy: v.id("users"),
+  }).index("by_organizationId_and_version", ["organizationId", "version"]),
+
   // Someone an admin asked to join a Firmă, by email. They accept from the
   // invitation's link, or in the app once they sign in with that address.
   // Accepted, declined and revoked invitations are deleted, and the rest
