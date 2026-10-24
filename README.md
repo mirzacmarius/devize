@@ -69,6 +69,8 @@ You need [Bun](https://bun.sh/docs/installation) 1.4.2, a [Convex](https://dashb
 
    Until you verify a domain in Resend, codes only reach the address of your Resend account. Once one is verified, set the sender, for example `bunx convex env set AUTH_EMAIL_FROM 'Devize <cont@devize.ro>'`.
 
+   On Vercel, a code goes out only for a request Vercel BotID let through, and Convex checks the token Vercel gave the request (`docs/adr/0052`). Your laptop has no such token, so turn the check off on your development deployment: `bunx convex env set BOTID_CHECK off`.
+
 5. Optionally, set up Google sign-in. In the Google Cloud console, create an OAuth client with `http://localhost:3000` as an authorized JavaScript origin and your deployment's HTTP Actions URL plus `/api/auth/callback/google` as the redirect URI, for example `https://happy-animal-123.convex.site/api/auth/callback/google`. Then store its credentials on the deployment:
 
    ```bash
@@ -109,7 +111,7 @@ bun run build
 
 ## Deployment
 
-Each app is its own Vercel project, with `apps/app` or `apps/web` as the root directory. The app's `vercel.json` deploys the Convex functions first (it needs a `CONVEX_DEPLOY_KEY`) and builds against the deployed URL. Set `SITE_URL`, the Convex Auth keys, `AUTH_RESEND_KEY` (and `AUTH_EMAIL_FROM`), `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` and `ANTHROPIC_API_KEY` on the production Convex deployment, and `NEXT_PUBLIC_APP_URL` on the marketing site (plus `NEXT_PUBLIC_SITE_URL` once it has its own domain; until then its canonical links and sitemap use the Vercel production domain). For error reports, set `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` on the app. To send sign-in codes only after a Cloudflare Turnstile check (`docs/adr/0031`), create a Turnstile widget for the app's addresses, set its site key as `NEXT_PUBLIC_TURNSTILE_SITE_KEY` on the app's Production environment and redeploy, then set its secret key with `bunx convex env set --prod TURNSTILE_SECRET_KEY`: in that order, since a secret without the widget stops every code. In `packages/backend`, `bunx @convex-dev/auth --prod --web-server-url <app URL>` sets `SITE_URL` and the keys, and `bunx convex env set --prod AUTH_RESEND_KEY` the Resend key.
+Each app is its own Vercel project, with `apps/app` or `apps/web` as the root directory. The app's `vercel.json` deploys the Convex functions first (it needs a `CONVEX_DEPLOY_KEY`) and builds against the deployed URL. Set `SITE_URL`, the Convex Auth keys, `AUTH_RESEND_KEY` (and `AUTH_EMAIL_FROM`), `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` and `ANTHROPIC_API_KEY` on the production Convex deployment, and `NEXT_PUBLIC_APP_URL` on the marketing site (plus `NEXT_PUBLIC_SITE_URL` once it has its own domain; until then its canonical links and sitemap use the Vercel production domain). For error reports, set `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` on the app. Sign-in codes go out only after a Vercel BotID check (`docs/adr/0052`), which needs nothing set: it relies on the app project's OIDC Federation, which Vercel turns on for new projects (Settings → Security). On a Pro plan, BotID Deep Analysis can be turned on under the project's Firewall → Configure. In `packages/backend`, `bunx @convex-dev/auth --prod --web-server-url <app URL>` sets `SITE_URL` and the keys, and `bunx convex env set --prod AUTH_RESEND_KEY` the Resend key.
 
 ### Preview deployments
 

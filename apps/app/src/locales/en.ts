@@ -3536,12 +3536,10 @@ export default {
         "We don't sell personal data or use it for advertising. The providers that help us run Devize get it, each for its own part:",
       convex: "Convex: the app's database and functions",
       vercel:
-        "Vercel: hosting the website and the app, with the technical logs of visits",
+        "Vercel: hosting the website and the app, with the technical logs of visits, and the anti-bot check (BotID) on the sign-in page, which tells people from automated programs before we email a code; for it, Vercel uses the IP address and some technical details of the browser",
       anthropic: "Anthropic: Claude, for the AI features",
       resend:
         "Resend: the app's automatic emails, such as sign-in codes, invitations, notifications and the confirmation of an accepted offer",
-      cloudflare:
-        "Cloudflare: the anti-bot check (Turnstile) on the sign-in page, which tells people from automated programs before we email a code. It gets the IP address and some technical details of the browser; we don't send it your email address.",
       google:
         "Google: signing in with a Google account, if you choose it; a colleague's Google profile picture is loaded by the browser straight from Google",
       sentry: "Sentry: error reports, without data that identifies you",
@@ -3555,7 +3553,7 @@ export default {
     },
     cookies: {
       title: "Cookies",
-      body: "We use only the cookies the app can't work without: those that keep you signed in, short-lived ones that check a Google sign-in and the one that remembers your language. Also in your browser, the app keeps your session, your light or dark theme and, for an estimate's forms, your last choices, including the names of the beneficiary, the designer and whoever signs the offer, so you don't type them again; these stay on your device. On the sign-in page, Cloudflare's Turnstile anti-bot check reads some technical details of the browser to tell people from automated programs. We use no analytics or advertising cookies.",
+      body: "We use only the cookies the app can't work without: those that keep you signed in, short-lived ones that check a Google sign-in and the one that remembers your language. Also in your browser, the app keeps your session, your light or dark theme and, for an estimate's forms, your last choices, including the names of the beneficiary, the designer and whoever signs the offer, so you don't type them again; these stay on your device. On the sign-in page, the Vercel BotID anti-bot check reads some technical details of the browser, and may keep a technical cookie, to tell people from automated programs. We use no analytics or advertising cookies.",
     },
     rights: {
       title: "Your rights",

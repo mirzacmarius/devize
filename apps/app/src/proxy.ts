@@ -27,6 +27,9 @@ const inEveryLanguage = (paths: string[]) =>
   ]);
 
 const isSignInPage = createRouteMatcher(inEveryLanguage(["/login"]));
+// The sign-in page's request for a code (app/api/sign-in-code), which is no
+// page and comes from people not signed in.
+const isCodeRequest = createRouteMatcher(["/api/sign-in-code"]);
 // An Ofertă's link, which the firm's client opens without an account, and the
 // privacy page, which emails to producers link to.
 const isPublicPage = createRouteMatcher(
@@ -35,6 +38,9 @@ const isPublicPage = createRouteMatcher(
 
 export const proxy = convexAuthNextjsMiddleware(
   async (request, { convexAuth }) => {
+    if (isCodeRequest(request)) {
+      return;
+    }
     const isAuthenticated = await convexAuth.isAuthenticated();
     const isSignIn = isSignInPage(request);
     // Signing in leads back to the page that asked for it, such as an
@@ -54,10 +60,11 @@ export const proxy = convexAuthNextjsMiddleware(
 
 export const config = {
   // Everything except Next internals, files with an extension (such as the
-  // manifest) and the generated app icons, plus /api, where Convex Auth handles
-  // sign-in requests.
+  // manifest), the generated app icons and Vercel BotID's own path
+  // (botid/next/config), plus /api, where Convex Auth handles sign-in
+  // requests.
   matcher: [
-    "/((?!_next/static|_next/image|api|icon|apple-icon|.*\\..*).*)",
+    "/((?!_next/static|_next/image|api|icon|apple-icon|149e9513-01fa-4fb0-aad4-566afd725d1b|.*\\..*).*)",
     "/",
     "/(api|trpc)(.*)",
   ],

@@ -88,7 +88,6 @@ export default async function Page() {
             <li>{t("processors.vercel")}</li>
             <li>{t("processors.anthropic")}</li>
             <li>{t("processors.resend")}</li>
-            <li>{t("processors.cloudflare")}</li>
             <li>{t("processors.google")}</li>
             <li>{t("processors.sentry")}</li>
           </ul>

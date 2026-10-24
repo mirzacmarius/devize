@@ -1,5 +1,7 @@
 # Sign-in codes are sent after a Cloudflare Turnstile check
 
+Superseded by ADR 0052 (24 October 2026): a Vercel BotID check replaces Turnstile, whose site key was never set on Vercel.
+
 Anyone can ask for a sign-in code for any address (ADR 0007). Each address gets at most five codes an hour, but a script cycling through addresses could make Devize send email to thousands of strangers, through Resend and from Devize's own domain, which costs money and the domain's reputation. The security audit of 23 October 2026 found this, and Marius asked to close it right away.
 
 The sign-in page now shows Cloudflare Turnstile, which tells people from scripts and usually needs no click, and the backend sends a code only for a token Cloudflare confirms was issued for the sign-in page (action `sign-in`). A token works once, so each code, a new one included, needs a fresh challenge. Typing the code needs no challenge: the code is the proof.

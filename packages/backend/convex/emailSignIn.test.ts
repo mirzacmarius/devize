@@ -6,7 +6,8 @@ import {
   setSystemTime,
   test,
 } from "bun:test";
-import { generateKeyPairSync } from "node:crypto";
+import { generateKeyPairSync, type KeyObject } from "node:crypto";
+import { type JWTPayload, SignJWT } from "jose";
 import { api, internal } from "./_generated/api";
 import { CODE_LENGTH, codeEmail, randomDigits } from "./emailSignIn";
 import { setup, type TestConvex } from "./test.helper";
@@ -22,20 +23,55 @@ const variables = [
   "JWT_PRIVATE_KEY",
   "AUTH_RESEND_KEY",
   "AUTH_EMAIL_FROM",
-  "TURNSTILE_SECRET_KEY",
+  "BOTID_CHECK",
 ] as const;
-const TURNSTILE_URL =
-  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-const TURNSTILE_SECRET = "turnstile-test-secret";
-// What Cloudflare says of the tokens the tests send; any other is refused.
-const turnstileAnswers: Record<string, { success: boolean; action: string }> = {
-  "token-solved": { success: true, action: "sign-in" },
-  "token-other-page": { success: true, action: "contact" },
+// Vercel's OIDC issuer for the team, its keys, and the key it signs with.
+const VERCEL_ISSUER = "https://oidc.vercel.com/orvibo";
+const vercelKey = generateKeyPairSync("rsa", { modulusLength: 2048 });
+const VERCEL_KEY_ID = "vercel-test-key";
+const vercelKeys = {
+  keys: [
+    {
+      ...vercelKey.publicKey.export({ format: "jwk" }),
+      kid: VERCEL_KEY_ID,
+      alg: "RS256",
+      use: "sig",
+    },
+  ],
 };
+const PRODUCTION = "owner:orvibo:project:devize:environment:production";
 let sent: SentEmail[] = [];
+// Every address asked for, besides Resend's.
+let requested: string[] = [];
+
+/**
+ * An OIDC token as Vercel gives the app's production functions, good for an
+ * hour, with `claims` changed and signed with `key`.
+ */
+async function vercelToken(
+  claims: JWTPayload = {},
+  key: KeyObject = vercelKey.privateKey,
+) {
+  const now = Math.floor(Date.now() / 1000);
+  return await new SignJWT({
+    iss: VERCEL_ISSUER,
+    aud: "https://vercel.com/orvibo",
+    sub: PRODUCTION,
+    owner: "orvibo",
+    project: "devize",
+    environment: "production",
+    iat: now,
+    nbf: now,
+    exp: now + 60 * 60,
+    ...claims,
+  })
+    .setProtectedHeader({ alg: "RS256", kid: VERCEL_KEY_ID, typ: "JWT" })
+    .sign(key);
+}
 
 beforeEach(() => {
   sent = [];
+  requested = [];
   process.env.AUTH_LOG_LEVEL = "ERROR";
   process.env.SITE_URL = "http://localhost:3000";
   process.env.CONVEX_SITE_URL = "https://test-123.convex.site";
@@ -43,19 +79,18 @@ beforeEach(() => {
     .export({ type: "pkcs8", format: "pem" })
     .toString();
   process.env.AUTH_RESEND_KEY = "re_test";
-  // Resend and Cloudflare answer in memory; nothing leaves the test.
+  // Resend and Vercel answer in memory; nothing leaves the test.
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-    if (String(input) === TURNSTILE_URL) {
-      const form = new URLSearchParams(String(init?.body));
-      const answer = turnstileAnswers[form.get("response") ?? ""];
-      return Response.json(
-        form.get("secret") === TURNSTILE_SECRET && answer
-          ? answer
-          : { success: false, "error-codes": ["invalid-input-response"] },
-      );
-    }
-    if (String(input) !== "https://api.resend.com/emails") {
-      throw new Error(`Unexpected request to ${String(input)}`);
+    const url = String(input);
+    if (url !== "https://api.resend.com/emails") {
+      requested.push(url);
+      if (
+        url === `${VERCEL_ISSUER}/.well-known/jwks` ||
+        url === "https://oidc.vercel.com/.well-known/jwks"
+      ) {
+        return Response.json(vercelKeys);
+      }
+      throw new Error(`Unexpected request to ${url}`);
     }
     sent.push(JSON.parse(String(init?.body)));
     return Response.json({ id: `email-${sent.length}` });
@@ -70,15 +105,19 @@ afterEach(() => {
   setSystemTime();
 });
 
+/**
+ * Asks for a code as the app's /api/sign-in-code does, with Vercel's token
+ * unless `oidcToken` says otherwise (null for none).
+ */
 async function requestCode(
   t: TestConvex,
   email: string,
-  turnstileToken?: string,
+  oidcToken?: string | null,
 ) {
+  const token = oidcToken === undefined ? await vercelToken() : oidcToken;
   return await t.action(api.auth.signIn, {
     provider: "email-code",
-    params:
-      turnstileToken === undefined ? { email } : { email, turnstileToken },
+    params: token === null ? { email } : { email, oidcToken: token },
   });
 }
 
@@ -236,7 +275,7 @@ describe("email sign-in", () => {
     expect(users).toHaveLength(1);
   });
 
-  test("signs in to the user an address had before codes passed Turnstile", async () => {
+  test("signs in to the user an address had under the old Email provider", async () => {
     const t = setup();
     // A user and account as the Email provider stored them.
     const userId = await t.run(async (ctx) => {
@@ -279,32 +318,66 @@ describe("email sign-in", () => {
   });
 });
 
-describe("email sign-in with Turnstile set up", () => {
-  beforeEach(() => {
-    process.env.TURNSTILE_SECRET_KEY = TURNSTILE_SECRET;
-  });
-
-  test("sends a code once Cloudflare confirms the sign-in page's challenge", async () => {
-    const t = setup();
-    await expect(requestCode(t, "ana@example.com")).rejects.toThrow(
-      /turnstile/,
+describe("email sign-in behind Vercel BotID", () => {
+  async function refused(t: TestConvex, oidcToken: string | null) {
+    await expect(requestCode(t, "ana@example.com", oidcToken)).rejects.toThrow(
+      /forbidden/,
     );
-    await expect(
-      requestCode(t, "ana@example.com", "token-made-up"),
-    ).rejects.toThrow(/turnstile/);
-    // A challenge solved for another page doesn't count.
-    await expect(
-      requestCode(t, "ana@example.com", "token-other-page"),
-    ).rejects.toThrow(/turnstile/);
+  }
+
+  test("sends a code only with Vercel's token for the app's functions", async () => {
+    const t = setup();
+    const otherKey = generateKeyPairSync("rsa", { modulusLength: 2048 });
+    // No token, and tokens that aren't Vercel's for this project's production
+    // or preview functions.
+    await refused(t, null);
+    await refused(t, "not-a-token");
+    await refused(t, await vercelToken({}, otherKey.privateKey));
+    await refused(
+      t,
+      await vercelToken({
+        sub: "owner:orvibo:project:other-app:environment:production",
+      }),
+    );
+    // What a laptop gets from `vercel env pull`.
+    await refused(
+      t,
+      await vercelToken({
+        sub: "owner:orvibo:project:devize:environment:development",
+      }),
+    );
+    await refused(t, await vercelToken({ aud: "https://vercel.com/acme" }));
+    await refused(
+      t,
+      await vercelToken({ exp: Math.floor(Date.now() / 1000) - 120 }),
+    );
+    // Far longer than any token Vercel gives.
+    await refused(t, await vercelToken({ padding: "x".repeat(8192) }));
+    // Keys are only ever fetched from Vercel.
+    await refused(t, await vercelToken({ iss: "https://attacker.example" }));
+    expect(
+      requested.some((url) => !url.startsWith("https://oidc.vercel.com/")),
+    ).toBe(false);
     // Nothing is sent or stored for a refused request.
     expect(sent).toHaveLength(0);
     expect(await t.run(async (ctx) => ctx.db.query("users").collect())).toEqual(
       [],
     );
 
-    await requestCode(t, "ana@example.com", "token-solved");
-    expect(sent).toHaveLength(1);
-    // The code itself signs in, with no second challenge.
+    await requestCode(t, "ana@example.com");
+    await requestCode(
+      t,
+      "bob@example.com",
+      await vercelToken({
+        sub: "owner:orvibo:project:devize:environment:preview",
+        environment: "preview",
+      }),
+    );
+    expect(sent.map((email) => email.to[0])).toEqual([
+      "ana@example.com",
+      "bob@example.com",
+    ]);
+    // The code itself signs in, with no token.
     const result = await t.action(api.auth.signIn, {
       provider: "email-code",
       params: { email: "ana@example.com", code: codeIn(sent[0]) },
@@ -312,22 +385,37 @@ describe("email sign-in with Turnstile set up", () => {
     expect(result.tokens?.token).toBeString();
   });
 
-  test("sends no code while Cloudflare is out of reach", async () => {
+  test("takes the tokens Vercel signs under the global issuer mode", async () => {
+    const t = setup();
+    await requestCode(
+      t,
+      "ana@example.com",
+      await vercelToken({ iss: "https://oidc.vercel.com" }),
+    );
+    expect(sent).toHaveLength(1);
+  });
+
+  test("sends no code while Vercel's keys are out of reach", async () => {
     const t = setup();
     const answering = globalThis.fetch;
     globalThis.fetch = (async (
       input: RequestInfo | URL,
       init?: RequestInit,
     ) => {
-      if (String(input) === TURNSTILE_URL) {
+      if (String(input).startsWith("https://oidc.vercel.com/")) {
         throw new TypeError("fetch failed");
       }
       return answering(input, init);
     }) as typeof fetch;
-    await expect(
-      requestCode(t, "ana@example.com", "token-solved"),
-    ).rejects.toThrow(/turnstile/);
+    await refused(t, await vercelToken());
     expect(sent).toHaveLength(0);
+  });
+
+  test("sends codes without a token where the check is off", async () => {
+    process.env.BOTID_CHECK = "off";
+    const t = setup();
+    await requestCode(t, "ana@example.com", null);
+    expect(sent).toHaveLength(1);
   });
 
   test("can't be skipped by asking the provider that sends the codes", async () => {
