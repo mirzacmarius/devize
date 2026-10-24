@@ -80,6 +80,7 @@ export const erasureRule = v.union(
   v.literal("not_written"),
   v.literal("opt_out"),
   v.literal("excluded"),
+  v.literal("inactive"),
 );
 
 // A: the manufacturer already has norms. B: we found none.

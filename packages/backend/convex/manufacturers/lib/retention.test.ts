@@ -4,6 +4,7 @@ import {
   DAY_MS,
   ERASED,
   firmWords,
+  IN_TOUCH_MS,
   inTouch,
   isPersonAddress,
   mentions,
@@ -79,6 +80,7 @@ function plan(input: {
   contacts?: PlanInput["contacts"];
   messages?: PlanInput["messages"];
   suppressed?: PlanInput["suppressed"];
+  normsReceivedAt?: number;
 }) {
   return Object.fromEntries(
     retentionPlan({
@@ -86,6 +88,7 @@ function plan(input: {
       messages: input.messages ?? [],
       suppressed: input.suppressed ?? new Set(),
       manufacturer: { ...manufacturer, ...input.manufacturer },
+      normsReceivedAt: input.normsReceivedAt,
     }).map((entry) => [entry.address, { at: entry.at, rule: entry.rule }]),
   );
 }
@@ -233,11 +236,46 @@ describe("retentionPlan", () => {
     );
   });
 
-  test("people stay while the firm is in touch", () => {
+  test("people stay while the firm is in touch, until 2 years after the last message", () => {
     const result = plan({
       manufacturer: { answeredAt: T, status: "contacted" },
       contacts: [contact("ion.popescu@termotest.example")],
       messages: [message("ion.popescu@termotest.example")],
+    });
+    expect(result["ion.popescu@termotest.example"]).toEqual({
+      at: T + IN_TOUCH_MS,
+      rule: "inactive",
+    });
+    expect(IN_TOUCH_MS).toBeLessThan(730 * DAY_MS);
+  });
+
+  test("the last message is the firm's last answer, its last norms or our last email to anyone there", () => {
+    const ion = "ion.popescu@termotest.example";
+    const later = (days: number) => T + days * DAY_MS;
+    const at = (input: Parameters<typeof plan>[0]) =>
+      plan({ contacts: [contact(ion)], ...input })[ion]?.at;
+    const replied = { answeredAt: T, status: "replied" } as const;
+    expect(
+      at({ manufacturer: { ...replied, lastAnsweredAt: later(30) } }),
+    ).toBe(later(30) + IN_TOUCH_MS);
+    expect(at({ manufacturer: replied, normsReceivedAt: later(60) })).toBe(
+      later(60) + IN_TOUCH_MS,
+    );
+    expect(
+      at({
+        manufacturer: replied,
+        messages: [
+          message("office@termotest.example", { sentAt: later(90) }),
+          message(undefined, { status: "draft", sentAt: undefined }),
+        ],
+      }),
+    ).toBe(later(90) + IN_TOUCH_MS);
+  });
+
+  test("a firm in touch with nothing that dates it keeps its people for now", () => {
+    const result = plan({
+      manufacturer: { claimStatus: "claimed" },
+      contacts: [contact("ion.popescu@termotest.example")],
     });
     expect(result["ion.popescu@termotest.example"]).toEqual({
       at: null,

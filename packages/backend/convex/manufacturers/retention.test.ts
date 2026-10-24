@@ -3,7 +3,7 @@ import { api, internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import { setup, signIn, type TestConvex } from "../test.helper";
 import { DAY_MS, ERASED } from "./lib/retention";
-import { insertManufacturer } from "./test.helper";
+import { insertManufacturer, insertNormImport } from "./test.helper";
 
 // Made-up producers and people only.
 
@@ -354,6 +354,96 @@ describe("people at a producer in touch", () => {
     expect(after.contacts).toHaveLength(1);
     expect(after.messages[0]?.to).toBe(ion);
     expect(after.erasures).toHaveLength(0);
+  });
+});
+
+describe("people at a producer in touch, after 2 years", () => {
+  test("go 2 years after the last answer; the email stays without them", async () => {
+    at(T);
+    const t = setup();
+    const { admin, manufacturerId } = await contactedProducer(t);
+    await insertContact(t, manufacturerId, ion);
+    await insertContact(t, manufacturerId, office, { kind: "generic" });
+    await insertMessage(t, manufacturerId, ion);
+    await admin.as.mutation(api.manufacturers.admin.update, {
+      manufacturerId,
+      status: "replied",
+    });
+
+    at(T + 724 * DAY_MS);
+    await runSweep(t);
+    expect((await rows(t, manufacturerId)).contacts).toHaveLength(2);
+
+    at(T + 726 * DAY_MS);
+    await runSweep(t);
+    const after = await rows(t, manufacturerId);
+    expect(after.contacts.map((contact) => contact.email)).toEqual([office]);
+    expect(after.messages[0]?.to).toBeUndefined();
+    expect(after.messages[0]?.body).toContain(ERASED);
+    expect(after.erasures).toMatchObject([{ rule: "inactive", addresses: 1 }]);
+  });
+
+  test("„Încă discutăm” and new norms start the 2 years again", async () => {
+    at(T);
+    const t = setup();
+    const { admin, manufacturerId } = await contactedProducer(t, {
+      status: "replied",
+      answeredAt: T,
+    });
+    await insertContact(t, manufacturerId, ion);
+
+    at(T + 700 * DAY_MS);
+    await admin.as.mutation(api.manufacturers.admin.stillInTouch, {
+      manufacturerId,
+    });
+    at(T + 726 * DAY_MS);
+    await runSweep(t);
+    expect((await rows(t, manufacturerId)).contacts).toHaveLength(1);
+
+    at(T + 1400 * DAY_MS);
+    await insertNormImport(t, admin.userId, manufacturerId);
+    at(T + 1426 * DAY_MS);
+    await runSweep(t);
+    expect((await rows(t, manufacturerId)).contacts).toHaveLength(1);
+
+    at(T + 2126 * DAY_MS);
+    await runSweep(t);
+    expect((await rows(t, manufacturerId)).contacts).toHaveLength(0);
+  });
+
+  test("a firm in touch from before starts its 2 years at the next run", async () => {
+    at(T);
+    const t = setup();
+    // Claimed without ever writing to us, before ADR 0048.
+    const { manufacturerId } = await contactedProducer(t, {
+      claimStatus: "claimed",
+    });
+    await insertContact(t, manufacturerId, ion);
+    await runSweep(t);
+    const lastAnsweredAt = (await rows(t, manufacturerId)).manufacturer
+      ?.lastAnsweredAt;
+    expect(lastAnsweredAt).toBeGreaterThanOrEqual(T);
+    expect(lastAnsweredAt).toBeLessThan(T + DAY_MS);
+    at(T + 726 * DAY_MS);
+    await runSweep(t);
+    expect((await rows(t, manufacturerId)).contacts).toHaveLength(0);
+  });
+
+  test("„Încă discutăm” is for a firm in touch, and for super admins", async () => {
+    const t = setup();
+    const { manufacturerId } = await contactedProducer(t);
+    const admin = await signIn(t, { name: "Ana", superadmin: true });
+    await expect(
+      admin.as.mutation(api.manufacturers.admin.stillInTouch, {
+        manufacturerId,
+      }),
+    ).rejects.toThrow();
+    const user = await signIn(t, { name: "Ion" });
+    await expect(
+      user.as.mutation(api.manufacturers.admin.stillInTouch, {
+        manufacturerId,
+      }),
+    ).rejects.toThrow();
   });
 });
 

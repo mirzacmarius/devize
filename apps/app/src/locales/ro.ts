@@ -2582,6 +2582,7 @@ export default {
         not_written: "Nu le-a scris nimeni în 25 de zile",
         opt_out: "Au cerut să nu le mai scriem",
         excluded: "Firma a fost exclusă",
+        inactive: "Nu am mai vorbit cu firma de 2 ani",
       },
       addresses: "Adrese șterse: {count}",
       mailbox:
@@ -2788,8 +2789,10 @@ export default {
         suppress: "Exclude",
         suppressConfirm: "Sigur? Se șterge peste tot",
         retention:
-          "Adresele persoanelor se șterg singure: la 25 de zile de când le-am găsit, dacă nu le-a scris nimeni, și la 175 de zile după ultimul email trimis lor, dacă firma nu răspunde. La „stop” sau dacă excluzi firma, se șterg imediat. Adresele generale ale firmei rămân.",
+          "Adresele persoanelor se șterg singure: la 25 de zile de când le-am găsit, dacă nu le-a scris nimeni, și la 175 de zile după ultimul email trimis lor, dacă firma nu răspunde. Cât discutăm cu firma rămân, dar cel mult 2 ani de la ultimul mesaj; dacă firma ți-a scris din nou, apasă „Încă discutăm”. La „stop” sau dacă excluzi firma, se șterg imediat. Adresele generale ale firmei rămân.",
         kept: "Rămâne cât discutăm cu firma",
+        keptUntil: "Rămâne cât discutăm, cel mult până pe {date}",
+        stillInTouch: "Încă discutăm",
         erasesOn: "Se șterge pe {date}",
         erasesNow: "Se șterge acum",
         remove: "Șterge",
@@ -3427,7 +3430,7 @@ export default {
       optOut:
         "răspundeți „stop” și nu vă mai scriem. Ștergem atunci adresa dumneavoastră din contactele și din mesajele noastre, inclusiv din emailurile trimise. O păstrăm doar pe lista de excludere, ca să nu vă scriem din nou, iar dacă firma ne-a dat acordul să publicăm normele, păstrăm și dovada acordului.",
       retention:
-        "cât discutăm cu firma. Dacă firma nu răspunde sau refuză, ștergem adresa unei persoane în cel mult 6 luni de la ultimul mesaj trimis la ea, iar adresa unei persoane căreia nu i-am scris o ștergem în cel mult o lună de când am găsit-o. Mesajele trimise firmei le păstrăm fără aceste adrese, ca dovadă că i-am scris. Raportul în care asistentul descrie ce a găsit pe site-ul firmei îl ștergem după cel mult o lună. Dovada acordului de a publica normele o păstrăm și după ce firma își scoate profilul din Devize, pentru că normele publicate până atunci rămân în devizele făcute cu ele.",
+        "cât discutăm cu firma, dar cel mult 2 ani de la ultimul mesaj schimbat cu ea. Dacă firma nu răspunde sau refuză, ștergem adresa unei persoane în cel mult 6 luni de la ultimul mesaj trimis la ea, iar adresa unei persoane căreia nu i-am scris o ștergem în cel mult o lună de când am găsit-o. Mesajele trimise firmei le păstrăm fără aceste adrese, ca dovadă că i-am scris. Raportul în care asistentul descrie ce a găsit pe site-ul firmei îl ștergem după cel mult o lună. Dovada acordului de a publica normele o păstrăm și după ce firma își scoate profilul din Devize, pentru că normele publicate până atunci rămân în devizele făcute cu ele.",
       claims:
         "Dacă preluați în Devize profilul firmei la care lucrați, păstrăm cererea, ca dovadă a cui a preluat profilul și cum: adresa de email cu care ați intrat, ce ne-ați scris despre rolul dumneavoastră și CUI-ul firmei, pe care îl verificăm în registrul public ANAF. La fel păstrăm cererile de a scoate un profil. Când vă ștergeți contul, ștergem cererile care încă așteaptă, iar din cele hotărâte păstrăm doar ce s-a hotărât, cum și când, fără adresa dumneavoastră și ce ne-ați scris. Linkul de preluare primit pe email îl ștergem la o lună după ce expiră. Numele, emailul și telefonul persoanei de contact pe care firma le trece pe profil le văd toți cei care folosesc Devize; dacă persoana de contact sunteți dumneavoastră, cu adresa contului, le scoatem de pe profil când vă ștergeți contul. Din devizele firmelor, producătorul primește doar statistici lunare despre normele și produsele lui, fără să afle care firmă le-a folosit.",
     },

@@ -7,7 +7,7 @@ import { createJob, JOB_TIMEOUT_MS } from "../ai/jobs";
 import { aiModel } from "../ai/models";
 import { requireSuperAdmin } from "../lib/roles";
 import { deleteProducerRows } from "../producers/handover";
-import { REPORT_MS } from "./lib/retention";
+import { inTouch, REPORT_MS } from "./lib/retention";
 import {
   isEmail,
   nameKey,
@@ -274,10 +274,10 @@ export const update = mutation({
     if (!manufacturer) {
       throw new ConvexError({ code: "not_found" });
     }
-    // The first answer is kept when the status changes again (ADR 0043).
-    const answered =
-      manufacturer.answeredAt === undefined &&
-      (status === "replied" || status === "norms_received");
+    // The first answer is kept when the status changes again (ADR 0043);
+    // the last one dates how long its people's addresses stay (ADR 0048).
+    const answering = status === "replied" || status === "norms_received";
+    const answered = manufacturer.answeredAt === undefined && answering;
     // An empty text clears the field; a field left out stays as it is.
     const cleared: Partial<Record<keyof typeof texts, string | undefined>> = {};
     for (const [key, value] of Object.entries(texts)) {
@@ -291,6 +291,30 @@ export const update = mutation({
       ...(wave !== undefined ? { wave } : {}),
       ...(status ? { status } : {}),
       ...(answered ? { answeredAt: Date.now() } : {}),
+      ...(answering ? { lastAnsweredAt: Date.now() } : {}),
+    });
+    return null;
+  },
+});
+
+/**
+ * "Încă discutăm": the firm wrote to us again, so its people's addresses
+ * stay another 2 years (ADR 0048). Only for a firm in touch.
+ */
+export const stillInTouch = mutation({
+  args: { manufacturerId: v.id("manufacturers") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await requireSuperAdmin(ctx);
+    const manufacturer = await ctx.db.get("manufacturers", args.manufacturerId);
+    if (!manufacturer) {
+      throw new ConvexError({ code: "not_found" });
+    }
+    if (!inTouch(manufacturer)) {
+      throw new ConvexError({ code: "invalid" });
+    }
+    await ctx.db.patch("manufacturers", manufacturer._id, {
+      lastAnsweredAt: Date.now(),
     });
     return null;
   },
