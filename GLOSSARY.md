@@ -33,7 +33,7 @@ A Producător's document for one product: what it is, how much of it a unit of w
 _Avoid_: Spec sheet, product sheet
 
 **Normă proprie** (own norm):
-A Firmă's own Normă, seen and used only by that Firmă: written on the norm form, copied from the catalog to adjust, or written by Devize AI from a few sentences about a work the catalog lacks, with where each consumption comes from and orientative prices for materials; the Firmă checks it, and adding it to a Deviz publishes it in the Firmă's own catalog. In code: `norms` with source `organization`, `normRequests` and `catalog/aiNorms.ts` for the ones Devize AI writes. See `docs/adr/0032`.
+A Firmă's own Normă, seen and used only by that Firmă: written on the norm form, copied from the catalog to adjust, or written by Devize AI from a few sentences about a work the catalog lacks, with where each consumption comes from and orientative prices for materials; the Firmă checks it, and adding it to a Deviz publishes it in the Firmă's own catalog. In code: `norms` with source `organization`, `normRequests` and `catalog/aiNorms.ts` for the ones Devize AI writes. See `docs/adr/0034`.
 _Avoid_: Private norm, custom norm
 
 **Normă de bază** (base norm):
