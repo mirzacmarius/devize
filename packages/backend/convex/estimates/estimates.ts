@@ -12,6 +12,7 @@ import { checkDate, romanianDate } from "../lib/dates";
 import { invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import { store } from "../prices/validators";
+import { deleteProgressRows } from "../progress/cleanup";
 import { deleteProposals } from "../proposals/proposals";
 import { copyTakeoffs } from "../takeoffs/helpers";
 import {
@@ -554,6 +555,11 @@ export const deleteRows = internalMutation({
     deleted += await deleteProposals(
       ctx,
       { estimateId: args.estimateId },
+      Math.max(BATCH - deleted, 0),
+    );
+    deleted += await deleteProgressRows(
+      ctx,
+      args.estimateId,
       Math.max(BATCH - deleted, 0),
     );
     const files = await ctx.db

@@ -100,6 +100,24 @@ _Avoid_: Extra, add-on
 Devize AI answering a client's questions on an Ofertă's link, only from what the link shows them. What the Ofertă doesn't say, or only the Firmă can decide, goes to the Firmă, who replies from the Deviz's page; the Firmă can also turn the assistant off for a link. In code: `offerQuestions`, `offers/assistant.ts`. See `docs/adr/0019`.
 _Avoid_: Chatbot, bot
 
+### Execution
+
+**Situație de lucrări** (progress statement):
+What an accepted Deviz's works came to in a period: each Articol with the quantity executed before, in the period and in all, what remains, and the period's value with the Deviz's Cote. One statement is open at a time; a new one starts once the beneficiary confirms the last, from the quantities it reached. In code: `workStatements`, `workStatementRows`, page `/estimates/<id>/progress`. See `docs/adr/0035`.
+_Avoid_: Progress report, invoice (the statement is what an invoice is made from), situație de plată
+
+**Atașament** (measurement sheet):
+The measurements behind a quantity in a Situație de lucrări, a line each: count × length × width × height, some subtracted. In code: `workStatementRows.attachment`.
+_Avoid_: Attachment (a file), annex
+
+**Proces-verbal de recepție** (reception report):
+The document that closes the works: la terminarea lucrărilor (at their end) and finală (at the end of the warranty), with the committee, its findings, the objections and their deadlines, and the decision to admit, postpone or reject (HG 343/2017). In code: `receptions`, kinds `completion` and `final`; the PDFs follow the regulation's models. See `docs/adr/0035`.
+_Avoid_: Handover protocol, acceptance certificate
+
+**Garanție de bună execuție** (performance guarantee):
+What the contractor leaves with the beneficiary against defects, at most 10 % of the contract: kept back from each Situație de lucrări, or given as a bank or insurance instrument. 70 % comes back after the reception at the end of the works and 30 % after the final one, each within 14 days (HG 395/2016, art. 40 and 42). In code: `guarantees`, `progress/arithmetic.ts`. See `docs/adr/0035`.
+_Avoid_: Retention money (only one way of holding it), warranty (the period, not the money)
+
 ### Public tenders
 
 **Licitație** (tender):

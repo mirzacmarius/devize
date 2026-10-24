@@ -69,6 +69,10 @@ type FirmTable =
   | "priceAlerts"
   | "proposals"
   | "proposalItems"
+  | "workStatements"
+  | "workStatementRows"
+  | "receptions"
+  | "guarantees"
   | "normRequests";
 
 /**

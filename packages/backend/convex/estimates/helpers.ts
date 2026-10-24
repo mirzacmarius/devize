@@ -4,6 +4,7 @@ import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { requireFirmDoc } from "../lib/access";
 import { appError, invalid, notFound } from "../lib/errors";
 import { createPriceResolver } from "../prices/resolve";
+import { hasStatements } from "../progress/helpers";
 import { computeRecap, unitCost } from "./recap";
 
 /** A Deviz the signed-in user may change: their firm's, and not sent. */
@@ -49,6 +50,10 @@ export async function changeStatus(
       )
     ) {
       throw appError("locked", "offer");
+    }
+    // A Deviz with Situații de lucrări is being executed as accepted.
+    if (await hasStatements(ctx, estimate._id)) {
+      throw appError("locked", "statements");
     }
     await ctx.db.patch("estimates", estimate._id, {
       status: "draft",
