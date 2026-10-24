@@ -1,4 +1,5 @@
 import { withSentryConfig } from "@sentry/nextjs/config";
+import { withBotId } from "botid/next/config";
 import "./src/env.mjs";
 
 // Sections without a page of their own open their first one, with or without
@@ -43,9 +44,11 @@ const nextConfig = {
   },
 };
 
-// Uploads source maps for readable stack traces when SENTRY_AUTH_TOKEN is set
-// (with SENTRY_ORG and SENTRY_PROJECT), then deletes them so they aren't served.
-export default withSentryConfig(nextConfig, {
+// Vercel BotID's script and its checks go through the app's own address, where
+// ad blockers leave them alone (docs/adr/0052). Source maps are uploaded for
+// readable stack traces when SENTRY_AUTH_TOKEN is set (with SENTRY_ORG and
+// SENTRY_PROJECT), then deleted so they aren't served.
+export default withSentryConfig(withBotId(nextConfig), {
   authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
   widenClientFileUpload: true,
