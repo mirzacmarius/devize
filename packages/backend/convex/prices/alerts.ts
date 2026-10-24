@@ -270,54 +270,71 @@ export const list = query({
   args: { organizationId: v.id("organizations") },
   handler: async (ctx, args) => {
     await requireMember(ctx, args.organizationId);
-    const alertPercent = alertPercentOf(
-      await priceSettingsOf(ctx, args.organizationId),
-    );
-    const alerts = [];
-    let dismissed = 0;
-    const rows =
-      alertPercent > 0
-        ? await ctx.db
-            .query("priceAlerts")
-            .withIndex("by_organizationId_and_checkedAt", (q) =>
-              q.eq("organizationId", args.organizationId),
-            )
-            .order("desc")
-            .take(MAX_ALERTS)
-        : [];
-    for (const alert of rows) {
-      const estimate = await ctx.db.get("estimates", alert.estimateId);
-      if (
-        !estimate ||
-        !isWatched(estimate.status) ||
-        Math.abs(alert.percent) < alertPercent
-      ) {
-        continue;
-      }
-      if (alert.dismissedAt !== undefined) {
-        dismissed++;
-        continue;
-      }
-      const client = estimate.clientId
-        ? await ctx.db.get("clients", estimate.clientId)
-        : null;
-      const { organizationId, estimateId, dismissedPercent, ...fields } = alert;
-      alerts.push({
-        ...fields,
-        estimate: {
-          _id: estimate._id,
-          number: estimate.number,
-          revision: estimate.revision,
-          title: estimate.title,
-          status: estimate.status,
-          clientName: client?.name,
-        },
-      });
-    }
-    alerts.sort((a, b) => Math.abs(b.percent) - Math.abs(a.percent));
-    return { alertPercent, alerts, dismissed };
+    return await listAlerts(ctx, args.organizationId);
   },
 });
+
+/**
+ * A firm's alerts, biggest change first, once the caller checked membership:
+ * the ones over the firm's threshold on devize still watched, and how many
+ * of those it dismissed.
+ */
+export async function listAlerts(
+  ctx: QueryCtx,
+  organizationId: Id<"organizations">,
+) {
+  const alertPercent = alertPercentOf(
+    await priceSettingsOf(ctx, organizationId),
+  );
+  const alerts = [];
+  let dismissed = 0;
+  const rows =
+    alertPercent > 0
+      ? await ctx.db
+          .query("priceAlerts")
+          .withIndex("by_organizationId_and_checkedAt", (q) =>
+            q.eq("organizationId", organizationId),
+          )
+          .order("desc")
+          .take(MAX_ALERTS)
+      : [];
+  for (const alert of rows) {
+    const estimate = await ctx.db.get("estimates", alert.estimateId);
+    if (
+      !estimate ||
+      !isWatched(estimate.status) ||
+      Math.abs(alert.percent) < alertPercent
+    ) {
+      continue;
+    }
+    if (alert.dismissedAt !== undefined) {
+      dismissed++;
+      continue;
+    }
+    const client = estimate.clientId
+      ? await ctx.db.get("clients", estimate.clientId)
+      : null;
+    const {
+      organizationId: _organizationId,
+      estimateId,
+      dismissedPercent,
+      ...fields
+    } = alert;
+    alerts.push({
+      ...fields,
+      estimate: {
+        _id: estimate._id,
+        number: estimate.number,
+        revision: estimate.revision,
+        title: estimate.title,
+        status: estimate.status,
+        clientName: client?.name,
+      },
+    });
+  }
+  alerts.sort((a, b) => Math.abs(b.percent) - Math.abs(a.percent));
+  return { alertPercent, alerts, dismissed };
+}
 
 /** How many alerts the firm hasn't dismissed, for the menu. */
 export const count = query({

@@ -14,6 +14,7 @@ import {
   History,
   House,
   Layers,
+  LayoutDashboard,
   Library,
   List,
   Loader2,
@@ -35,6 +36,7 @@ import {
 // Devize's fixed icon vocabulary (Lucide, 1.5px stroke from globals.css).
 // Use the same icon for the same meaning everywhere; `AI` means AI only.
 export const Icons = {
+  Home: LayoutDashboard,
   SignOut: LogOut,
   Copy,
   Check,
