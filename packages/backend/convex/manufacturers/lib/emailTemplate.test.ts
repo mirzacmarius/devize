@@ -173,6 +173,23 @@ describe("renderThanksEmail", () => {
     expect(lintEmail({ ...email, to: thanks.address })).toEqual([]);
   });
 
+  test("points out printed totals that don't follow from the unit prices", () => {
+    const email = renderThanksEmail(
+      {
+        ...thanks,
+        thanks: { ...thanks.thanks, totals: { compared: 24, differing: 21 } },
+      },
+      sender,
+    );
+    expect(email.body).toContain(
+      "12 articole și 51 de variante.\n\nAm verificat și calculele: la 21 din cele 24 de variante cu prețuri unitare, totalul tipărit nu iese din cantitățile și prețurile din tabel.",
+    );
+    expect(email.body).toContain(
+      "pentru o ediție nouă.\n\nDacă nu mi-ați scris deja",
+    );
+    expect(lintEmail({ ...email, to: thanks.address })).toEqual([]);
+  });
+
   test("blocks approval without the link", () => {
     const email = renderThanksEmail(
       { ...thanks, thanks: { ...thanks.thanks, claimUrl: undefined } },

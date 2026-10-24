@@ -2871,7 +2871,7 @@ export default {
       thanks: {
         title: "Thank-you",
         description:
-          "The reply to whoever sent us the norms, with the link to claim the manufacturer's profile. You approve it and send it from your own mailbox, like the first email.",
+          "The reply to whoever sent us the norms, with the link to claim the manufacturer's profile. If most variants' printed totals don't follow from the document's unit prices, it says so too, for their next edition. You approve it and send it from your own mailbox, like the first email.",
         to: "Address that sent us the norms",
         prepare: "Draft the thank-you",
         claimed: "The profile is already claimed, so no link goes out.",

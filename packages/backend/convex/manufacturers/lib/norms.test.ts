@@ -5,6 +5,8 @@ import {
   checkPrintedTotal,
   type ExtractedArticle,
   normsFromArticle,
+  printedTotals,
+  totalsMostlyDiffer,
 } from "./norms";
 
 // A made-up article shaped like a manufacturer's norms table.
@@ -210,6 +212,29 @@ describe("checkPrintedTotal", () => {
   test("needs a printed total and a price for every resource", () => {
     expect(checkPrintedTotal(second, 20)).toBe(null);
     expect(checkPrintedTotal({ ...second, totalPrice: 50 }, 20)).toBe(null);
+  });
+});
+
+describe("printedTotals", () => {
+  const [first, second] = normsFromArticle(article);
+
+  test("counts the variants it could compare and those that differ", () => {
+    const norms = [
+      first,
+      { ...first, totalPrice: 75 },
+      { ...first, totalPrice: 80 },
+      second,
+    ];
+    const totals = printedTotals(norms, undefined);
+    expect(totals).toEqual({ compared: 3, differing: 2 });
+    expect(totalsMostlyDiffer(totals)).toBe(true);
+  });
+
+  test("a misread row or two isn't the document's doing", () => {
+    expect(totalsMostlyDiffer({ compared: 12, differing: 6 })).toBe(false);
+    expect(totalsMostlyDiffer({ compared: 12, differing: 1 })).toBe(false);
+    expect(totalsMostlyDiffer({ compared: 1, differing: 1 })).toBe(false);
+    expect(totalsMostlyDiffer({ compared: 0, differing: 0 })).toBe(false);
   });
 });
 

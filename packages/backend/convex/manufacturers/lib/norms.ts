@@ -175,6 +175,44 @@ export function checkPrintedTotal(
   };
 }
 
+export type PrintedTotals = {
+  // Variants with a printed total and a price for every resource.
+  compared: number;
+  // Of those, the ones whose total differs by more than 1%.
+  differing: number;
+};
+
+/**
+ * How a document's printed totals compare with its own quantities and unit
+ * prices, over the variants a reviewer hasn't rejected.
+ */
+export function printedTotals(
+  norms: Pick<NormRow, "resources" | "totalPrice">[],
+  laborRate: number | undefined,
+): PrintedTotals {
+  let compared = 0;
+  let differing = 0;
+  for (const norm of norms) {
+    const check = checkPrintedTotal(norm, laborRate);
+    if (check) {
+      compared += 1;
+      if (!check.matches) {
+        differing += 1;
+      }
+    }
+  }
+  return { compared, differing };
+}
+
+/**
+ * Whether the document itself worked out its totals with other prices: most
+ * of its variants differ, which a misread row or two can't explain. Only then
+ * is it worth telling the manufacturer.
+ */
+export function totalsMostlyDiffer({ compared, differing }: PrintedTotals) {
+  return compared >= 2 && differing * 2 > compared;
+}
+
 /**
  * One Normă per variant of an extracted article: TST10 with variants A01 and
  * B01 gives TST10A01 and TST10B01, titled "<article>, <variant>".

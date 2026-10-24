@@ -96,6 +96,9 @@ export const thanksVars = v.object({
   claimExpiresAt: v.optional(v.number()),
   articles: v.optional(v.number()),
   variants: v.optional(v.number()),
+  // Set when most of the document's printed totals don't follow from its own
+  // unit prices, which the email then points out.
+  totals: v.optional(v.object({ compared: v.number(), differing: v.number() })),
   // Their written agreement to publish is already recorded on the document.
   consentRecorded: v.boolean(),
 });
