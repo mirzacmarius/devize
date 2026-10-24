@@ -264,7 +264,9 @@ export const get = query({
     }
     const terms = await lastTermsAcceptance(ctx, firm._id);
     // Who accepted them, unless they have deleted their account since.
-    const acceptedBy = terms ? await ctx.db.get("users", terms.acceptedBy) : null;
+    const acceptedBy = terms
+      ? await ctx.db.get("users", terms.acceptedBy)
+      : null;
     return {
       ...firm,
       role: membership.role,

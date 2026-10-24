@@ -63,9 +63,9 @@ describe("accepting the terms", () => {
         termsVersion: "2020-01-01",
       }),
     ).rejects.toThrow(/terms/);
-    expect(
-      await ana.as.query(api.accounts.organizations.listMine, {}),
-    ).toEqual([]);
+    expect(await ana.as.query(api.accounts.organizations.listMine, {})).toEqual(
+      [],
+    );
   });
 
   test("a firm made without them is asked for them, and an admin accepts once", async () => {

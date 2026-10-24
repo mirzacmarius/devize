@@ -1,8 +1,8 @@
 "use client";
 
-import { TERMS_VERSION } from "@devize/backend/convex/accounts/terms";
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Doc, Id } from "@devize/backend/convex/_generated/dataModel";
+import { TERMS_VERSION } from "@devize/backend/convex/accounts/terms";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
