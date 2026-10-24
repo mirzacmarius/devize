@@ -481,6 +481,56 @@ export default {
       add: "Add to estimate",
       added: "{code} was added to the estimate.",
       addedCount: "Added now: {count}",
+      ai: {
+        offer: "Write the norm with Devize AI",
+        offerMore: "Not what you were after? Write a new norm with Devize AI",
+        resume: "Back to the norm Devize AI wrote",
+        title: "New norm with Devize AI",
+        description:
+          "Describe the job and Devize AI writes a norm for your company: the consumption per unit, with where each figure comes from, and orientative prices for materials. You check it before it goes into the estimate.",
+        work: "Job",
+        workPlaceholder:
+          "e.g. Terrace waterproofing with self-adhesive bitumen membrane, two layers, on an existing screed",
+        workHint:
+          "Say what is done, with which material, thicknesses or formats, and where (indoors, outdoors, bathroom). At most {max} characters.",
+        workRequired: "Describe the job in a few words.",
+        privacy:
+          "The description goes to Claude, Anthropic's AI model, for this norm only. The norm stays your company's.",
+        submit: "Write the norm",
+        writing: "Devize AI is writing the norm…",
+        writingHint:
+          "It takes up to a minute. You can close the panel: the norm appears among your company's norms.",
+        done: "The norm is ready. Check the consumption and prices, then add the quantity.",
+        assumptions: "What Devize AI assumed",
+        checks: "To check",
+        referencePrices:
+          "Material prices are orientative: your company's rates and store prices replace them.",
+        addAndPublish: "Publish and add to estimate",
+        published:
+          "Norm {code} is now among your company's norms and was added to the estimate.",
+        edit: "Edit the norm",
+        discard: "Delete the draft",
+        discarded: "The draft was deleted.",
+        retry: "Try again",
+        failed: {
+          unknown: "Devize AI couldn't write the norm. Try again.",
+          not_work:
+            "The description doesn't look like construction work, or is too vague. Say what is done and with what.",
+          invalid_output:
+            "The answer didn't come out as a whole norm. Try again with more detail.",
+          max_tokens:
+            "The answer didn't come out as a whole norm. Try again with more detail.",
+          missing_api_key: "Devize AI isn't configured on this server yet.",
+          api_key_rejected:
+            "The Devize AI key isn't accepted. Tell the Devize team.",
+          no_credit: "Devize AI is out of credit. Tell the Devize team.",
+          timeout: "Devize AI didn't answer in time. Try again.",
+          busy: "Devize AI is busy right now. Try again in a few minutes.",
+          refusal: "Devize AI declined the description. Rephrase it.",
+        },
+        rateLimited:
+          "You asked for many norms in the last hour. Try again later.",
+      },
     },
     custom: {
       title: "Own line item",
@@ -1598,6 +1648,15 @@ export default {
       notVerified: "Not verified",
       copiedFrom: "Copied from",
     },
+    aiRequest: {
+      title: "Written from a description",
+      badge: "Written by Devize AI",
+      description:
+        "Devize AI wrote the norm from the company's description. Each resource's note says where its figure comes from; material prices are orientative.",
+      request: "Description",
+      assumptions: "What Devize AI assumed",
+      checks: "To check before using the norm",
+    },
     datasheet: {
       title: "Data sheet",
       badge: "Read by Devize AI",
@@ -2005,6 +2064,7 @@ export default {
       tender_import: "Quantity lists import",
       offer_question: "Question on an offer",
       omission_check: "Omissions check",
+      norm_draft: "Norm from a description",
     },
     confidence: {
       high: "High confidence",

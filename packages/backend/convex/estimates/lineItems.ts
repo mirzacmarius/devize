@@ -65,32 +65,49 @@ export const addFromNorm = mutation({
   returns: v.id("lineItems"),
   handler: async (ctx, args) => {
     const { estimate } = await requireEditableEstimate(ctx, args.estimateId);
-    checkQuantity(args.quantity);
-    await checkSection(ctx, estimate, args.sectionId);
     const norm = await usableNorm(ctx, estimate, args.normId);
-    const resources = await snapshotResources(
-      await readNormResources(ctx, norm._id),
-      resolverFor(ctx, estimate),
-    );
-    const lineItemId = await ctx.db.insert("lineItems", {
-      organizationId: estimate.organizationId,
-      estimateId: estimate._id,
-      sectionId: args.sectionId,
-      position: await positionFor(ctx, estimate, args.afterId),
-      origin: "norm",
-      normId: norm._id,
-      code: norm.code,
-      title: norm.title,
-      unit: norm.unit,
-      quantity: args.quantity,
-      ...pricedFields(resources),
-      updatedAt: Date.now(),
-    });
-    await refreshTotals(ctx, estimate);
-    await countNormAdded(ctx, estimate, norm, args.quantity);
-    return lineItemId;
+    return await insertFromNorm(ctx, estimate, norm, args);
   },
 });
+
+/**
+ * Inserts the line item for a norm the caller checked the firm may use, with
+ * the firm's prices today, and brings the Deviz's totals up to date.
+ */
+export async function insertFromNorm(
+  ctx: MutationCtx,
+  estimate: Doc<"estimates">,
+  norm: Doc<"norms">,
+  args: {
+    quantity: number;
+    sectionId?: Id<"sections">;
+    afterId?: Id<"lineItems">;
+  },
+): Promise<Id<"lineItems">> {
+  checkQuantity(args.quantity);
+  await checkSection(ctx, estimate, args.sectionId);
+  const resources = await snapshotResources(
+    await readNormResources(ctx, norm._id),
+    resolverFor(ctx, estimate),
+  );
+  const lineItemId = await ctx.db.insert("lineItems", {
+    organizationId: estimate.organizationId,
+    estimateId: estimate._id,
+    sectionId: args.sectionId,
+    position: await positionFor(ctx, estimate, args.afterId),
+    origin: "norm",
+    normId: norm._id,
+    code: norm.code,
+    title: norm.title,
+    unit: norm.unit,
+    quantity: args.quantity,
+    ...pricedFields(resources),
+    updatedAt: Date.now(),
+  });
+  await refreshTotals(ctx, estimate);
+  await countNormAdded(ctx, estimate, norm, args.quantity);
+  return lineItemId;
+}
 
 const customResource = v.object({
   kind: resourceKind,

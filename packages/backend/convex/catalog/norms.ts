@@ -389,9 +389,26 @@ export const get = query({
         canEdit && norm.datasheetImportId
           ? await datasheetOf(ctx, norm.datasheetImportId)
           : null,
+      // Or the description Devize AI wrote it from, for the firm that asked.
+      aiRequest: canEdit ? await aiRequestOf(ctx, norm._id) : null,
     };
   },
 });
+
+/** What a firm asked Devize AI for, when the norm came from that. */
+async function aiRequestOf(ctx: QueryCtx, normId: Id<"norms">) {
+  const request = await ctx.db
+    .query("normRequests")
+    .withIndex("by_normId", (q) => q.eq("normId", normId))
+    .first();
+  return request
+    ? {
+        description: request.description,
+        assumptions: request.assumptions ?? [],
+        checks: request.checks ?? [],
+      }
+    : null;
+}
 
 /** The versions of a norm the signed-in user may read, newest first. */
 export const versions = query({
@@ -657,31 +674,43 @@ export const publish = mutation({
     if (norm.visibility === "public") {
       await requireSuperAdmin(ctx);
     }
-    if (norm.status !== "draft" && norm.status !== "review") {
-      throw appError("locked", norm.status);
-    }
-    await assertPublishable(ctx, norm);
-    const now = Date.now();
-    for (const version of await versionsOf(ctx, norm)) {
-      if (version._id !== norm._id && version.status === "published") {
-        await ctx.db.patch("norms", version._id, {
-          status: "superseded",
-          updatedAt: now,
-        });
-      }
-    }
-    await ctx.db.patch("norms", norm._id, {
-      status: "published",
-      publishedAt: now,
-      reviewNote: undefined,
-      ...(norm.visibility === "public"
-        ? { verifiedBy: userId, verifiedAt: now }
-        : {}),
-      updatedAt: now,
-    });
+    await publishDraft(ctx, norm, userId);
     return null;
   },
 });
+
+/**
+ * Publishes a draft (or a norm in review) and supersedes the version it
+ * replaces, once the caller checked who may publish in that catalog.
+ */
+export async function publishDraft(
+  ctx: MutationCtx,
+  norm: Doc<"norms">,
+  userId: Id<"users">,
+) {
+  if (norm.status !== "draft" && norm.status !== "review") {
+    throw appError("locked", norm.status);
+  }
+  await assertPublishable(ctx, norm);
+  const now = Date.now();
+  for (const version of await versionsOf(ctx, norm)) {
+    if (version._id !== norm._id && version.status === "published") {
+      await ctx.db.patch("norms", version._id, {
+        status: "superseded",
+        updatedAt: now,
+      });
+    }
+  }
+  await ctx.db.patch("norms", norm._id, {
+    status: "published",
+    publishedAt: now,
+    reviewNote: undefined,
+    ...(norm.visibility === "public"
+      ? { verifiedBy: userId, verifiedAt: now }
+      : {}),
+    updatedAt: now,
+  });
+}
 
 /** Sends a norm in review back to its author with a note. */
 export const reject = mutation({
