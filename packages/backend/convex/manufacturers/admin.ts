@@ -276,7 +276,11 @@ export const update = mutation({
     }
     // The first answer is kept when the status changes again (ADR 0043);
     // the last one dates how long its people's addresses stay (ADR 0048).
-    const answering = status === "replied" || status === "norms_received";
+    // The details form sends the status with every save, so only a change
+    // counts.
+    const answering =
+      (status === "replied" || status === "norms_received") &&
+      status !== manufacturer.status;
     const answered = manufacturer.answeredAt === undefined && answering;
     // An empty text clears the field; a field left out stays as it is.
     const cleared: Partial<Record<keyof typeof texts, string | undefined>> = {};

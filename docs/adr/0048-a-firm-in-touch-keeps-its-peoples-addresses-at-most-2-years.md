@@ -6,7 +6,7 @@ ADR 0043 erases the addresses of people at producers that never answer, but kept
 
 At a firm in touch, people's addresses go 2 years after the last message between us that Devize knows of (`lastExchange` in `lib/retention.ts`), the later of:
 
-- its last answer: `manufacturers.lastAnsweredAt`, set when a super admin sets the status to replied or norms received (again, too), when the profile is claimed, or with „Încă discutăm” on the producer's page, and its first answer (`answeredAt`);
+- its last answer: `manufacturers.lastAnsweredAt`, set when a super admin changes the status to replied or norms received, when the profile is claimed, or with „Încă discutăm” on the producer's page, and its first answer (`answeredAt`);
 - its last norm document (`normImports`);
 - our last email to anyone at the firm, sent or opened to send.
 

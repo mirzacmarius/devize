@@ -392,6 +392,16 @@ describe("people at a producer in touch, after 2 years", () => {
     });
     await insertContact(t, manufacturerId, ion);
 
+    // Saving the details with the same status isn't an answer.
+    at(T + 600 * DAY_MS);
+    await admin.as.mutation(api.manufacturers.admin.update, {
+      manufacturerId,
+      status: "replied",
+      notes: "Revin în ianuarie.",
+    });
+    expect((await rows(t, manufacturerId)).manufacturer?.lastAnsweredAt).toBe(
+      undefined,
+    );
     at(T + 700 * DAY_MS);
     await admin.as.mutation(api.manufacturers.admin.stillInTouch, {
       manufacturerId,
