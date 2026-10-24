@@ -17,7 +17,7 @@ export const progressTables = {
   // Situații de lucrări: what of an accepted Deviz was executed in a
   // period, article by article, with the period's own Recapitulație. The
   // rows snapshot the contract, so the statements of a Deviz agree with each
-  // other whatever happens to the Deviz later. See docs/adr/0034.
+  // other whatever happens to the Deviz later. See docs/adr/0035.
   workStatements: defineTable({
     organizationId: v.id("organizations"),
     estimateId: v.id("estimates"),
