@@ -1,11 +1,16 @@
 import { z } from "zod";
 import { cleanNormCode, isKnownUnit, normalizeUnit } from "../../lib/text";
-import { baseCategories } from "../baseNorms";
+import { baseCategories } from "../baseCategories";
 import type { NormResourceInput } from "../resourceRows";
 
 // A Normă proprie Devize AI writes from a firm's description of a work the
 // catalog lacks. The firm reads the draft, with what the model assumed and
 // what to check, before the norm goes into a Deviz.
+
+// The names a norm's category takes, as the base catalog writes them.
+const categoryNames = baseCategories
+  .map((category) => category.name)
+  .join(", ");
 
 /** Characters a description may have: a few sentences about the work. */
 export const MAX_DESCRIPTION = 600;
@@ -42,7 +47,7 @@ export const aiNormSchema = z.object({
       .string()
       .nullable()
       .describe(
-        `Categoria lucrării, una dintre: ${baseCategories.join(", ")}; null dacă niciuna nu se potrivește.`,
+        `Categoria lucrării, una dintre: ${categoryNames}; null dacă niciuna nu se potrivește.`,
       ),
     includes: z
       .string()
@@ -177,7 +182,7 @@ export function aiNormRequest(subject: AiNormSubject): string {
       : "Firma nu are încă tarife pe meserii: folosești meseriile uzuale.",
     machines ? `Utilajele din tarifele firmei: ${machines}` : "",
     transport ? `Transportul din tarifele firmei: ${transport}` : "",
-    `Categoriile catalogului Devize: ${baseCategories.join(", ")}`,
+    `Categoriile catalogului Devize: ${categoryNames}`,
     "",
     "Lucrarea descrisă de firmă:",
     subject.description,

@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { type AiNormOutput, aiNormRequest, cleanAiNorm } from "./aiNorm";
+import {
+  type AiNormOutput,
+  aiNormRequest,
+  aiNormSchema,
+  cleanAiNorm,
+} from "./aiNorm";
 
 // What the model might answer for a made-up waterproofing work.
 const output: AiNormOutput = {
@@ -218,5 +223,19 @@ describe("aiNormRequest", () => {
     });
     expect(request).toContain("Firma nu are încă tarife pe meserii");
     expect(request).not.toContain("Devizul în care intră norma");
+  });
+
+  test("names the catalog's categories, for the model and in the schema", () => {
+    const request = aiNormRequest({
+      firm: "Ana Construct SRL",
+      description: "Zidărie din BCA",
+      rates: [],
+    });
+    const schema = aiNormSchema.shape.norm.shape.category.description ?? "";
+    for (const text of [request, schema]) {
+      expect(text).toContain("Zidărie, Confecții metalice, Acoperișuri");
+      expect(text).toContain("Organizare de șantier și diverse");
+      expect(text).not.toContain("[object Object]");
+    }
   });
 });

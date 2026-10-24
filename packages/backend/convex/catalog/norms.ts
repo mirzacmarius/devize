@@ -19,6 +19,11 @@ import {
   requireEditableNorm,
   requireReadableNorm,
 } from "./access";
+import {
+  baseCategoryByKey,
+  baseCategoryByName,
+  codeRangeOf,
+} from "./baseCategories";
 import { type NormResourceInput, writeNormResources } from "./resourceRows";
 import { normResourceInput, normSource, normStatus } from "./validators";
 
@@ -242,6 +247,39 @@ export const search = query({
         Number(a.confirmedAt !== undefined),
     );
     return await summaries(ctx, [...own, ...shared].slice(0, limit));
+  },
+});
+
+/**
+ * The published norms of one category of the base catalog, by code. A
+ * category owns a series of codes (DV-ZID-01, DV-ZID-02 …), so the index on
+ * codes lists it and the norm needs no field for it; a producer's norms,
+ * with codes of their own, are left out.
+ */
+export const listBaseCategory = query({
+  args: { category: v.string() },
+  handler: async (ctx, args) => {
+    await requireUserId(ctx);
+    const category =
+      baseCategoryByKey(args.category) ?? baseCategoryByName(args.category);
+    if (!category) {
+      throw invalid("category");
+    }
+    const { start, end } = codeRangeOf(category);
+    const norms = await ctx.db
+      .query("norms")
+      .withIndex("by_visibility_and_status_and_code", (q) =>
+        q
+          .eq("visibility", "public")
+          .eq("status", "published")
+          .gte("code", start)
+          .lt("code", end),
+      )
+      .take(100);
+    return await summaries(
+      ctx,
+      norms.filter((norm) => norm.source === "base"),
+    );
   },
 });
 

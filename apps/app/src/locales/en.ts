@@ -693,10 +693,15 @@ export default {
       description:
         "Search by code or by job. Resources take today's prices, with the company's rates.",
       searchPlaceholder: "Code or job, e.g. stone wool",
-      hint: "Type the norm's code or a few words about the job. The company's own norms come first.",
+      hint: "Type the norm's code or a few words about the job, or pick a category. The company's own norms come first.",
       searching: "Searching…",
       noResults: "No norm matches “{text}”.",
       results: "Norms found",
+      categories: "Categories",
+      allCategories: "All",
+      categoryEmpty: "No norm published in “{category}” yet.",
+      noResultsInCategory: "No norm in “{category}” matches “{text}”.",
+      searchAllCategories: "Search all categories",
       custom: "Not in the catalog? Add your own line item",
       back: "Back to results",
       loading: "Loading the norm…",
@@ -1892,6 +1897,13 @@ export default {
       "Write a norm from scratch, or copy one from the public catalog and adjust its consumptions to how your team works.",
     ownEmptyAction: "Write your first norm",
     producers: "Manufacturers",
+    categories: {
+      label: "Categories",
+      all: "All",
+    },
+    categoryEmpty: "No norm published in “{category}” yet.",
+    noResultsInCategory: "No norm in “{category}” matches “{text}”.",
+    searchAllCategories: "Search all categories",
   },
   norms: {
     sources: {
