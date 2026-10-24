@@ -7,7 +7,7 @@ import { nameKey, normalizeEmail } from "./text";
 // leaves room for a missed daily run. An address nobody wrote to goes within
 // a month of being found (GDPR art. 14(3)(a)): 25 days fit the shortest one.
 // While the firm is in touch they stay, but at most 2 years after the last
-// message either way (ADR 0048); the shortest 2 years are 730 days.
+// message either way (ADR 0049); the shortest 2 years are 730 days.
 export const DAY_MS = 24 * 60 * 60 * 1000;
 export const NO_ANSWER_MS = 175 * DAY_MS;
 export const NOT_WRITTEN_MS = 25 * DAY_MS;

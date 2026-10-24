@@ -275,7 +275,7 @@ export const update = mutation({
       throw new ConvexError({ code: "not_found" });
     }
     // The first answer is kept when the status changes again (ADR 0043);
-    // the last one dates how long its people's addresses stay (ADR 0048).
+    // the last one dates how long its people's addresses stay (ADR 0049).
     // The details form sends the status with every save, so only a change
     // counts.
     const answering =
@@ -303,7 +303,7 @@ export const update = mutation({
 
 /**
  * "Încă discutăm": the firm wrote to us again, so its people's addresses
- * stay another 2 years (ADR 0048). Only for a firm in touch.
+ * stay another 2 years (ADR 0049). Only for a firm in touch.
  */
 export const stillInTouch = mutation({
   args: { manufacturerId: v.id("manufacturers") },

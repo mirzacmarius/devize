@@ -135,7 +135,7 @@ export const review = internalMutation({
       });
       manufacturer = { ...manufacturer, answeredAt: now };
     }
-    // A firm in touch from before ADR 0048, such as one that claimed its
+    // A firm in touch from before ADR 0049, such as one that claimed its
     // profile without writing to us, starts its 2 years now.
     if (inTouch(manufacturer) && manufacturer.lastAnsweredAt === undefined) {
       const lastAnsweredAt = manufacturer.answeredAt ?? now;

@@ -424,7 +424,7 @@ describe("people at a producer in touch, after 2 years", () => {
   test("a firm in touch from before starts its 2 years at the next run", async () => {
     at(T);
     const t = setup();
-    // Claimed without ever writing to us, before ADR 0048.
+    // Claimed without ever writing to us, before ADR 0049.
     const { manufacturerId } = await contactedProducer(t, {
       claimStatus: "claimed",
     });

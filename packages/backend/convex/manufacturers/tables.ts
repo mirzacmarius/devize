@@ -60,7 +60,7 @@ export const manufacturerTables = {
     // The last time the firm answered, as far as Devize knows: a status set
     // to replied or norms received, the profile claimed, or "Încă discutăm".
     // Its people's addresses go 2 years after this, its last norms or our
-    // last email, whichever is later (ADR 0048).
+    // last email, whichever is later (ADR 0049).
     lastAnsweredAt: v.optional(v.number()),
     // When the next research report kept on its jobs is due to be deleted; 0
     // when none is kept. Missing on manufacturers from before ADR 0043.
