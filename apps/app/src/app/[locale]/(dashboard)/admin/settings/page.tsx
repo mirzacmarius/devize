@@ -3,12 +3,19 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button, buttonVariants } from "@devize/ui/button";
 import { Input } from "@devize/ui/input";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { ExternalLink, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useScopedI18n } from "@/locales/client";
-import { ErrorText, Field, Panel, useFormat, useRun } from "../_components/ui";
+import {
+  ErrorText,
+  Field,
+  Panel,
+  Pill,
+  useFormat,
+  useRun,
+} from "../_components/ui";
 
 const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
@@ -79,6 +86,7 @@ function SenderForm({ settings }: { settings: Settings }) {
   const [firstName, setFirstName] = useState(settings.firstName ?? "");
   const [lastName, setLastName] = useState(settings.lastName ?? "");
   const [phone, setPhone] = useState(settings.phone ?? "");
+  const [senderEmail, setSenderEmail] = useState(settings.senderEmail ?? "");
   const [saved, setSaved] = useState(false);
   const { run, error, pending } = useRun();
 
@@ -89,7 +97,9 @@ function SenderForm({ settings }: { settings: Settings }) {
         onSubmit={async (event) => {
           event.preventDefault();
           setSaved(
-            await run(() => updateSettings({ firstName, lastName, phone })),
+            await run(() =>
+              updateSettings({ firstName, lastName, phone, senderEmail }),
+            ),
           );
         }}
       >
@@ -115,6 +125,18 @@ function SenderForm({ settings }: { settings: Settings }) {
             onChange={(event) => setPhone(event.target.value)}
           />
         </Field>
+        <Field label={t("senderEmail")} htmlFor="sender_email">
+          <Input
+            id="sender_email"
+            type="email"
+            value={senderEmail}
+            aria-describedby="sender_email_hint"
+            onChange={(event) => setSenderEmail(event.target.value)}
+          />
+          <p id="sender_email_hint" className="text-xs text-primary/50">
+            {t("senderEmailHint")}
+          </p>
+        </Field>
         <div className="flex items-center gap-3 sm:col-span-2">
           <Button type="submit" size="sm" disabled={pending}>
             {t("save")}
@@ -125,7 +147,88 @@ function SenderForm({ settings }: { settings: Settings }) {
           <ErrorText error={error} />
         </div>
       </form>
+      {settings.senderEmail && (
+        <DomainCheck key={settings.senderEmail} email={settings.senderEmail} />
+      )}
     </Panel>
+  );
+}
+
+type DomainResult = FunctionReturnType<
+  typeof api.manufacturers.mailbox.checkSenderDomain
+>;
+
+/**
+ * Whether the saved mailbox's domain publishes SPF, DKIM and DMARC, which
+ * keep a first email to a firm out of spam.
+ */
+function DomainCheck({ email }: { email: string }) {
+  const t = useScopedI18n("admin.settings.sender.domain");
+  const check = useAction(api.manufacturers.mailbox.checkSenderDomain);
+  const [result, setResult] = useState<DomainResult | null>(null);
+  const { run, error, pending } = useRun();
+
+  return (
+    <div className="flex flex-col gap-3 border-t border-border pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-primary/70">{t("intro", { email })}</p>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={pending}
+          onClick={() => run(async () => setResult(await check()))}
+        >
+          {pending && <Loader2 className="animate-spin" aria-hidden />}
+          {t("check")}
+        </Button>
+      </div>
+      <ErrorText error={error} />
+      {result?.outcome === "provider" && (
+        <p className="text-sm text-primary/70">
+          {t("provider", { domain: result.domain })}
+        </p>
+      )}
+      {result?.outcome === "unavailable" && (
+        <p className="text-sm text-primary/70">
+          {t("unavailable", { domain: result.domain })}
+        </p>
+      )}
+      {result?.outcome === "checked" && (
+        <ul className="flex flex-col gap-2 text-sm">
+          <DomainRow ok={result.spf} label="SPF">
+            {result.spf ? t("spfOk") : t("spfMissing")}
+          </DomainRow>
+          <DomainRow ok={result.dkim !== null} label="DKIM">
+            {result.dkim !== null
+              ? t("dkimOk", { selector: result.dkim })
+              : t("dkimMissing")}
+          </DomainRow>
+          <DomainRow ok={result.dmarc} label="DMARC">
+            {result.dmarc ? t("dmarcOk") : t("dmarcMissing")}
+          </DomainRow>
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function DomainRow({
+  ok,
+  label,
+  children,
+}: {
+  ok: boolean;
+  label: string;
+  children: ReactNode;
+}) {
+  const t = useScopedI18n("admin.settings.sender.domain");
+  return (
+    <li className="flex items-start gap-2">
+      <Pill tone={ok ? "success" : "warning"}>
+        {label} · {ok ? t("ok") : t("missing")}
+      </Pill>
+      <span className="text-primary/70">{children}</span>
+    </li>
   );
 }
 

@@ -2954,6 +2954,29 @@ export default {
         description:
           "Devize erased these people's addresses. Delete the emails sent to them from the mailbox you sent them from, then press the button.",
       },
+      readiness: {
+        title: "Before the first email",
+        description:
+          "The steps to the first email to a producer, each with where you do it. The list goes away once you mark the first email sent.",
+        done: "(done)",
+        key: "Put the Claude key in Convex, as ANTHROPIC_API_KEY.",
+        keyMissing:
+          "Research doesn't start without it. The commands are in the README; don't send the key in a chat.",
+        signature: "Fill in the signature: first name, last name and phone.",
+        controller:
+          "Enter the firm that runs Devize and the email for personal data. They appear on the privacy page, and drafts can't be approved without them.",
+        mailbox: "Choose the mailbox you send from.",
+        mailboxMissing:
+          "Google Workspace on a Devize domain, or your own Gmail. Enter the address in Settings and check the domain there.",
+        manufacturers: "Add the wave 1 producers.",
+        manufacturersCount: "Added: {count}.",
+        manufacturersAction: "Producers",
+        research: "Start the research.",
+        researchCount: "Researched: {count} of {total}.",
+        send: "Approve the first email, send it from your mailbox and press “I sent it”.",
+        sendCount: "Drafts: {drafts}. Approved, to send: {approved}.",
+        settingsAction: "Settings",
+      },
     },
     catalog: {
       title: "Base catalog",
@@ -2986,14 +3009,37 @@ export default {
     settings: {
       title: "Settings",
       sender: {
-        title: "Signature",
+        title: "Signature and sending mailbox",
         description:
-          "It appears in every email. Drafts nobody edited are rebuilt with the new details.",
+          "The signature appears in every email, and drafts nobody edited are rebuilt with the new details. The mailbox is the address you send the emails from.",
         firstName: "First name",
         lastName: "Last name",
         phone: "Phone",
+        senderEmail: "Mailbox you send from",
+        senderEmailHint:
+          "“Open in Gmail” opens the draft in this account. Devize sends nothing from it.",
         save: "Save",
         saved: "Saved.",
+        domain: {
+          intro:
+            "Check whether the domain of {email} is ready: without SPF, DKIM and DMARC, first emails land in spam.",
+          check: "Check the domain",
+          provider:
+            "{domain} is a public email service that already has SPF, DKIM and DMARC. Nothing to do.",
+          unavailable:
+            "Couldn't read the DNS of {domain}. Try again in a few minutes.",
+          ok: "yes",
+          missing: "missing",
+          spfOk: "The domain says which servers send email for it.",
+          spfMissing:
+            "Add the SPF TXT record your email provider gives you. For Google Workspace: v=spf1 include:_spf.google.com ~all.",
+          dkimOk: "Emails are signed (selector {selector}).",
+          dkimMissing:
+            "No DKIM key under the usual selectors. Turn it on in your email provider's admin console; if you already have one under another selector, that's fine.",
+          dmarcOk: "The domain has a DMARC policy.",
+          dmarcMissing:
+            "Add a TXT record at _dmarc on the domain, for example v=DMARC1; p=none, to start.",
+        },
       },
       privacy: {
         title: "Privacy policy",

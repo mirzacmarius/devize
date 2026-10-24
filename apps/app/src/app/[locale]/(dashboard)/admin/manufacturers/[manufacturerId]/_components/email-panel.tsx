@@ -4,7 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import { Button, buttonVariants } from "@devize/ui/button";
 import { Input } from "@devize/ui/input";
 import { toast } from "@devize/ui/sonner";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useId, useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import { gmailComposeUrl, mailtoUrl } from "../../../_components/email-links";
@@ -273,6 +273,7 @@ function SendButtons({
   onOpen: () => void;
 }) {
   const t = useScopedI18n("admin.manufacturer.email");
+  const from = useQuery(api.manufacturers.outreach.getSettings)?.senderEmail;
   if (disabled) {
     return (
       <>
@@ -292,7 +293,7 @@ function SendButtons({
         {t("mailto")}
       </a>
       <a
-        href={gmailComposeUrl(email)}
+        href={gmailComposeUrl(email, from)}
         target="_blank"
         rel="noreferrer noopener"
         onClick={onOpen}
