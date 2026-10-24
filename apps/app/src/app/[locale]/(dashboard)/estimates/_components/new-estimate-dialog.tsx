@@ -12,7 +12,8 @@ import {
 } from "@devize/ui/dialog";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
-import { useMutation } from "convex/react";
+import { toast } from "@devize/ui/sonner";
+import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { Field } from "@/components/field";
@@ -23,16 +24,28 @@ import { todayInput } from "@/lib/format";
 import { useScopedI18n } from "@/locales/client";
 import { ClientSheet } from "../../clients/_components/client-sheet";
 import { ClientSelect, CountySelect } from "./estimate-fields";
+import {
+  parsedStarter,
+  type StartFrom,
+  StartFromField,
+  useStartFromName,
+} from "./start-from";
 
 type EstimateKind = Doc<"estimates">["kind"];
 
-/** Starts a Deviz: what the work is, for whom and where, and the date of its prices. */
+/**
+ * Starts a Deviz: from nothing or from a Șablon, what the work is, for whom
+ * and where, and the date of its prices.
+ */
 export function NewEstimateDialog({
   open,
   onOpenChange,
+  initial,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // What the Deviz starts from when the dialog opens, as picked in Șabloane.
+  initial?: StartFrom;
 }) {
   const t = useScopedI18n("estimates");
   const tc = useScopedI18n("common");
@@ -43,20 +56,40 @@ export function NewEstimateDialog({
           <DialogTitle>{t("newTitle")}</DialogTitle>
           <DialogDescription>{t("newDescription")}</DialogDescription>
         </DialogHeader>
-        {open && <NewEstimateForm onClose={() => onOpenChange(false)} />}
+        {open && (
+          <NewEstimateForm
+            initial={initial ?? { kind: "blank" }}
+            onClose={() => onOpenChange(false)}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
 }
 
-function NewEstimateForm({ onClose }: { onClose: () => void }) {
+function NewEstimateForm({
+  initial,
+  onClose,
+}: {
+  initial: StartFrom;
+  onClose: () => void;
+}) {
   const t = useScopedI18n("estimates");
+  const tt = useScopedI18n("templates");
   const tc = useScopedI18n("common");
   const { firm } = useFirm();
   const create = useMutation(api.estimates.estimates.create);
+  const start = useMutation(api.templates.templates.start);
+  const templates = useQuery(api.templates.templates.list, {
+    organizationId: firm._id,
+  });
+  const startFromName = useStartFromName();
   const run = useRun();
   const router = useRouter();
-  const [title, setTitle] = useState("");
+  const [startFrom, setStartFrom] = useState<StartFrom>(initial);
+  // Until someone types a title, the Deviz takes its Șablon's name.
+  const [typedTitle, setTypedTitle] = useState<string>();
+  const title = typedTitle ?? startFromName(startFrom, templates) ?? "";
   const [kind, setKind] = useState<EstimateKind>("private");
   const [clientId, setClientId] = useState<Id<"clients"> | null>(null);
   const [siteAddress, setSiteAddress] = useState("");
@@ -72,24 +105,42 @@ function NewEstimateForm({ onClose }: { onClose: () => void }) {
       setError(t("titleRequired"));
       return;
     }
+    const starter = parsedStarter(startFrom);
+    if (startFrom.kind === "starter" && !starter) {
+      return;
+    }
     setError(undefined);
     setSaving(true);
-    const result = await run(() =>
-      create({
-        organizationId: firm._id,
-        title: title.trim(),
-        kind,
-        clientId: clientId ?? undefined,
-        siteAddress: siteAddress.trim() || undefined,
-        county: county || undefined,
-        priceDate: priceDate || undefined,
-      }),
-    );
+    const details = {
+      organizationId: firm._id,
+      title: title.trim(),
+      kind,
+      clientId: clientId ?? undefined,
+      siteAddress: siteAddress.trim() || undefined,
+      county: county || undefined,
+      priceDate: priceDate || undefined,
+    };
+    const result = await run(async () => {
+      if (startFrom.kind === "template") {
+        return await start({ ...details, templateId: startFrom.templateId });
+      }
+      if (starter) {
+        return await start({
+          ...details,
+          starter: { key: starter.starter.key, values: starter.values },
+        });
+      }
+      return { estimateId: await create(details), skipped: [] };
+    });
     if (result.ok) {
+      const { estimateId, skipped } = result.value;
+      if (skipped.length > 0) {
+        toast.warning(tt("skipped", { codes: skipped.join(", ") }));
+      }
       // The list stays mounted, hidden, for Back (ADR 0029), so the dialog
       // closes rather than wait there open.
       onClose();
-      router.push(`/estimates/${result.value}`);
+      router.push(`/estimates/${estimateId}`);
     } else {
       setSaving(false);
     }
@@ -98,11 +149,16 @@ function NewEstimateForm({ onClose }: { onClose: () => void }) {
   return (
     <>
       <form className="grid gap-5" onSubmit={submit} noValidate>
+        <StartFromField
+          templates={templates}
+          value={startFrom}
+          onChange={setStartFrom}
+        />
         <Field label={t("fields.title")} htmlFor="estimate-title" error={error}>
           <Input
             id="estimate-title"
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => setTypedTitle(event.target.value)}
             placeholder={t("fields.titlePlaceholder")}
             aria-invalid={error !== undefined}
             autoFocus

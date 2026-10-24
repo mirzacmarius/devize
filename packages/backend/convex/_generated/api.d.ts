@@ -195,6 +195,10 @@ import type * as takeoffs_rooms from "../takeoffs/rooms.js";
 import type * as takeoffs_tables from "../takeoffs/tables.js";
 import type * as takeoffs_takeoffs from "../takeoffs/takeoffs.js";
 import type * as takeoffs_validators from "../takeoffs/validators.js";
+import type * as templates_starters from "../templates/starters.js";
+import type * as templates_tables from "../templates/tables.js";
+import type * as templates_templates from "../templates/templates.js";
+import type * as templates_validators from "../templates/validators.js";
 import type * as users from "../users.js";
 import type * as utils_validators from "../utils/validators.js";
 
@@ -389,6 +393,10 @@ declare const fullApi: ApiFromModules<{
   "takeoffs/tables": typeof takeoffs_tables;
   "takeoffs/takeoffs": typeof takeoffs_takeoffs;
   "takeoffs/validators": typeof takeoffs_validators;
+  "templates/starters": typeof templates_starters;
+  "templates/tables": typeof templates_tables;
+  "templates/templates": typeof templates_templates;
+  "templates/validators": typeof templates_validators;
   users: typeof users;
   "utils/validators": typeof utils_validators;
 }>;

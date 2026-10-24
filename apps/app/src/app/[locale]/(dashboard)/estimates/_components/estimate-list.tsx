@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { usePaginatedQuery, useQuery } from "convex/react";
-import { Plus } from "lucide-react";
+import { LayoutTemplate, Plus } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import {
@@ -28,6 +28,8 @@ import { SegmentedControl } from "@/components/segmented-control";
 import { estimateCode, formatDay, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { NewEstimateDialog } from "./new-estimate-dialog";
+import type { StartFrom } from "./start-from";
+import { TemplatesSheet } from "./templates-sheet";
 
 type Filter = "all" | EstimateStatus;
 const filters = ["all", "draft", "sent", "accepted", "rejected"] as const;
@@ -46,12 +48,19 @@ type Row = {
 export function EstimateList() {
   const t = useScopedI18n("estimates");
   const tc = useScopedI18n("common");
+  const tt = useScopedI18n("templates");
   const locale = useCurrentLocale();
   const { firm } = useFirm();
   const [filter, setFilter] = useState<Filter>("all");
   const [text, setText] = useState("");
   const search = useDeferredValue(text.trim());
   const [creating, setCreating] = useState(false);
+  const [startFrom, setStartFrom] = useState<StartFrom>();
+  const [browsing, setBrowsing] = useState(false);
+  const startBlank = () => {
+    setStartFrom(undefined);
+    setCreating(true);
+  };
 
   const listed = usePaginatedQuery(
     api.estimates.estimates.list,
@@ -81,10 +90,16 @@ export function EstimateList() {
         title={t("title")}
         description={t("description")}
         actions={
-          <Button onClick={() => setCreating(true)}>
-            <Plus aria-hidden />
-            {t("new")}
-          </Button>
+          <>
+            <Button variant="outline" onClick={() => setBrowsing(true)}>
+              <LayoutTemplate aria-hidden />
+              {tt("open")}
+            </Button>
+            <Button onClick={startBlank}>
+              <Plus aria-hidden />
+              {t("new")}
+            </Button>
+          </>
         }
       />
       {isEmpty ? (
@@ -93,7 +108,7 @@ export function EstimateList() {
           title={t("emptyTitle")}
           description={t("emptyDescription")}
           action={
-            <Button variant="outline" onClick={() => setCreating(true)}>
+            <Button variant="outline" onClick={startBlank}>
               {t("emptyAction")}
             </Button>
           }
@@ -201,7 +216,20 @@ export function EstimateList() {
           </CardContent>
         </Card>
       )}
-      <NewEstimateDialog open={creating} onOpenChange={setCreating} />
+      <TemplatesSheet
+        open={browsing}
+        onOpenChange={setBrowsing}
+        onUse={(choice) => {
+          setBrowsing(false);
+          setStartFrom(choice);
+          setCreating(true);
+        }}
+      />
+      <NewEstimateDialog
+        open={creating}
+        onOpenChange={setCreating}
+        initial={startFrom}
+      />
     </>
   );
 }
