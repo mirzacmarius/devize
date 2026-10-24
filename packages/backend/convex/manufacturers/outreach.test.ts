@@ -414,6 +414,20 @@ describe("the signer deleting their account", () => {
     });
   });
 
+  test("takes the mailbox with the signature", async () => {
+    const t = setup();
+    const { admin } = await producerWithNorms(t);
+    await admin.as.mutation(outreach.updateSettings, {
+      firstName: "Ioana",
+      lastName: "Pop",
+      phone: "0711 111 111",
+      senderEmail: "ioana@devize.example",
+    });
+    await admin.as.mutation(api.users.deleteCurrentUserAccount, {});
+    await t.finishAllScheduledFunctions(() => {});
+    expect((await settingsOf(t))?.senderEmail).toBeUndefined();
+  });
+
   test("a signature saved before goes with whoever saved the settings last", async () => {
     const t = setup();
     // producerWithNorms saves its signature without a signer.
@@ -421,5 +435,111 @@ describe("the signer deleting their account", () => {
     await admin.as.mutation(api.users.deleteCurrentUserAccount, {});
     await t.finishAllScheduledFunctions(() => {});
     expect((await settingsOf(t))?.firstName).toBeUndefined();
+  });
+});
+
+describe("the sending mailbox", () => {
+  test("is saved in lower case, and kept when left out", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    const sign = (senderEmail?: string) =>
+      admin.as.mutation(outreach.updateSettings, {
+        firstName: "Ioana",
+        lastName: "Pop",
+        phone: "0711 111 111",
+        ...(senderEmail === undefined ? {} : { senderEmail }),
+      });
+    await sign(" Ioana@Devize.example ");
+    expect((await admin.as.query(outreach.getSettings, {})).senderEmail).toBe(
+      "ioana@devize.example",
+    );
+    await sign();
+    expect((await admin.as.query(outreach.getSettings, {})).senderEmail).toBe(
+      "ioana@devize.example",
+    );
+    await sign("");
+    expect(
+      (await admin.as.query(outreach.getSettings, {})).senderEmail,
+    ).toBeUndefined();
+    await expect(sign("ioana")).rejects.toThrow();
+  });
+});
+
+describe("readiness", () => {
+  afterEach(() => {
+    delete process.env.ANTHROPIC_API_KEY;
+  });
+
+  test("says what is missing before the first email, until one is sent", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    expect(await admin.as.query(outreach.readiness, {})).toEqual({
+      hasApiKey: false,
+      signature: false,
+      controller: false,
+      senderEmail: undefined,
+      manufacturers: 0,
+      researched: 0,
+      drafts: 0,
+      approved: 0,
+      sent: false,
+    });
+
+    process.env.ANTHROPIC_API_KEY = "test-key";
+    await admin.as.mutation(outreach.updateSettings, {
+      firstName: "Ioana",
+      lastName: "Pop",
+      phone: "0711 111 111",
+      senderEmail: "ioana@devize.example",
+    });
+    await admin.as.mutation(outreach.updatePrivacy, {
+      controllerName: "Exemplu SRL",
+      controllerRegistration: "",
+      controllerAddress: "",
+      controllerEmail: "date@exemplu.example",
+      privacyUrl: "",
+    });
+    const manufacturerId = await insertManufacturer(t, admin.userId, {
+      status: "review",
+      normsStatus: "unknown",
+      researchedAt: Date.now(),
+    });
+    await insertManufacturer(t, admin.userId, {
+      name: "Alt Test SA",
+      nameKey: "alt test",
+      status: "new",
+      normsStatus: "unknown",
+    });
+    await t.run(async (ctx) => {
+      await ctx.db.insert("outreachMessages", {
+        manufacturerId,
+        step: "initial",
+        status: "draft",
+        to: "office@termotest.example",
+        subject: "Normele de deviz Termo Test în Devize",
+        body: "Bună ziua,",
+        vars: { firm: "Termo Test" },
+        issues: [],
+        edited: false,
+        updatedAt: Date.now(),
+      });
+    });
+    expect(await admin.as.query(outreach.readiness, {})).toEqual({
+      hasApiKey: true,
+      signature: true,
+      controller: true,
+      senderEmail: "ioana@devize.example",
+      manufacturers: 2,
+      researched: 1,
+      drafts: 1,
+      approved: 0,
+      sent: false,
+    });
+  });
+
+  test("is only for super admins", async () => {
+    const t = setup();
+    const user = await signIn(t, { name: "Ion" });
+    await expect(user.as.query(outreach.readiness, {})).rejects.toThrow();
   });
 });

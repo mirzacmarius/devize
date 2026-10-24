@@ -2943,6 +2943,29 @@ export default {
         description:
           "Devize a șters adresele acestor persoane. Șterge și emailurile trimise lor din căsuța din care le-ai trimis, apoi apasă butonul.",
       },
+      readiness: {
+        title: "Înainte de primul email",
+        description:
+          "Pașii până la primul email către un producător, fiecare cu locul unde îl faci. Lista dispare după ce marchezi primul email ca trimis.",
+        done: "(făcut)",
+        key: "Pune cheia Claude în Convex, ca ANTHROPIC_API_KEY.",
+        keyMissing:
+          "Fără ea, cercetarea nu pornește. Comenzile sunt în README; nu trimite cheia în chat.",
+        signature: "Completează semnătura: prenume, nume și telefon.",
+        controller:
+          "Trece firma care operează Devize și emailul pentru date personale. Apar pe pagina de confidențialitate, iar fără ele ciornele nu se pot aproba.",
+        mailbox: "Alege căsuța din care trimiți.",
+        mailboxMissing:
+          "Google Workspace pe un domeniu Devize sau Gmail-ul tău. Treci adresa în Setări și verifică acolo domeniul.",
+        manufacturers: "Adaugă producătorii valului 1.",
+        manufacturersCount: "Adăugați: {count}.",
+        manufacturersAction: "Producători",
+        research: "Pornește cercetarea.",
+        researchCount: "Cercetați: {count} din {total}.",
+        send: "Aprobă primul email, trimite-l din căsuța ta și apasă „Am trimis-o”.",
+        sendCount: "Ciorne: {drafts}. Aprobate, de trimis: {approved}.",
+        settingsAction: "Setări",
+      },
     },
     catalog: {
       title: "Catalogul de bază",
@@ -2975,14 +2998,37 @@ export default {
     settings: {
       title: "Setări",
       sender: {
-        title: "Semnătura",
+        title: "Semnătura și căsuța de trimitere",
         description:
-          "Apare în fiecare email. Ciornele needitate se refac cu noile date.",
+          "Semnătura apare în fiecare email, iar ciornele needitate se refac cu noile date. Căsuța e adresa din care trimiți emailurile.",
         firstName: "Prenume",
         lastName: "Nume",
         phone: "Telefon",
+        senderEmail: "Căsuța din care trimiți",
+        senderEmailHint:
+          "Butonul „Deschide în Gmail” deschide ciorna în acest cont. Devize nu trimite nimic din ea.",
         save: "Salvează",
         saved: "Salvat.",
+        domain: {
+          intro:
+            "Verifică dacă domeniul lui {email} e pregătit: fără SPF, DKIM și DMARC, primele emailuri ajung în spam.",
+          check: "Verifică domeniul",
+          provider:
+            "{domain} e un serviciu de email public, care are deja SPF, DKIM și DMARC. Nu trebuie făcut nimic.",
+          unavailable:
+            "Nu am putut citi DNS-ul pentru {domain}. Încearcă din nou peste câteva minute.",
+          ok: "da",
+          missing: "lipsește",
+          spfOk: "Domeniul spune ce servere trimit emailuri în numele lui.",
+          spfMissing:
+            "Adaugă înregistrarea TXT SPF pe care ți-o dă furnizorul de email. La Google Workspace: v=spf1 include:_spf.google.com ~all.",
+          dkimOk: "Emailurile sunt semnate (selectorul {selector}).",
+          dkimMissing:
+            "Nu am găsit o cheie DKIM la selectorii obișnuiți. Activeaz-o din consola de administrare a furnizorului de email; dacă ai deja una cu alt selector, e în regulă.",
+          dmarcOk: "Domeniul are o politică DMARC.",
+          dmarcMissing:
+            "Adaugă o înregistrare TXT la _dmarc pe domeniu, de exemplu v=DMARC1; p=none, ca început.",
+        },
       },
       privacy: {
         title: "Politica de confidențialitate",

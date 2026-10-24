@@ -123,6 +123,9 @@ export const manufacturerTables = {
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
     phone: v.optional(v.string()),
+    // The mailbox the emails go from, so the Gmail button opens that account
+    // and its domain can be checked. The signer's, so it goes with them.
+    senderEmail: v.optional(v.string()),
     // Another privacy page than Devize's own /confidentialitate.
     privacyUrl: v.optional(v.string()),
     // Who answers for the personal data in Devize (the GDPR controller), as
