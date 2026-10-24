@@ -54,7 +54,11 @@ export function SidebarContent({
     <SidebarNavItem
       key={href}
       asChild
-      active={pathname === href || pathname.startsWith(`${href}/`)}
+      active={
+        href === "/"
+          ? pathname === "/"
+          : pathname === href || pathname.startsWith(`${href}/`)
+      }
     >
       <Link href={href} onClick={onNavigate}>
         <Icon aria-hidden />
@@ -82,6 +86,7 @@ export function SidebarContent({
       <FirmSwitcher onNavigate={onNavigate} />
       <SidebarNav aria-label={t("main")}>
         <SidebarNavLabel>{t("work")}</SidebarNavLabel>
+        {item("/", Icons.Home, t("home"))}
         {item("/estimates", Icons.Deviz, t("estimates"))}
         {item("/catalog", Icons.Catalog, t("catalog"))}
         {item("/clients", Icons.Clients, t("clients"))}

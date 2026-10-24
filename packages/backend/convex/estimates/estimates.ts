@@ -52,7 +52,11 @@ async function checkClient(
   }
 }
 
-async function withClientNames(ctx: QueryCtx, estimates: Doc<"estimates">[]) {
+/** Devize as lists show them, each with its client's name. */
+export async function withClientNames(
+  ctx: QueryCtx,
+  estimates: Doc<"estimates">[],
+) {
   const names = new Map<Id<"clients">, string>();
   for (const estimate of estimates) {
     if (estimate.clientId && !names.has(estimate.clientId)) {

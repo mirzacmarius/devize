@@ -54,6 +54,7 @@ import type * as estimates_sections from "../estimates/sections.js";
 import type * as estimates_tables from "../estimates/tables.js";
 import type * as estimates_validators from "../estimates/validators.js";
 import type * as http from "../http.js";
+import type * as home from "../home.js";
 import type * as lib_access from "../lib/access.js";
 import type * as lib_dates from "../lib/dates.js";
 import type * as lib_email from "../lib/email.js";
@@ -219,6 +220,7 @@ declare const fullApi: ApiFromModules<{
   "estimates/tables": typeof estimates_tables;
   "estimates/validators": typeof estimates_validators;
   http: typeof http;
+  home: typeof home;
   "lib/access": typeof lib_access;
   "lib/dates": typeof lib_dates;
   "lib/email": typeof lib_email;

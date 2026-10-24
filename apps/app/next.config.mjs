@@ -4,11 +4,7 @@ import "./src/env.mjs";
 // Sections without a page of their own open their first one, with or without
 // the language the proxy puts in front (src/locales/locale.ts). A redirect here
 // answers before anything renders, which a page streaming into its shell can't.
-const sections = [
-  // The devize are the app's home until there is an overview to show.
-  ["/", "/estimates"],
-  ["/admin", "/admin/manufacturers"],
-];
+const sections = [["/admin", "/admin/manufacturers"]];
 
 // Sent with every page. No other site may show the app in a frame, where a
 // hidden Ofertă could trick its client into signing; browsers take a file as
