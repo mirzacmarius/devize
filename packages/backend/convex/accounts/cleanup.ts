@@ -4,6 +4,7 @@ import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { internalMutation } from "../_generated/server";
 import { deleteFirmNormRequests } from "../catalog/aiNorms";
+import { deleteFirmInvoices } from "../invoices/invoices";
 import { deleteFirmInvoiceSettings } from "../invoices/settings";
 import { deletePackagingRows } from "../materials/packagings";
 import { deleteFirmDatasheets } from "../producers/datasheets";
@@ -251,6 +252,10 @@ async function deleteSome(
   const packagings = await deletePackagingRows(ctx, organizationId, limit);
   if (packagings > 0) {
     return packagings;
+  }
+  const invoices = await deleteFirmInvoices(ctx, organizationId, limit);
+  if (invoices > 0) {
+    return invoices;
   }
   const invoiceSettings = await deleteFirmInvoiceSettings(ctx, organizationId);
   if (invoiceSettings > 0) {

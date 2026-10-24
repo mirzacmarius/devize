@@ -2293,6 +2293,15 @@ export default {
       warning: "This can't be undone.",
       button: "Delete account",
       confirm: "Are you sure? Click again",
+      firmTitle: "{firm} is deleted with your account",
+      firmDescription:
+        "You are its only member, so its estimates, clients and rates are deleted too.",
+      invoices: "Numbered invoices: {count}. They are deleted too, for good.",
+      manyInvoices:
+        "Over 100 numbered invoices. They are deleted too, for good.",
+      law: "Romania's accounting law (Legea 82/1991, art. 25) has the firm keep its invoices for 5 years, counted from 1 July of the year after it issued them. Download the archive first: once deleted, we can't get them back.",
+      confirmInvoices:
+        "I understand the firm's invoices are deleted from Devize for good and that keeping them is the firm's duty.",
     },
     firm: {
       logoTitle: "Logo",
@@ -3509,11 +3518,11 @@ export default {
       basis:
         "our contract with you (Art. 6(1)(b) GDPR) and our legitimate interest in keeping the app secure, for example by limiting how many codes and invitations go to one address and how many AI requests each person makes, or by checking that a person is asking before we send a sign-in code (Art. 6(1)(f)). The statistics for manufacturers hold no personal data.",
       retention:
-        "while you have an account. You can ask us at any time to delete your account and your firm's data; we keep only what the law requires us to keep. If you ask for a sign-in code and never sign in, we delete the address and the codes within two days. A session ends 30 days after you sign in, and we delete it within a day after that. A file uploaded and never used is deleted within three hours.",
+        "while you have an account. You can ask us at any time to delete your account and your firm's data; we keep only what the law requires us to keep. If you are your firm's only member, the firm is deleted with your account, its invoices included; first we offer you their archive, because the accounting law has the firm keep them for 5 years. If you ask for a sign-in code and never sign in, we delete the address and the codes within two days. A session ends 30 days after you sign in, and we delete it within a day after that. A file uploaded and never used is deleted within three hours.",
     },
     clients: {
       title: "Firms' clients and others named in documents",
-      body: "When a firm works with you through Devize, the firm answers for your data and Devize processes it on the firm's behalf. For an offer: the name and contact details the firm entered, the work's address, when you opened the offer's link, what you chose in it, the questions you asked and your reason if you decline it. If you accept it: the name you typed, the signature you drew, the moment, a fingerprint of what you accepted, what your browser says about itself (type, language, time zone, screen) and the IP address you sent the acceptance from; if the firm entered your email, we send you the confirmation. For invoices: your name, your CUI or, if you gave it to the firm, your CNP, address, email and phone, what you were invoiced for and the payments the firm recorded. If you are a firm, your name, registered office and registration number may come from ANAF's public register. For this data, write to the firm first.",
+      body: "When a firm works with you through Devize, the firm answers for your data and Devize processes it on the firm's behalf. For an offer: the name and contact details the firm entered, the work's address, when you opened the offer's link, what you chose in it, the questions you asked and your reason if you decline it. If you accept it: the name you typed, the signature you drew, the moment, a fingerprint of what you accepted, what your browser says about itself (type, language, time zone, screen) and the IP address you sent the acceptance from; if the firm entered your email, we send you the confirmation. For invoices: your name, your CUI or, if you gave it to the firm, your CNP, address, email and phone, what you were invoiced for and the payments the firm recorded; we keep them while the firm is on Devize. If you are a firm, your name, registered office and registration number may come from ANAF's public register. For this data, write to the firm first.",
       others:
         "Also on the firm's behalf we keep the name, role and firm or institution of the people named in reception reports (the committee members, the site supervisor, the designer, the guests), the work's location and the name of whoever confirmed a progress statement. The firm enters them, and the firm downloads and sends the documents.",
       dpa: "What Devize does with this data on the firm's behalf, with which providers and how it deletes it, is in the {dpa}, which the firm accepts together with the {terms}.",
@@ -4058,6 +4067,8 @@ export default {
       "Each line needs a description of at most 200 characters.",
     invalidVatRate: "The VAT rate is between 0% and 100%.",
     inUseInvoices: "The estimate has issued invoices, so it can't be deleted.",
+    inUseFirmInvoices:
+      "Your firm has numbered invoices, which are deleted with your account. Tick that you know, then try again.",
     inUseSeries: "The series already exists or has numbered invoices.",
     lockedInvoice:
       "The invoice is issued and can't change. A wrong invoice is reversed with a storno.",
@@ -4121,6 +4132,14 @@ export default {
       cancelled: "Cancelled",
     },
     noneHere: "No invoices here.",
+    archive: {
+      button: "Download the invoice archive",
+      reading: "Reading the invoices… {count}",
+      drawing: "Making the PDFs… {done} of {total}",
+      done: "The archive is downloaded. Invoices in it: {count}.",
+      empty: "The firm has no numbered invoices yet.",
+      failed: "We couldn't make the archive. Try again.",
+    },
     columns: {
       invoice: "Invoice",
       client: "Client",

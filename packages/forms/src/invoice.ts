@@ -356,3 +356,150 @@ export function invoiceDocument(invoice: InvoiceInput): FormDocument {
     blocks,
   };
 }
+
+/** An invoice as the register lists it. */
+export type RegisterInvoice = Pick<
+  InvoiceInput,
+  | "kind"
+  | "status"
+  | "series"
+  | "number"
+  | "issueDate"
+  | "dueDate"
+  | "buyer"
+  | "totals"
+  | "paidAmount"
+> & { efactura: { status: InvoiceDoc["efactura"]["status"] } };
+
+const statusLabels: Record<InvoiceDoc["status"], string> = {
+  draft: "Ciornă",
+  issued: "Emisă",
+  paid: "Încasată",
+  cancelled: "Anulată",
+};
+
+const shortKinds: Record<InvoiceDoc["kind"], string> = {
+  advance: "Avans",
+  statement: "Situație de lucrări",
+  final: "Finală",
+  storno: "Stornare",
+};
+
+const efacturaLabels: Record<InvoiceDoc["efactura"]["status"], string> = {
+  not_sent: "Netrimisă",
+  uploading: "În curs",
+  processing: "În curs",
+  accepted: "Acceptată",
+  rejected: "Respinsă",
+  failed: "Eroare",
+};
+
+/**
+ * A firm's invoices in one table, for the archive it keeps: each one's
+ * number, date, client, amounts and where it stands, with the sums of those
+ * that count. `madeOn` is the day the archive was made, as YYYY-MM-DD.
+ */
+export function invoiceRegister(
+  invoices: readonly RegisterInvoice[],
+  firm: string,
+  madeOn: string,
+): FormDocument {
+  // A cancelled invoice keeps its number but bills nothing.
+  const counted = invoices.filter((invoice) => invoice.status !== "cancelled");
+  const sum = (pick: (invoice: RegisterInvoice) => number) =>
+    roundLei(counted.reduce((total, invoice) => total + pick(invoice), 0));
+  const rows: Row[] = invoices.map((invoice, index) => ({
+    kind: "item",
+    cells: [
+      { text: String(index + 1), align: "right" },
+      { text: invoiceCodeOf(invoice) ?? "–" },
+      { text: formatDate(invoice.issueDate), align: "center" },
+      { text: shortKinds[invoice.kind] },
+      { text: invoice.buyer.name || "–" },
+      { text: identifier(invoice.buyer) ?? "–" },
+      money(invoice.totals.net),
+      money(invoice.totals.vat),
+      money(invoice.totals.total),
+      money(invoice.paidAmount),
+      { text: statusLabels[invoice.status] },
+      { text: efacturaLabels[invoice.efactura.status] },
+    ],
+  }));
+  rows.push({
+    kind: "total",
+    cells: [
+      { text: "Total, fără facturile anulate", bold: true, colSpan: 6 },
+      money(
+        sum((invoice) => invoice.totals.net),
+        { bold: true },
+      ),
+      money(
+        sum((invoice) => invoice.totals.vat),
+        { bold: true },
+      ),
+      money(
+        sum((invoice) => invoice.totals.total),
+        { bold: true },
+      ),
+      money(
+        sum((invoice) => invoice.paidAmount),
+        { bold: true },
+      ),
+      { text: "" },
+      { text: "" },
+    ],
+  });
+  return {
+    id: "REGISTRU",
+    name: "Registrul facturilor",
+    orientation: "landscape",
+    footer: `${firm} · Registrul facturilor`,
+    blocks: [
+      { type: "title", lines: ["REGISTRUL FACTURILOR", firm] },
+      {
+        type: "text",
+        text: `Facturile cu număr din Devize, la ${formatDate(madeOn)}. Sumele sunt în lei.`,
+        muted: true,
+        size: 8,
+        align: "center",
+      },
+      { type: "space", height: 10 },
+      {
+        type: "table",
+        style: "grid",
+        fontSize: 7.5,
+        columns: [
+          { width: 24, align: "right" },
+          { width: 62 },
+          { width: 52, align: "center" },
+          { width: 70 },
+          { width: 1, flex: true },
+          { width: 80 },
+          { width: 62, align: "right" },
+          { width: 56, align: "right" },
+          { width: 62, align: "right" },
+          { width: 62, align: "right" },
+          { width: 50 },
+          { width: 54 },
+        ],
+        header: [
+          [
+            { text: "Nr. crt." },
+            { text: "Număr" },
+            { text: "Data" },
+            { text: "Tip" },
+            { text: "Client" },
+            { text: "CUI / CNP" },
+            { text: "Bază" },
+            { text: "TVA" },
+            { text: "Total" },
+            { text: "Încasat" },
+            { text: "Stare" },
+            { text: "e-Factura" },
+          ],
+        ],
+        rows,
+      },
+    ],
+  };
+}

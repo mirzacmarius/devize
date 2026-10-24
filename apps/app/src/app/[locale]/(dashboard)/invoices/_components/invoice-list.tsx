@@ -18,6 +18,7 @@ import { usePaginatedQuery } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { InvoiceArchiveButton } from "@/components/invoice-archive";
 import {
   EfacturaPill,
   type InvoiceStatus,
@@ -55,7 +56,19 @@ export function InvoiceList() {
 
   return (
     <>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          isEmpty ? undefined : (
+            // The firm keeps its invoices 5 years (Legea 82/1991 art. 25).
+            <InvoiceArchiveButton
+              organizationId={firm._id}
+              firmName={firm.name}
+            />
+          )
+        }
+      />
       {isEmpty ? (
         <EmptyState
           icon={<Icons.Invoice />}

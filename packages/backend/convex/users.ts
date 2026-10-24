@@ -2,11 +2,12 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import type { MutationCtx } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import { unclaimedUpload } from "./accounts/files";
 import { EMAIL_CODE_PROVIDER } from "./emailSignIn";
-import { invalid } from "./lib/errors";
+import { numberedInvoiceCount } from "./invoices/archive";
+import { appError, invalid } from "./lib/errors";
 import { forgetSender } from "./manufacturers/outreach";
 import { forgetClaimant } from "./producers/claims";
 import { forgetContact } from "./producers/details";
@@ -118,6 +119,63 @@ export const removeUserImage = mutation({
   },
 });
 
+/** The firms the user is the only member of, which go with their account. */
+async function soleFirms(ctx: QueryCtx, userId: Id<"users">) {
+  const memberships = await ctx.db
+    .query("memberships")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .take(100);
+  const firms = [];
+  for (const membership of memberships) {
+    const members = await ctx.db
+      .query("memberships")
+      .withIndex("by_organizationId_and_userId", (q) =>
+        q.eq("organizationId", membership.organizationId),
+      )
+      .take(2);
+    if (members.some((other) => other._id !== membership._id)) {
+      continue;
+    }
+    const firm = await ctx.db.get("organizations", membership.organizationId);
+    if (firm) {
+      firms.push(firm);
+    }
+  }
+  return firms;
+}
+
+// Invoices are counted up to one past this, for "peste 100".
+const INVOICES_COUNTED = 100;
+
+/**
+ * What deleting the account takes with it: the firms the user is the only
+ * member of, each with how many numbered invoices it has, so the warning can
+ * name them and offer their archive first (ADR 0050).
+ */
+export const deletionPreview = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+    const firms = await soleFirms(ctx, userId);
+    const preview = [];
+    for (const firm of firms) {
+      preview.push({
+        _id: firm._id,
+        name: firm.name,
+        invoices: await numberedInvoiceCount(
+          ctx,
+          firm._id,
+          INVOICES_COUNTED + 1,
+        ),
+      });
+    }
+    return preview;
+  },
+});
+
 /**
  * Takes a user out of their firms. A firm left without members is deleted; a
  * firm left without an owner passes to its longest-standing admin, or member.
@@ -162,15 +220,27 @@ async function leaveFirms(ctx: MutationCtx, userId: Id<"users">) {
 
 /**
  * Deletes the signed-in user with their sign-in accounts, sessions and avatar,
- * takes them out of their firms and forgets them on producers' profiles. The
- * client signs out afterwards.
+ * takes them out of their firms and forgets them on producers' profiles. A
+ * firm left without members goes too, with its invoices only once the person
+ * confirms. The client signs out afterwards.
  */
 export const deleteCurrentUserAccount = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    // The person read that their firm's invoices go too, and was offered
+    // the archive (ADR 0050).
+    deleteInvoices: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       return;
+    }
+    if (!args.deleteInvoices) {
+      for (const firm of await soleFirms(ctx, userId)) {
+        if ((await numberedInvoiceCount(ctx, firm._id, 1)) > 0) {
+          throw appError("in_use", "firmInvoices");
+        }
+      }
     }
     const user = await ctx.db.get("users", userId);
     if (user?.imageId) {
