@@ -3,6 +3,8 @@ import {
   Calculator,
   ChartColumn,
   Check,
+  ClipboardCheck,
+  ClipboardList,
   Coins,
   Copy,
   Ellipsis,
@@ -45,6 +47,10 @@ export const Icons = {
   Prices: Tags,
   Producers: Store,
   Survey: Ruler,
+  // Situații de lucrări: what was executed, period by period.
+  Progress: ClipboardList,
+  // A Proces-verbal de recepție.
+  Reception: ClipboardCheck,
   Deviz: FileText,
   OfficialForms: FileSpreadsheet,
   Spreadsheet: Sheet,

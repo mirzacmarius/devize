@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./pdf": "./src/pdf/index.ts",
+    "./progress": "./src/progress/index.ts",
     "./sheet": "./src/sheet.ts",
     "./workbook": "./src/workbook/index.ts",
     "./xlsx": "./src/xlsx/index.ts"

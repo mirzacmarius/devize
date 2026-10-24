@@ -20,6 +20,7 @@ import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { PackagingCard } from "../_materials/packaging-card";
 import { OfferCard } from "../_offer/offer-card";
+import { ProgressCard } from "../_progress/progress-card";
 import { OmissionsSheet } from "../_proposal/omissions-sheet";
 import { ProposalBanner } from "../_proposal/proposal-banner";
 import { ProposalSheet } from "../_proposal/proposal-sheet";
@@ -155,6 +156,9 @@ export function EstimatePage() {
           <CompatibilityCard estimate={estimate} editable={editable} />
           <TakeoffCard estimate={estimate} />
           <OfferCard estimate={estimate} />
+          {estimate.status === "accepted" && (
+            <ProgressCard estimate={estimate} />
+          )}
           <DocumentsCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />
           <DetailsCard
