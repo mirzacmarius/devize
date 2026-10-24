@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -9,6 +10,8 @@ import {
   TickRule,
 } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
+import { useQuery } from "convex/react";
+import { EurAmount } from "@/components/eur-amount";
 import { formatHours, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate, OpenPanel } from "./types";
@@ -43,6 +46,7 @@ export function RecapCard({
   const tTarget = useScopedI18n("targetPrice");
   const locale = useCurrentLocale();
   const { totals, markups } = estimate;
+  const eur = useQuery(api.exchange.rates.latest, {});
   const rate = (value: number) => formatPercent(value, locale);
 
   const rows: Row[] = [
@@ -168,6 +172,7 @@ export function RecapCard({
             })}
           </span>
         </p>
+        {eur && totals.total > 0 && <EurAmount lei={totals.total} rate={eur} />}
       </CardContent>
     </Card>
   );

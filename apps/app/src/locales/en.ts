@@ -244,6 +244,10 @@ export default {
       submit: "Save",
     },
   },
+  eur: {
+    amount: "≈ {amount} EUR at BNR's rate of {date} (1 EUR = {rate} lei).",
+    paidInLei: "Payment is in lei.",
+  },
   targetPrice: {
     open: "Target price",
     title: "Fit the estimate to a price",
@@ -1639,6 +1643,9 @@ export default {
       assistant: "The AI assistant answers the client's questions",
       assistantHint:
         "It answers from the offer alone. What it doesn't know, or only you can decide, it sends to you.",
+      showEur: "Show the price in EUR too",
+      showEurHint:
+        "At BNR's rate of the day the client opens the offer. The price stays in lei.",
       submit: "Create the link",
       created: "The link is ready and copied.",
       createdNotCopied: "The link is ready.",

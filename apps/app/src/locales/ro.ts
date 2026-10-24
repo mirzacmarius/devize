@@ -239,6 +239,10 @@ export default {
       submit: "Salvează",
     },
   },
+  eur: {
+    amount: "≈ {amount} EUR la cursul BNR din {date} (1 EUR = {rate} lei).",
+    paidInLei: "Plata se face în lei.",
+  },
   targetPrice: {
     open: "Preț țintă",
     title: "Potrivește devizul la un preț",
@@ -1631,6 +1635,9 @@ export default {
       assistant: "Asistentul AI răspunde la întrebările clientului",
       assistantHint:
         "Răspunde doar din ofertă. Ce nu știe sau doar tu poți hotărî îți trimite ție.",
+      showEur: "Arată prețul și în EUR",
+      showEurHint:
+        "La cursul BNR din ziua în care clientul deschide oferta. Prețul rămâne în lei.",
       submit: "Creează linkul",
       created: "Linkul e gata și l-am copiat.",
       createdNotCopied: "Linkul e gata.",
