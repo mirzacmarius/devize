@@ -16,6 +16,7 @@ import { useFirm } from "@/components/firm-provider";
 import { Wordmark } from "@/components/wordmark";
 import { useScopedI18n } from "@/locales/client";
 import { AccountMenu } from "./account-menu";
+import { CommandMenuButton } from "./command-menu";
 import { FirmSwitcher } from "./firm-switcher";
 
 /**
@@ -84,6 +85,7 @@ export function SidebarContent({
         </Link>
       </div>
       <FirmSwitcher onNavigate={onNavigate} />
+      <CommandMenuButton onOpen={onNavigate} />
       <SidebarNav aria-label={t("main")}>
         <SidebarNavLabel>{t("work")}</SidebarNavLabel>
         {item("/", Icons.Home, t("home"))}

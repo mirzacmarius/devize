@@ -213,6 +213,7 @@ import type * as proposals_proposals from "../proposals/proposals.js";
 import type * as proposals_tables from "../proposals/tables.js";
 import type * as proposals_tender from "../proposals/tender.js";
 import type * as proposals_validators from "../proposals/validators.js";
+import type * as search_everywhere from "../search/everywhere.js";
 import type * as systems_baseSystems from "../systems/baseSystems.js";
 import type * as systems_check from "../systems/check.js";
 import type * as systems_completion from "../systems/completion.js";
@@ -445,6 +446,7 @@ declare const fullApi: ApiFromModules<{
   "proposals/tables": typeof proposals_tables;
   "proposals/tender": typeof proposals_tender;
   "proposals/validators": typeof proposals_validators;
+  "search/everywhere": typeof search_everywhere;
   "systems/baseSystems": typeof systems_baseSystems;
   "systems/check": typeof systems_check;
   "systems/completion": typeof systems_completion;

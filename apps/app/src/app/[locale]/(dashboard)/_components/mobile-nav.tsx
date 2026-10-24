@@ -10,10 +10,12 @@ import {
   SheetTrigger,
 } from "@devize/ui/sheet";
 import type { Preloaded } from "convex/react";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Wordmark } from "@/components/wordmark";
 import { useScopedI18n } from "@/locales/client";
+import { useOpenCommandMenu } from "./command-menu";
 import { SidebarContent } from "./sidebar-content";
 
 /** Under 768px: the mark, and a button that opens the sidebar as a drawer. */
@@ -25,7 +27,9 @@ export function MobileNav({
   isSuperAdmin?: boolean;
 }) {
   const t = useScopedI18n("navigation");
+  const tc = useScopedI18n("commandMenu");
   const [open, setOpen] = useState(false);
+  const openSearch = useOpenCommandMenu();
   return (
     <div className="-ml-2 flex items-center gap-1 md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
@@ -54,6 +58,15 @@ export function MobileNav({
       >
         <Wordmark />
       </Link>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="ml-auto"
+        aria-label={tc("title")}
+        onClick={openSearch}
+      >
+        <Search />
+      </Button>
     </div>
   );
 }

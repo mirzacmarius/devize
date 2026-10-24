@@ -195,6 +195,17 @@ async function summaries(ctx: QueryCtx, norms: readonly Doc<"norms">[]) {
 }
 
 /**
+ * Public norms as a search found them, those their producer confirmed first;
+ * the search's own order holds within each group.
+ */
+export function confirmedFirst(norms: Doc<"norms">[]): Doc<"norms">[] {
+  return [...norms].sort(
+    (a, b) =>
+      Number(b.confirmedAt !== undefined) - Number(a.confirmedAt !== undefined),
+  );
+}
+
+/**
  * Published norms a firm can put in a Deviz that match the words typed, its own
  * first, or only the public ones. Words are matched without diacritics, the
  * last one as a prefix.
@@ -239,14 +250,10 @@ export const search = query({
         return args.category ? scoped.eq("category", args.category) : scoped;
       })
       .take(limit);
-    // Among the public norms found, those their producer confirmed come
-    // first; the search's own order holds within each group.
-    shared.sort(
-      (a, b) =>
-        Number(b.confirmedAt !== undefined) -
-        Number(a.confirmedAt !== undefined),
+    return await summaries(
+      ctx,
+      [...own, ...confirmedFirst(shared)].slice(0, limit),
     );
-    return await summaries(ctx, [...own, ...shared].slice(0, limit));
   },
 });
 
