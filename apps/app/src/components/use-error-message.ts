@@ -61,6 +61,11 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     takeoffs: "invalidTakeoffs",
     paymentSchedule: "invalidPaymentSchedule",
     evidence: "invalidEvidence",
+    templateName: "invalidTemplateName",
+    templateSize: "invalidTemplateSize",
+    templateItems: "invalidTemplateItems",
+    templates: "invalidTemplates",
+    starterValues: "invalidStarterValues",
     period: "invalidPeriod",
     percent: "invalidPercent",
     amount: "invalidAmount",
@@ -98,6 +103,7 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     workStatementRows: "notFoundStatement",
     guarantee: "notFoundGuarantee",
     release: "notFoundRelease",
+    baseCatalog: "notFoundBaseCatalog",
   },
   forbidden: {
     domain: "forbiddenDomain",
@@ -117,6 +123,7 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     invoices: "inUseInvoices",
     series: "inUseSeries",
     statement: "inUseStatement",
+    templateName: "inUseTemplateName",
   },
   locked: {
     estimate: "lockedEstimate",

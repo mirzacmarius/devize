@@ -132,6 +132,118 @@ export default {
       done: "Done",
     },
   },
+  templates: {
+    open: "Templates",
+    startFrom: "Start from",
+    startFromHint:
+      "A template brings its chapters and line items, at your prices today.",
+    blank: "Blank estimate",
+    firmGroup: "Your firm's templates",
+    starterGroup: "Devize templates",
+    unavailable: "{name} (once the base catalog is published)",
+    itemCount: "Line items: {count}",
+    measurements: "Dimensions",
+    measurementsHint:
+      "The quantities are worked out from them. You correct them later in the estimate or the take-off.",
+    willAdd: "Line items from the base catalog: {count}.",
+    skipped:
+      "The template's line items missing from the base catalog: {codes}.",
+    starters: {
+      bathroom: {
+        name: "Bathroom",
+        description:
+          "Stripping, plumbing and wiring, waterproofing, floor and wall tiles, and sanitary fittings.",
+      },
+      kitchen: {
+        name: "Kitchen",
+        description:
+          "Wiring and plumbing, floor tiles, a tiled splashback, skim coat and paint.",
+      },
+      apartment: {
+        name: "Apartment painting",
+        description:
+          "Skim coat on part of the surfaces and emulsion paint on walls and ceilings.",
+      },
+      facade: {
+        name: "External insulation",
+        description:
+          "Scaffolding, 10 cm polystyrene insulation with decorative render, and sills.",
+      },
+      roof: {
+        name: "Roof",
+        description:
+          "Treated timber roof frame, metal tiles, gutters, downpipes and, if needed, loft insulation.",
+      },
+    },
+    inputs: {
+      length: "Length",
+      width: "Width",
+      tileHeight: "Tiling height",
+      height: "Room height",
+      backsplash: "Worktop length",
+      area: "Floor area",
+      gletShare: "Share to skim",
+      perimeter: "House perimeter",
+      facadeHeight: "Façade height",
+      openings: "Windows and doors",
+      sills: "Sill length",
+      months: "Scaffolding, in months",
+      roofArea: "Roof area",
+      timber: "Timber for the roof frame",
+      gutters: "Gutters",
+      downpipes: "Downpipes",
+      insulation: "Insulation between rafters",
+    },
+    units: {
+      m: "m",
+      mp: "m²",
+      mc: "m³",
+      buc: "pcs",
+      percent: "%",
+      month: "months",
+    },
+    sheet: {
+      title: "Templates",
+      description:
+        "Estimates saved as templates, and Devize's templates. A new estimate starts from any of them, at your prices today.",
+      firm: "Your firm's",
+      starters: "Devize",
+      empty:
+        "No templates yet. On an estimate's page, choose “Save as template” from the menu.",
+      meta: "Line items: {items} · {total} lei when saved",
+      used: "Estimates started from it: {count}",
+      neverUsed: "Not used yet",
+      use: "New estimate",
+      useLabel: "New estimate from “{name}”",
+      rename: "Rename",
+      delete: "Delete",
+      actionsLabel: "Actions for “{name}”",
+      deleteTitle: "Delete the template “{name}”?",
+      deleteDescription: "The estimates started from it stay as they are.",
+      deleteConfirm: "Delete the template",
+      deleted: "The template was deleted.",
+      renamed: "The template was renamed.",
+      unavailable: "Available once the base catalog is published.",
+    },
+    save: {
+      action: "Save as template",
+      title: "Save the estimate as a template",
+      description:
+        "It keeps the chapters and line items, with their quantities and resources. Prices are taken again when you start an estimate from the template.",
+      name: "Template name",
+      details: "Description",
+      detailsHint: "Optional. For example: flat bathroom, with a bathtub.",
+      submit: "Save",
+      saved: "The template “{name}” was saved.",
+      replaceTitle: "A template “{name}” already exists",
+      replaceDescription: "Replace it with this estimate?",
+      replace: "Replace",
+    },
+    rename: {
+      title: "Rename the template",
+      submit: "Save",
+    },
+  },
   estimates: {
     title: "Estimates",
     description: "The company's estimates, from draft to accepted offer.",
@@ -3304,6 +3416,13 @@ export default {
     invalidPaymentSchedule:
       "Payment stages have a name and a share between 0 and 100%, and the shares add up to 100% at most.",
     invalidEvidence: "The browser's details are too long.",
+    invalidTemplateName: "A template's name has 1 to 120 characters.",
+    invalidTemplateItems: "A template needs at least one line item.",
+    invalidTemplateSize:
+      "The estimate is too large for a template: 300 line items at most.",
+    invalidTemplates:
+      "The firm already has 200 templates. Delete one to save another.",
+    invalidStarterValues: "A dimension is outside the template's limits.",
     lockedAccepted:
       "Progress statements are made only on an estimate the client accepted.",
     lockedStatement:
@@ -3328,6 +3447,8 @@ export default {
     notFoundStatement: "The progress statement no longer exists.",
     notFoundGuarantee: "The estimate has no guarantee set.",
     notFoundRelease: "The return no longer exists.",
+    notFoundBaseCatalog:
+      "The base catalog isn't published yet, so Devize's templates can't start.",
     invalidIban: "The IBAN is not valid.",
     invalidSeries:
       "The series is not valid: letters and digits, at most 10, and it must be active.",
@@ -3356,6 +3477,7 @@ export default {
     lockedUnapproved:
       "An invoice is issued only for a work statement the beneficiary confirmed.",
     inUseStatement: "The work statement already has an invoice.",
+    inUseTemplateName: "A template with this name already exists.",
   },
   markups: {
     cam: {

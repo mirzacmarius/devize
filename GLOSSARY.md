@@ -56,6 +56,10 @@ _Avoid_: Total, breakdown
 The percentages a Recapitulație adds on top of the direct costs: CAM (contribuția asiguratorie pentru muncă) on labour, indirect costs on the direct costs, profit on direct plus indirect costs, and VAT on the total. Each Deviz copies them from its Firmă's defaults. In code: `markups`.
 _Avoid_: Rates (a rate is a price per hour), fees
 
+**Șablon de deviz** (estimate template):
+What a new Deviz starts from instead of an empty page. A Firmă saves any Deviz as one, keeping its Capitole and Articole with their quantities and Resurse but not its client, site, Cote or prices, which the new Deviz takes from the day it starts. Devize also ships its own (Baie, Bucătărie, Zugrăveli apartament, Termosistem, Acoperiș), written with the Norme de bază, that work out each quantity from a few measurements. In code: `estimateTemplates`, `templates/`, `templates/starters.ts`. See `docs/adr/0040`.
+_Avoid_: Model, preset, Copie (a copy of one Deviz, with its client and prices)
+
 **Antemăsurătoare** (quantity take-off):
 The measured quantities behind a Deviz's Articole: rows of count × length × width × height, with the openings deducted, typed by hand or written from the Deviz's Camere, so an Articol's quantity is the sum of its rows and the Anexa Antemăsurătoare prints them after the Deviz. Devize AI writes rows too, from plans, photos or dictation. In code: `takeoffs`, `takeoffs/`. See `docs/adr/0033`.
 _Avoid_: Measurement, survey

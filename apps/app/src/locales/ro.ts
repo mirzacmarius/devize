@@ -128,6 +128,117 @@ export default {
       done: "Gata",
     },
   },
+  templates: {
+    open: "Șabloane",
+    startFrom: "Pornește de la",
+    startFromHint:
+      "Un șablon aduce capitolele și articolele lui, cu prețurile tale de azi.",
+    blank: "Deviz gol",
+    firmGroup: "Șabloanele firmei",
+    starterGroup: "Șabloane Devize",
+    unavailable: "{name} (după publicarea catalogului de bază)",
+    itemCount: "Articole: {count}",
+    measurements: "Dimensiuni",
+    measurementsHint:
+      "Cantitățile se calculează din ele. Le corectezi apoi în deviz sau în antemăsurătoare.",
+    willAdd: "Articole din catalogul de bază: {count}.",
+    skipped: "Lipsesc din catalogul de bază articolele șablonului: {codes}.",
+    starters: {
+      bathroom: {
+        name: "Baie",
+        description:
+          "Desfaceri, instalații, hidroizolație, gresie, faianță și obiecte sanitare.",
+      },
+      kitchen: {
+        name: "Bucătărie",
+        description:
+          "Instalații electrice și sanitare, gresie, faianță la blat, glet și zugrăveli.",
+      },
+      apartment: {
+        name: "Zugrăveli apartament",
+        description:
+          "Glet pe o parte din suprafețe și vopsea lavabilă pe pereți și tavane.",
+      },
+      facade: {
+        name: "Termosistem",
+        description:
+          "Schelă, anvelopare cu polistiren de 10 cm și tencuială decorativă, glafuri.",
+      },
+      roof: {
+        name: "Acoperiș",
+        description:
+          "Șarpantă din lemn tratat, țiglă metalică, jgheaburi, burlane și, la nevoie, termoizolația mansardei.",
+      },
+    },
+    inputs: {
+      length: "Lungimea",
+      width: "Lățimea",
+      tileHeight: "Înălțimea faianței",
+      height: "Înălțimea camerei",
+      backsplash: "Lungimea blatului",
+      area: "Suprafața utilă",
+      gletShare: "Cât se gletuiește",
+      perimeter: "Perimetrul casei",
+      facadeHeight: "Înălțimea fațadei",
+      openings: "Ferestre și uși",
+      sills: "Lungimea glafurilor",
+      months: "Schela, în luni",
+      roofArea: "Suprafața acoperișului",
+      timber: "Lemn pentru șarpantă",
+      gutters: "Jgheaburi",
+      downpipes: "Burlane",
+      insulation: "Termoizolație între căpriori",
+    },
+    units: {
+      m: "m",
+      mp: "mp",
+      mc: "mc",
+      buc: "buc",
+      percent: "%",
+      month: "luni",
+    },
+    sheet: {
+      title: "Șabloane",
+      description:
+        "Devizele salvate ca șablon și șabloanele Devize. Un deviz nou pornește de la oricare, cu prețurile tale de azi.",
+      firm: "Ale firmei",
+      starters: "Devize",
+      empty:
+        "Niciun șablon încă. Pe pagina unui deviz, alege „Salvează ca șablon” din meniu.",
+      meta: "Articole: {items} · {total} lei la salvare",
+      used: "Devize pornite din el: {count}",
+      neverUsed: "Nefolosit încă",
+      use: "Deviz nou",
+      useLabel: "Deviz nou din „{name}”",
+      rename: "Redenumește",
+      delete: "Șterge",
+      actionsLabel: "Acțiuni pentru „{name}”",
+      deleteTitle: "Ștergi șablonul „{name}”?",
+      deleteDescription: "Devizele pornite din el rămân neschimbate.",
+      deleteConfirm: "Șterge șablonul",
+      deleted: "Șablonul a fost șters.",
+      renamed: "Șablonul a fost redenumit.",
+      unavailable: "Disponibil după publicarea catalogului de bază.",
+    },
+    save: {
+      action: "Salvează ca șablon",
+      title: "Salvează devizul ca șablon",
+      description:
+        "Se păstrează capitolele și articolele, cu cantitățile și resursele lor. Prețurile se iau din nou când pornești un deviz din șablon.",
+      name: "Numele șablonului",
+      details: "Descriere",
+      detailsHint: "Opțional. De exemplu: baie de bloc, cu cadă.",
+      submit: "Salvează",
+      saved: "Șablonul „{name}” a fost salvat.",
+      replaceTitle: "Există deja un șablon „{name}”",
+      replaceDescription: "Îl înlocuiești cu acest deviz?",
+      replace: "Înlocuiește",
+    },
+    rename: {
+      title: "Redenumește șablonul",
+      submit: "Salvează",
+    },
+  },
   estimates: {
     title: "Devize",
     description: "Devizele firmei, de la ciornă la oferta acceptată.",
@@ -3295,6 +3406,13 @@ export default {
     invalidPaymentSchedule:
       "Etapele de plată au un nume și o cotă între 0 și 100%, iar cotele adunate nu trec de 100%.",
     invalidEvidence: "Datele browserului sunt prea lungi.",
+    invalidTemplateName: "Numele șablonului are între 1 și 120 de caractere.",
+    invalidTemplateItems: "Un șablon are nevoie de cel puțin un articol.",
+    invalidTemplateSize:
+      "Devizul e prea mare pentru un șablon: cel mult 300 de articole.",
+    invalidTemplates:
+      "Firma are deja 200 de șabloane. Șterge unul ca să salvezi altul.",
+    invalidStarterValues: "O dimensiune e în afara limitelor șablonului.",
     lockedAccepted:
       "Situațiile de lucrări se fac doar pe un deviz acceptat de client.",
     lockedStatement:
@@ -3319,6 +3437,8 @@ export default {
     notFoundStatement: "Situația de lucrări nu mai există.",
     notFoundGuarantee: "Devizul nu are o garanție stabilită.",
     notFoundRelease: "Restituirea nu mai există.",
+    notFoundBaseCatalog:
+      "Catalogul de bază nu e publicat încă, așa că șabloanele Devize nu pot porni.",
     invalidIban: "IBAN-ul nu e valid.",
     invalidSeries:
       "Seria nu e validă: litere și cifre, cel mult 10, și trebuie să fie activă.",
@@ -3347,6 +3467,7 @@ export default {
     lockedUnapproved:
       "Factura se emite doar pentru o situație de lucrări confirmată de beneficiar.",
     inUseStatement: "Situația de lucrări are deja o factură.",
+    inUseTemplateName: "Există deja un șablon cu acest nume.",
   },
   markups: {
     cam: {

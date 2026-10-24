@@ -1,5 +1,5 @@
 import { paginationOptsValidator } from "convex/server";
-import { v } from "convex/values";
+import { type ObjectType, v } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
@@ -243,53 +243,68 @@ export const revisions = query({
   },
 });
 
+// What a new Deviz is started with, from the dialog or from a Șablon.
+export const newEstimateArgs = {
+  organizationId: v.id("organizations"),
+  title: v.string(),
+  kind: v.optional(estimateKind),
+  clientId: v.optional(v.id("clients")),
+  description: v.optional(v.string()),
+  siteAddress: v.optional(v.string()),
+  county: v.optional(v.string()),
+  priceDate: v.optional(v.string()),
+};
+
+/**
+ * Inserts an empty draft Deviz with the firm's next number, its default
+ * markups and today's prices. The caller checked the user is a member.
+ */
+export async function insertEstimate(
+  ctx: MutationCtx,
+  args: ObjectType<typeof newEstimateArgs>,
+  userId: Id<"users">,
+): Promise<Id<"estimates">> {
+  const firm = await ctx.db.get("organizations", args.organizationId);
+  if (!firm) {
+    throw notFound("organization");
+  }
+  await checkClient(ctx, args.organizationId, args.clientId);
+  const title = cleanTitle(args.title);
+  const number = firm.lastEstimateNumber + 1;
+  await ctx.db.patch("organizations", firm._id, {
+    lastEstimateNumber: number,
+  });
+  const now = Date.now();
+  return await ctx.db.insert("estimates", {
+    organizationId: firm._id,
+    number,
+    title,
+    searchText: searchText(number, title),
+    description: optionalText(args.description, 5000),
+    clientId: args.clientId,
+    siteAddress: optionalText(args.siteAddress),
+    county: optionalText(args.county ?? firm.county, 50),
+    kind: args.kind ?? "private",
+    status: "draft",
+    priceDate: args.priceDate ? checkDate(args.priceDate) : romanianDate(now),
+    markups: {
+      ...firm.defaultMarkups,
+      vat: firm.vatPayer ? firm.defaultMarkups.vat : 0,
+    },
+    totals: emptyRecap,
+    revision: 1,
+    createdBy: userId,
+    updatedAt: now,
+  });
+}
+
 /** Starts a Deviz with the firm's default markups and today's prices. */
 export const create = mutation({
-  args: {
-    organizationId: v.id("organizations"),
-    title: v.string(),
-    kind: v.optional(estimateKind),
-    clientId: v.optional(v.id("clients")),
-    description: v.optional(v.string()),
-    siteAddress: v.optional(v.string()),
-    county: v.optional(v.string()),
-    priceDate: v.optional(v.string()),
-  },
+  args: newEstimateArgs,
   returns: v.id("estimates"),
   handler: async (ctx, args) => {
     const { userId } = await requireMember(ctx, args.organizationId);
-    const firm = await ctx.db.get("organizations", args.organizationId);
-    if (!firm) {
-      throw notFound("organization");
-    }
-    await checkClient(ctx, args.organizationId, args.clientId);
-    const title = cleanTitle(args.title);
-    const number = firm.lastEstimateNumber + 1;
-    await ctx.db.patch("organizations", firm._id, {
-      lastEstimateNumber: number,
-    });
-    const now = Date.now();
-    return await ctx.db.insert("estimates", {
-      organizationId: firm._id,
-      number,
-      title,
-      searchText: searchText(number, title),
-      description: optionalText(args.description, 5000),
-      clientId: args.clientId,
-      siteAddress: optionalText(args.siteAddress),
-      county: optionalText(args.county ?? firm.county, 50),
-      kind: args.kind ?? "private",
-      status: "draft",
-      priceDate: args.priceDate ? checkDate(args.priceDate) : romanianDate(now),
-      markups: {
-        ...firm.defaultMarkups,
-        vat: firm.vatPayer ? firm.defaultMarkups.vat : 0,
-      },
-      totals: emptyRecap,
-      revision: 1,
-      createdBy: userId,
-      updatedAt: now,
-    });
+    return await insertEstimate(ctx, args, userId);
   },
 });
 
