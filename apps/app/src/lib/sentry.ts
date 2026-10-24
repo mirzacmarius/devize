@@ -1,34 +1,13 @@
-import type { BrowserOptions, Event } from "@sentry/nextjs";
+import type { BrowserOptions } from "@sentry/nextjs";
 import { env } from "@/env.mjs";
-
-/**
- * Removes the query string and hash from every address in a text. They can
- * carry sign-in codes and other one-time tokens.
- */
-function withoutQueries(text: string) {
-  return text.replace(/((?:https?:\/\/|\/)[^\s?#"']*)[?#][^\s"']*/g, "$1");
-}
-
-function scrubEvent<E extends Event>(event: E): E {
-  if (event.request) {
-    if (event.request.url)
-      event.request.url = withoutQueries(event.request.url);
-    event.request.query_string = undefined;
-    event.request.cookies = undefined;
-    event.request.headers = undefined;
-  }
-  if (event.transaction) event.transaction = withoutQueries(event.transaction);
-  for (const exception of event.exception?.values ?? []) {
-    if (exception.value) exception.value = withoutQueries(exception.value);
-  }
-  return event;
-}
+import { scrubBreadcrumb, scrubEvent, scrubSpan } from "@/lib/sentry-scrub";
 
 /**
  * Error reports and a sample of traces to Sentry, shared by the browser, Node
  * and edge runtimes. Without NEXT_PUBLIC_SENTRY_DSN, as in local runs and CI,
  * nothing is sent. Reports say what broke, never who it happened to: no user,
- * IP address, cookies, headers, bodies, local variables or query strings.
+ * IP address, cookies, headers, bodies, local variables, query strings or
+ * link tokens (sentry-scrub.ts).
  */
 export const sentryOptions = {
   dsn: env.NEXT_PUBLIC_SENTRY_DSN,
@@ -43,25 +22,6 @@ export const sentryOptions = {
     stackFrameVariables: false,
   },
   beforeSend: scrubEvent,
-  beforeSendSpan(span) {
-    span.name = withoutQueries(span.name);
-    for (const [key, value] of Object.entries(span.attributes)) {
-      if (typeof value === "string" && /url|query|fragment|target/i.test(key)) {
-        span.attributes[key] = withoutQueries(value);
-      }
-    }
-    return span;
-  },
-  beforeBreadcrumb(breadcrumb) {
-    if (breadcrumb.message) {
-      breadcrumb.message = withoutQueries(breadcrumb.message);
-    }
-    for (const key of ["url", "from", "to"]) {
-      const value = breadcrumb.data?.[key];
-      if (typeof value === "string" && breadcrumb.data) {
-        breadcrumb.data[key] = withoutQueries(value);
-      }
-    }
-    return breadcrumb;
-  },
+  beforeSendSpan: scrubSpan,
+  beforeBreadcrumb: scrubBreadcrumb,
 } satisfies BrowserOptions;
