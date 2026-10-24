@@ -17,6 +17,6 @@ Amounts in euros are rounded to cents from the total in lei; nothing is stored i
 
 ## Consequences
 
-- A new deployment shows no euros until the cron's first run, at most a few hours.
+- A new deployment shows no euros until the cron's next run, at 11:15 or 14:15 UTC, which can be up to 21 hours away. Running `bunx convex run exchange/rates:refresh` once (with `--prod` for production) reads the rate at once.
 - The rate is the one BNR set for its day, so an Ofertă opened on Saturday shows Friday's rate, as the law uses it.
 - Offers sent before this change show no euros (their `showEur` is unset).
