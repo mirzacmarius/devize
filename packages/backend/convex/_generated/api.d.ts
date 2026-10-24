@@ -52,6 +52,8 @@ import type * as estimates_lineItems from "../estimates/lineItems.js";
 import type * as estimates_recap from "../estimates/recap.js";
 import type * as estimates_sections from "../estimates/sections.js";
 import type * as estimates_tables from "../estimates/tables.js";
+import type * as estimates_target from "../estimates/target.js";
+import type * as estimates_targetPrice from "../estimates/targetPrice.js";
 import type * as estimates_validators from "../estimates/validators.js";
 import type * as home from "../home.js";
 import type * as http from "../http.js";
@@ -250,6 +252,8 @@ declare const fullApi: ApiFromModules<{
   "estimates/recap": typeof estimates_recap;
   "estimates/sections": typeof estimates_sections;
   "estimates/tables": typeof estimates_tables;
+  "estimates/target": typeof estimates_target;
+  "estimates/targetPrice": typeof estimates_targetPrice;
   "estimates/validators": typeof estimates_validators;
   home: typeof home;
   http: typeof http;

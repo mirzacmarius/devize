@@ -51,6 +51,7 @@ export function EstimateActions({
   const tMaterials = useScopedI18n("materials");
   const tProgress = useScopedI18n("progress");
   const tTemplates = useScopedI18n("templates.save");
+  const tTarget = useScopedI18n("targetPrice");
   const router = useRouter();
   const run = useRun();
   const setStatus = useMutation(api.estimates.estimates.setStatus);
@@ -151,6 +152,12 @@ export function EstimateActions({
             <>
               <DropdownMenuItem onSelect={() => open({ kind: "markups" })}>
                 {t("actions.markups")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={estimate.lineItems.length === 0}
+                onSelect={() => open({ kind: "target" })}
+              >
+                {tTarget("open")}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={refresh}>
                 {t("actions.refreshPrices")}
