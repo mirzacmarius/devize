@@ -67,7 +67,10 @@ type FirmTable =
   | "storeReads"
   | "priceAlerts"
   | "proposals"
-  | "proposalItems";
+  | "proposalItems"
+  | "invoices"
+  | "invoiceSettings"
+  | "invoiceSeries";
 
 /**
  * Loads a firm's row and checks that the signed-in user belongs to that firm.
