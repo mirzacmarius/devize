@@ -1,12 +1,12 @@
 import type { BaseNorm } from "./norm";
 import {
+  aerCald,
   amorsaBituminoasa,
   bandaColturi,
   betoniera,
   betonist,
   dibluCui,
   emulsieBituminoasa,
-  equipment,
   fierar,
   foliePolietilena,
   gazPropan,
@@ -36,7 +36,6 @@ const dibluMembrana = material(
   1.6,
 );
 const tablaPvc = material("Tablă căptușită cu PVC pentru racorduri", "m", 28);
-const aerCald = equipment("Aparat de sudat cu aer cald", "ora", 12);
 const membranaEpdm = material("Membrană EPDM de 1,2 mm", "mp", 48);
 const adezivEpdm = material("Adeziv de contact pentru EPDM", "kg", 32);
 const bandaEpdm = material("Bandă de îmbinare pentru EPDM", "m", 14);

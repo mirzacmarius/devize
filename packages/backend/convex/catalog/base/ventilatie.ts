@@ -1,11 +1,13 @@
 import type { BaseNorm } from "./norm";
 import {
+  bandaAluminiu,
   carotiera,
   clema,
   dibluMetalic,
   electrician,
   frigotehnist,
   instalator,
+  linieFrigorifica,
   material,
   necalificat,
   pompaVid,
@@ -49,11 +51,6 @@ const linieFrigorificaMica = material(
   'Linie frigorifică izolată din cupru, 1/4" – 3/8"',
   "m",
   55,
-);
-const linieFrigorifica = material(
-  'Linie frigorifică izolată din cupru, 3/8" – 5/8"',
-  "m",
-  95,
 );
 const tubCondens = material("Tub pentru condens Ø16", "m", 3);
 const cabluSplit = material("Cablu de interconectare 4 × 1,5 mm²", "m", 6);
@@ -113,7 +110,6 @@ const izolatieTubulatura = material(
   "mp",
   32,
 );
-const bandaAluminiu = material("Bandă adezivă din aluminiu", "buc", 25);
 const tubulaturaFlexibila = material(
   "Tubulatură flexibilă izolată Ø125",
   "m",
@@ -284,7 +280,7 @@ export const ventilatie: BaseNorm[] = [
     includes:
       "Fixarea unității pe perete sau pe tavan cu ancore, racordarea celor patru tubulaturi, evacuarea condensului cu sifon, legarea electrică, reglarea debitelor pe fiecare valvă și punerea în funcțiune.",
     excludes:
-      "Tubulatura și cutiile de distribuție (DV-VEN-08 – DV-VEN-11) și circuitul electric.",
+      "Tubulatura, cutiile de distribuție, valvele și prizele de aer exterioare (DV-VEN-08 – DV-VEN-11) și circuitul electric.",
     measurement: "Numărul de unități montate.",
     resources: [
       vmc(1),
@@ -367,7 +363,7 @@ export const ventilatie: BaseNorm[] = [
       fitingSpiro(0.3),
       colier(0.7),
       dibluMetalic(0.7),
-      bandaAluminiu(0.1),
+      bandaAluminiu(0.5),
       instalator(0.5),
       necalificat(0.3),
     ],
@@ -399,7 +395,7 @@ export const ventilatie: BaseNorm[] = [
     includes:
       "Tăierea și înfășurarea saltelei pe tubulatură, fixarea și închiderea rosturilor cu bandă din aluminiu.",
     measurement: "Suprafața desfășurată a tubulaturii izolate.",
-    resources: [izolatieTubulatura(1.1), bandaAluminiu(0.3), instalator(0.4)],
+    resources: [izolatieTubulatura(1.1), bandaAluminiu(2), instalator(0.4)],
   },
   {
     code: "DV-VEN-15",
@@ -411,7 +407,7 @@ export const ventilatie: BaseNorm[] = [
     measurement: "Lungimea tubulaturii montate.",
     resources: [
       tubulaturaFlexibila(1.05),
-      bandaAluminiu(0.1),
+      bandaAluminiu(0.5),
       smallMaterials(2),
       instalator(0.25),
     ],

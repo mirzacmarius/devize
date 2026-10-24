@@ -2,20 +2,24 @@ import type { BaseNorm } from "./norm";
 import {
   adezivC2TE,
   adezivC2TES1,
+  aerCald,
+  amorsaEpoxidica,
   amorsaSape,
   bandaPerimetrala,
   betonC25,
   betoniera,
   betonist,
   chit,
+  chitPoliuretanic,
   dibluCui,
+  durificatorCuart,
   elicopterBeton,
-  equipment,
   faiantar,
   fibre,
   foliePolietilena,
   folieSpuma,
   gresie,
+  impregnantPiatra,
   masinaSlefuitBeton,
   masinaSlefuitParchet,
   masinaTaiatPlaci,
@@ -29,6 +33,7 @@ import {
   placiSpc,
   plintaGresie,
   plintaParchet,
+  plotTerasa,
   pompaBeton,
   pompaSapa,
   profilTrecere,
@@ -65,13 +70,11 @@ const gresieExterior = material(
   "mp",
   120,
 );
-const plot = material("Plot reglabil pentru terase", "buc", 12);
 const piatraPardoseala = material(
   "Plăci din piatră naturală pentru pardoseli",
   "mp",
   220,
 );
-const impregnant = material("Impregnant pentru piatră naturală", "l", 60);
 const parchetStratificat = material(
   "Parchet din lemn triplustratificat, 14 mm",
   "mp",
@@ -90,18 +93,10 @@ const adezivCovor = material(
   14,
 );
 const cordonSudura = material("Cordon de sudură pentru pardoseli PVC", "m", 2);
-const aerCald = equipment("Aparat de sudat cu aer cald", "ora", 12);
 const lvt = material("Pardoseală vinilică LVT lipită", "mp", 85);
 const mocheta = material("Mochetă de trafic intens", "mp", 60);
 const linoleum = material("Linoleum natural, 2,5 mm", "mp", 90);
 const fibreMetalice = material("Fibre metalice pentru beton", "kg", 6);
-const cuart = material("Durificator de suprafață cu cuarț", "kg", 2.2);
-const chitPoliuretanic = material(
-  "Chit poliuretanic pentru rosturi, cartuș de 600 ml",
-  "buc",
-  35,
-);
-const amorsaEpoxidica = material("Amorsă epoxidică", "kg", 42);
 const rasinaEpoxidica = material(
   "Pardoseală epoxidică autonivelantă, 2 mm",
   "kg",
@@ -414,7 +409,7 @@ export const pardoseli: BaseNorm[] = [
     measurement: "Suprafața pardoselii.",
     resources: [
       gresieExterior(1.05),
-      plot(4),
+      plotTerasa(4),
       faiantar(0.6),
       necalificat(0.25),
     ],
@@ -433,7 +428,7 @@ export const pardoseli: BaseNorm[] = [
       piatraPardoseala(1.05),
       adezivC2TES1(6),
       chit(0.3),
-      impregnant(0.1),
+      impregnantPiatra(0.1),
       smallMaterials(2),
       faiantar(1.3),
       necalificat(0.35),
@@ -607,7 +602,7 @@ export const pardoseli: BaseNorm[] = [
       foliePolietilena(1.1),
       betonC25(0.155),
       fibreMetalice(4),
-      cuart(4),
+      durificatorCuart(4),
       chitPoliuretanic(0.05),
       betonist(0.45),
       necalificat(0.3),

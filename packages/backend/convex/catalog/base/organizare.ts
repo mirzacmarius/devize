@@ -1,5 +1,6 @@
 import type { BaseNorm } from "./norm";
 import {
+  apometru,
   autoutilitara,
   bandaHartie,
   betonC8,
@@ -9,6 +10,7 @@ import {
   dulgher,
   electrician,
   equipment,
+  fitingPehd32,
   foliePolietilena,
   generator,
   instalator,
@@ -19,6 +21,7 @@ import {
   smallMaterials,
   surubAutofiletant,
   tablaZincata,
+  tevaPehd32,
   topometrist,
   transportAgabaritic,
 } from "./resources";
@@ -49,13 +52,6 @@ const tablouSantier = material(
   1500,
 );
 const cabluSantier = material("Cablu flexibil H07RN-F 5 × 6 mm²", "m", 32);
-const tevaPehd32 = material("Țeavă PEHD Ø32 PN10 pentru branșament", "m", 6);
-const fitingCompresiune = material(
-  "Fiting de compresiune pentru PEHD Ø32",
-  "buc",
-  25,
-);
-const apometru = material("Apometru DN20 cu racorduri", "buc", 180);
 const consumabile = material("Consumabile de curățenie", "set", 45);
 const panouIdentificare = material(
   "Panou de identificare a investiției, 1,5 × 1 m, imprimat",
@@ -161,7 +157,7 @@ export const organizare: BaseNorm[] = [
     measurement: "Numărul de racorduri.",
     resources: [
       tevaPehd32(20),
-      fitingCompresiune(4),
+      fitingPehd32(4),
       apometru(1),
       robinetSferic(2),
       smallMaterials(2),
@@ -268,6 +264,7 @@ export const organizare: BaseNorm[] = [
     unit: "buc",
     includes:
       "Preluarea reperelor, trasarea axelor și a conturului cu țăruși și repere, procesul-verbal de trasare.",
+    excludes: "Împrejmuirea de trasare din scânduri (DV-TER-20).",
     measurement: "Numărul de obiecte trasate.",
     resources: [tarusi(1), topometrist(6), necalificat(2)],
   },

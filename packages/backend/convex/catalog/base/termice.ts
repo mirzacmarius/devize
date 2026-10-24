@@ -1,7 +1,9 @@
 import type { BaseNorm } from "./norm";
 import {
   aparatSudura,
-  bandaPerimetrala,
+  bandaAluminiu,
+  brataraMetalica,
+  cutieDistribuitor,
   dibluCui,
   dibluMetalic,
   discAbraziv,
@@ -14,6 +16,8 @@ import {
   grundAnticoroziv,
   instalator,
   izolatieTeava,
+  izolatieTeava13,
+  linieFrigorifica,
   material,
   mortarZidarie,
   necalificat,
@@ -78,11 +82,6 @@ const pompaCalduraSplit = material(
   "Pompă de căldură aer-apă split, 8 kW, cu unitate interioară",
   "set",
   26000,
-);
-const linieFrigorifica = material(
-  'Linie frigorifică izolată din cupru, 3/8" – 5/8"',
-  "m",
-  95,
 );
 const suportPompa = material(
   "Suport antivibrant pentru unitatea exterioară",
@@ -155,11 +154,6 @@ const fitingPresare26 = material(
   "buc",
   20,
 );
-const izolatieTeava13 = material(
-  "Izolație din spumă de polietilenă pentru țevi, 13 mm",
-  "m",
-  4,
-);
 const izolatieElastomerica = material(
   "Izolație din cauciuc elastomeric pentru țevi, 19 mm",
   "m",
@@ -175,16 +169,10 @@ const cochilieVata = material(
   "m",
   28,
 );
-const bandaAluminiu = material("Bandă adezivă din aluminiu", "buc", 25);
 const distribuitorRadiatoare = material(
   "Distribuitor-colector din alamă pentru încălzire, 6 circuite",
   "buc",
   450,
-);
-const cutieDistribuitor = material(
-  "Cutie de distribuitor îngropată",
-  "buc",
-  180,
 );
 const tevaOtelMare = material('Țeavă din oțel negru, 1 1/4" – 2"', "m", 38);
 const fitingOtelMare = material(
@@ -192,22 +180,12 @@ const fitingOtelMare = material(
   "buc",
   18,
 );
-const bratraMetalica = material(
-  "Brățară metalică cu diblu pentru țevi",
-  "buc",
-  4,
-);
 const placaNuturi = material(
   "Placă cu nuturi din EPS, 30 mm, pentru încălzire în pardoseală",
   "mp",
   32,
 );
 const tevaPert = material("Țeavă PE-RT cu barieră de oxigen Ø16", "m", 3.2);
-const aditivSapa = material(
-  "Aditiv plastifiant pentru șape de încălzire",
-  "l",
-  12,
-);
 const distribuitorPardoseala = material(
   "Distribuitor-colector din inox cu debitmetre, 8 circuite",
   "buc",
@@ -265,7 +243,7 @@ export const termice: BaseNorm[] = [
     includes:
       "Fixarea centralei pe perete, racordarea hidraulică la tur, retur și apă caldă menajeră cu robineți de izolare, filtrul magnetic pe retur, kitul de evacuare coaxial prin perete, neutralizatorul și evacuarea condensului, umplerea și punerea în funcțiune.",
     excludes:
-      "Racordul de gaz (categoria Instalații de gaze), circuitul electric și termostatul (DV-INC-27).",
+      "Racordul de gaz (categoria Instalații de gaze), circuitul electric și termostatul (DV-INC-29).",
     measurement: "Numărul de centrale montate.",
     resources: [
       centralaCondensare(1),
@@ -288,7 +266,7 @@ export const termice: BaseNorm[] = [
     includes:
       "Aducerea în centrala termică, asamblarea buncărului, racordarea hidraulică cu robineți de izolare și ventil termic de siguranță, racordarea la coșul de fum, umplerea și punerea în funcțiune.",
     excludes:
-      "Coșul de fum (DV-INC-28 – DV-INC-30), pufferul (DV-INC-06) și circuitul electric.",
+      "Coșul de fum (DV-INC-30 – DV-INC-32), pufferul (DV-INC-08) și circuitul electric.",
     measurement: "Numărul de centrale montate.",
     resources: [
       centralaPeleti(1),
@@ -308,7 +286,7 @@ export const termice: BaseNorm[] = [
     includes:
       "Aducerea în centrala termică, așezarea pe postament, racordarea hidraulică cu robineți de izolare și ventil termic de siguranță, racordarea la coșul de fum, umplerea și punerea în funcțiune.",
     excludes:
-      "Coșul de fum, pufferul obligatoriu (DV-INC-06), postamentul și circuitul electric.",
+      "Coșul de fum, pufferul obligatoriu (DV-INC-08), postamentul și circuitul electric.",
     measurement: "Numărul de cazane montate.",
     resources: [
       cazanLemne(1),
@@ -593,7 +571,7 @@ export const termice: BaseNorm[] = [
       tevaPexAl20(1.02),
       izolatieTeava(1.02),
       fitingPresare20(0.2),
-      bratraMetalica(0.7),
+      brataraMetalica(0.7),
       smallMaterials(2),
       instalator(0.3),
       presaFitinguri(0.05),
@@ -612,7 +590,7 @@ export const termice: BaseNorm[] = [
       tevaPexAl26(1.02),
       izolatieTeava13(1.02),
       fitingPresare26(0.2),
-      bratraMetalica(0.7),
+      brataraMetalica(0.7),
       smallMaterials(2),
       instalator(0.35),
       presaFitinguri(0.06),
@@ -650,7 +628,7 @@ export const termice: BaseNorm[] = [
       fitingOtel(0.5),
       electrozi(0.1),
       grundAnticoroziv(0.08),
-      bratraMetalica(0.6),
+      brataraMetalica(0.6),
       discAbraziv(0.05),
       instalator(0.6),
       sudor(0.3),
@@ -674,7 +652,7 @@ export const termice: BaseNorm[] = [
       fitingOtelMare(0.4),
       electrozi(0.2),
       grundAnticoroziv(0.12),
-      bratraMetalica(0.5),
+      brataraMetalica(0.5),
       discAbraziv(0.08),
       instalator(0.8),
       sudor(0.4),
@@ -706,7 +684,7 @@ export const termice: BaseNorm[] = [
     includes:
       "Tăierea, așezarea cochiliilor pe conductă, închiderea cu banda autoadezivă a cochiliei și cu bandă din aluminiu la îmbinări.",
     measurement: "Lungimea conductei izolate.",
-    resources: [cochilieVata(1.05), bandaAluminiu(0.1), instalator(0.2)],
+    resources: [cochilieVata(1.05), bandaAluminiu(0.5), instalator(0.2)],
   },
   {
     code: "DV-INC-25",
@@ -715,15 +693,13 @@ export const termice: BaseNorm[] = [
       "Încălzire în pardoseală pe plăci cu nuturi, țeavă PE-RT Ø16 la pas de 15 cm",
     unit: "mp",
     includes:
-      "Banda perimetrală, așezarea plăcilor cu nuturi, pozarea țevii în serpentină la pas de 15 cm, legarea la distribuitor, aditivul pentru șapă și proba de presiune menținută pe durata turnării șapei.",
+      "Așezarea plăcilor cu nuturi, pozarea țevii în serpentină la pas de 15 cm, legarea la distribuitor și proba de presiune menținută pe durata turnării șapei.",
     excludes:
-      "Șapa (categoria Pardoseli), termoizolația suplimentară de sub plăci, distribuitorul (DV-INC-26) și grupul de pompare (DV-INC-27).",
+      "Șapa, cu banda perimetrală și aditivul ei (DV-PRD-10), termoizolația suplimentară de sub plăci, distribuitorul (DV-INC-26) și grupul de pompare (DV-INC-27).",
     measurement: "Suprafața încălzită, fără zonele fără țeavă.",
     resources: [
       placaNuturi(1.05),
       tevaPert(7),
-      bandaPerimetrala(0.8),
-      aditivSapa(0.3),
       smallMaterials(2),
       instalator(0.6),
       necalificat(0.2),

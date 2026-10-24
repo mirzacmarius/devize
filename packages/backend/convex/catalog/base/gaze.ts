@@ -2,6 +2,7 @@ import type { BaseNorm } from "./norm";
 import {
   aparatSudura,
   bandaAvertizare,
+  brataraMetalica,
   discAbraziv,
   electrician,
   electrozi,
@@ -37,16 +38,7 @@ const fitingGaz = material(
   12,
 );
 const vopseaGalbena = material("Email galben pentru conducte de gaz", "kg", 28);
-const bratraMetalica = material(
-  "Brățară metalică cu diblu pentru țevi",
-  "buc",
-  4,
-);
-const multistratGaz = material(
-  "Țeavă multistrat pentru gaze Ø20, cu fitinguri de presare",
-  "m",
-  12,
-);
+const multistratGaz = material("Țeavă multistrat pentru gaze Ø20", "m", 12);
 const fitingPresareGaz = material(
   "Fiting de presare pentru țeavă multistrat de gaze Ø20",
   "buc",
@@ -97,7 +89,7 @@ export const gaze: BaseNorm[] = [
       electrozi(0.1),
       grundAnticoroziv(0.05),
       vopseaGalbena(0.08),
-      bratraMetalica(0.6),
+      brataraMetalica(0.6),
       discAbraziv(0.05),
       instalator(0.7),
       sudor(0.3),
@@ -121,7 +113,7 @@ export const gaze: BaseNorm[] = [
       electrozi(0.2),
       grundAnticoroziv(0.1),
       vopseaGalbena(0.15),
-      bratraMetalica(0.5),
+      brataraMetalica(0.5),
       discAbraziv(0.08),
       instalator(0.9),
       sudor(0.4),
@@ -142,7 +134,7 @@ export const gaze: BaseNorm[] = [
     resources: [
       multistratGaz(1.02),
       fitingPresareGaz(0.25),
-      bratraMetalica(0.7),
+      brataraMetalica(0.7),
       smallMaterials(2),
       instalator(0.3),
       presaFitinguri(0.05),

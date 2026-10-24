@@ -29,7 +29,8 @@ import { zugraveli } from "./base/zugraveli";
 // super admin publishes this edition from the admin panel; a norm whose
 // content changed becomes a new version of the one already published.
 //
-// Each category of baseCategories has its norms in one file under base/,
+// Each category of baseCategories has its norms under base/, in one file (two
+// for Instalații sanitare, whose new norms go at the end of sanitareObiecte),
 // in the order of its codes; this module puts the categories together in the
 // order works follow on a site. The Resurse the categories share are in
 // base/resources.ts, so one name means one unit and one reference price.

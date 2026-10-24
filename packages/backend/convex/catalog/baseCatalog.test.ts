@@ -1,5 +1,5 @@
 import { describe, expect, setDefaultTimeout, test } from "bun:test";
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { api } from "../_generated/api";
@@ -101,6 +101,24 @@ describe("the base catalog's data", () => {
         seen.set(key, value);
       }
     }
+  });
+
+  // A resource two categories consume lives in base/resources.ts: two copies
+  // drift apart, or end up under two names for one product (ADR 0039).
+  test("defines each resource in one file", () => {
+    const definedIn = new Map<string, string>();
+    for (const file of readdirSync(join(import.meta.dir, "base"))) {
+      const source = readFileSync(join(import.meta.dir, "base", file), "utf8");
+      for (const [, , name] of source.matchAll(
+        /\b(?:material|labor|equipment|transport)\(\s*(["'])(.+?)\1/g,
+      )) {
+        expect(`${name} ${definedIn.get(name) ?? file}`).toBe(
+          `${name} ${file}`,
+        );
+        definedIn.set(name, file);
+      }
+    }
+    expect(definedIn.size).toBeGreaterThan(500);
   });
 
   test("writes Romanian with comma-below diacritics", () => {

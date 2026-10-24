@@ -461,7 +461,7 @@ export const curentiSlabi: BaseNorm[] = [
     unit: "buc",
     includes:
       "Montarea termostatului în locul celui existent sau pe cablu nou, legarea la centrală, configurarea în aplicație și proba.",
-    excludes: "Cablul nou până la centrală (DV-INC-29).",
+    excludes: "Cablul nou până la centrală, în tub, și șlițurile.",
     measurement: "Numărul de termostate.",
     resources: [
       termostatSmart(1),

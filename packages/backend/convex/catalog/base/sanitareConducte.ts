@@ -1,6 +1,8 @@
 import type { BaseNorm } from "./norm";
 import {
+  apometru,
   automacara,
+  bandaAluminiu,
   bandaAvertizare,
   bandaFolii,
   baterieLavoar,
@@ -8,16 +10,20 @@ import {
   boiler,
   bratara,
   clema,
+  cutieDistribuitor,
   electrician,
   equipment,
+  fitingCanal40,
   fitingCanal50,
   fitingCanal110,
+  fitingPehd32,
   fitingPpr20,
   fitingPpr25,
   fitingPresare16,
   fitingPresare20,
   instalator,
   izolatieTeava,
+  izolatieTeava13,
   lavoar,
   material,
   mortarZidarie,
@@ -35,8 +41,10 @@ import {
   suduraPe,
   suduraPpr,
   supapa,
+  tevaCanal40,
   tevaCanal50,
   tevaCanal110,
+  tevaPehd32,
   tevaPexAl16,
   tevaPexAl20,
   tevaPpr20,
@@ -57,27 +65,14 @@ const distribuitor = material(
   "buc",
   180,
 );
-const cutieDistribuitor = material(
-  "Cutie de distribuitor îngropată",
-  "buc",
-  180,
-);
 const tevaCupru = material("Țeavă de cupru Ø15–22", "m", 32);
 const fitingCupru = material("Fiting de cupru pentru lipit", "buc", 12);
-const tevaPehd32 = material("Țeavă PEHD Ø32 PN10 pentru branșament", "m", 6);
-const fitingCompresiune = material(
-  "Fiting de compresiune pentru PEHD Ø32",
-  "buc",
-  25,
-);
 const tevaPehd63 = material("Țeavă PEHD Ø63 PN10", "m", 16);
 const fitingPehd63 = material(
   "Fiting de electrofuziune pentru PEHD Ø63",
   "buc",
   55,
 );
-const tevaCanal40 = material("Țeavă de canalizare PP Ø40", "m", 5);
-const fitingCanal40 = material("Fiting de canalizare Ø40", "buc", 3);
 const tevaCanal75 = material("Țeavă de canalizare PP Ø75", "m", 10);
 const fitingCanal75 = material("Fiting de canalizare Ø75", "buc", 6);
 const tevaKg110 = material("Țeavă PVC-KG Ø110 SN4", "m", 18);
@@ -108,7 +103,6 @@ const caminApometru = material(
   "buc",
   650,
 );
-const apometru = material('Apometru de 3/4", cu racorduri', "buc", 180);
 const filtru = material('Filtru de impurități cu sită, 3/4"', "buc", 60);
 const reductor = material('Reductor de presiune de 3/4"', "buc", 220);
 const hidrofor = material("Grup de pompare cu hidrofor de 50 l", "buc", 1400);
@@ -141,11 +135,6 @@ const aerisitor = material(
   60,
 );
 const piesaCuratire = material("Piesă de curățire Ø110", "buc", 35);
-const izolatie13 = material(
-  "Izolație din spumă de polietilenă pentru țevi, 13 mm",
-  "m",
-  4,
-);
 const dezinfectant = material(
   "Soluție de dezinfectare pentru instalații de apă",
   "l",
@@ -157,7 +146,6 @@ const cabluDegivrare = material(
   "m",
   45,
 );
-const bandaAluminiu = material("Bandă adezivă de aluminiu", "m", 1.2);
 
 export const sanitareConducte: BaseNorm[] = [
   {
@@ -442,7 +430,7 @@ export const sanitareConducte: BaseNorm[] = [
     measurement: "Lungimea conductei.",
     resources: [
       tevaPehd32(1.03),
-      fitingCompresiune(0.1),
+      fitingPehd32(0.1),
       bandaAvertizare(1),
       instalator(0.15),
       necalificat(0.1),
@@ -781,7 +769,7 @@ export const sanitareConducte: BaseNorm[] = [
     includes:
       "Îmbrăcarea conductei cu tubul despicat și lipirea rosturilor cu bandă.",
     measurement: "Lungimea conductei izolate.",
-    resources: [izolatie13(1.05), bandaFolii(0.3), instalator(0.07)],
+    resources: [izolatieTeava13(1.05), bandaFolii(0.3), instalator(0.07)],
   },
   {
     code: "DV-SAN-39",

@@ -587,7 +587,8 @@ export const electrice: BaseNorm[] = [
     unit: "buc",
     includes:
       "Turnarea fundației cu șuruburile de ancorare, ridicarea stâlpului, montarea lămpii, conectarea cablului și proba.",
-    excludes: "Săpătura și cablul de alimentare (DV-ELE-13).",
+    excludes:
+      "Săpătura (categoria Terasamente) și cablul de alimentare îngropat (DV-ELE-13, cu secțiunea cablului adaptată).",
     measurement: "Numărul de stâlpi.",
     resources: [
       stalpIluminat(1),

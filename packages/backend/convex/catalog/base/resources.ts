@@ -214,6 +214,7 @@ export const pompaVid = equipment(
 );
 export const motocoasa = equipment("Motocoasă", "ora", 8);
 export const motostivuitor = equipment("Motostivuitor", "ora", 90);
+export const aerCald = equipment("Aparat de sudat cu aer cald", "ora", 12);
 
 // Transport.
 export const autobasculanta = transport(
@@ -293,7 +294,7 @@ export const balast = material("Balast", "mc", 85);
 export const nisip = material("Nisip", "mc", 110);
 export const pietris = material("Pietriș sort 16-31", "mc", 120);
 export const piatraSparta = material("Piatră spartă sort 0-63", "mc", 115);
-export const ciment = material("Ciment Portland 42,5 R, sac", "kg", 0.75);
+export const ciment = material("Ciment Portland 42,5 R", "kg", 0.75);
 export const mortarReparatii = material(
   "Mortar de reparații pentru beton, clasa R3",
   "kg",
@@ -318,6 +319,21 @@ export const surubAutofiletant = material(
 export const geotextil = material("Geotextil de 200 g/mp", "mp", 3.2);
 export const foliePolietilena = material("Folie de polietilenă", "mp", 0.8);
 export const bandaAvertizare = material("Bandă de avertizare", "m", 0.3);
+export const durificatorCuart = material(
+  "Durificator de suprafață cu cuarț",
+  "kg",
+  2.2,
+);
+export const chitPoliuretanic = material(
+  "Chit poliuretanic pentru rosturi, cartuș de 600 ml",
+  "buc",
+  35,
+);
+export const mortarRostuire = material(
+  "Mortar de rostuire pentru zidărie aparentă",
+  "kg",
+  2,
+);
 
 // Plasters and drywall.
 export const tencuialaIpsos = material(
@@ -522,6 +538,13 @@ export const cartonProtectie = material(
   "mp",
   2.2,
 );
+export const amorsaEpoxidica = material("Amorsă epoxidică", "kg", 42);
+export const impregnantPiatra = material(
+  "Impregnant pentru piatră naturală",
+  "l",
+  60,
+);
+export const plotTerasa = material("Plot reglabil pentru terase", "buc", 12);
 
 // Joinery.
 export const fereastraPvc = material(
@@ -612,6 +635,45 @@ export const tevaOtelNegru = material(
   18,
 );
 export const fitingOtel = material("Fiting filetat din oțel", "buc", 9);
+export const tevaPehd32 = material(
+  "Țeavă PEHD Ø32 PN10 pentru branșament",
+  "m",
+  6,
+);
+export const fitingPehd32 = material(
+  "Fiting de compresiune pentru PEHD Ø32",
+  "buc",
+  25,
+);
+export const apometru = material(
+  'Apometru DN20 (3/4"), cu racorduri',
+  "buc",
+  180,
+);
+export const tevaCanal40 = material("Țeavă de canalizare PP Ø40", "m", 5);
+export const fitingCanal40 = material("Fiting de canalizare Ø40", "buc", 3);
+export const cutieDistribuitor = material(
+  "Cutie de distribuitor îngropată",
+  "buc",
+  180,
+);
+export const izolatieTeava13 = material(
+  "Izolație din spumă de polietilenă pentru țevi, 13 mm",
+  "m",
+  4,
+);
+export const brataraMetalica = material(
+  "Brățară metalică cu diblu pentru țevi",
+  "buc",
+  4,
+);
+export const linieFrigorifica = material(
+  'Linie frigorifică izolată din cupru, 3/8" – 5/8"',
+  "m",
+  95,
+);
+// Joints of insulation and ducts.
+export const bandaAluminiu = material("Bandă adezivă din aluminiu", "m", 0.6);
 
 // Electrical.
 export const cablu25 = material("Cablu CYY-F 3 × 2,5 mm²", "m", 6.2);

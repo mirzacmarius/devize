@@ -519,6 +519,9 @@ export default {
       categories: "Categorii",
       allCategories: "Toate",
       categoryEmpty: "Nicio normă publicată în „{category}” deocamdată.",
+      noResultsInCategory:
+        "Nicio normă din „{category}” nu se potrivește cu „{text}”.",
+      searchAllCategories: "Caută în toate categoriile",
       custom: "Nu e în catalog? Adaugă un articol propriu",
       back: "Înapoi la rezultate",
       loading: "Se încarcă norma…",
@@ -1626,6 +1629,9 @@ export default {
       all: "Toate",
     },
     categoryEmpty: "Nicio normă publicată în „{category}” deocamdată.",
+    noResultsInCategory:
+      "Nicio normă din „{category}” nu se potrivește cu „{text}”.",
+    searchAllCategories: "Caută în toate categoriile",
   },
   norms: {
     sources: {

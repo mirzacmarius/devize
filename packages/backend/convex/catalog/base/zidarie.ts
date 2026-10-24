@@ -11,6 +11,7 @@ import {
   caramidaPlina,
   material,
   montatorGips,
+  mortarRostuire,
   mortarZidarie,
   necalificat,
   otelBeton,
@@ -50,11 +51,6 @@ const ancoraZidarie = material(
 );
 const caramidaKlinker = material("Cărămidă aparentă klinker", "buc", 4.5);
 const mortarAparent = material("Mortar pentru zidărie aparentă", "kg", 1.8);
-const mortarRostuire = material(
-  "Mortar de rostuire pentru zidărie aparentă",
-  "kg",
-  2,
-);
 const piatraZidarie = material(
   "Piatră naturală brută pentru zidărie",
   "mc",
@@ -235,8 +231,8 @@ export const zidarie: BaseNorm[] = [
       "Buiandrugii, stâlpișorii și centurile din beton armat; schela pentru înălțimi de peste 3 m.",
     measurement: "Volumul zidăriei, fără golurile de uși și ferestre.",
     resources: [
-      blocBca30(23),
-      adezivBca(18),
+      blocBca30(28.6),
+      adezivBca(21),
       mortarZidarie(0.01),
       zidar(2.4),
       necalificat(1.1),
@@ -252,7 +248,7 @@ export const zidarie: BaseNorm[] = [
     excludes: "Buiandrugii peste uși.",
     measurement: "Suprafața peretelui, fără golurile de uși.",
     resources: [
-      blocBca15(6.9),
+      blocBca15(8.6),
       adezivBca(3),
       ancoraZidarie(1.5),
       smallMaterials(1),
@@ -270,7 +266,7 @@ export const zidarie: BaseNorm[] = [
     excludes: "Buiandrugii, stâlpișorii și centurile.",
     measurement: "Suprafața peretelui, fără goluri.",
     resources: [
-      blocBca20(6.9),
+      blocBca20(8.6),
       adezivBca(4),
       ancoraZidarie(1.5),
       smallMaterials(1),
@@ -285,7 +281,7 @@ export const zidarie: BaseNorm[] = [
       "Zidărie aparentă din cărămidă klinker de 11,5 cm, cu rosturi profilate",
     unit: "mp",
     includes:
-      "Zidirea cu mortar special, cu rosturile pline și profilate pe măsura lucrului, ancorele de legătură cu peretele din spate, protejarea zidăriei de ploaie.",
+      "Zidirea cu mortar special, cu rosturile pline și profilate pe măsură ce se zidește, ancorele de legătură cu peretele din spate, protejarea zidăriei de ploaie.",
     excludes: "Peretele portant din spate; schela; curățarea finală cu acizi.",
     measurement: "Suprafața zidăriei aparente, fără goluri.",
     resources: [

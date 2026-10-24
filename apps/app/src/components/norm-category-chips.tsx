@@ -7,21 +7,25 @@ import {
 import { cn } from "@devize/ui/utils";
 
 /**
- * The categories of the base catalog as one row of chips, "Toate" first,
- * that scrolls sideways where it doesn't fit. At most one chip is pressed:
- * the category being browsed. The catalog and the add-norm sheet share it.
+ * The categories of the base catalog as chips, "Toate" first. They sit in
+ * one row that scrolls sideways, with a thin scrollbar so a mouse can reach
+ * the last ones, or, with `wrap`, in rows from tablet width up. At most one
+ * chip is pressed: the category being browsed. The catalog and the add-norm
+ * sheet share it.
  */
 export function NormCategoryChips({
   label,
   allLabel,
   value,
   onChange,
+  wrap = false,
   className,
 }: {
   label: string;
   allLabel: string;
   value: BaseCategoryKey | null;
   onChange: (key: BaseCategoryKey | null) => void;
+  wrap?: boolean;
   className?: string;
 }) {
   const options: { key: BaseCategoryKey | null; name: string }[] = [
@@ -35,7 +39,8 @@ export function NormCategoryChips({
     <fieldset
       aria-label={label}
       className={cn(
-        "-mx-1 m-0 flex min-w-0 gap-1.5 overflow-x-auto border-0 px-1 py-0.5 [scrollbar-width:none]",
+        "-mx-1 flex min-w-0 gap-1.5 overflow-x-auto border-0 px-1 pt-0.5 pb-1.5 [scrollbar-width:thin]",
+        wrap && "sm:flex-wrap sm:overflow-x-visible sm:pb-0.5",
         className,
       )}
     >

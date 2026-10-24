@@ -30,9 +30,9 @@ import {
   pietris,
   placajFilmat,
   placaVibranta,
+  plotTerasa,
   pompaEpuisment,
   smallMaterials,
-  topometrist,
   vibrator,
 } from "./resources";
 
@@ -45,9 +45,9 @@ const gazonRulou = material("Gazon rulou", "mp", 14);
 const pavele8 = material("Pavele de beton, 8 cm", "mp", 52);
 const dale = material("Dale de beton, 40 × 40 cm", "mp", 55);
 const borduraMare = material(
-  "Bordură de beton stradală, 20 × 25 cm",
+  "Bordură de beton stradală, 20 × 25 × 50 cm",
   "buc",
-  38,
+  20,
 );
 const rigola = material(
   "Rigolă din beton polimer cu grătar din fontă",
@@ -75,7 +75,6 @@ const dusumeaLemn = material(
 );
 const grinziTerasa = material("Grinzi de lemn tratat pentru terase", "m", 14);
 const surubInox = material("Șurub inox pentru terase", "buc", 0.5);
-const plot = material("Plot reglabil pentru terase", "buc", 12);
 const dusumeaWpc = material("Dușumea de terasă din WPC", "mp", 150);
 const profilWpc = material(
   "Profil de susținere din aluminiu pentru terase",
@@ -217,7 +216,7 @@ export const terasamente: BaseNorm[] = [
       "Săparea cu miniexcavatorul, depozitarea pământului lângă săpătură și finisarea manuală a fundului.",
     excludes: "Sprijinirile; încărcarea și transportul pământului.",
     measurement: "Volumul săpăturii, după dimensiunile din proiect.",
-    resources: [miniexcavator(0.08), necalificat(0.15)],
+    resources: [miniexcavator(0.15), necalificat(0.15)],
   },
   {
     code: "DV-TER-11",
@@ -288,7 +287,7 @@ export const terasamente: BaseNorm[] = [
       "Strat de piatră spartă compactată, pentru fundații de drumuri și platforme",
     unit: "mc",
     includes:
-      "Împrăștierea pietrei sparte în straturi, împănarea, udarea și compactarea cu cilindrul.",
+      "Împrăștierea pietrei sparte în straturi, udarea și compactarea cu cilindrul.",
     measurement: "Volumul stratului compactat.",
     resources: [
       piatraSparta(1.3),
@@ -303,8 +302,9 @@ export const terasamente: BaseNorm[] = [
     title: "Pat de nisip pentru conducte și cabluri, cu acoperirea lor",
     unit: "mc",
     includes:
-      "Așezarea nisipului sub și peste conductă, în straturi compactate manual, cu banda de avertizare deasupra.",
-    excludes: "Umplutura cu pământ de deasupra.",
+      "Așezarea nisipului sub și peste conductă sau cablu, în straturi compactate ușor.",
+    excludes:
+      "Umplutura cu pământ de deasupra; banda de avertizare, cuprinsă în normele conductelor și ale cablurilor; nisipul conductelor și al cablurilor a căror normă îl cuprinde deja (DV-ELE-13, DV-GAZ-04).",
     measurement: "Volumul nisipului pus în operă.",
     resources: [nisip(1.2), necalificat(1.2), placaVibranta(0.1)],
   },
@@ -334,12 +334,15 @@ export const terasamente: BaseNorm[] = [
   {
     code: "DV-TER-20",
     category,
-    title: "Trasarea construcției pe teren, cu topometrist",
+    title:
+      "Împrejmuire de trasare din scânduri pe țăruși, pentru o construcție cu amprenta de până la 300 mp",
     unit: "buc",
     includes:
-      "Materializarea axelor și a cotei de nivel cu țăruși și sârmă, pe împrejmuirea de trasare, și predarea lor constructorului, pentru o construcție cu amprenta de până la 300 mp.",
-    measurement: "Numărul de trasări.",
-    resources: [cherestea(0.02), cuie(0.5), topometrist(4), necalificat(4)],
+      "Baterea țărușilor la 1,5 – 2 m în afara conturului, prinderea scândurilor orizontal, la aceeași cotă, și marcarea pe ele a axelor date de topometrist.",
+    excludes:
+      "Trasarea axelor de către topometrist și procesul-verbal de trasare (DV-ORG-16).",
+    measurement: "Numărul de împrejmuiri de trasare.",
+    resources: [cherestea(0.3), cuie(2), dulgher(8), necalificat(8)],
   },
   {
     code: "DV-TER-21",
@@ -349,7 +352,8 @@ export const terasamente: BaseNorm[] = [
     unit: "mp",
     includes:
       "Aducerea pământului vegetal cu roaba, împrăștierea, mărunțirea și nivelarea lui cu grebla.",
-    excludes: "Pământul adus din altă parte peste cel de pe amplasament.",
+    excludes:
+      "Decopertarea și depozitarea pământului vegetal de pe amplasament (DV-TER-08); când se refolosește acel pământ, materialul Pământ vegetal se scoate din normă.",
     measurement: "Suprafața amenajată.",
     resources: [pamantVegetal(0.11), necalificat(0.12)],
   },
@@ -444,7 +448,7 @@ export const terasamente: BaseNorm[] = [
       "Așezarea geotextilului în șanț, stratul de pietriș, tubul de drenaj la pantă, acoperirea cu pietriș și închiderea geotextilului.",
     excludes: "Săpătura șanțului; căminele; umplutura de deasupra.",
     measurement: "Lungimea drenului.",
-    resources: [tubDren(1.05), geotextil(1.8), pietris(0.25), necalificat(0.7)],
+    resources: [tubDren(1.05), geotextil(1.8), pietris(0.17), necalificat(0.7)],
   },
   {
     code: "DV-TER-29",
@@ -514,7 +518,7 @@ export const terasamente: BaseNorm[] = [
       placajFilmat(0.25),
       cherestea(0.006),
       cuie(0.1),
-      betonist(1.2),
+      betonist(0.5),
       dulgher(0.8),
       fierar(0.2),
       necalificat(1),
@@ -534,7 +538,7 @@ export const terasamente: BaseNorm[] = [
       dusumeaLemn(1.08),
       grinziTerasa(3),
       surubInox(24),
-      plot(3),
+      plotTerasa(3),
       dulgher(0.9),
       necalificat(0.3),
     ],
@@ -552,7 +556,7 @@ export const terasamente: BaseNorm[] = [
       dusumeaWpc(1.06),
       profilWpc(3),
       clipsWpc(20),
-      plot(3),
+      plotTerasa(3),
       dulgher(0.8),
       necalificat(0.3),
     ],

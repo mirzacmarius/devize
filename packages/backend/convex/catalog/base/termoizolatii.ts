@@ -55,9 +55,9 @@ const vataInsuflata = material(
 const celuloza = material("Celuloză pentru insuflare", "kg", 5);
 const pir = material("Panou PIR cu folie de aluminiu, 10 cm", "mp", 75);
 const spumaProiectata = material(
-  "Spumă poliuretanică cu celule închise, pulverizată, 5 cm",
+  "Spumă poliuretanică cu celule închise, 5 cm, pulverizată de echipa specializată, cu utilaj",
   "mp",
-  60,
+  130,
 );
 const adezivVata = material(
   "Adeziv și masă de șpaclu pentru vată bazaltică",
@@ -385,20 +385,18 @@ export const termoizolatii: BaseNorm[] = [
   {
     code: "DV-TRM-15",
     category,
-    title:
-      "Strat suplimentar de 5 cm din vată minerală sub căpriori, pe șipci, cu barieră de vapori",
+    title: "Strat suplimentar de 5 cm din vată minerală sub căpriori, pe șipci",
     unit: "mp",
     includes:
-      "Baterea șipcilor transversal pe căpriori, așezarea vatei între ele, prinderea și lipirea barierei de vapori.",
-    excludes: "Vata dintre căpriori; placarea la interior.",
+      "Baterea șipcilor transversal pe căpriori și așezarea vatei între ele.",
+    excludes:
+      "Vata dintre căpriori; bariera de vapori, luată o singură dată din DV-TRM-03 și montată sub acest strat; placarea la interior.",
     measurement: "Suprafața acoperișului izolat, măsurată pe pantă.",
     resources: [
       vataSticla5(1.05),
-      barieraVapori(1.1),
-      bandaFolii(0.6),
       cherestea(0.003),
       cuie(0.03),
-      izolator(0.3),
+      izolator(0.22),
       necalificat(0.1),
     ],
   },

@@ -1,5 +1,6 @@
 import type { BaseNorm } from "./norm";
 import {
+  amorsaEpoxidica,
   ancoraChimica,
   aparatSpalat,
   betonC25,
@@ -64,7 +65,6 @@ const mortarR4 = material(
   4.8,
 );
 const masinaTorcret = equipment("Mașină de torcretat", "ora", 60);
-const amorsaEpoxidica = material("Amorsă epoxidică", "kg", 42);
 const tesaturaCarbon = material(
   "Țesătură din fibre de carbon unidirecțională, 300 g/mp",
   "mp",

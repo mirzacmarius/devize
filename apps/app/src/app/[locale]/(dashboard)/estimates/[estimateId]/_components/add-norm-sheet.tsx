@@ -196,7 +196,26 @@ function AddNorm({
           ) : results === undefined ? (
             <p className="m-0 text-meta text-ink-3">{t("addNorm.searching")}</p>
           ) : results.length === 0 ? (
-            search ? (
+            search && category ? (
+              // None in the category: the search over all of them comes
+              // before a norm from Devize AI, so the AI doesn't write one the
+              // catalog has elsewhere.
+              <div className="grid justify-items-start gap-3">
+                <p className="m-0 text-meta text-ink-3">
+                  {t("addNorm.noResultsInCategory", {
+                    category: category.name,
+                    text: search,
+                  })}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCategoryKey(null)}
+                >
+                  {t("addNorm.searchAllCategories")}
+                </Button>
+              </div>
+            ) : search ? (
               <div className="grid justify-items-start gap-3">
                 <p className="m-0 text-meta text-ink-3">
                   {t("addNorm.noResults", { text: search })}

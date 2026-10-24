@@ -3,6 +3,7 @@ import {
   baterieLavoar,
   betonC16,
   dibluMetalic,
+  fitingCanal40,
   instalator,
   material,
   necalificat,
@@ -16,6 +17,7 @@ import {
   smallMaterials,
   spuma,
   supapa,
+  tevaCanal40,
 } from "./resources";
 
 const category = "Instalații sanitare";
@@ -108,8 +110,6 @@ const sifonMasina = material(
   "buc",
   40,
 );
-const tevaCanal40 = material("Țeavă de canalizare PP Ø40", "m", 5);
-const fitingCanal40 = material("Fiting de canalizare PP Ø40", "buc", 4);
 const boiler120 = material("Boiler electric de 120 l", "buc", 950);
 const instant = material("Încălzitor electric instant de 5,5 kW", "buc", 450);
 const statieDedurizare = material(

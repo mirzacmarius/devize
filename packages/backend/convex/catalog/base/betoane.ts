@@ -8,10 +8,13 @@ import {
   betoniera,
   betonist,
   cherestea,
+  chitPoliuretanic,
   ciment,
   cuie,
   dulgher,
+  durificatorCuart,
   elicopterBeton,
+  equipment,
   fierar,
   foliePolietilena,
   masinaFasonat,
@@ -36,7 +39,7 @@ import {
 
 const category = "Betoane și armături";
 
-const cofrajModular = material(
+const cofrajModular = equipment(
   "Cofraj modular din panouri, chirie pe o lună",
   "mp",
   35,
@@ -46,12 +49,6 @@ const buiandrug = material(
   "Buiandrug prefabricat din beton armat, 12 × 20 cm",
   "m",
   45,
-);
-const cuart = material("Durificator de suprafață cu cuarț", "kg", 2.2);
-const chitPoliuretanic = material(
-  "Chit poliuretanic pentru rosturi, cartuș de 600 ml",
-  "buc",
-  35,
 );
 const betonUsor = material(
   "Beton ușor de pantă cu granule de polistiren",
@@ -438,7 +435,7 @@ export const betoane: BaseNorm[] = [
     excludes: "Turnarea betonului; tăierea rosturilor.",
     measurement: "Suprafața finisată.",
     resources: [
-      cuart(4),
+      durificatorCuart(4),
       betonist(0.15),
       necalificat(0.05),
       elicopterBeton(0.08),

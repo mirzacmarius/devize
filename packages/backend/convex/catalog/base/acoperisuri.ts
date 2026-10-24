@@ -254,7 +254,7 @@ export const acoperisuri: BaseNorm[] = [
       "Învelitoare din șindrilă bituminoasă pe astereală, cu membrană de bază",
     unit: "mp",
     includes:
-      "Montarea membranei de bază, a rândului de pornire și a șindrilei bătută în cuie, lipirea la margini și la străpungeri.",
+      "Montarea membranei de bază, a rândului de pornire și a șindrilei bătute în cuie, lipirea la margini și la străpungeri.",
     excludes: "Astereala; coamele și doliile; sistemul pluvial.",
     measurement: "Suprafața învelitorii, măsurată pe pantă.",
     resources: [

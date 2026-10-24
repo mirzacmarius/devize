@@ -174,6 +174,7 @@ export function CatalogPage() {
               allLabel={t("categories.all")}
               value={category?.key ?? null}
               onChange={changeCategory}
+              wrap
             />
           </div>
         )}
@@ -222,11 +223,27 @@ export function CatalogPage() {
                 {rows?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={columns} className="text-ink-3">
-                      {search
-                        ? t("noResults", { text: search })
-                        : category
-                          ? t("categoryEmpty", { category: category.name })
-                          : t("catalogEmpty")}
+                      {search && !isOwn && category ? (
+                        <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                          {t("noResultsInCategory", {
+                            category: category.name,
+                            text: search,
+                          })}
+                          <Button
+                            type="button"
+                            variant="link"
+                            onClick={() => changeCategory(null)}
+                          >
+                            {t("searchAllCategories")}
+                          </Button>
+                        </span>
+                      ) : search ? (
+                        t("noResults", { text: search })
+                      ) : category ? (
+                        t("categoryEmpty", { category: category.name })
+                      ) : (
+                        t("catalogEmpty")
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

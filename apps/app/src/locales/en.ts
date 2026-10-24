@@ -525,6 +525,8 @@ export default {
       categories: "Categories",
       allCategories: "All",
       categoryEmpty: "No norm published in “{category}” yet.",
+      noResultsInCategory: "No norm in “{category}” matches “{text}”.",
+      searchAllCategories: "Search all categories",
       custom: "Not in the catalog? Add your own line item",
       back: "Back to results",
       loading: "Loading the norm…",
@@ -1632,6 +1634,8 @@ export default {
       all: "All",
     },
     categoryEmpty: "No norm published in “{category}” yet.",
+    noResultsInCategory: "No norm in “{category}” matches “{text}”.",
+    searchAllCategories: "Search all categories",
   },
   norms: {
     sources: {

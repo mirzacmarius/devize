@@ -12,10 +12,12 @@ import {
   faiantar,
   gletIpsos,
   gresie,
+  impregnantPiatra,
   lacatus,
   masinaTaiatPlaci,
   material,
   montatorGips,
+  mortarRostuire,
   necalificat,
   pietrar,
   profilFaianta,
@@ -38,18 +40,12 @@ const piatraPerete = material(
   "mp",
   240,
 );
-const impregnant = material("Impregnant pentru piatră naturală", "l", 60);
 const piatraDecorativa = material(
   "Piatră decorativă din beton pentru placaje",
   "mp",
   95,
 );
 const placuteCaramida = material("Plăcuțe de cărămidă aparentă", "mp", 110);
-const mortarRostuire = material(
-  "Mortar de rostuire pentru zidărie aparentă",
-  "kg",
-  2,
-);
 const profilTreapta = material(
   "Profil de treaptă din aluminiu antiderapant",
   "m",
@@ -217,7 +213,7 @@ export const placaje: BaseNorm[] = [
       piatraPerete(1.05),
       adezivAlb(6),
       chit(0.3),
-      impregnant(0.1),
+      impregnantPiatra(0.1),
       smallMaterials(2),
       faiantar(1.6),
       necalificat(0.4),
