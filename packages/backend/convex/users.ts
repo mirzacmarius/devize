@@ -176,10 +176,9 @@ export const deleteCurrentUserAccount = mutation({
     if (user?.imageId) {
       await ctx.storage.delete(user.imageId);
     }
-    // While they are still a member, to find the profiles they are contact of.
-    await forgetContact(ctx, userId);
     await leaveFirms(ctx, userId);
     await forgetClaimant(ctx, userId);
+    await forgetContact(ctx, userId);
     const emails = await ctx.db
       .query("invitationEmails")
       .withIndex("by_userId_and_sentAt", (q) => q.eq("userId", userId))

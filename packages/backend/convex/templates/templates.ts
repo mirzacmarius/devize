@@ -521,7 +521,9 @@ export const start = mutation({
 
 /**
  * Deletes the next batch of a deleted firm's templates with their works, and
- * returns how many it deleted; 0 means none is left.
+ * returns how many it deleted; 0 means none is left. A template's works can
+ * take up to 800 KB, in its contents row or, saved before those, on the
+ * template itself, so ten stay well under what one mutation may read.
  */
 export async function deleteFirmTemplates(
   ctx: MutationCtx,
@@ -533,7 +535,7 @@ export async function deleteFirmTemplates(
     .withIndex("by_organizationId_and_nameKey", (q) =>
       q.eq("organizationId", organizationId),
     )
-    .take(Math.min(limit, 50));
+    .take(Math.min(limit, 10));
   for (const template of templates) {
     const contents = await contentsRow(ctx, template._id);
     if (contents) {

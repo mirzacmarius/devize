@@ -100,7 +100,10 @@ export const producerTables = {
     contactPhone: v.optional(v.string()),
     updatedBy: v.id("users"),
     updatedAt: v.number(),
-  }).index("by_manufacturerId", ["manufacturerId"]),
+  })
+    .index("by_manufacturerId", ["manufacturerId"])
+    // For taking someone who deletes their account off the profiles.
+    .index("by_contactEmail", ["contactEmail"]),
 
   // A technical data sheet the producer's firm uploaded for Devize AI to read
   // into a draft Normă de producător, each figure with the page it comes

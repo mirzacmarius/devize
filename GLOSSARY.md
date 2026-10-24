@@ -221,7 +221,7 @@ What a Producător learns of how firms use its Norme de producător and products
 _Avoid_: Analytics, reports, insights
 
 **Revendicare** (claim):
-How someone who works for a Producător takes its Profil over for a Firmă: with the link in the thank-you a super admin sends to the address that sent the norms, at once with a verified address on one of the Producător's domains, or by a request a super admin checks, with the CUI looked up at ANAF. A Profil belongs to one Firmă. A link lasts 30 days and goes a month after it expires; when the person deletes their account, a decided claim keeps only what was decided, how and when. In code: `manufacturerClaims`, `claimLinks` and `manufacturerDomains`. See `docs/adr/0018` and `docs/adr/0046`.
+How someone who works for a Producător takes its Profil over for a Firmă: with the link in the thank-you a super admin sends to the address that sent the norms, at once with a verified address on one of the Producător's domains, or by a request a super admin checks, with the CUI looked up at ANAF. A Profil belongs to one Firmă. A link lasts 30 days and goes a month after it expires; when the person deletes their account, a decided claim keeps only what was decided, how and when. In code: `manufacturerClaims`, `claimLinks` and `manufacturerDomains`. See `docs/adr/0018` and `docs/adr/0047`.
 _Avoid_: Verification, ownership request
 
 **Furnizor** (supplier):

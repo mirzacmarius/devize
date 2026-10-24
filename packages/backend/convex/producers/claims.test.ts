@@ -762,7 +762,7 @@ describe("when the claimant deletes their account", () => {
     expect(JSON.stringify(seen)).not.toContain("ana@termotest.ro");
   });
 
-  test("a decided request loses their address, words and the reason given", async () => {
+  test("a decided request loses their address, words and the reason given, and comes off any profile as its contact", async () => {
     const t = setup();
     const { admin, manufacturerId } = await visibleProducer(t);
     const bogdan = await signIn(t, { name: "Bogdan", verified: true });
@@ -779,7 +779,7 @@ describe("when the claimant deletes their account", () => {
       { manufacturerId, message: "Nu ne-am dat acordul." },
     );
     await admin.as.mutation(api.producers.admin.dismiss, { requestId });
-    // Details with his address on a profile no firm of his holds stay.
+    // A profile no firm of his holds, with him as its contact.
     await t.run(async (ctx) => {
       await ctx.db.insert("producerDetails", {
         manufacturerId,
@@ -805,7 +805,9 @@ describe("when the claimant deletes their account", () => {
     expect(left.request).toMatchObject({ status: "dismissed" });
     expect(left.request?.email).toBeUndefined();
     expect(left.request?.message).toBeUndefined();
-    expect(left.details[0]?.contactEmail).toBe("bogdan@example.com");
+    expect(left.details).toHaveLength(1);
+    expect(left.details[0]?.contactName).toBeUndefined();
+    expect(left.details[0]?.contactEmail).toBeUndefined();
   });
 });
 
