@@ -27,6 +27,7 @@ import { useState } from "react";
 import { useRun } from "@/components/use-run";
 import { estimateCode } from "@/lib/format";
 import { useScopedI18n } from "@/locales/client";
+import { SaveTemplateDialog } from "./save-template";
 import type { Estimate, OpenPanel } from "./types";
 
 type Status = Doc<"estimates">["status"];
@@ -49,6 +50,7 @@ export function EstimateActions({
   const tBasket = useScopedI18n("prices.basket");
   const tMaterials = useScopedI18n("materials");
   const tProgress = useScopedI18n("progress");
+  const tTemplates = useScopedI18n("templates.save");
   const router = useRouter();
   const run = useRun();
   const setStatus = useMutation(api.estimates.estimates.setStatus);
@@ -58,6 +60,7 @@ export function EstimateActions({
   const refreshedMessage = useRefreshedMessage();
   const [confirm, setConfirm] = useState<"send" | "delete" | null>(null);
   const [busy, setBusy] = useState(false);
+  const [savingTemplate, setSavingTemplate] = useState(false);
   const { status } = estimate;
   const estimateId = estimate._id;
   const code = estimateCode(estimate.number, estimate.revision);
@@ -196,6 +199,12 @@ export function EstimateActions({
           <DropdownMenuItem onSelect={() => copy(false)}>
             {t("actions.copy")}
           </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={estimate.lineItems.length === 0}
+            onSelect={() => setSavingTemplate(true)}
+          >
+            {tTemplates("action")}
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-danger focus:text-danger"
@@ -205,6 +214,12 @@ export function EstimateActions({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <SaveTemplateDialog
+        estimate={estimate}
+        open={savingTemplate}
+        onOpenChange={setSavingTemplate}
+      />
 
       <Dialog
         open={confirm === "send"}

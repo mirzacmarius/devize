@@ -128,6 +128,117 @@ export default {
       done: "Gata",
     },
   },
+  templates: {
+    open: "Șabloane",
+    startFrom: "Pornește de la",
+    startFromHint:
+      "Un șablon aduce capitolele și articolele lui, cu prețurile tale de azi.",
+    blank: "Deviz gol",
+    firmGroup: "Șabloanele firmei",
+    starterGroup: "Șabloane Devize",
+    unavailable: "{name} (după publicarea catalogului de bază)",
+    itemCount: "Articole: {count}",
+    measurements: "Dimensiuni",
+    measurementsHint:
+      "Cantitățile se calculează din ele. Le corectezi apoi în deviz sau în antemăsurătoare.",
+    willAdd: "Articole din catalogul de bază: {count}.",
+    skipped: "Lipsesc din catalogul de bază articolele șablonului: {codes}.",
+    starters: {
+      bathroom: {
+        name: "Baie",
+        description:
+          "Desfaceri, instalații, hidroizolație, gresie, faianță și obiecte sanitare.",
+      },
+      kitchen: {
+        name: "Bucătărie",
+        description:
+          "Instalații electrice și sanitare, gresie, faianță la blat, glet și zugrăveli.",
+      },
+      apartment: {
+        name: "Zugrăveli apartament",
+        description:
+          "Glet pe o parte din suprafețe și vopsea lavabilă pe pereți și tavane.",
+      },
+      facade: {
+        name: "Termosistem",
+        description:
+          "Schelă, anvelopare cu polistiren de 10 cm și tencuială decorativă, glafuri.",
+      },
+      roof: {
+        name: "Acoperiș",
+        description:
+          "Șarpantă din lemn tratat, țiglă metalică, jgheaburi, burlane și, la nevoie, termoizolația mansardei.",
+      },
+    },
+    inputs: {
+      length: "Lungimea",
+      width: "Lățimea",
+      tileHeight: "Înălțimea faianței",
+      height: "Înălțimea camerei",
+      backsplash: "Lungimea blatului",
+      area: "Suprafața utilă",
+      gletShare: "Cât se gletuiește",
+      perimeter: "Perimetrul casei",
+      facadeHeight: "Înălțimea fațadei",
+      openings: "Ferestre și uși",
+      sills: "Lungimea glafurilor",
+      months: "Schela, în luni",
+      roofArea: "Suprafața acoperișului",
+      timber: "Lemn pentru șarpantă",
+      gutters: "Jgheaburi",
+      downpipes: "Burlane",
+      insulation: "Termoizolație între căpriori",
+    },
+    units: {
+      m: "m",
+      mp: "mp",
+      mc: "mc",
+      buc: "buc",
+      percent: "%",
+      month: "luni",
+    },
+    sheet: {
+      title: "Șabloane",
+      description:
+        "Devizele salvate ca șablon și șabloanele Devize. Un deviz nou pornește de la oricare, cu prețurile tale de azi.",
+      firm: "Ale firmei",
+      starters: "Devize",
+      empty:
+        "Niciun șablon încă. Pe pagina unui deviz, alege „Salvează ca șablon” din meniu.",
+      meta: "Articole: {items} · {total} lei la salvare",
+      used: "Devize pornite din el: {count}",
+      neverUsed: "Nefolosit încă",
+      use: "Deviz nou",
+      useLabel: "Deviz nou din „{name}”",
+      rename: "Redenumește",
+      delete: "Șterge",
+      actionsLabel: "Acțiuni pentru „{name}”",
+      deleteTitle: "Ștergi șablonul „{name}”?",
+      deleteDescription: "Devizele pornite din el rămân neschimbate.",
+      deleteConfirm: "Șterge șablonul",
+      deleted: "Șablonul a fost șters.",
+      renamed: "Șablonul a fost redenumit.",
+      unavailable: "Disponibil după publicarea catalogului de bază.",
+    },
+    save: {
+      action: "Salvează ca șablon",
+      title: "Salvează devizul ca șablon",
+      description:
+        "Se păstrează capitolele și articolele, cu cantitățile și resursele lor. Prețurile se iau din nou când pornești un deviz din șablon.",
+      name: "Numele șablonului",
+      details: "Descriere",
+      detailsHint: "Opțional. De exemplu: baie de bloc, cu cadă.",
+      submit: "Salvează",
+      saved: "Șablonul „{name}” a fost salvat.",
+      replaceTitle: "Există deja un șablon „{name}”",
+      replaceDescription: "Îl înlocuiești cu acest deviz?",
+      replace: "Înlocuiește",
+    },
+    rename: {
+      title: "Redenumește șablonul",
+      submit: "Salvează",
+    },
+  },
   estimates: {
     title: "Devize",
     description: "Devizele firmei, de la ciornă la oferta acceptată.",
@@ -1194,6 +1305,18 @@ export default {
       saveFailed: "Excelul nu a putut fi făcut. Încearcă din nou.",
     },
   },
+  payment: {
+    triggers: {
+      signing: "la semnare",
+      start: "la începerea lucrărilor",
+      statement: "pe situații de lucrări",
+      completion: "la recepția lucrărilor",
+      final: "la recepția finală",
+    },
+    share: "{stage}: {percent} {trigger}",
+    shareAmount: "{stage}: {percent} {trigger} ({amount} lei)",
+    fixed: "{stage}: {amount} lei {trigger}",
+  },
   offer: {
     title: "Oferta pentru client",
     hint: "Un link pe care clientul îl deschide fără cont: vede devizul pe înțeles, alege lucrările opționale și acceptă online, cu semnătură.",
@@ -1249,6 +1372,22 @@ export default {
     withdrawDone: "Linkul a fost retras.",
     madeBy: "Creat de {name}",
     deposit: "Avans cerut: {percent}",
+    payment: "Plata: {schedule}",
+    consumer: "Client consumator: pagina îi arată drepturile din OUG 34/2014",
+    evidence: {
+      title: "Dovezile semnării",
+      code: "Cod SHA-256 al documentului semnat: {hash}",
+      address: "Adresa de rețea: {address}",
+      browser: "Browser: {browser}",
+      earlyStart:
+        "Clientul a cerut începerea lucrărilor înainte de expirarea celor 14 zile de retragere.",
+      withdrawalUntil:
+        "Consumatorul se poate retrage fără motiv până pe {date} (OUG 34/2014).",
+      confirmation:
+        "Copia semnată i-a fost trimisă pe email la {email}, pe {date}.",
+      noConfirmation:
+        "Copia semnată nu i s-a putut trimite pe email: clientul nu are email în fișă. Trimite-i PDF-ul din „Vezi ca clientul”.",
+    },
     questions: {
       title: "Întrebările clientului",
       none: "Clientul n-a pus încă nicio întrebare.",
@@ -1387,9 +1526,40 @@ export default {
         twoMonths: "Două luni",
         threeMonths: "Trei luni",
       },
-      deposit: "Avans la acceptare",
-      depositHint: "Din totalul cu TVA. Lasă gol dacă nu ceri avans.",
-      depositInvalid: "Avansul trebuie să fie între 1% și 100%.",
+      payment: "Plata",
+      paymentHint:
+        "Etapele în care clientul plătește. Apar pe pagina ofertei, în PDF și în emailul de confirmare; facturile de avans pornesc de la ele.",
+      paymentPresets: {
+        none: "La înțelegere, fără etape",
+        deposit30: "Avans 30% la semnare, restul la recepție",
+        thirds: "30% la semnare, 40% la începerea lucrărilor, 30% la recepție",
+        half: "50% la semnare, 50% la recepție",
+        statements: "Avans 20% la semnare, restul pe situații de lucrări",
+        custom: "Personalizat",
+      },
+      paymentStages: {
+        deposit: "Avans",
+        start: "La începerea lucrărilor",
+        completion: "La recepție",
+        statements: "Pe situații de lucrări",
+        rest: "Restul",
+      },
+      paymentStage: "Etapa",
+      paymentStagePlaceholder: "De exemplu: Avans",
+      paymentPercent: "Cota",
+      paymentTrigger: "Scadentă",
+      paymentAdd: "Adaugă o etapă",
+      paymentRemove: "Scoate etapa „{stage}”",
+      paymentSum: "Etapele acoperă {percent} din preț.",
+      paymentSumWarning:
+        "Etapele acoperă doar {percent} din preț. Restul rămâne la înțelegere.",
+      paymentInvalid:
+        "Fiecare etapă are un nume și o cotă între 0 și 100%, iar cotele adunate nu trec de 100%.",
+      consumer: "Clientul e consumator (persoană fizică)",
+      consumerHint:
+        "Pagina ofertei îi arată drepturile din OUG 34/2014, cu cele 14 zile de retragere și formularul de retragere, iar acceptarea îi e confirmată pe email.",
+      consumerNoEmail:
+        "Clientul nu are email în fișă, așa că nu-i putem trimite confirmarea. Adaugă-l la Clienți.",
       variants: "Variante",
       variantsHint:
         "Clientul alege între devizul de bază și variantele bifate.",
@@ -1455,6 +1625,26 @@ export default {
     total: "Total cu TVA",
     totalNoVat: "Total",
     deposit: "Avans la acceptare: {percent}, adică {amount} lei",
+    payment: {
+      title: "Cum se plătește",
+      share: "{percent} {trigger}",
+      lei: "{amount} lei",
+      note: "Sumele sunt din totalul cu TVA pentru ce ai ales.",
+    },
+    rights: {
+      title: "Drepturile tale de consumator",
+      distance:
+        "Acceptând oferta online, închei un contract la distanță cu {firm}. Te poți retrage din el fără motiv în 14 zile de la acceptare (OUG 34/2014).",
+      how: "Ca să te retragi, trimite firmei o declarație neechivocă, de exemplu un email{contact}. Poți folosi formularul de mai jos.",
+      contact: " la {email}",
+      earlyStart:
+        "Dacă ceri ca lucrările să înceapă în aceste 14 zile și te retragi apoi, plătești lucrările executate până atunci. După terminarea lucrărilor cu acordul tău expres, dreptul de retragere se pierde.",
+      exceptions:
+        "Construirea de clădiri noi și transformarea substanțială a clădirilor existente nu intră sub OUG 34/2014. Pentru reclamații te poți adresa ANPC, anpc.ro.",
+      until: "Te poți retrage până pe {date}.",
+      form: "Descarcă formularul de retragere",
+      formFailed: "Formularul nu a putut fi făcut. Încearcă din nou.",
+    },
     variants: {
       title: "Alege varianta",
       hint: "Variantele diferă prin materiale. Fiecare total ține cont de lucrările alese mai jos.",
@@ -1527,6 +1717,10 @@ export default {
       consent:
         "Am citit oferta și o accept, cu varianta și lucrările alese, la prețul de mai sus.",
       consentMissing: "Bifează că ai citit și accepți oferta.",
+      consumerNote:
+        "Ai 14 zile de la acceptare în care te poți retrage fără motiv (OUG 34/2014). Detaliile sunt pe pagină, la „Drepturile tale de consumator”, și le primești și pe email.",
+      earlyStart:
+        "Solicit expres începerea lucrărilor înainte de expirarea termenului de retragere de 14 zile și înțeleg că, dacă mă retrag, plătesc lucrările executate până atunci.",
       submit: "Semnează și acceptă",
       done: "Ai acceptat oferta. Am anunțat firma {firm}.",
     },
@@ -1547,6 +1741,12 @@ export default {
       signedBy: "Semnată de {name}",
       signatureLabel: "Semnătura lui {name}",
       typedSignature: "Semnată cu numele scris.",
+      confirmation: "Copia semnată ți-a fost trimisă la {email}.",
+      code: "Cod de verificare: {hash}",
+      withdrawalUntil:
+        "Te poți retrage fără motiv până pe {date} (OUG 34/2014).",
+      earlyStart:
+        "Ai cerut începerea lucrărilor înainte de expirarea termenului de retragere.",
     },
     declined: {
       title: "Ai refuzat oferta",
@@ -3217,6 +3417,16 @@ export default {
     invalidMeasure:
       "Articolul e într-o unitate de măsură pe care camerele nu o măsoară așa.",
     invalidTakeoffs: "Un articol poate avea cel mult 20 de măsurători.",
+    invalidPaymentSchedule:
+      "Etapele de plată au un nume și o cotă între 0 și 100%, iar cotele adunate nu trec de 100%.",
+    invalidEvidence: "Datele browserului sunt prea lungi.",
+    invalidTemplateName: "Numele șablonului are între 1 și 120 de caractere.",
+    invalidTemplateItems: "Un șablon are nevoie de cel puțin un articol.",
+    invalidTemplateSize:
+      "Devizul e prea mare pentru un șablon: cel mult 300 de articole.",
+    invalidTemplates:
+      "Firma are deja 200 de șabloane. Șterge unul ca să salvezi altul.",
+    invalidStarterValues: "O dimensiune e în afara limitelor șablonului.",
     lockedAccepted:
       "Situațiile de lucrări se fac doar pe un deviz acceptat de client.",
     lockedStatement:
@@ -3241,6 +3451,8 @@ export default {
     notFoundStatement: "Situația de lucrări nu mai există.",
     notFoundGuarantee: "Devizul nu are o garanție stabilită.",
     notFoundRelease: "Restituirea nu mai există.",
+    notFoundBaseCatalog:
+      "Catalogul de bază nu e publicat încă, așa că șabloanele Devize nu pot porni.",
     invalidIban: "IBAN-ul nu e valid.",
     invalidSeries:
       "Seria nu e validă: litere și cifre, cel mult 10, și trebuie să fie activă.",
@@ -3269,6 +3481,7 @@ export default {
     lockedUnapproved:
       "Factura se emite doar pentru o situație de lucrări confirmată de beneficiar.",
     inUseStatement: "Situația de lucrări are deja o factură.",
+    inUseTemplateName: "Există deja un șablon cu acest nume.",
   },
   markups: {
     cam: {

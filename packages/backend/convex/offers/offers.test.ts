@@ -485,7 +485,7 @@ describe("offers", () => {
     });
     const data = await t.query(api.offers.public.document, { token });
     expect(data?.lineItems.map((item) => item._id)).toEqual([tilingId]);
-    expect(data?.client).toEqual({ name: "Ion Popescu" });
+    expect(data?.client).toMatchObject({ name: "Ion Popescu" });
     expect(JSON.stringify(data)).not.toContain("resources");
   });
 

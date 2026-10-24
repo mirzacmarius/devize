@@ -17,6 +17,7 @@ import { DeclineDialog } from "./decline-dialog";
 import { OfferHeader } from "./offer-header";
 import { PriceCard } from "./price-card";
 import { QuestionsCard } from "./questions-card";
+import { RightsCard } from "./rights-card";
 import type { Choice, OpenOfferView } from "./types";
 import { useOfferPdf } from "./use-offer-pdf";
 import { VariantPicker } from "./variant-picker";
@@ -178,6 +179,7 @@ export function OpenOffer({
               onToggle={toggle}
             />
             <PriceCard offer={offer} updating={updating} />
+            {offer.consumer && <RightsCard token={token} offer={offer} />}
             <QuestionsCard token={token} offer={offer} choice={choice} />
           </div>
           <aside className="grid min-w-0 gap-6 lg:sticky lg:top-6">

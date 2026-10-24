@@ -19,12 +19,16 @@ import type { FormDocument } from "./model";
 // tender. Builders turn the Deviz into blocks and tables; `@devize/forms/pdf`
 // draws them.
 
+export { withdrawalDocument } from "./forms/withdrawal";
 export type {
   DocumentKind,
   ExportData,
   ExportOptions,
   LineItemInput,
+  OfferTermsInput,
   PartyInput,
+  PaymentStageInput,
+  PaymentTriggerInput,
   ResourceScope,
   RoomInput,
   ScheduleWindow,

@@ -1,9 +1,11 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { getScopedI18n } from "@/locales/server";
+import { AddressProvider, AddressValue } from "./_components/address";
 import { OfferPage } from "./_components/offer-page";
 
 /**
@@ -38,20 +40,26 @@ export async function generateMetadata({
 
 export default function Page() {
   return (
-    <>
+    <AddressProvider>
       <OfferPage />
       <Suspense>
-        <AtRequest />
+        <ClientAddress />
       </Suspense>
-    </>
+    </AddressProvider>
   );
 }
 
 /**
- * Nothing to show: it tells Next.js the page renders for each request, which
- * it asks for when a page's title does (ADR 0029).
+ * The address the request came from, kept as evidence when the client signs.
+ * Reading the request also tells Next.js the page renders for each request,
+ * which it asks for when a page's title does (ADR 0029).
  */
-async function AtRequest() {
-  await connection();
-  return null;
+async function ClientAddress() {
+  const requestHeaders = await headers();
+  const forwarded = requestHeaders.get("x-forwarded-for");
+  const address =
+    forwarded?.split(",")[0]?.trim() ||
+    requestHeaders.get("x-real-ip")?.trim() ||
+    undefined;
+  return <AddressValue address={address} />;
 }

@@ -23,6 +23,7 @@ import {
   signaturePath,
 } from "@/components/signature/signature-path";
 import { useScopedI18n } from "@/locales/client";
+import { useAddress } from "./address";
 import { ChoiceSummary } from "./answer-card";
 import type { Choice, OpenOfferView } from "./types";
 import { useOfferError } from "./use-offer-error";
@@ -66,6 +67,37 @@ export function AcceptDialog({
 
 type Errors = { name?: string; signature?: string; consent?: string };
 
+// How much of each piece of evidence the server keeps (offers/consumer.ts).
+const limits = {
+  userAgent: 300,
+  language: 35,
+  timeZone: 64,
+  screen: 32,
+  address: 64,
+};
+
+/** What the browser says about itself, kept with the signature as evidence. */
+function signingEvidence(address: string | undefined) {
+  const cut = (value: string | undefined, max: number) =>
+    value ? value.slice(0, max) : undefined;
+  let timeZone: string | undefined;
+  try {
+    timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    timeZone = undefined;
+  }
+  return {
+    userAgent: cut(navigator.userAgent, limits.userAgent),
+    language: cut(navigator.language, limits.language),
+    timeZone: cut(timeZone, limits.timeZone),
+    screen: cut(
+      `${window.screen.width}×${window.screen.height}`,
+      limits.screen,
+    ),
+    address: cut(address, limits.address),
+  };
+}
+
 function AcceptForm({
   token,
   offer,
@@ -81,7 +113,10 @@ function AcceptForm({
   const tc = useScopedI18n("common");
   const accept = useMutation(api.offers.public.accept);
   const errorMessage = useOfferError();
+  const address = useAddress();
   const [name, setName] = useState(offer.client?.name ?? "");
+  // A consumer may ask for the works to start within the withdrawal days.
+  const [earlyStart, setEarlyStart] = useState(false);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   // Signing with the typed name alone, for whoever can't draw.
   const [typed, setTyped] = useState(false);
@@ -114,7 +149,14 @@ function AcceptForm({
     }
     setBusy(true);
     try {
-      await accept({ token, ...choice, name: signer, signature });
+      await accept({
+        token,
+        ...choice,
+        name: signer,
+        signature,
+        evidence: signingEvidence(address),
+        earlyStart: offer.consumer ? earlyStart : undefined,
+      });
       toast.success(t("done", { firm: offer.firm.name }));
       onDone();
     } catch (error) {
@@ -217,6 +259,20 @@ function AcceptForm({
           </p>
         )}
       </div>
+      {offer.consumer && (
+        <div className="grid gap-2 rounded-md border border-border bg-sunken px-4 py-3">
+          <p className="m-0 text-meta text-ink-2">{t("consumerNote")}</p>
+          <label className="flex items-start gap-3 text-meta text-ink">
+            <input
+              type="checkbox"
+              checked={earlyStart}
+              onChange={(event) => setEarlyStart(event.target.checked)}
+              className="mt-0.5 size-4 shrink-0 accent-primary"
+            />
+            {t("earlyStart")}
+          </label>
+        </div>
+      )}
       <DialogFooter className="gap-2">
         <Button type="button" variant="ghost" onClick={onDone}>
           {tc("cancel")}

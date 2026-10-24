@@ -1,8 +1,20 @@
 import { type Infer, v } from "convex/values";
 import { internal } from "../_generated/api";
-import { env, internalAction, internalQuery } from "../_generated/server";
+import {
+  env,
+  internalAction,
+  internalMutation,
+  internalQuery,
+} from "../_generated/server";
 import { emailHtml, escapeHtml, sendEmail } from "../lib/email";
+import {
+  formatBucharest,
+  WITHDRAWAL_DAYS,
+  withdrawalDeadline,
+} from "./consumer";
 import { estimateCode } from "./helpers";
+import { describeSchedule, triggerWords } from "./payments";
+import { paymentStage } from "./validators";
 
 // Tells whoever made an Ofertă's link that the client answered it, or asked
 // something only the firm can answer, by email when Resend is set up. The
@@ -220,6 +232,188 @@ export const question = internalAction({
     } catch (error) {
       // The Deviz's page shows the question anyway.
       console.error(`The client's question was not emailed: ${String(error)}`);
+    }
+    return null;
+  },
+});
+
+const confirmationDetailsValidator = v.object({
+  email: v.string(),
+  token: v.string(),
+  code: v.string(),
+  title: v.string(),
+  firm: v.object({
+    name: v.string(),
+    email: v.union(v.string(), v.null()),
+    phone: v.union(v.string(), v.null()),
+  }),
+  signerName: v.string(),
+  signedAt: v.number(),
+  variantName: v.union(v.string(), v.null()),
+  total: v.number(),
+  withVat: v.boolean(),
+  paymentSchedule: v.array(paymentStage),
+  consumer: v.boolean(),
+  earlyStart: v.boolean(),
+  contentHash: v.union(v.string(), v.null()),
+});
+
+type ConfirmationDetails = Infer<typeof confirmationDetailsValidator>;
+
+/** What the client's confirmation says, or null when they have no email. */
+export const confirmationDetails = internalQuery({
+  args: { offerId: v.id("offers") },
+  returns: v.union(confirmationDetailsValidator, v.null()),
+  handler: async (ctx, args): Promise<ConfirmationDetails | null> => {
+    const offer = await ctx.db.get("offers", args.offerId);
+    const estimate = offer
+      ? await ctx.db.get("estimates", offer.estimateId)
+      : null;
+    const firm = offer
+      ? await ctx.db.get("organizations", offer.organizationId)
+      : null;
+    const client = estimate?.clientId
+      ? await ctx.db.get("clients", estimate.clientId)
+      : null;
+    if (
+      !offer ||
+      !estimate ||
+      !firm ||
+      offer.status !== "accepted" ||
+      !offer.signature ||
+      !client?.email
+    ) {
+      return null;
+    }
+    const variant = offer.acceptedVariantId
+      ? await ctx.db.get("variants", offer.acceptedVariantId)
+      : null;
+    const totals = offer.choice?.totals ?? estimate.totals;
+    return {
+      email: client.email,
+      token: offer.token,
+      code: estimateCode(estimate),
+      title: estimate.title,
+      firm: {
+        name: firm.name,
+        email: firm.email ?? null,
+        phone: firm.phone ?? null,
+      },
+      signerName: offer.signature.name,
+      signedAt: offer.signature.signedAt,
+      variantName: variant?.name ?? null,
+      total: totals.total,
+      withVat: totals.vat !== 0,
+      paymentSchedule: offer.paymentSchedule ?? [],
+      consumer: offer.consumer ?? false,
+      earlyStart: offer.signature.earlyStart ?? false,
+      contentHash: offer.signature.contentHash ?? null,
+    };
+  },
+});
+
+/**
+ * The confirmation a client gets after accepting: what they accepted, how it
+ * is paid, their right to withdraw when they are a consumer (OUG 34/2014,
+ * art. 8), the code of the signed document and where its copy is.
+ */
+export function confirmationEmail(details: ConfirmationDetails, link: string) {
+  const { date, time } = formatBucharest(details.signedAt);
+  const until = formatBucharest(withdrawalDeadline(details.signedAt)).date;
+  const what = `oferta ${details.code} „${details.title.slice(0, 120)}”`;
+  const contacts = [
+    details.firm.email && `email ${details.firm.email}`,
+    details.firm.phone && `telefon ${details.firm.phone}`,
+  ].filter(Boolean);
+  const lines = [
+    `Ați acceptat ${what} de la ${details.firm.name} pe ${date}, la ${time}, semnând electronic ca ${details.signerName}.`,
+    details.variantName ? `Varianta aleasă: ${details.variantName}.` : "",
+    `Total acceptat: ${formatLei(details.total)} lei${details.withVat ? ", cu TVA" : ""}.`,
+    details.paymentSchedule.length > 0
+      ? `Plata: ${describeSchedule(
+          details.paymentSchedule,
+          details.total,
+          formatLei,
+          (trigger) => triggerWords[trigger],
+        ).join("; ")}.`
+      : "",
+    details.consumer
+      ? `Dreptul de retragere: fiind consumator, puteți renunța la acest contract fără să dați un motiv în ${WITHDRAWAL_DAYS} zile de la acceptare, până pe ${until}, printr-o declarație neechivocă trimisă firmei${
+          details.firm.email ? ` la ${details.firm.email}` : ""
+        }. Formularul de retragere se descarcă de pe pagina ofertei (OUG 34/2014).`
+      : "",
+    details.consumer
+      ? details.earlyStart
+        ? "Ați cerut ca lucrările să înceapă în acest termen: dacă vă retrageți, plătiți lucrările executate până atunci."
+        : "Dacă cereți începerea lucrărilor înainte de expirarea acestui termen, la retragere plătiți lucrările executate până atunci."
+      : "",
+    details.contentHash
+      ? `Codul de verificare al documentului semnat (SHA-256): ${details.contentHash}.`
+      : "",
+    contacts.length > 0
+      ? `Pentru orice întrebare, scrieți firmei ${details.firm.name}: ${contacts.join(", ")}.`
+      : "",
+  ].filter(Boolean);
+  return {
+    subject: `Confirmare: ați acceptat oferta ${details.code} de la ${details.firm.name}`,
+    text: [...lines, "", `Copia semnată a ofertei, în PDF: ${link}`].join("\n"),
+    html: emailHtml(
+      `${lines
+        .map(
+          (line) =>
+            `                <p style="margin:0 0 12px;font-size:15px">${escapeHtml(line)}</p>`,
+        )
+        .join("\n")}
+                <p style="margin:20px 0 0"><a href="${escapeHtml(link)}" style="display:inline-block;padding:10px 18px;border-radius:8px;background:#1a1a18;color:#ffffff;font-size:15px;text-decoration:none">Vezi oferta semnată</a></p>`,
+    ),
+  };
+}
+
+/** Emails the client their confirmation, and records where it went. */
+export const confirmation = internalAction({
+  args: { offerId: v.id("offers") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const site = env.SITE_URL?.trim().replace(/\/+$/, "");
+    if (!env.AUTH_RESEND_KEY?.trim() || !site) {
+      return null;
+    }
+    const details: ConfirmationDetails | null = await ctx.runQuery(
+      internal.offers.notify.confirmationDetails,
+      args,
+    );
+    if (!details) {
+      return null;
+    }
+    try {
+      await sendEmail(
+        details.email,
+        confirmationEmail(details, `${site}/o/${details.token}`),
+      );
+    } catch (error) {
+      // The signed copy stays on the offer's page either way.
+      console.error(
+        `The client's confirmation was not emailed: ${String(error)}`,
+      );
+      return null;
+    }
+    await ctx.runMutation(internal.offers.notify.recordConfirmation, {
+      offerId: args.offerId,
+      email: details.email,
+    });
+    return null;
+  },
+});
+
+export const recordConfirmation = internalMutation({
+  args: { offerId: v.id("offers"), email: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const offer = await ctx.db.get("offers", args.offerId);
+    if (offer?.status === "accepted") {
+      await ctx.db.patch("offers", offer._id, {
+        confirmation: { email: args.email, sentAt: Date.now() },
+      });
     }
     return null;
   },

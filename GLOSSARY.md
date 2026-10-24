@@ -56,6 +56,10 @@ _Avoid_: Total, breakdown
 The percentages a Recapitulație adds on top of the direct costs: CAM (contribuția asiguratorie pentru muncă) on labour, indirect costs on the direct costs, profit on direct plus indirect costs, and VAT on the total. Each Deviz copies them from its Firmă's defaults. In code: `markups`.
 _Avoid_: Rates (a rate is a price per hour), fees
 
+**Șablon de deviz** (estimate template):
+What a new Deviz starts from instead of an empty page. A Firmă saves any Deviz as one, keeping its Capitole and Articole with their quantities and Resurse but not its client, site, Cote or prices, which the new Deviz takes from the day it starts. Devize also ships its own (Baie, Bucătărie, Zugrăveli apartament, Termosistem, Acoperiș), written with the Norme de bază, that work out each quantity from a few measurements. In code: `estimateTemplates`, `templates/`, `templates/starters.ts`. See `docs/adr/0040`.
+_Avoid_: Model, preset, Copie (a copy of one Deviz, with its client and prices)
+
 **Antemăsurătoare** (quantity take-off):
 The measured quantities behind a Deviz's Articole: rows of count × length × width × height, with the openings deducted, typed by hand or written from the Deviz's Camere, so an Articol's quantity is the sum of its rows and the Anexa Antemăsurătoare prints them after the Deviz. Devize AI writes rows too, from plans, photos or dictation. In code: `takeoffs`, `takeoffs/`. See `docs/adr/0033`.
 _Avoid_: Measurement, survey
@@ -95,6 +99,18 @@ _Avoid_: Deviz (for what the client sees), proposal
 **Lucrare opțională** (optional work):
 An Articol of an Ofertă that the client may include or leave out; the Firmă says whether it starts included. Every total the client sees is the server's, for what they chose. In code: `offers.optionalItems`.
 _Avoid_: Extra, add-on
+
+**Eșalonarea plății** (payment schedule):
+How an Ofertă's price is paid: one to eight stages the Firmă names, each due at a moment of the works (la semnare, la începerea lucrărilor, pe situații de lucrări, la recepția lucrărilor, la recepția finală) as a share of the total with VAT or a fixed sum in lei. The client's page, the PDF and the confirmation email show the same stages; the deposit is the stage due at signing. In code: `offers.paymentSchedule`, `offers/payments.ts`. See `docs/adr/0038`.
+_Avoid_: Payment terms (the whole of the conditions), instalments, tranșe
+
+**Consumator** (consumer):
+A client who is a private person acting outside a trade, so that accepting an Ofertă on its link makes a distance contract under OUG 34/2014: the page tells them their rights, they may withdraw for 14 days (the Formular de retragere, Anexa B, is theirs to download), they may ask expressly for an early start, and the firm confirms the contract to them by email, with the signed copy. A Firmă marks the client a consumer when it makes the link; a person is one unless it says otherwise. In code: `offers.consumer`, `offers/consumer.ts`. See `docs/adr/0038`.
+_Avoid_: Customer (any client), persoană fizică (the kind of client, not the right)
+
+**Dovezile semnării** (signing evidence):
+What stands behind a client's electronic signature on an Ofertă (Legea 214/2024): the name typed, the moment, the SHA-256 hash of what they signed, the address the page's server saw and what the browser said about itself, plus the copy emailed to the client. In code: `offers.signature.contentHash`, `offers.signature.evidence`, `offers.confirmation`. See `docs/adr/0038`.
+_Avoid_: Audit trail, certificate (a qualified signature's)
 
 **Asistentul ofertei** (offer assistant):
 Devize AI answering a client's questions on an Ofertă's link, only from what the link shows them. What the Ofertă doesn't say, or only the Firmă can decide, goes to the Firmă, who replies from the Deviz's page; the Firmă can also turn the assistant off for a link. In code: `offerQuestions`, `offers/assistant.ts`. See `docs/adr/0019`.

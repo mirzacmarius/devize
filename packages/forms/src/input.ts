@@ -143,6 +143,50 @@ export type TakeoffData = {
   takeoffs: readonly TakeoffInput[];
 };
 
+/** When a part of the price is due (convex/offers/payments.ts). */
+export type PaymentTriggerInput =
+  | "signing"
+  | "start"
+  | "statement"
+  | "completion"
+  | "final";
+
+/** One stage of payment: a share of the total with VAT, or a sum in lei. */
+export type PaymentStageInput = {
+  stage: string;
+  percent?: number;
+  amount?: number;
+  trigger: PaymentTriggerInput;
+};
+
+/** What the browser and the page's server recorded when the client signed. */
+export type SignatureEvidenceInput = {
+  userAgent?: string;
+  language?: string;
+  timeZone?: string;
+  screen?: string;
+  address?: string;
+};
+
+/**
+ * The terms an Ofertă carries beyond its prices: how it is paid, whether its
+ * client is a consumer with the rights of OUG 34/2014 and, once accepted, the
+ * client's electronic signature and the confirmation sent to them.
+ */
+export type OfferTermsInput = {
+  paymentSchedule?: readonly PaymentStageInput[] | null;
+  consumer?: boolean;
+  signature?: {
+    name: string;
+    signedAt: number;
+    contentHash?: string;
+    evidence?: SignatureEvidenceInput;
+    earlyStart?: boolean;
+    withdrawalUntil?: number;
+  } | null;
+  confirmation?: { email: string; sentAt: number } | null;
+};
+
 export type ExportData = {
   estimate: EstimateInput;
   sections: readonly SectionInput[];
@@ -151,6 +195,8 @@ export type ExportData = {
   client?: PartyInput | null;
   // For the Anexă · Antemăsurătoare; left out, the appendix isn't drawn.
   takeoff?: TakeoffData | null;
+  // The client's Deviz prints the Ofertă's terms when it has them.
+  offer?: OfferTermsInput | null;
 };
 
 /** A Deviz's works, without who builds them or for whom. */

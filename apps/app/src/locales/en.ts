@@ -132,6 +132,118 @@ export default {
       done: "Done",
     },
   },
+  templates: {
+    open: "Templates",
+    startFrom: "Start from",
+    startFromHint:
+      "A template brings its chapters and line items, at your prices today.",
+    blank: "Blank estimate",
+    firmGroup: "Your firm's templates",
+    starterGroup: "Devize templates",
+    unavailable: "{name} (once the base catalog is published)",
+    itemCount: "Line items: {count}",
+    measurements: "Dimensions",
+    measurementsHint:
+      "The quantities are worked out from them. You correct them later in the estimate or the take-off.",
+    willAdd: "Line items from the base catalog: {count}.",
+    skipped:
+      "The template's line items missing from the base catalog: {codes}.",
+    starters: {
+      bathroom: {
+        name: "Bathroom",
+        description:
+          "Stripping, plumbing and wiring, waterproofing, floor and wall tiles, and sanitary fittings.",
+      },
+      kitchen: {
+        name: "Kitchen",
+        description:
+          "Wiring and plumbing, floor tiles, a tiled splashback, skim coat and paint.",
+      },
+      apartment: {
+        name: "Apartment painting",
+        description:
+          "Skim coat on part of the surfaces and emulsion paint on walls and ceilings.",
+      },
+      facade: {
+        name: "External insulation",
+        description:
+          "Scaffolding, 10 cm polystyrene insulation with decorative render, and sills.",
+      },
+      roof: {
+        name: "Roof",
+        description:
+          "Treated timber roof frame, metal tiles, gutters, downpipes and, if needed, loft insulation.",
+      },
+    },
+    inputs: {
+      length: "Length",
+      width: "Width",
+      tileHeight: "Tiling height",
+      height: "Room height",
+      backsplash: "Worktop length",
+      area: "Floor area",
+      gletShare: "Share to skim",
+      perimeter: "House perimeter",
+      facadeHeight: "Façade height",
+      openings: "Windows and doors",
+      sills: "Sill length",
+      months: "Scaffolding, in months",
+      roofArea: "Roof area",
+      timber: "Timber for the roof frame",
+      gutters: "Gutters",
+      downpipes: "Downpipes",
+      insulation: "Insulation between rafters",
+    },
+    units: {
+      m: "m",
+      mp: "m²",
+      mc: "m³",
+      buc: "pcs",
+      percent: "%",
+      month: "months",
+    },
+    sheet: {
+      title: "Templates",
+      description:
+        "Estimates saved as templates, and Devize's templates. A new estimate starts from any of them, at your prices today.",
+      firm: "Your firm's",
+      starters: "Devize",
+      empty:
+        "No templates yet. On an estimate's page, choose “Save as template” from the menu.",
+      meta: "Line items: {items} · {total} lei when saved",
+      used: "Estimates started from it: {count}",
+      neverUsed: "Not used yet",
+      use: "New estimate",
+      useLabel: "New estimate from “{name}”",
+      rename: "Rename",
+      delete: "Delete",
+      actionsLabel: "Actions for “{name}”",
+      deleteTitle: "Delete the template “{name}”?",
+      deleteDescription: "The estimates started from it stay as they are.",
+      deleteConfirm: "Delete the template",
+      deleted: "The template was deleted.",
+      renamed: "The template was renamed.",
+      unavailable: "Available once the base catalog is published.",
+    },
+    save: {
+      action: "Save as template",
+      title: "Save the estimate as a template",
+      description:
+        "It keeps the chapters and line items, with their quantities and resources. Prices are taken again when you start an estimate from the template.",
+      name: "Template name",
+      details: "Description",
+      detailsHint: "Optional. For example: flat bathroom, with a bathtub.",
+      submit: "Save",
+      saved: "The template “{name}” was saved.",
+      replaceTitle: "A template “{name}” already exists",
+      replaceDescription: "Replace it with this estimate?",
+      replace: "Replace",
+    },
+    rename: {
+      title: "Rename the template",
+      submit: "Save",
+    },
+  },
   estimates: {
     title: "Estimates",
     description: "The company's estimates, from draft to accepted offer.",
@@ -1198,6 +1310,18 @@ export default {
       saveFailed: "The Excel file couldn't be made. Try again.",
     },
   },
+  payment: {
+    triggers: {
+      signing: "on signing",
+      start: "when the works start",
+      statement: "on work statements",
+      completion: "on acceptance of the works",
+      final: "on final acceptance",
+    },
+    share: "{stage}: {percent} {trigger}",
+    shareAmount: "{stage}: {percent} {trigger} ({amount} lei)",
+    fixed: "{stage}: {amount} lei {trigger}",
+  },
   offer: {
     title: "Offer for the client",
     hint: "A link the client opens without an account: they read the estimate in plain words, choose the optional works and accept online, with a signature.",
@@ -1253,6 +1377,23 @@ export default {
     withdrawDone: "The link was withdrawn.",
     madeBy: "Created by {name}",
     deposit: "Deposit asked: {percent}",
+    payment: "Payment: {schedule}",
+    consumer:
+      "Consumer client: the page shows them their rights under OUG 34/2014",
+    evidence: {
+      title: "Signing evidence",
+      code: "SHA-256 code of the signed document: {hash}",
+      address: "Network address: {address}",
+      browser: "Browser: {browser}",
+      earlyStart:
+        "The client asked for the works to start before the 14 withdrawal days are over.",
+      withdrawalUntil:
+        "The consumer may withdraw without a reason until {date} (OUG 34/2014).",
+      confirmation:
+        "The signed copy was emailed to them at {email}, on {date}.",
+      noConfirmation:
+        "The signed copy could not be emailed: the client has no email on file. Send them the PDF from “View as the client”.",
+    },
     questions: {
       title: "The client's questions",
       none: "The client hasn't asked anything yet.",
@@ -1393,9 +1534,40 @@ export default {
         twoMonths: "Two months",
         threeMonths: "Three months",
       },
-      deposit: "Deposit on acceptance",
-      depositHint: "Of the total incl. VAT. Leave empty for no deposit.",
-      depositInvalid: "The deposit must be between 1% and 100%.",
+      payment: "Payment",
+      paymentHint:
+        "The stages in which the client pays. They appear on the offer page, in the PDF and in the confirmation email; deposit invoices start from them.",
+      paymentPresets: {
+        none: "As agreed, without stages",
+        deposit30: "30% deposit on signing, the rest on acceptance",
+        thirds: "30% on signing, 40% when the works start, 30% on acceptance",
+        half: "50% on signing, 50% on acceptance",
+        statements: "20% deposit on signing, the rest on work statements",
+        custom: "Custom",
+      },
+      paymentStages: {
+        deposit: "Deposit",
+        start: "When the works start",
+        completion: "On acceptance",
+        statements: "On work statements",
+        rest: "The rest",
+      },
+      paymentStage: "Stage",
+      paymentStagePlaceholder: "For example: Deposit",
+      paymentPercent: "Share",
+      paymentTrigger: "Due",
+      paymentAdd: "Add a stage",
+      paymentRemove: "Remove the stage “{stage}”",
+      paymentSum: "The stages cover {percent} of the price.",
+      paymentSumWarning:
+        "The stages cover only {percent} of the price. The rest stays as agreed.",
+      paymentInvalid:
+        "Each stage has a name and a share between 0 and 100%, and the shares add up to 100% at most.",
+      consumer: "The client is a consumer (a private person)",
+      consumerHint:
+        "The offer page shows them their rights under OUG 34/2014, with the 14 withdrawal days and the withdrawal form, and their acceptance is confirmed by email.",
+      consumerNoEmail:
+        "The client has no email on file, so we cannot send them the confirmation. Add it under Clients.",
       variants: "Variants",
       variantsHint:
         "The client chooses between the base estimate and the ticked variants.",
@@ -1459,6 +1631,26 @@ export default {
     total: "Total incl. VAT",
     totalNoVat: "Total",
     deposit: "Deposit on acceptance: {percent}, that is {amount} lei",
+    payment: {
+      title: "How it is paid",
+      share: "{percent} {trigger}",
+      lei: "{amount} lei",
+      note: "The sums come from the total with VAT for what you chose.",
+    },
+    rights: {
+      title: "Your rights as a consumer",
+      distance:
+        "By accepting the offer online you make a distance contract with {firm}. You may withdraw from it without a reason within 14 days of accepting (OUG 34/2014).",
+      how: "To withdraw, send the firm an unequivocal statement, for example an email{contact}. You can use the form below.",
+      contact: " to {email}",
+      earlyStart:
+        "If you ask for the works to start within these 14 days and then withdraw, you pay for the works done by then. Once the works are finished with your express consent, the right to withdraw is lost.",
+      exceptions:
+        "Building new buildings and substantially converting existing ones fall outside OUG 34/2014. For complaints you can turn to ANPC, anpc.ro.",
+      until: "You may withdraw until {date}.",
+      form: "Download the withdrawal form",
+      formFailed: "The form could not be made. Try again.",
+    },
     variants: {
       title: "Choose a variant",
       hint: "The variants differ in materials. Each total counts the works chosen below.",
@@ -1532,6 +1724,10 @@ export default {
       consent:
         "I have read the offer and accept it, with the variant and works chosen, at the price above.",
       consentMissing: "Tick that you have read and accept the offer.",
+      consumerNote:
+        "You have 14 days from accepting in which you may withdraw without a reason (OUG 34/2014). The details are on the page, under “Your rights as a consumer”, and you get them by email too.",
+      earlyStart:
+        "I expressly ask for the works to start before the 14-day withdrawal period is over, and I understand that if I withdraw, I pay for the works done by then.",
       submit: "Sign and accept",
       done: "You accepted the offer. We let {firm} know.",
     },
@@ -1552,6 +1748,12 @@ export default {
       signedBy: "Signed by {name}",
       signatureLabel: "{name}'s signature",
       typedSignature: "Signed with the typed name.",
+      confirmation: "The signed copy was sent to you at {email}.",
+      code: "Verification code: {hash}",
+      withdrawalUntil:
+        "You may withdraw without a reason until {date} (OUG 34/2014).",
+      earlyStart:
+        "You asked for the works to start before the withdrawal period is over.",
     },
     declined: {
       title: "You declined the offer",
@@ -3223,6 +3425,16 @@ export default {
     invalidMeasure:
       "The line item is in a unit of measure that rooms don't measure that way.",
     invalidTakeoffs: "A line item can have at most 20 take-offs.",
+    invalidPaymentSchedule:
+      "Payment stages have a name and a share between 0 and 100%, and the shares add up to 100% at most.",
+    invalidEvidence: "The browser's details are too long.",
+    invalidTemplateName: "A template's name has 1 to 120 characters.",
+    invalidTemplateItems: "A template needs at least one line item.",
+    invalidTemplateSize:
+      "The estimate is too large for a template: 300 line items at most.",
+    invalidTemplates:
+      "The firm already has 200 templates. Delete one to save another.",
+    invalidStarterValues: "A dimension is outside the template's limits.",
     lockedAccepted:
       "Progress statements are made only on an estimate the client accepted.",
     lockedStatement:
@@ -3247,6 +3459,8 @@ export default {
     notFoundStatement: "The progress statement no longer exists.",
     notFoundGuarantee: "The estimate has no guarantee set.",
     notFoundRelease: "The return no longer exists.",
+    notFoundBaseCatalog:
+      "The base catalog isn't published yet, so Devize's templates can't start.",
     invalidIban: "The IBAN is not valid.",
     invalidSeries:
       "The series is not valid: letters and digits, at most 10, and it must be active.",
@@ -3275,6 +3489,7 @@ export default {
     lockedUnapproved:
       "An invoice is issued only for a work statement the beneficiary confirmed.",
     inUseStatement: "The work statement already has an invoice.",
+    inUseTemplateName: "A template with this name already exists.",
   },
   markups: {
     cam: {

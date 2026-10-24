@@ -1,6 +1,7 @@
 "use client";
 
 import { roundLei } from "@devize/backend/convex/estimates/recap";
+import { stageAmount } from "@devize/backend/convex/offers/payments";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -11,6 +12,7 @@ import {
 } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useState } from "react";
+import { useTriggerWords } from "@/components/payment-schedule";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { OpenOfferView } from "./types";
@@ -30,8 +32,11 @@ export function PriceCard({
   updating: boolean;
 }) {
   const t = useScopedI18n("offerPage.totals");
+  const tp = useScopedI18n("offerPage.payment");
+  const triggers = useTriggerWords();
   const locale = useCurrentLocale();
   const [details, setDetails] = useState(false);
+  const schedule = offer.paymentSchedule ?? [];
   const { totals } = offer.choice;
   const { markups } = offer;
   const rate = (value: number) => formatPercent(value, locale);
@@ -135,6 +140,48 @@ export function PriceCard({
           </div>
         </dl>
         {!hasVat && <p className="m-0 text-meta text-ink-3">{t("noVat")}</p>}
+        {schedule.length > 0 && (
+          <div className="grid gap-1 border-t border-border pt-3">
+            <span className="text-meta font-medium text-ink-3">
+              {tp("title")}
+            </span>
+            <dl
+              aria-busy={updating}
+              className={cn(
+                "m-0 grid transition-opacity",
+                updating && "opacity-60",
+              )}
+            >
+              {schedule.map((stage) => (
+                <div
+                  key={`${stage.stage}·${stage.trigger}·${stage.percent ?? stage.amount}`}
+                  className="flex items-baseline justify-between gap-4 py-1.5"
+                >
+                  <dt className="text-body text-ink-2">
+                    <span className="text-ink">{stage.stage}</span>{" "}
+                    <span className="text-meta text-ink-3">
+                      {stage.percent !== undefined
+                        ? tp("share", {
+                            percent: formatPercent(stage.percent, locale),
+                            trigger: triggers[stage.trigger],
+                          })
+                        : triggers[stage.trigger]}
+                    </span>
+                  </dt>
+                  <dd className="m-0 text-body tabular-nums text-ink-2">
+                    {tp("lei", {
+                      amount: formatMoney(
+                        stageAmount(stage, totals.total),
+                        locale,
+                      ),
+                    })}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="m-0 text-meta text-ink-3">{tp("note")}</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
