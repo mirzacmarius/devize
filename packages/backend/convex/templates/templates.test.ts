@@ -1,17 +1,22 @@
-import { afterEach, describe, expect, setSystemTime, test } from "bun:test";
+import {
+  afterEach,
+  describe,
+  expect,
+  setDefaultTimeout,
+  setSystemTime,
+  test,
+} from "bun:test";
 import { api } from "../_generated/api";
 import { devizFor } from "../offers/test.helper";
-import { firmOwner, setup, signIn, type TestConvex } from "../test.helper";
+import { firmOwner, publishBaseCatalog, setup, signIn } from "../test.helper";
+
+// Publishing the base catalog's six hundred norms takes convex-test longer
+// than bun's five seconds.
+setDefaultTimeout(60_000);
 
 afterEach(() => {
   setSystemTime();
 });
-
-async function publishBaseCatalog(t: TestConvex) {
-  const admin = await signIn(t, { name: "Admin", superadmin: true });
-  await admin.as.mutation(api.catalog.baseCatalog.publish, {});
-  await t.finishAllScheduledFunctions(() => {});
-}
 
 describe("a firm's templates", () => {
   test("a Deviz saved as a template starts the next one, priced today", async () => {

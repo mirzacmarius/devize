@@ -4,7 +4,13 @@ import { join } from "node:path";
 
 import { api } from "../_generated/api";
 import { isKnownUnit, isPercentUnit, normalizeUnit } from "../lib/text";
-import { firmOwner, setup, signIn, type TestConvex } from "../test.helper";
+import {
+  firmOwner,
+  publishBaseCatalog,
+  setup,
+  signIn,
+  type TestConvex,
+} from "../test.helper";
 import { BASE_EDITION, baseCategories, baseNorms } from "./baseNorms";
 import { validateResources } from "./resourceRows";
 
@@ -127,36 +133,6 @@ describe("the base catalog's data", () => {
   });
 });
 
-async function publishAll(t: TestConvex) {
-  const admin = await signIn(t, { name: "Admin", superadmin: true });
-  await publishCatalog(t, admin);
-  return admin;
-}
-
-// Each batch of norms schedules the next one, and convex-test can come back
-// from draining the scheduler between two batches, so the catalog is drained
-// until its status shows nothing left to publish.
-async function publishCatalog(
-  t: TestConvex,
-  admin: Awaited<ReturnType<typeof signIn>>,
-) {
-  await admin.as.mutation(api.catalog.baseCatalog.publish, {});
-  for (let round = 0; round < 50; round++) {
-    await t.finishAllScheduledFunctions(() => {});
-    const pending = await t.run(async (ctx) => {
-      const jobs = await ctx.db.system.query("_scheduled_functions").collect();
-      return jobs.filter(
-        (job) =>
-          job.state.kind === "pending" || job.state.kind === "inProgress",
-      ).length;
-    });
-    if (pending === 0) {
-      return;
-    }
-  }
-  throw new Error("publishing the base catalog did not finish");
-}
-
 async function normWithCode(t: TestConvex, code: string) {
   return await t.run(
     async (ctx) =>
@@ -177,7 +153,7 @@ describe("publishing the base catalog", () => {
       baseNorms.map(() => "new"),
     );
 
-    await publishCatalog(t, admin);
+    await publishBaseCatalog(t, admin);
 
     const after = await admin.as.query(api.catalog.baseCatalog.status, {});
     expect(after.norms.every((norm) => norm.state === "unchanged")).toBe(true);
@@ -214,7 +190,7 @@ describe("publishing the base catalog", () => {
 
   test("shares one catalog resource among the norms that consume it", async () => {
     const t = setup();
-    await publishAll(t);
+    await publishBaseCatalog(t);
     const resources = await t.run(
       async (ctx) =>
         await ctx.db
@@ -237,7 +213,7 @@ describe("publishing the base catalog", () => {
 
   test("lets firms find the base norms and price them in a Deviz", async () => {
     const t = setup();
-    await publishAll(t);
+    await publishBaseCatalog(t);
     const ana = await firmOwner(t, "Ana");
     const found = await ana.as.query(api.catalog.norms.search, {
       organizationId: ana.organizationId,
@@ -272,7 +248,7 @@ describe("publishing the base catalog", () => {
 
   test("lists one category's published norms by code, from the codes alone", async () => {
     const t = setup();
-    await publishAll(t);
+    await publishBaseCatalog(t);
     const ana = await firmOwner(t, "Ana");
     const masonry = await ana.as.query(api.catalog.norms.listBaseCategory, {
       category: "zid",
@@ -297,8 +273,8 @@ describe("publishing the base catalog", () => {
 
   test("leaves unchanged norms alone when published again", async () => {
     const t = setup();
-    const admin = await publishAll(t);
-    await publishCatalog(t, admin);
+    const admin = await publishBaseCatalog(t);
+    await publishBaseCatalog(t, admin);
 
     const norms = await t.run(
       async (ctx) => await ctx.db.query("norms").collect(),
@@ -309,7 +285,7 @@ describe("publishing the base catalog", () => {
 
   test("publishes a changed norm as a new version that supersedes the old one", async () => {
     const t = setup();
-    const admin = await publishAll(t);
+    const admin = await publishBaseCatalog(t);
     // Someone changed the published version, so the code now differs from it.
     const [published] = await normWithCode(t, "DV-ZUG-01");
     await t.run(async (ctx) => {
@@ -323,7 +299,7 @@ describe("publishing the base catalog", () => {
       status.norms.filter((norm) => norm.state !== "unchanged"),
     ).toMatchObject([{ code: "DV-ZUG-01", state: "changed", version: 1 }]);
 
-    await publishCatalog(t, admin);
+    await publishBaseCatalog(t, admin);
 
     const versions = await normWithCode(t, "DV-ZUG-01");
     expect(
@@ -338,7 +314,7 @@ describe("publishing the base catalog", () => {
 
   test("brings back a norm archived in the app while the code still has it", async () => {
     const t = setup();
-    const admin = await publishAll(t);
+    const admin = await publishBaseCatalog(t);
     const [scaffolding] = await normWithCode(t, "DV-SCH-01");
     if (!scaffolding) {
       throw new Error("DV-SCH-01 was not published");
@@ -351,7 +327,7 @@ describe("publishing the base catalog", () => {
       status.norms.filter((norm) => norm.state !== "unchanged"),
     ).toMatchObject([{ code: "DV-SCH-01", state: "new" }]);
 
-    await publishCatalog(t, admin);
+    await publishBaseCatalog(t, admin);
 
     const versions = await normWithCode(t, "DV-SCH-01");
     expect(
@@ -381,7 +357,7 @@ describe("publishing the base catalog", () => {
         referencePrice: 45,
       });
     });
-    await publishAll(t);
+    await publishBaseCatalog(t);
     const prices = await t.run(async (ctx) => {
       const rows = await ctx.db.query("resources").collect();
       return rows
