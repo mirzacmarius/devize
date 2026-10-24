@@ -6,9 +6,12 @@ import { nameKey, normalizeEmail } from "./text";
 // firm doesn't answer; the shortest 6 calendar months are 181 days, so 175
 // leaves room for a missed daily run. An address nobody wrote to goes within
 // a month of being found (GDPR art. 14(3)(a)): 25 days fit the shortest one.
+// While the firm is in touch they stay, but at most 2 years after the last
+// message either way (ADR 0049); the shortest 2 years are 730 days.
 export const DAY_MS = 24 * 60 * 60 * 1000;
 export const NO_ANSWER_MS = 175 * DAY_MS;
 export const NOT_WRITTEN_MS = 25 * DAY_MS;
+export const IN_TOUCH_MS = 725 * DAY_MS;
 // The research report names people in free text, so it goes after 25 days
 // whatever the firm did; what research found stays on the manufacturer.
 export const REPORT_MS = 25 * DAY_MS;
@@ -16,7 +19,12 @@ export const REPORT_MS = 25 * DAY_MS;
 // What an erased address becomes in the emails kept as a record.
 export const ERASED = "[adresă ștearsă]";
 
-export type ErasureRule = "no_answer" | "not_written" | "opt_out" | "excluded";
+export type ErasureRule =
+  | "no_answer"
+  | "not_written"
+  | "opt_out"
+  | "excluded"
+  | "inactive";
 
 // Words that make an address a company's rather than a person's: office@,
 // vanzari.export@, tehnic-ro@.
@@ -225,6 +233,7 @@ type RetentionManufacturer = Pick<
   | "normsStatus"
   | "claimStatus"
   | "answeredAt"
+  | "lastAnsweredAt"
 >;
 
 /**
@@ -273,15 +282,34 @@ function writtenAt(message: Doc<"outreachMessages">): number | undefined {
 
 export type AddressPlan = {
   address: string;
-  // When it is erased: 0 for the next run, null while the firm is in touch.
+  // When it is erased: 0 for the next run, null when nothing dates it yet.
   at: number | null;
   rule: ErasureRule | null;
 };
 
 /**
+ * The last message between the firm and us that Devize knows of: its last
+ * answer, its last norms, or our last email to anyone there.
+ */
+export function lastExchange(
+  manufacturer: RetentionManufacturer,
+  messages: Doc<"outreachMessages">[],
+  normsReceivedAt?: number,
+): number | undefined {
+  const times = [
+    manufacturer.answeredAt,
+    manufacturer.lastAnsweredAt,
+    normsReceivedAt,
+    ...messages.map(writtenAt),
+  ].filter((time): time is number => time !== undefined);
+  return times.length > 0 ? Math.max(...times) : undefined;
+}
+
+/**
  * When each person's address the firm's records hold is erased:
  * - right away if they asked us to stop or the firm was excluded;
- * - never while the firm is in touch with us;
+ * - while the firm is in touch with us, 2 years after the last message
+ *   between us (`normsReceivedAt` is when its last norms came);
  * - 175 days after the last email written to that address;
  * - 25 days after it was found, if nobody wrote to it.
  * Company addresses (office@, vanzari@) are kept.
@@ -291,6 +319,7 @@ export function retentionPlan(input: {
   contacts: Doc<"manufacturerContacts">[];
   messages: Doc<"outreachMessages">[];
   suppressed: Set<string>;
+  normsReceivedAt?: number;
 }): AddressPlan[] {
   const { manufacturer, contacts, messages, suppressed } = input;
   const firm = firmWords(manufacturer);
@@ -335,6 +364,9 @@ export function retentionPlan(input: {
   }
 
   const keep = inTouch(manufacturer);
+  const exchanged = keep
+    ? lastExchange(manufacturer, messages, input.normsReceivedAt)
+    : undefined;
   return [...found.keys()].sort().map((address): AddressPlan => {
     if (suppressed.has(address)) {
       return { address, at: 0, rule: "opt_out" };
@@ -343,7 +375,9 @@ export function retentionPlan(input: {
       return { address, at: 0, rule: "excluded" };
     }
     if (keep) {
-      return { address, at: null, rule: null };
+      return exchanged === undefined
+        ? { address, at: null, rule: null }
+        : { address, at: exchanged + IN_TOUCH_MS, rule: "inactive" };
     }
     const last = written.get(address);
     if (last !== undefined) {

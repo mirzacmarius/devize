@@ -36,12 +36,33 @@ export function ContactsPanel({
   const chooseContact = useMutation(api.manufacturers.outreach.chooseContact);
   const suppress = useMutation(api.manufacturers.outreach.suppress);
   const removeContact = useMutation(api.manufacturers.admin.removeContact);
+  const stillInTouch = useMutation(api.manufacturers.admin.stillInTouch);
   const { run, error, pending } = useRun();
   const format = useFormat();
   const canUse = message?.status === "draft";
+  // A firm in touch keeps its people's addresses 2 years after the last
+  // message between us; a new answer starts them again.
+  const inTouch = contacts.some(
+    (contact) => contact.retention?.rule === "inactive",
+  );
 
   return (
-    <Panel title={t("title")} description={t("description")}>
+    <Panel
+      title={t("title")}
+      description={t("description")}
+      actions={
+        inTouch && (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={pending}
+            onClick={() => run(() => stillInTouch({ manufacturerId }))}
+          >
+            {t("stillInTouch")}
+          </Button>
+        )
+      }
+    >
       <p className="text-sm text-primary/60">{t("retention")}</p>
       <ErrorText error={error} />
       {contacts.length === 0 ? (
@@ -74,6 +95,12 @@ export function ContactsPanel({
                 {contact.retention &&
                   (contact.retention.at === null ? (
                     <Pill>{t("kept")}</Pill>
+                  ) : contact.retention.rule === "inactive" ? (
+                    <Pill>
+                      {t("keptUntil", {
+                        date: format.date(contact.retention.at),
+                      })}
+                    </Pill>
                   ) : (
                     <Pill tone="warning">
                       {contact.retention.at === 0

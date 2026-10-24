@@ -2600,6 +2600,7 @@ export default {
         not_written: "Nobody wrote to them in 25 days",
         opt_out: "They asked us to stop",
         excluded: "The firm was excluded",
+        inactive: "No word with the firm for 2 years",
       },
       addresses: "Addresses erased: {count}",
       mailbox:
@@ -2808,8 +2809,10 @@ export default {
         suppress: "Suppress",
         suppressConfirm: "Sure? It's erased everywhere",
         retention:
-          "People's addresses are erased on their own: 25 days after we found them if nobody wrote to them, and 175 days after the last email sent to them if the firm doesn't answer. On “stop”, or if you exclude the firm, they go at once. The firm's general addresses stay.",
+          "People's addresses are erased on their own: 25 days after we found them if nobody wrote to them, and 175 days after the last email sent to them if the firm doesn't answer. While we talk with the firm they stay, but at most 2 years after the last message; if the firm wrote to you again, press “Still in touch”. On “stop”, or if you exclude the firm, they go at once. The firm's general addresses stay.",
         kept: "Kept while we talk with the firm",
+        keptUntil: "Kept while we talk, until {date} at most",
+        stillInTouch: "Still in touch",
         erasesOn: "Erased on {date}",
         erasesNow: "Erased now",
         remove: "Delete",
@@ -3492,7 +3495,7 @@ export default {
       optOut:
         "reply “stop” and we won't write again. We then delete your address from our contacts and messages, including the emails we sent. We keep it only on our exclusion list, so we never write to it again, and if the firm consented to our publishing its norms, we also keep the proof of that consent.",
       retention:
-        "while we are in touch with the firm. If the firm doesn't answer or declines, we delete a person's address within 6 months of the last message sent to it, and a person's address we never wrote to within a month of finding it. We keep the messages sent to the firm without these addresses, as proof that we wrote. The report in which the assistant describes what it found on the firm's site is deleted within a month. We keep the proof of the consent to publish the norms even after the firm takes its profile off Devize, because the norms published until then stay in the estimates made with them.",
+        "while we are in touch with the firm, and at most 2 years after the last message exchanged with it. If the firm doesn't answer or declines, we delete a person's address within 6 months of the last message sent to it, and a person's address we never wrote to within a month of finding it. We keep the messages sent to the firm without these addresses, as proof that we wrote. The report in which the assistant describes what it found on the firm's site is deleted within a month. We keep the proof of the consent to publish the norms even after the firm takes its profile off Devize, because the norms published until then stay in the estimates made with them.",
       claims:
         "If you take over your firm's profile in Devize, we keep the request as proof of who took it over and how: the email address you signed in with, what you told us about your role and the firm's CUI, which we check in ANAF's public register. We keep requests to remove a profile the same way. When you delete your account, we delete the requests still waiting, and of those decided we keep only what was decided, how and when, without your address and what you wrote to us. We delete the claim link you received by email a month after it expires. The name, email and phone of the contact person a firm puts on its profile are seen by everyone who uses Devize; if the contact person is you, with your account's address, we take them off the profile when you delete your account. From the firms' estimates, a manufacturer gets only monthly statistics about its norms and products, without learning which firm used them.",
     },
