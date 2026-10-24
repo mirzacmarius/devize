@@ -204,7 +204,10 @@ describe("the terms of an Ofertă", () => {
 
     // Both sides see where the copy went, the client's page with the address hidden.
     const confirmed = await t.query(api.offers.public.view, { token });
-    expect(confirmed?.confirmation).toMatchObject({ email: "i***@exemplu.ro" });
+    expect(confirmed).toMatchObject({
+      state: "accepted",
+      confirmation: { email: "i***@exemplu.ro" },
+    });
     const followedAgain = await firm.as.query(api.offers.offers.forEstimate, {
       estimateId,
     });
