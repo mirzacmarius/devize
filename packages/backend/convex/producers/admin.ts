@@ -46,7 +46,7 @@ function signals(
   manufacturer: Doc<"manufacturers">,
 ) {
   const site = websiteDomain(manufacturer.website);
-  const domain = domainOf(claim.email);
+  const domain = claim.email === undefined ? null : domainOf(claim.email);
   const anafName = claim.anaf?.name ? normalizeText(claim.anaf.name) : null;
   // The first word of each of the producer's names, after a leading "SC".
   const names = [
@@ -65,7 +65,9 @@ function signals(
   return {
     // The address is on the producer's website's domain or a subdomain of it.
     emailMatchesWebsite:
-      site !== null && (domain === site || domain.endsWith(`.${site}`)),
+      site !== null &&
+      domain !== null &&
+      (domain === site || domain.endsWith(`.${site}`)),
     // ANAF's name for the CUI starts with a word of the producer's name.
     anafNameMatches:
       anafName === null ? null : names.some((word) => anafName.includes(word)),
@@ -221,7 +223,8 @@ export const queue = query({
         manufacturerName: manufacturer.name,
         name: await userName(ctx, request.userId),
         email: request.email,
-        message: request.message,
+        // A pending request always has its words; they go only with a decision.
+        message: request.message ?? "",
         createdAt: request._creationTime,
       });
     }
@@ -334,12 +337,13 @@ export const removeDomain = mutation({
 async function pendingClaim(
   ctx: QueryCtx,
   claimId: Id<"manufacturerClaims">,
-): Promise<Doc<"manufacturerClaims">> {
+): Promise<Doc<"manufacturerClaims"> & { email: string }> {
   const claim = await ctx.db.get("manufacturerClaims", claimId);
-  if (claim?.status !== "pending") {
+  // A pending claim always has its address; it goes only with a decision.
+  if (claim?.status !== "pending" || claim.email === undefined) {
     throw notFound("claim");
   }
-  return claim;
+  return { ...claim, email: claim.email };
 }
 
 /**

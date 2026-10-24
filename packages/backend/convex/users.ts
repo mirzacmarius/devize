@@ -8,6 +8,8 @@ import { unclaimedUpload } from "./accounts/files";
 import { EMAIL_CODE_PROVIDER } from "./emailSignIn";
 import { invalid } from "./lib/errors";
 import { forgetSender } from "./manufacturers/outreach";
+import { forgetClaimant } from "./producers/claims";
+import { forgetContact } from "./producers/details";
 import { forgetAddress } from "./signInLeftovers";
 import { username } from "./utils/validators";
 
@@ -160,7 +162,8 @@ async function leaveFirms(ctx: MutationCtx, userId: Id<"users">) {
 
 /**
  * Deletes the signed-in user with their sign-in accounts, sessions and avatar,
- * and takes them out of their firms. The client signs out afterwards.
+ * takes them out of their firms and forgets them on producers' profiles. The
+ * client signs out afterwards.
  */
 export const deleteCurrentUserAccount = mutation({
   args: {},
@@ -174,6 +177,8 @@ export const deleteCurrentUserAccount = mutation({
       await ctx.storage.delete(user.imageId);
     }
     await leaveFirms(ctx, userId);
+    await forgetClaimant(ctx, userId);
+    await forgetContact(ctx, userId);
     const emails = await ctx.db
       .query("invitationEmails")
       .withIndex("by_userId_and_sentAt", (q) => q.eq("userId", userId))

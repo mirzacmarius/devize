@@ -16,8 +16,20 @@ for (const file of new Glob("**/*.{ts,js}").scanSync(import.meta.dir)) {
   modules[`./${file}`] = () => import(`${import.meta.dir}/${file}`);
 }
 
-export function setup() {
-  return convexTest(schema, modules);
+// What one function may read and write, as convex-test names the limits;
+// `true` enforces Convex's own.
+type TransactionLimits =
+  | boolean
+  | Partial<
+      Record<
+        "bytesRead" | "bytesWritten" | "documentsRead" | "documentsWritten",
+        number
+      >
+    >;
+
+/** A fresh in-memory deployment, by default with no transaction limits. */
+export function setup(options: { transactionLimits?: TransactionLimits } = {}) {
+  return convexTest({ schema, modules, ...options });
 }
 
 export type TestConvex = ReturnType<typeof setup>;

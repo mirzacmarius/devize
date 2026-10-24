@@ -3,7 +3,7 @@ import type { Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { mutation } from "../_generated/server";
 import { optionalText } from "../accounts/identifiers";
-import { cleanEmail } from "../accounts/invitations";
+import { cleanEmail, normalizeEmail } from "../accounts/invitations";
 import { getMembership, requireUserId } from "../lib/access";
 import { forbidden, invalid, notFound } from "../lib/errors";
 
@@ -67,6 +67,30 @@ export async function deleteDetails(
     );
   for await (const row of rows) {
     await ctx.db.delete("producerDetails", row._id);
+  }
+}
+
+/**
+ * Takes a person who is deleting their account off every profile whose
+ * contact has their account's address: the contact's name, address and phone
+ * go, what the producer wrote about itself stays.
+ */
+export async function forgetContact(ctx: MutationCtx, userId: Id<"users">) {
+  const user = await ctx.db.get("users", userId);
+  if (!user?.email) {
+    return;
+  }
+  const email = normalizeEmail(user.email);
+  const rows = await ctx.db
+    .query("producerDetails")
+    .withIndex("by_contactEmail", (q) => q.eq("contactEmail", email))
+    .take(100);
+  for (const row of rows) {
+    await ctx.db.patch("producerDetails", row._id, {
+      contactName: undefined,
+      contactEmail: undefined,
+      contactPhone: undefined,
+    });
   }
 }
 

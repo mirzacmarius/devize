@@ -676,6 +676,188 @@ describe("managing claims", () => {
   });
 });
 
+describe("when the claimant deletes their account", () => {
+  test("their waiting requests go, and a decided claim keeps only how and when", async () => {
+    const t = setup();
+    const { admin, manufacturerId } = await visibleProducer(t);
+    const { token } = await admin.as.mutation(api.producers.admin.createLink, {
+      manufacturerId,
+      email: "ana@termotest.ro",
+    });
+    const ana = await signIn(t, {
+      name: "Ana",
+      email: "ana@termotest.ro",
+      verified: true,
+    });
+    const { organizationId } = await ana.as.mutation(
+      api.producers.claimLinks.claim,
+      { token },
+    );
+    // A colleague keeps the producer's firm going.
+    const bogdan = await signIn(t, { name: "Bogdan" });
+    await t.run(async (ctx) => {
+      await ctx.db.insert("memberships", {
+        organizationId,
+        userId: bogdan.userId,
+        role: "admin",
+        lastActiveAt: Date.now(),
+      });
+    });
+    await ana.as.mutation(api.producers.details.update, {
+      manufacturerId,
+      about: "Producem termosisteme.",
+      contactName: "Ana Ionescu",
+      contactEmail: "Ana@TermoTest.ro",
+      contactPhone: "0722 000 000",
+    });
+    // A claim and a removal request about another producer, still waiting.
+    const other = await manufacturer(t, "Vata Test SRL");
+    await publishNorm(other.admin, other.manufacturerId);
+    await ana.as.mutation(api.producers.claims.request, {
+      manufacturerId: other.manufacturerId,
+      message: "Lucrez și la Vata Test.",
+    });
+    await ana.as.mutation(api.producers.claims.requestRemoval, {
+      manufacturerId: other.manufacturerId,
+      message: "Nu ne-am dat acordul.",
+    });
+
+    await ana.as.mutation(api.users.deleteCurrentUserAccount, {});
+    await t.finishAllScheduledFunctions(() => {});
+
+    const left = await t.run(async (ctx) => ({
+      claims: await ctx.db.query("manufacturerClaims").collect(),
+      removals: await ctx.db.query("removalRequests").collect(),
+      links: await ctx.db.query("claimLinks").collect(),
+      details: await ctx.db.query("producerDetails").collect(),
+      firm: await ctx.db.get("organizations", organizationId),
+    }));
+    expect(left.claims).toHaveLength(1);
+    expect(left.claims[0]).toMatchObject({
+      manufacturerId,
+      method: "link",
+      status: "approved",
+      organizationId,
+    });
+    expect(left.claims[0]?.email).toBeUndefined();
+    expect(left.removals).toEqual([]);
+    expect(left.links).toEqual([]);
+    expect(left.details).toHaveLength(1);
+    expect(left.details[0]?.about).toBe("Producem termosisteme.");
+    expect(left.details[0]?.contactName).toBeUndefined();
+    expect(left.details[0]?.contactEmail).toBeUndefined();
+    expect(left.details[0]?.contactPhone).toBeUndefined();
+    // The profile stays with the producer's firm.
+    expect(left.firm?.manufacturerId).toBe(manufacturerId);
+    const seen = await admin.as.query(api.producers.admin.forManufacturer, {
+      manufacturerId,
+    });
+    expect(seen?.claims).toEqual([
+      expect.objectContaining({
+        method: "link",
+        status: "approved",
+        name: null,
+      }),
+    ]);
+    expect(JSON.stringify(seen)).not.toContain("ana@termotest.ro");
+  });
+
+  test("a decided request loses their address, words and the reason given, and comes off any profile as its contact", async () => {
+    const t = setup();
+    const { admin, manufacturerId } = await visibleProducer(t);
+    const bogdan = await signIn(t, { name: "Bogdan", verified: true });
+    const claimId = await bogdan.as.mutation(api.producers.claims.request, {
+      manufacturerId,
+      message: "Sunt Bogdan, de la Termo Test.",
+    });
+    await admin.as.mutation(api.producers.admin.reject, {
+      claimId,
+      reason: "Nu am putut confirma că lucrați la Termo Test.",
+    });
+    const requestId = await bogdan.as.mutation(
+      api.producers.claims.requestRemoval,
+      { manufacturerId, message: "Nu ne-am dat acordul." },
+    );
+    await admin.as.mutation(api.producers.admin.dismiss, { requestId });
+    // A profile no firm of his holds, with him as its contact.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("producerDetails", {
+        manufacturerId,
+        contactName: "Ion",
+        contactEmail: "bogdan@example.com",
+        updatedBy: admin.userId,
+        updatedAt: Date.now(),
+      });
+    });
+
+    await bogdan.as.mutation(api.users.deleteCurrentUserAccount, {});
+
+    const left = await t.run(async (ctx) => ({
+      claim: await ctx.db.get("manufacturerClaims", claimId),
+      request: await ctx.db.get("removalRequests", requestId),
+      details: await ctx.db.query("producerDetails").collect(),
+    }));
+    expect(left.claim).toMatchObject({ method: "manual", status: "rejected" });
+    expect(left.claim?.email).toBeUndefined();
+    expect(left.claim?.message).toBeUndefined();
+    expect(left.claim?.reason).toBeUndefined();
+    expect(left.claim?.decidedAt).toBeNumber();
+    expect(left.request).toMatchObject({ status: "dismissed" });
+    expect(left.request?.email).toBeUndefined();
+    expect(left.request?.message).toBeUndefined();
+    expect(left.details).toHaveLength(1);
+    expect(left.details[0]?.contactName).toBeUndefined();
+    expect(left.details[0]?.contactEmail).toBeUndefined();
+  });
+});
+
+describe("claim links", () => {
+  test("go a month after they expire, used or not", async () => {
+    const t = setup();
+    const { admin, manufacturerId } = await visibleProducer(t);
+    const day = 24 * 60 * 60 * 1000;
+    const tokens: Record<string, string> = {};
+    for (const email of [
+      "vechi@termotest.ro",
+      "folosit@termotest.ro",
+      "recent@termotest.ro",
+      "nou@termotest.ro",
+    ]) {
+      const link = await admin.as.mutation(api.producers.admin.createLink, {
+        manufacturerId,
+        email,
+      });
+      tokens[email] = link.token;
+    }
+    const expire = async (email: string, daysAgo: number, used = false) => {
+      await t.run(async (ctx) => {
+        const link = await ctx.db
+          .query("claimLinks")
+          .withIndex("by_token", (q) => q.eq("token", tokens[email] ?? ""))
+          .unique();
+        if (link) {
+          await ctx.db.patch("claimLinks", link._id, {
+            expiresAt: Date.now() - daysAgo * day,
+            ...(used ? { usedAt: Date.now() - (daysAgo + 20) * day } : {}),
+          });
+        }
+      });
+    };
+    await expire("vechi@termotest.ro", 31);
+    await expire("folosit@termotest.ro", 45, true);
+    await expire("recent@termotest.ro", 29);
+
+    await t.mutation(internal.producers.claimLinks.deleteExpired, {});
+    const left = await t.run(
+      async (ctx) => await ctx.db.query("claimLinks").collect(),
+    );
+    expect(left.map((link) => link.email).sort()).toEqual([
+      "nou@termotest.ro",
+      "recent@termotest.ro",
+    ]);
+  });
+});
+
 describe("ANAF's answer", () => {
   test("is read for a firm found, one not found, and an answer it can't read", () => {
     expect(

@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
+import type { MutationCtx } from "../_generated/server";
 import { mutation } from "../_generated/server";
 import { cleanCui, optionalText } from "../accounts/identifiers";
 import { appError, forbidden, invalid, notFound } from "../lib/errors";
@@ -172,3 +174,55 @@ export const requestRemoval = mutation({
     });
   },
 });
+
+/**
+ * Forgets a person who is deleting their account: their claims and removal
+ * requests still waiting go, and a decided one keeps only what was decided,
+ * how and when, without their address and words. The claim links sent to
+ * their address for the profiles they claimed go too.
+ */
+export async function forgetClaimant(ctx: MutationCtx, userId: Id<"users">) {
+  const claims = await ctx.db
+    .query("manufacturerClaims")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .take(200);
+  for (const claim of claims) {
+    if (claim.email !== undefined) {
+      const email = claim.email;
+      const links = await ctx.db
+        .query("claimLinks")
+        .withIndex("by_manufacturerId", (q) =>
+          q.eq("manufacturerId", claim.manufacturerId),
+        )
+        .take(100);
+      for (const link of links) {
+        if (link.email === email) {
+          await ctx.db.delete("claimLinks", link._id);
+        }
+      }
+    }
+    if (claim.status === "pending") {
+      await ctx.db.delete("manufacturerClaims", claim._id);
+    } else {
+      await ctx.db.patch("manufacturerClaims", claim._id, {
+        email: undefined,
+        message: undefined,
+        reason: undefined,
+      });
+    }
+  }
+  const removals = await ctx.db
+    .query("removalRequests")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .take(200);
+  for (const request of removals) {
+    if (request.status === "pending") {
+      await ctx.db.delete("removalRequests", request._id);
+    } else {
+      await ctx.db.patch("removalRequests", request._id, {
+        email: undefined,
+        message: undefined,
+      });
+    }
+  }
+}

@@ -55,4 +55,12 @@ crons.cron(
   {},
 );
 
+// Deletes claim links a month after they expire (docs/adr/0047).
+crons.cron(
+  "delete expired claim links",
+  "30 3 * * *",
+  internal.producers.claimLinks.deleteExpired,
+  {},
+);
+
 export default crons;

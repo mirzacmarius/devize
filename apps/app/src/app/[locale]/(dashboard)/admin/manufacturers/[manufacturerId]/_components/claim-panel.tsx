@@ -309,7 +309,7 @@ function Requests({ data }: { data: ClaimData }) {
             >
               <span className="text-primary/80">
                 {[
-                  claim.name ?? claim.email,
+                  claim.name ?? claim.email ?? t("deletedAccount"),
                   t(`methods.${claim.method}`),
                   format.date(claim.createdAt),
                 ].join(" · ")}
