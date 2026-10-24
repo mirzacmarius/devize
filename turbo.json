@@ -12,7 +12,8 @@
         "SENTRY_AUTH_TOKEN",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
-        "VERCEL_ENV"
+        "VERCEL_ENV",
+        "VERCEL_PROJECT_PRODUCTION_URL"
       ],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": ["^build"],

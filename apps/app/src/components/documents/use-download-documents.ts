@@ -100,7 +100,13 @@ export function useDownloadDocuments(estimate: Estimate) {
           import("@devize/forms"),
           format === "xlsx" ? xlsxWriter() : pdfWriter(),
         ]);
-        const data = exportData(estimate, firm, client);
+        // The rooms and takeoffs, only for the Anexă · Antemăsurătoare.
+        const takeoff = kinds.includes("AM")
+          ? await convex.query(api.takeoffs.page.forExport, {
+              estimateId: estimate._id,
+            })
+          : null;
+        const data = { ...exportData(estimate, firm, client), takeoff };
         const documents = forms.buildDocuments(data, kinds, {
           ...options,
           date: todayInput(),

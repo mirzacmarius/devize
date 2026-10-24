@@ -82,12 +82,75 @@ export type PartyInput = {
   phone?: string;
 };
 
+/** One row of an Antemăsurătoare: count × length × width × height. */
+export type TakeoffRowInput = {
+  label?: string;
+  count: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  deduct: boolean;
+};
+
+export type RoomMeasure =
+  | "floor"
+  | "ceiling"
+  | "walls"
+  | "wallsAndCeiling"
+  | "perimeter"
+  | "skirting"
+  | "openings"
+  | "doors"
+  | "windows";
+
+/** A Cameră with what it measures, as `takeoffs.page.forExport` returns it. */
+export type RoomInput = {
+  _id: string;
+  name: string;
+  level?: string;
+  length?: number;
+  width?: number;
+  height?: number;
+  floorArea?: number;
+  perimeter?: number;
+  openings: readonly {
+    kind: "door" | "window" | "other";
+    label?: string;
+    count: number;
+    width: number;
+    height: number;
+  }[];
+  measures: Record<RoomMeasure, number>;
+};
+
+/** An Antemăsurătoare of a line item, or of none when its line was removed. */
+export type TakeoffInput = {
+  _id: string;
+  lineItemId?: string;
+  method: string;
+  title?: string;
+  unit: string;
+  rows: readonly TakeoffRowInput[];
+  // In the line item's unit; the rows are in metres and pieces.
+  total: number;
+  // What of its rooms it measures, when written from them.
+  measure?: RoomMeasure;
+};
+
+/** The rooms and the measurements behind a Deviz's quantities. */
+export type TakeoffData = {
+  rooms: readonly RoomInput[];
+  takeoffs: readonly TakeoffInput[];
+};
+
 export type ExportData = {
   estimate: EstimateInput;
   sections: readonly SectionInput[];
   lineItems: readonly LineItemInput[];
   firm: PartyInput;
   client?: PartyInput | null;
+  // For the Anexă · Antemăsurătoare; left out, the appendix isn't drawn.
+  takeoff?: TakeoffData | null;
 };
 
 /** A Deviz's works, without who builds them or for whom. */
@@ -95,11 +158,13 @@ export type WorksData = Pick<ExportData, "estimate" | "sections" | "lineItems">;
 
 /**
  * The documents a Deviz can be exported as, in the order they print: the
- * client's Deviz, the offer form that opens a tender's financial offer, the
- * Deviz general and the objects' Devize, then the offer's other forms.
+ * client's Deviz and its Antemăsurătoare, the offer form that opens a
+ * tender's financial offer, the Deviz general and the objects' Devize, then
+ * the offer's other forms.
  */
 export const documentKinds = [
   "DEVIZ",
+  "AM",
   "OF",
   "DG",
   "DO",
@@ -123,6 +188,8 @@ export function defaultLabel(kind: DocumentKind): string {
   switch (kind) {
     case "DEVIZ":
       return "Deviz";
+    case "AM":
+      return "Anexa Antemăsurătoare";
     case "OF":
       return "Formularul de ofertă";
     case "DG":

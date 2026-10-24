@@ -6,6 +6,7 @@ import { offerFormDocuments } from "./forms/offerForm";
 import { c5Documents, f3Documents } from "./forms/quantities";
 import { f6Documents } from "./forms/schedule";
 import { f1Documents, f2Documents } from "./forms/summaries";
+import { takeoffDocuments } from "./forms/takeoff";
 import {
   type DocumentKind,
   documentKinds,
@@ -25,9 +26,12 @@ export type {
   LineItemInput,
   PartyInput,
   ResourceScope,
+  RoomInput,
   ScheduleWindow,
   SectionInput,
   Subchapter,
+  TakeoffData,
+  TakeoffInput,
   WorksData,
 } from "./input";
 export { defaultLabel, documentKinds, subchapters } from "./input";
@@ -43,6 +47,7 @@ const builders: Record<
   ) => FormDocument[]
 > = {
   DEVIZ: (data, options) => [devizDocument(data, options)],
+  AM: takeoffDocuments,
   OF: offerFormDocuments,
   DG: generalDocuments,
   DO: objectDocuments,

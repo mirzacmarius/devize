@@ -60,6 +60,7 @@ type FirmTable =
   | "sections"
   | "lineItems"
   | "takeoffs"
+  | "rooms"
   | "variants"
   | "offers"
   | "offerQuestions"

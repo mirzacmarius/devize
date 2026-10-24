@@ -159,6 +159,13 @@ import type * as systems_producerSystems from "../systems/producerSystems.js";
 import type * as systems_rules from "../systems/rules.js";
 import type * as systems_tables from "../systems/tables.js";
 import type * as systems_validators from "../systems/validators.js";
+import type * as takeoffs_helpers from "../takeoffs/helpers.js";
+import type * as takeoffs_measures from "../takeoffs/measures.js";
+import type * as takeoffs_page from "../takeoffs/page.js";
+import type * as takeoffs_rooms from "../takeoffs/rooms.js";
+import type * as takeoffs_takeoffs from "../takeoffs/takeoffs.js";
+import type * as takeoffs_tables from "../takeoffs/tables.js";
+import type * as takeoffs_validators from "../takeoffs/validators.js";
 import type * as users from "../users.js";
 import type * as utils_validators from "../utils/validators.js";
 
@@ -317,6 +324,13 @@ declare const fullApi: ApiFromModules<{
   "systems/rules": typeof systems_rules;
   "systems/tables": typeof systems_tables;
   "systems/validators": typeof systems_validators;
+  "takeoffs/helpers": typeof takeoffs_helpers;
+  "takeoffs/measures": typeof takeoffs_measures;
+  "takeoffs/page": typeof takeoffs_page;
+  "takeoffs/rooms": typeof takeoffs_rooms;
+  "takeoffs/takeoffs": typeof takeoffs_takeoffs;
+  "takeoffs/tables": typeof takeoffs_tables;
+  "takeoffs/validators": typeof takeoffs_validators;
   users: typeof users;
   "utils/validators": typeof utils_validators;
 }>;

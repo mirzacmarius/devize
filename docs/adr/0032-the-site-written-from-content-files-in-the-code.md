@@ -1,0 +1,19 @@
+# The site written from content files in the code
+
+The marketing site in `apps/web` had one screen: three advantages and a button into the app. It now has the pages a visitor looks for before signing up: the home page, a page for Constructori and one for Producători, the proposed prices, the frequent questions and a page for each common kind of work ("Deviz pentru renovarea băii"), with the official forms, the omissions and the questions that kind of work raises.
+
+Every word of the site lives in typed content files under `apps/web/src/content`: the features, the plans, the questions and the works, each an array the pages map over. The pages and components hold layout only. The site is Romanian only, with no language switch and no translation table: it is written for one market, and the app's `ro.ts`/`en.ts` rule is for the product's interface, where a person picks a language. Its design is the app's: the tokens and components of `@devize/ui`, Geist and Lucide, light and dark through `next-themes` as in the app, and the brand lime only in the mark, the eyebrow dot, the recommended plan's tag and the text selection.
+
+The prices are a proposal. The app has no plans, limits or payments yet, and Marius has not chosen between the plans in the audit (Gratuit, Pro at 149 lei and Echipă at 349 lei per firm per month, or paying 1% of the devize accepted through a link). The page shows the three plans, says in its first paragraph that they are a proposal that may change, and leads to the sign-in page, never to a checkout. Features a plan promises but the app doesn't have yet are tagged "în curând", and a section of each page lists what is being built, so the site never claims more than the app does.
+
+Each work page is prerendered from `generateStaticParams`. Cache Components (ADR 0029) doesn't take `dynamicParams = false`, so an address no work has streams the not-found page into the shell with status 200, as the app's not-found pages do. Search engines get a sitemap, a robots file, canonical links, and structured data: the organization, the site and the application on the home page, the questions as `FAQPage`, and the path to a work page as `BreadcrumbList`. The data is written as a script's text, which React escapes enough, rather than with `dangerouslySetInnerHTML`, which Biome forbids here. The picture a shared link shows is drawn at request time from the Geist files in the hoisted `geist` package, read from disk, since Turbopack's `fetch` can't read the `file:` address it gives an asset.
+
+The site's own address, for canonical links and the sitemap, is `NEXT_PUBLIC_SITE_URL` when set and otherwise the production domain Vercel sets in `VERCEL_PROJECT_PRODUCTION_URL`, so a domain added in Vercel needs no change here. The app's address stays `NEXT_PUBLIC_APP_URL`.
+
+## Consequences
+
+- A new page is a content file and a page that maps over it; the header, footer, section parts, FAQ list and calls to action are shared. The copy follows the design system's rules: comma-below diacritics, no exclamation marks, sentence-case titles, Romanian number formats.
+- A plan or a price changes in `content/pricing.ts`, and the "proposal" wording in the prices page is the first thing to remove once Marius has decided and the app enforces the plans.
+- The works' pages are the site's search-engine surface: adding a work is one entry in `content/works.ts`, with its chapters, price drivers, omissions and questions, and it joins the sitemap, the footer and the related links on its own.
+- The site deploys as the `devize-web` Vercel project. Its `.vercel.app` addresses are behind Vercel's own sign-in, so nothing on it is public, or crawlable, until a domain is added.
+- The social image is a dynamic route, rendered on demand; a static route would need the font files in the repository.
