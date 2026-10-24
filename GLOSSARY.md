@@ -118,6 +118,32 @@ _Avoid_: Handover protocol, acceptance certificate
 What the contractor leaves with the beneficiary against defects, at most 10 % of the contract: kept back from each Situație de lucrări, or given as a bank or insurance instrument. 70 % comes back after the reception at the end of the works and 30 % after the final one, each within 14 days (HG 395/2016, art. 40 and 42). In code: `guarantees`, `progress/arithmetic.ts`. See `docs/adr/0035`.
 _Avoid_: Retention money (only one way of holding it), warranty (the period, not the money)
 
+### Invoicing
+
+**Factură** (invoice):
+What a Firmă bills a client for: the advance of an accepted Ofertă, a confirmed Situație de lucrări, or the rest of the Deviz once the works are done, with the advances deducted. It is shaped as a draft (ciornă), then issued: issuing gives it the next number of its Serie de facturare and freezes it; from then on it is paid, cancelled while it never left the firm, or reversed by a Storno. Its client and firm are copied onto it when it is made, so a later change to the client's card changes no issued invoice. In code: `invoices`, page `/invoices/<id>`. See `docs/adr/0037`.
+_Avoid_: Bill, receipt, chitanță (the paper for cash received)
+
+**Serie de facturare** (invoice series):
+The letters an invoice's number starts with (DVZ, FA) and the number the next invoice gets. Numbers follow without gaps, so a wrong invoice is never deleted. A Firmă's first invoice starts the series DVZ at 1 unless it set up its own. In code: `invoiceSeries`, Setări → Facturare.
+_Avoid_: Number range, prefix
+
+**Factură de avans** (advance invoice):
+The invoice for the deposit an accepted Ofertă asked, as a share of the accepted value without VAT. The final invoice deducts it with a negative line, so the client pays the rest once.
+_Avoid_: Proforma (which is not an invoice), deposit receipt
+
+**Storno** (reversal invoice):
+The invoice that cancels an issued one, with its lines negated and a reference to it. Romanian practice and the Codul fiscal (art. 330) correct an invoice this way rather than by deleting it. In code: `invoices` with kind `storno`, `stornoOf` and `stornoedBy`.
+_Avoid_: Credit note (the EN 16931 name; Romanian invoices use a negative invoice), deletion
+
+**e-Factura**:
+ANAF's system every invoice between Romanian firms, and to consumers, must reach within five working days of issue (OUG 89/2025), as UBL 2.1 XML in the CIUS-RO 1.0.1 format. Devize writes the XML, checks it against the rules ANAF checks and against ANAF's public validator, and keeps the deadline in sight; sending from Devize through SPV (Spațiul Privat Virtual) needs the firm's connection to ANAF. In code: `invoices/ubl.ts`, `invoices/rules.ts`, `invoices/anaf.ts`.
+_Avoid_: E-invoice (generic), SPV (the portal, not the format)
+
+**Încasare** (payment received):
+Money the client paid on an invoice, with its date and how it came: transfer, cash, card. An invoice is paid once its încasări reach its total. In code: `invoices.payments`.
+_Avoid_: Payment (ambiguous with what the firm pays), receipt
+
 ### Public tenders
 
 **Licitație** (tender):

@@ -4,8 +4,8 @@ import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import {
   planBasket,
-  singleStore,
   type StoreFees,
+  singleStore,
 } from "@devize/backend/convex/prices/basketPlan";
 import type { Store } from "@devize/backend/convex/prices/resolve";
 import { storeKeys } from "@devize/backend/convex/prices/stores";

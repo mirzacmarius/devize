@@ -18,6 +18,7 @@ import { useFirm } from "@/components/firm-provider";
 import { useRouteParam } from "@/components/use-route-param";
 import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { InvoicesCard } from "../_invoices/invoices-card";
 import { PackagingCard } from "../_materials/packaging-card";
 import { OfferCard } from "../_offer/offer-card";
 import { ProgressCard } from "../_progress/progress-card";
@@ -159,6 +160,7 @@ export function EstimatePage() {
           {estimate.status === "accepted" && (
             <ProgressCard estimate={estimate} />
           )}
+          <InvoicesCard estimate={estimate} />
           <DocumentsCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />
           <DetailsCard
