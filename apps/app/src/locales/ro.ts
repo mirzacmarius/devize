@@ -239,6 +239,10 @@ export default {
       submit: "Salvează",
     },
   },
+  eur: {
+    amount: "≈ {amount} EUR la cursul BNR din {date} (1 EUR = {rate} lei).",
+    paidInLei: "Plata se face în lei.",
+  },
   targetPrice: {
     open: "Preț țintă",
     title: "Potrivește devizul la un preț",
@@ -682,10 +686,16 @@ export default {
       description:
         "Caută după cod sau după lucrare. Resursele iau prețurile de azi, cu tarifele firmei.",
       searchPlaceholder: "Cod sau lucrare, ex. vată bazaltică",
-      hint: "Scrie codul normei sau câteva cuvinte despre lucrare. Normele firmei apar primele.",
+      hint: "Scrie codul normei sau câteva cuvinte despre lucrare, sau alege o categorie. Normele firmei apar primele.",
       searching: "Se caută…",
       noResults: "Nicio normă nu se potrivește cu „{text}”.",
       results: "Norme găsite",
+      categories: "Categorii",
+      allCategories: "Toate",
+      categoryEmpty: "Nicio normă publicată în „{category}” deocamdată.",
+      noResultsInCategory:
+        "Nicio normă din „{category}” nu se potrivește cu „{text}”.",
+      searchAllCategories: "Caută în toate categoriile",
       custom: "Nu e în catalog? Adaugă un articol propriu",
       back: "Înapoi la rezultate",
       loading: "Se încarcă norma…",
@@ -1631,6 +1641,9 @@ export default {
       assistant: "Asistentul AI răspunde la întrebările clientului",
       assistantHint:
         "Răspunde doar din ofertă. Ce nu știe sau doar tu poți hotărî îți trimite ție.",
+      showEur: "Arată prețul și în EUR",
+      showEurHint:
+        "La cursul BNR din ziua în care clientul deschide oferta. Prețul rămâne în lei.",
       submit: "Creează linkul",
       created: "Linkul e gata și l-am copiat.",
       createdNotCopied: "Linkul e gata.",
@@ -1877,6 +1890,14 @@ export default {
       "Scrie o normă de la zero sau copiază una din catalogul public și ajustează consumurile după cum lucrează echipa ta.",
     ownEmptyAction: "Scrie prima normă",
     producers: "Producători",
+    categories: {
+      label: "Categorii",
+      all: "Toate",
+    },
+    categoryEmpty: "Nicio normă publicată în „{category}” deocamdată.",
+    noResultsInCategory:
+      "Nicio normă din „{category}” nu se potrivește cu „{text}”.",
+    searchAllCategories: "Caută în toate categoriile",
   },
   norms: {
     sources: {

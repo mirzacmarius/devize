@@ -244,6 +244,10 @@ export default {
       submit: "Save",
     },
   },
+  eur: {
+    amount: "≈ {amount} EUR at BNR's rate of {date} (1 EUR = {rate} lei).",
+    paidInLei: "Payment is in lei.",
+  },
   targetPrice: {
     open: "Target price",
     title: "Fit the estimate to a price",
@@ -689,10 +693,15 @@ export default {
       description:
         "Search by code or by job. Resources take today's prices, with the company's rates.",
       searchPlaceholder: "Code or job, e.g. stone wool",
-      hint: "Type the norm's code or a few words about the job. The company's own norms come first.",
+      hint: "Type the norm's code or a few words about the job, or pick a category. The company's own norms come first.",
       searching: "Searching…",
       noResults: "No norm matches “{text}”.",
       results: "Norms found",
+      categories: "Categories",
+      allCategories: "All",
+      categoryEmpty: "No norm published in “{category}” yet.",
+      noResultsInCategory: "No norm in “{category}” matches “{text}”.",
+      searchAllCategories: "Search all categories",
       custom: "Not in the catalog? Add your own line item",
       back: "Back to results",
       loading: "Loading the norm…",
@@ -1639,6 +1648,9 @@ export default {
       assistant: "The AI assistant answers the client's questions",
       assistantHint:
         "It answers from the offer alone. What it doesn't know, or only you can decide, it sends to you.",
+      showEur: "Show the price in EUR too",
+      showEurHint:
+        "At BNR's rate of the day the client opens the offer. The price stays in lei.",
       submit: "Create the link",
       created: "The link is ready and copied.",
       createdNotCopied: "The link is ready.",
@@ -1885,6 +1897,13 @@ export default {
       "Write a norm from scratch, or copy one from the public catalog and adjust its consumptions to how your team works.",
     ownEmptyAction: "Write your first norm",
     producers: "Manufacturers",
+    categories: {
+      label: "Categories",
+      all: "All",
+    },
+    categoryEmpty: "No norm published in “{category}” yet.",
+    noResultsInCategory: "No norm in “{category}” matches “{text}”.",
+    searchAllCategories: "Search all categories",
   },
   norms: {
     sources: {

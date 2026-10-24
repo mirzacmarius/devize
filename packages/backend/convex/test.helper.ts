@@ -127,6 +127,34 @@ export async function publishedBaseNorm(
   return { normId, admin };
 }
 
+/**
+ * Publishes the base catalog's edition as `admin`, or a new super admin, and
+ * waits for every batch. Each batch schedules the next, and convex-test can
+ * come back from draining the scheduler between two of them, so it drains
+ * until no scheduled function is left pending.
+ */
+export async function publishBaseCatalog(
+  t: TestConvex,
+  admin?: Awaited<ReturnType<typeof signIn>>,
+) {
+  const by = admin ?? (await signIn(t, { name: "Admin", superadmin: true }));
+  await by.as.mutation(api.catalog.baseCatalog.publish, {});
+  for (let round = 0; round < 50; round++) {
+    await t.finishAllScheduledFunctions(() => {});
+    const pending = await t.run(async (ctx) => {
+      const jobs = await ctx.db.system.query("_scheduled_functions").collect();
+      return jobs.filter(
+        (job) =>
+          job.state.kind === "pending" || job.state.kind === "inProgress",
+      ).length;
+    });
+    if (pending === 0) {
+      return by;
+    }
+  }
+  throw new Error("publishing the base catalog did not finish");
+}
+
 /** A firm owned by a new user. */
 export async function firmOwner(t: TestConvex, name: string) {
   const owner = await signIn(t, { name });

@@ -26,6 +26,8 @@ export const offerTables = {
     optionalItems: v.array(optionalItem),
     // Whether the AI assistant answers the client's questions on the link.
     assistant: v.boolean(),
+    // Whether the link shows the price in EUR too, at BNR's rate of the day.
+    showEur: v.optional(v.boolean()),
     expiresAt: v.optional(v.number()),
     sentAt: v.number(),
     // The client's first visit, their last, and how many there were; a page
