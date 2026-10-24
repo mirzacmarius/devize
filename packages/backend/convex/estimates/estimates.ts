@@ -150,7 +150,14 @@ export const get = query({
     );
     return {
       ...estimate,
-      client: client ? { _id: client._id, name: client.name } : null,
+      client: client
+        ? {
+            _id: client._id,
+            name: client.name,
+            kind: client.kind,
+            email: client.email,
+          }
+        : null,
       sections: await readSections(ctx, estimate._id),
       lineItems: items.map((item) => ({
         ...item,

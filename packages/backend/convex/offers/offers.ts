@@ -9,7 +9,8 @@ import { requireFirmDoc } from "../lib/access";
 import { appError, invalid, notFound } from "../lib/errors";
 import { defaultChoice, priceChoice } from "./choice";
 import { newToken } from "./helpers";
-import { optionalItem } from "./validators";
+import { checkPaymentSchedule, depositOf } from "./payments";
+import { optionalItem, paymentStage } from "./validators";
 import { MAX_VARIANTS } from "./variants";
 
 // The firm's side of an Ofertă: making the client's link, taking it back, and
@@ -46,7 +47,11 @@ export const create = mutation({
     estimateId: v.id("estimates"),
     message: v.optional(v.string()),
     validDays: v.optional(v.number()),
+    // The share due at signing alone, or the whole schedule of payments.
     depositPercent: v.optional(v.number()),
+    paymentSchedule: v.optional(v.array(paymentStage)),
+    // Whether the client is a consumer; the client's kind decides when left out.
+    consumer: v.optional(v.boolean()),
     variantIds: v.optional(v.array(v.id("variants"))),
     baseLabel: v.optional(v.string()),
     optionalItems: v.optional(v.array(optionalItem)),
@@ -93,6 +98,18 @@ export const create = mutation({
     ) {
       throw invalid("depositPercent");
     }
+    const paymentSchedule = args.paymentSchedule
+      ? checkPaymentSchedule(args.paymentSchedule)
+      : undefined;
+    const depositPercent = paymentSchedule
+      ? depositOf(paymentSchedule)
+      : deposit === undefined
+        ? undefined
+        : Math.round(deposit * 100) / 100;
+    const client = estimate.clientId
+      ? await ctx.db.get("clients", estimate.clientId)
+      : null;
+    const consumer = args.consumer ?? client?.kind === "person";
     const variantIds = [...new Set(args.variantIds ?? [])];
     if (variantIds.length > MAX_VARIANTS) {
       throw invalid("variants");
@@ -140,8 +157,9 @@ export const create = mutation({
       expiresAt,
       sentAt: now,
       viewCount: 0,
-      depositPercent:
-        deposit === undefined ? undefined : Math.round(deposit * 100) / 100,
+      depositPercent,
+      paymentSchedule,
+      consumer,
       createdBy: userId,
     });
     await scheduleExpiry(ctx, offerId, expiresAt);
@@ -293,6 +311,9 @@ export const forEstimate = query({
       sentAt: offer.sentAt,
       expiresAt: offer.expiresAt,
       depositPercent: offer.depositPercent,
+      paymentSchedule: offer.paymentSchedule ?? [],
+      consumer: offer.consumer ?? false,
+      confirmation: offer.confirmation ?? null,
       viewCount: offer.viewCount,
       viewedAt: offer.viewedAt,
       lastViewedAt: offer.lastViewedAt,
@@ -303,6 +324,9 @@ export const forEstimate = query({
             name: offer.signature.name,
             signedAt: offer.signature.signedAt,
             path: offer.signature.path,
+            contentHash: offer.signature.contentHash,
+            evidence: offer.signature.evidence,
+            earlyStart: offer.signature.earlyStart ?? false,
           }
         : null,
       baseLabel: offer.baseLabel,

@@ -16,6 +16,12 @@ import type {
 } from "../input";
 import type { CellPart, FormDocument, Row, Table } from "../model";
 import { beneficiaryOf, money, quantity } from "./common";
+import {
+  acceptanceBlocks,
+  consumerBlocks,
+  formatMoment,
+  paymentBlocks,
+} from "./terms";
 
 // The Deviz as the client gets it: the firm's letterhead, the line items by
 // object and chapter at their direct cost, then the Recapitulație that adds
@@ -263,6 +269,7 @@ export function devizDocument(
     data.client && data.client.name === beneficiary ? data.client : undefined;
   const site = [estimate.siteAddress, estimate.county].filter(Boolean);
   const recap = computeRecap(data.lineItems, estimate.markups);
+  const signature = data.offer?.signature;
   return {
     id: "DEVIZ",
     name: `Deviz ${code}`,
@@ -333,6 +340,9 @@ export function devizDocument(
         muted: true,
         size: 7.5,
       },
+      ...paymentBlocks(data, recap.total),
+      ...consumerBlocks(data),
+      ...acceptanceBlocks(data),
       { type: "space", height: 24 },
       {
         type: "signatures",
@@ -342,7 +352,13 @@ export function devizDocument(
             name: data.firm.name,
             hint: "(semnătura și ștampila)",
           },
-          { role: "Beneficiar,", name: beneficiary, hint: "(semnătura)" },
+          {
+            role: "Beneficiar,",
+            name: signature?.name ?? beneficiary,
+            hint: signature
+              ? `(semnat electronic pe ${formatMoment(signature.signedAt)})`
+              : "(semnătura)",
+          },
         ],
       },
     ],

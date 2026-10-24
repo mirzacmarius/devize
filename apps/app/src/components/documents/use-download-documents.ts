@@ -1,10 +1,17 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import type { DocumentKind, ExportOptions, FormDocument } from "@devize/forms";
+import { withdrawalDeadline } from "@devize/backend/convex/offers/consumer";
+import type {
+  DocumentKind,
+  ExportOptions,
+  FormDocument,
+  OfferTermsInput,
+} from "@devize/forms";
 import { toast } from "@devize/ui/sonner";
 import * as Sentry from "@sentry/nextjs";
 import { useConvex } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useCallback } from "react";
 import { useErrorMessage } from "@/components/use-error-message";
 import { appErrorOf } from "@/lib/errors";
@@ -70,6 +77,38 @@ export async function xlsxWriter(): Promise<Writer> {
     renderXlsx(documents, { title, author });
 }
 
+type FirmOffer = NonNullable<
+  FunctionReturnType<typeof api.offers.offers.forEstimate>
+>;
+
+/**
+ * The terms of the Ofertă the client has, or accepted, for the client's
+ * Deviz: none once the link was declined, withdrawn or expired.
+ */
+function offerTerms(offer: FirmOffer | null): OfferTermsInput | null {
+  if (
+    !offer ||
+    (offer.status !== "sent" &&
+      offer.status !== "viewed" &&
+      offer.status !== "accepted")
+  ) {
+    return null;
+  }
+  return {
+    paymentSchedule: offer.paymentSchedule,
+    consumer: offer.consumer,
+    signature: offer.signature
+      ? {
+          ...offer.signature,
+          withdrawalUntil: offer.consumer
+            ? withdrawalDeadline(offer.signature.signedAt)
+            : undefined,
+        }
+      : null,
+    confirmation: offer.confirmation,
+  };
+}
+
 /**
  * Makes a Deviz's documents into one PDF, or one Excel workbook with a
  * sheet for each, in the browser and downloads it. The writer, and the
@@ -106,7 +145,17 @@ export function useDownloadDocuments(estimate: Estimate) {
               estimateId: estimate._id,
             })
           : null;
-        const data = { ...exportData(estimate, firm, client), takeoff };
+        // The Ofertă's terms, only for the client's Deviz.
+        const offer = kinds.includes("DEVIZ")
+          ? await convex.query(api.offers.offers.forEstimate, {
+              estimateId: estimate._id,
+            })
+          : null;
+        const data = {
+          ...exportData(estimate, firm, client),
+          takeoff,
+          offer: offerTerms(offer),
+        };
         const documents = forms.buildDocuments(data, kinds, {
           ...options,
           date: todayInput(),

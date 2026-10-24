@@ -96,6 +96,18 @@ _Avoid_: Deviz (for what the client sees), proposal
 An Articol of an Ofertă that the client may include or leave out; the Firmă says whether it starts included. Every total the client sees is the server's, for what they chose. In code: `offers.optionalItems`.
 _Avoid_: Extra, add-on
 
+**Eșalonarea plății** (payment schedule):
+How an Ofertă's price is paid: one to eight stages the Firmă names, each due at a moment of the works (la semnare, la începerea lucrărilor, pe situații de lucrări, la recepția lucrărilor, la recepția finală) as a share of the total with VAT or a fixed sum in lei. The client's page, the PDF and the confirmation email show the same stages; the deposit is the stage due at signing. In code: `offers.paymentSchedule`, `offers/payments.ts`. See `docs/adr/0038`.
+_Avoid_: Payment terms (the whole of the conditions), instalments, tranșe
+
+**Consumator** (consumer):
+A client who is a private person acting outside a trade, so that accepting an Ofertă on its link makes a distance contract under OUG 34/2014: the page tells them their rights, they may withdraw for 14 days (the Formular de retragere, Anexa B, is theirs to download), they may ask expressly for an early start, and the firm confirms the contract to them by email, with the signed copy. A Firmă marks the client a consumer when it makes the link; a person is one unless it says otherwise. In code: `offers.consumer`, `offers/consumer.ts`. See `docs/adr/0038`.
+_Avoid_: Customer (any client), persoană fizică (the kind of client, not the right)
+
+**Dovezile semnării** (signing evidence):
+What stands behind a client's electronic signature on an Ofertă (Legea 214/2024): the name typed, the moment, the SHA-256 hash of what they signed, the address the page's server saw and what the browser said about itself, plus the copy emailed to the client. In code: `offers.signature.contentHash`, `offers.signature.evidence`, `offers.confirmation`. See `docs/adr/0038`.
+_Avoid_: Audit trail, certificate (a qualified signature's)
+
 **Asistentul ofertei** (offer assistant):
 Devize AI answering a client's questions on an Ofertă's link, only from what the link shows them. What the Ofertă doesn't say, or only the Firmă can decide, goes to the Firmă, who replies from the Deviz's page; the Firmă can also turn the assistant off for a link. In code: `offerQuestions`, `offers/assistant.ts`. See `docs/adr/0019`.
 _Avoid_: Chatbot, bot

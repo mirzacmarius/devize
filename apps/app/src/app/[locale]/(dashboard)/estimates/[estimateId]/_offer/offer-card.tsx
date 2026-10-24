@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
+import { withdrawalDeadline } from "@devize/backend/convex/offers/consumer";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -18,6 +19,7 @@ import type { FunctionReturnType } from "convex/server";
 import { ExternalLink, Mail, MessageCircle } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useScheduleWords } from "@/components/payment-schedule";
 import { SignatureImage } from "@/components/signature/signature-image";
 import { useRun } from "@/components/use-run";
 import {
@@ -132,10 +134,18 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
   );
 }
 
+/** The stages of payment in one line: "Avans: 30% la semnare (1.200,00 lei); …". */
+function useScheduleLine() {
+  const words = useScheduleWords();
+  return (offer: Offer) =>
+    words(offer.paymentSchedule, offer.choice.totals.total).join("; ");
+}
+
 /** A link the client can still open: sharing it and following the visits. */
 function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
   const t = useScopedI18n("offer");
   const locale = useCurrentLocale();
+  const scheduleLine = useScheduleLine();
   const run = useRun();
   const withdraw = useMutation(api.offers.offers.withdraw);
   const firm = useQuery(api.accounts.organizations.get, {
@@ -191,8 +201,11 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
     t("sentOn", { date: formatDay(offer.sentAt, locale) }),
     offer.expiresAt !== undefined &&
       t("expiresOn", { date: formatDay(offer.expiresAt, locale) }),
-    offer.depositPercent !== undefined &&
-      t("deposit", { percent: formatPercent(offer.depositPercent, locale) }),
+    offer.paymentSchedule.length > 0
+      ? t("payment", { schedule: scheduleLine(offer) })
+      : offer.depositPercent !== undefined &&
+        t("deposit", { percent: formatPercent(offer.depositPercent, locale) }),
+    offer.consumer && t("consumer"),
     offer.createdByName && t("madeBy", { name: offer.createdByName }),
   ].filter(Boolean);
 
@@ -322,6 +335,7 @@ function AcceptedOffer({
 }) {
   const t = useScopedI18n("offer");
   const locale = useCurrentLocale();
+  const scheduleLine = useScheduleLine();
   const { signature } = offer;
   const signedAt = signature?.signedAt ?? offer.decidedAt;
   const name = signature?.name ?? estimate.client?.name ?? "";
@@ -337,6 +351,11 @@ function AcceptedOffer({
         </p>
       )}
       <ChoiceBox offer={offer} />
+      {offer.paymentSchedule.length > 0 && (
+        <p className="m-0 text-meta text-ink-2">
+          {t("payment", { schedule: scheduleLine(offer) })}
+        </p>
+      )}
       {signature &&
         (signature.path ? (
           <div className="rounded-md border border-border bg-card px-2">
@@ -348,6 +367,7 @@ function AcceptedOffer({
         ) : (
           <p className="m-0 text-meta text-ink-3">{t("typedSignature")}</p>
         ))}
+      <SigningEvidence estimate={estimate} offer={offer} />
       <OfferQuestions
         offerId={offer._id}
         assistant={offer.assistant}
@@ -355,6 +375,58 @@ function AcceptedOffer({
       />
       <ClientViewLink token={offer.token} />
     </>
+  );
+}
+
+/**
+ * What stands behind the client's signature (Legea 214/2024): the hash of
+ * what they signed, where they signed from, and the copy emailed to them.
+ */
+function SigningEvidence({
+  estimate,
+  offer,
+}: {
+  estimate: Estimate;
+  offer: Offer;
+}) {
+  const t = useScopedI18n("offer.evidence");
+  const locale = useCurrentLocale();
+  const { signature } = offer;
+  if (!signature) {
+    return null;
+  }
+  const evidence = signature.evidence ?? {};
+  const facts = [
+    evidence.address && t("address", { address: evidence.address }),
+    evidence.userAgent && t("browser", { browser: evidence.userAgent }),
+    signature.earlyStart && t("earlyStart"),
+    offer.consumer &&
+      t("withdrawalUntil", {
+        date: formatDay(withdrawalDeadline(signature.signedAt), locale),
+      }),
+    offer.confirmation
+      ? t("confirmation", {
+          email: offer.confirmation.email,
+          date: formatDay(offer.confirmation.sentAt, locale),
+        })
+      : !estimate.client?.email && t("noConfirmation"),
+  ].filter((fact): fact is string => typeof fact === "string");
+  return (
+    <details className="rounded-md border border-border bg-sunken px-3 py-2">
+      <summary className="cursor-pointer text-meta font-medium text-ink-2">
+        {t("title")}
+      </summary>
+      <ul className="m-0 mt-2 grid list-none gap-1 p-0 text-meta text-ink-2">
+        {signature.contentHash && (
+          <li className="break-all font-mono text-code">
+            {t("code", { hash: signature.contentHash })}
+          </li>
+        )}
+        {facts.map((fact) => (
+          <li key={fact}>{fact}</li>
+        ))}
+      </ul>
+    </details>
   );
 }
 

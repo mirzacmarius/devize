@@ -179,6 +179,30 @@ export function AnswerCard({
               </figcaption>
             </figure>
           )}
+          {accepted && (
+            <div className="grid gap-1 text-meta text-ink-2">
+              {offer.confirmation && (
+                <span>
+                  {t("accepted.confirmation", {
+                    email: offer.confirmation.email,
+                  })}
+                </span>
+              )}
+              {accepted.withdrawalUntil !== undefined && (
+                <span>
+                  {t("accepted.withdrawalUntil", {
+                    date: formatDay(accepted.withdrawalUntil, locale),
+                  })}
+                </span>
+              )}
+              {accepted.earlyStart && <span>{t("accepted.earlyStart")}</span>}
+              {accepted.contentHash && (
+                <span className="break-all font-mono text-code text-ink-3">
+                  {t("accepted.code", { hash: accepted.contentHash })}
+                </span>
+              )}
+            </div>
+          )}
           {download}
         </CardContent>
       </Card>

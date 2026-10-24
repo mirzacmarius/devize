@@ -26,6 +26,8 @@ function offer(overrides: Partial<AssistantOffer> = {}): AssistantOffer {
     message: "Vă mulțumim pentru încredere.",
     expiresAt: Date.UTC(2026, 10, 20, 10),
     depositPercent: 30,
+    paymentSchedule: undefined,
+    consumer: false,
     assistant: true,
     client: { name: "Ion Popescu" },
     markups: { cam: 2.25, indirect: 10, profit: 10, vat: 21 },
