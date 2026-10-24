@@ -342,6 +342,205 @@ describe("email sign-in with Turnstile set up", () => {
   });
 });
 
+describe("what signing in leaves behind", () => {
+  const MINUTE = 60 * 1000;
+  const HOUR = 60 * MINUTE;
+  const DAY = 24 * HOUR;
+  const start = new Date("2026-10-24T08:00:00Z").getTime();
+
+  async function sweep(t: TestConvex) {
+    await t.mutation(internal.signInLeftovers.sweep, {});
+    await t.finishAllScheduledFunctions(() => {});
+  }
+
+  function stored(t: TestConvex) {
+    return t.run(async (ctx) => ({
+      users: await ctx.db.query("users").collect(),
+      accounts: await ctx.db.query("authAccounts").collect(),
+      codes: await ctx.db.query("authVerificationCodes").collect(),
+      sessions: await ctx.db.query("authSessions").collect(),
+      refreshTokens: await ctx.db.query("authRefreshTokens").collect(),
+      verifiers: await ctx.db.query("authVerifiers").collect(),
+      sends: await ctx.db.query("emailCodeSends").collect(),
+      limits: await ctx.db.query("authRateLimits").collect(),
+    }));
+  }
+
+  function typeCode(t: TestConvex, email: string, code: string) {
+    return t.action(api.auth.signIn, {
+      provider: "email-code",
+      params: { email, code },
+    });
+  }
+
+  function wrong(code: string) {
+    return code === "00000000" ? "11111111" : "00000000";
+  }
+
+  test("deletes, a day on, the user of an address that never signed in", async () => {
+    const t = setup();
+    setSystemTime(start);
+    await requestCode(t, "ana@example.com");
+    await requestCode(t, "bob@example.com");
+    await typeCode(t, "bob@example.com", codeIn(sent[1]));
+    await t.run(async (ctx) => {
+      // Made a super admin before ever signing in.
+      await ctx.db.insert("users", {
+        email: "admin@example.com",
+        role: "superadmin",
+      });
+      // Users with no proven address who signed in some other way, or are in
+      // a firm, or have a Google account, stay too.
+      const carol = await ctx.db.insert("users", {
+        email: "carol@example.com",
+      });
+      await ctx.db.insert("authSessions", {
+        userId: carol,
+        expirationTime: start + 30 * DAY,
+      });
+      const dan = await ctx.db.insert("users", { email: "dan@example.com" });
+      const firm = await ctx.db.insert("organizations", {
+        name: "Dan Construct SRL",
+        kind: "contractor",
+        vatPayer: true,
+        defaultMarkups: { cam: 0, indirect: 0, profit: 0, vat: 21 },
+        lastEstimateNumber: 0,
+        createdBy: dan,
+      });
+      await ctx.db.insert("memberships", {
+        organizationId: firm,
+        userId: dan,
+        role: "owner",
+        lastActiveAt: start,
+      });
+      const eve = await ctx.db.insert("users", { email: "eve@example.com" });
+      await ctx.db.insert("authAccounts", {
+        userId: eve,
+        provider: "google",
+        providerAccountId: "google-eve",
+      });
+    });
+
+    setSystemTime(start + 23 * HOUR);
+    await sweep(t);
+    expect((await stored(t)).users).toHaveLength(6);
+
+    setSystemTime(start + DAY + MINUTE);
+    await sweep(t);
+    const left = await stored(t);
+    expect(left.users.map((user) => user.email).sort()).toEqual([
+      "admin@example.com",
+      "bob@example.com",
+      "carol@example.com",
+      "dan@example.com",
+      "eve@example.com",
+    ]);
+    expect(
+      left.accounts.map((account) => account.providerAccountId).sort(),
+    ).toEqual(["bob@example.com", "google-eve"]);
+    expect(left.codes).toEqual([]);
+    expect(left.sessions).toHaveLength(2);
+  });
+
+  test("keeps the user of an address whose code still works", async () => {
+    const t = setup();
+    setSystemTime(start);
+    await requestCode(t, "ana@example.com");
+    setSystemTime(start + DAY + MINUTE);
+    await requestCode(t, "ana@example.com");
+    await sweep(t);
+    const result = await typeCode(t, "ana@example.com", codeIn(sent[1]));
+    expect(result.tokens?.token).toBeString();
+  });
+
+  test("forgets the codes sent and the wrong ones typed an hour on", async () => {
+    const t = setup();
+    setSystemTime(start);
+    await requestCode(t, "ana@example.com");
+    const code = codeIn(sent[0]);
+    await expect(typeCode(t, "ana@example.com", wrong(code))).rejects.toThrow();
+
+    setSystemTime(start + 30 * MINUTE);
+    await sweep(t);
+    let left = await stored(t);
+    expect(left.sends).toHaveLength(1);
+    expect(left.limits).toHaveLength(1);
+
+    setSystemTime(start + HOUR + MINUTE);
+    await sweep(t);
+    left = await stored(t);
+    expect(left.sends).toEqual([]);
+    expect(left.limits).toEqual([]);
+
+    // A wrong code typed later keeps the count for an hour after it.
+    await expect(typeCode(t, "ana@example.com", wrong(code))).rejects.toThrow();
+    setSystemTime(start + 2 * HOUR + 30 * MINUTE);
+    await expect(typeCode(t, "ana@example.com", wrong(code))).rejects.toThrow();
+    setSystemTime(start + 3 * HOUR);
+    await sweep(t);
+    expect((await stored(t)).limits).toHaveLength(1);
+  });
+
+  test("forgets the codes an address was sent once its account is deleted", async () => {
+    const t = setup();
+    setSystemTime(start);
+    await requestCode(t, "ana@example.com");
+    await typeCode(t, "ana@example.com", codeIn(sent[0]));
+    setSystemTime(start + MINUTE);
+    await requestCode(t, "ana@example.com");
+    await expect(
+      typeCode(t, "ana@example.com", wrong(codeIn(sent[1]))),
+    ).rejects.toThrow();
+    const [session] = (await stored(t)).sessions;
+    const ana = t.withIdentity({
+      subject: `${session?.userId}|${session?._id}`,
+    });
+
+    await ana.mutation(api.users.deleteCurrentUserAccount, {});
+    expect(await stored(t)).toEqual({
+      users: [],
+      accounts: [],
+      codes: [],
+      sessions: [],
+      refreshTokens: [],
+      verifiers: [],
+      sends: [],
+      limits: [],
+    });
+  });
+
+  test("deletes ended sessions, and codes and Google sign-ins a day old", async () => {
+    const t = setup();
+    setSystemTime(start);
+    await requestCode(t, "ana@example.com");
+    await typeCode(t, "ana@example.com", codeIn(sent[0]));
+    // A Google sign-in started and never finished.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("authVerifiers", { signature: "state" });
+    });
+    // A code asked for and never typed.
+    setSystemTime(start + MINUTE);
+    await requestCode(t, "ana@example.com");
+
+    setSystemTime(start + DAY + 2 * MINUTE);
+    await sweep(t);
+    let left = await stored(t);
+    expect(left.codes).toEqual([]);
+    expect(left.verifiers).toEqual([]);
+    expect(left.sessions).toHaveLength(1);
+    expect(left.refreshTokens).toHaveLength(1);
+
+    // Sessions end 30 days after signing in.
+    setSystemTime(start + 30 * DAY + MINUTE);
+    await sweep(t);
+    left = await stored(t);
+    expect(left.sessions).toEqual([]);
+    expect(left.refreshTokens).toEqual([]);
+    expect(left.users).toHaveLength(1);
+    expect(left.accounts).toHaveLength(1);
+  });
+});
+
 describe("sign-in codes", () => {
   test("are 8 random digits", () => {
     const codes = Array.from({ length: 200 }, () => randomDigits(CODE_LENGTH));

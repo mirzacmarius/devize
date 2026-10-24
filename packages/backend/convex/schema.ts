@@ -35,7 +35,13 @@ export default defineSchema({
     imageId: v.optional(v.id("_storage")),
     // Devize staff. Granted with `bunx convex run admin:grantSuperAdmin`.
     role: v.optional(v.literal("superadmin")),
-  }).index("email", ["email"]),
+  })
+    .index("email", ["email"])
+    // Users made when someone asked for a code, kept only for a day unless
+    // they sign in (signInLeftovers.ts).
+    .index("by_emailVerificationTime", ["emailVerificationTime"])
+    // Whether a fresh upload became someone's photo (accounts/uploads.ts).
+    .index("by_imageId", ["imageId"]),
   // When sign-in codes were emailed, so one address can't be flooded with
   // them (see emailSignIn.ts).
   emailCodeSends: defineTable({
