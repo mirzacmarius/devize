@@ -2,6 +2,10 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import {
+  type BaseCategoryKey,
+  baseCategoryByKey,
+} from "@devize/backend/convex/catalog/baseCategories";
 import { MAX_DESCRIPTION } from "@devize/backend/convex/catalog/lib/aiNorm";
 import { AISuggestion } from "@devize/ui/ai-suggestion";
 import { Badge } from "@devize/ui/badge";
@@ -28,6 +32,7 @@ import {
 } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
+import { NormCategoryChips } from "@/components/norm-category-chips";
 import { useNormSource } from "@/components/norm-source";
 import { SearchInput } from "@/components/search-input";
 import { useErrorMessage } from "@/components/use-error-message";
@@ -45,9 +50,10 @@ import { SectionSelect } from "./section-select";
 import type { Estimate } from "./types";
 
 /**
- * Finds norms by code or by the words of the work and adds them to the Deviz
- * with a quantity. It stays open, so several items go in one after another.
- * A work the catalog lacks gets a norm written by Devize AI, for the firm.
+ * Finds norms by code, by the words of the work or by category of the base
+ * catalog, and adds them to the Deviz with a quantity. It stays open, so
+ * several items go in one after another. A work the catalog lacks gets a
+ * norm written by Devize AI, for the firm.
  */
 export function AddNormSheet({
   estimate,
@@ -107,18 +113,32 @@ function AddNorm({
   const normSource = useNormSource();
   const [text, setText] = useState("");
   const [view, setView] = useState<View>({ kind: "search" });
+  const [categoryKey, setCategoryKey] = useState<BaseCategoryKey | null>(null);
   const [sectionId, setSectionId] = useState(initialSectionId);
   const [added, setAdded] = useState(0);
   // The request Devize AI is writing or wrote, kept while the sheet is open,
   // so a look back at the search doesn't lose it.
   const [requestId, setRequestId] = useState<Id<"normRequests">>();
   const search = useDeferredValue(text.trim());
-  const results = useQuery(
+  const category = baseCategoryByKey(categoryKey);
+  // Words typed search the whole catalog, within the category when one is
+  // pressed; a category alone lists its base norms in the order of their codes.
+  const found = useQuery(
     api.catalog.norms.search,
     search
-      ? { organizationId: estimate.organizationId, text: search, limit: 30 }
+      ? {
+          organizationId: estimate.organizationId,
+          text: search,
+          category: category?.name,
+          limit: 30,
+        }
       : "skip",
   );
+  const inCategory = useQuery(
+    api.catalog.norms.listBaseCategory,
+    !search && category ? { category: category.key } : "skip",
+  );
+  const results = search ? found : category ? inCategory : undefined;
 
   const onAdded = () => {
     setAdded((count) => count + 1);
@@ -165,24 +185,38 @@ function AddNorm({
             aria-label={t("addNorm.searchPlaceholder")}
             autoFocus
           />
-          {!search ? (
+          <NormCategoryChips
+            label={t("addNorm.categories")}
+            allLabel={t("addNorm.allCategories")}
+            value={categoryKey}
+            onChange={setCategoryKey}
+          />
+          {!search && !category ? (
             <p className="m-0 text-meta text-ink-3">{t("addNorm.hint")}</p>
           ) : results === undefined ? (
             <p className="m-0 text-meta text-ink-3">{t("addNorm.searching")}</p>
           ) : results.length === 0 ? (
-            <div className="grid justify-items-start gap-3">
+            search ? (
+              <div className="grid justify-items-start gap-3">
+                <p className="m-0 text-meta text-ink-3">
+                  {t("addNorm.noResults", { text: search })}
+                </p>
+                <Button
+                  type="button"
+                  variant="ai"
+                  onClick={() => setView({ kind: "ai" })}
+                >
+                  <Icons.AI aria-hidden />
+                  {t("addNorm.ai.offer")}
+                </Button>
+              </div>
+            ) : (
               <p className="m-0 text-meta text-ink-3">
-                {t("addNorm.noResults", { text: search })}
+                {t("addNorm.categoryEmpty", {
+                  category: category?.name ?? "",
+                })}
               </p>
-              <Button
-                type="button"
-                variant="ai"
-                onClick={() => setView({ kind: "ai" })}
-              >
-                <Icons.AI aria-hidden />
-                {t("addNorm.ai.offer")}
-              </Button>
-            </div>
+            )
           ) : (
             <ul
               aria-label={t("addNorm.results")}

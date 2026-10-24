@@ -1,0 +1,62 @@
+"use client";
+
+import {
+  type BaseCategoryKey,
+  baseCategories,
+} from "@devize/backend/convex/catalog/baseCategories";
+import { cn } from "@devize/ui/utils";
+
+/**
+ * The categories of the base catalog as one row of chips, "Toate" first,
+ * that scrolls sideways where it doesn't fit. At most one chip is pressed:
+ * the category being browsed. The catalog and the add-norm sheet share it.
+ */
+export function NormCategoryChips({
+  label,
+  allLabel,
+  value,
+  onChange,
+  className,
+}: {
+  label: string;
+  allLabel: string;
+  value: BaseCategoryKey | null;
+  onChange: (key: BaseCategoryKey | null) => void;
+  className?: string;
+}) {
+  const options: { key: BaseCategoryKey | null; name: string }[] = [
+    { key: null, name: allLabel },
+    ...baseCategories.map((category) => ({
+      key: category.key,
+      name: category.name,
+    })),
+  ];
+  return (
+    <fieldset
+      aria-label={label}
+      className={cn(
+        "-mx-1 m-0 flex min-w-0 gap-1.5 overflow-x-auto border-0 px-1 py-0.5 [scrollbar-width:none]",
+        className,
+      )}
+    >
+      {options.map((option) => {
+        const pressed = option.key === value;
+        return (
+          <button
+            key={option.key ?? "all"}
+            type="button"
+            aria-pressed={pressed}
+            onClick={() => onChange(option.key)}
+            className={cn(
+              "inline-flex h-7 shrink-0 items-center whitespace-nowrap rounded-full border border-border bg-card px-3 text-meta text-ink-2 transition-colors hover:bg-tile hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              pressed &&
+                "border-primary bg-selected font-medium text-ink hover:bg-selected",
+            )}
+          >
+            {option.name}
+          </button>
+        );
+      })}
+    </fieldset>
+  );
+}

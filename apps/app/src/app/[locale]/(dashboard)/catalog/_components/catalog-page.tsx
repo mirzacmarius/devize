@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
+import { baseCategoryByKey } from "@devize/backend/convex/catalog/baseCategories";
 import { normalizeText } from "@devize/backend/convex/lib/text";
 import { Badge } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
@@ -23,6 +24,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { NormCategoryChips } from "@/components/norm-category-chips";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
 import { SearchInput } from "@/components/search-input";
@@ -47,7 +49,8 @@ function matches(norm: NormRow, words: readonly string[]) {
 /**
  * The catalog: the public norms (Devize's base norms and the producers'),
  * and the firm's own norms with their drafts. Both search by code or by the
- * words of the work.
+ * words of the work; the public ones are also browsed by category of the
+ * base catalog, which narrows a search too.
  */
 export function CatalogPage() {
   const t = useScopedI18n("catalog");
@@ -57,23 +60,35 @@ export function CatalogPage() {
   const normSource = useNormSource();
   const { firm } = useFirm();
   // The list shown is in the address: Back from a norm's page returns to it,
-  // and links to "?view=own" open the firm's own norms even on a page kept
-  // from an earlier visit (ADR 0029).
-  const view: CatalogView =
-    useSearchParams().get("view") === "own" ? "own" : "catalog";
+  // and links to "?view=own" or "?category=zid" open the firm's own norms or
+  // a category even on a page kept from an earlier visit (ADR 0029).
+  const params = useSearchParams();
+  const view: CatalogView = params.get("view") === "own" ? "own" : "catalog";
+  const category = baseCategoryByKey(params.get("category"));
   const [text, setText] = useState("");
   const search = useDeferredValue(text.trim());
   const isOwn = view === "own";
+  const browsing = !isOwn && !search && category !== undefined;
 
   const listed = usePaginatedQuery(
     api.catalog.norms.listPublished,
-    !isOwn && !search ? {} : "skip",
+    !isOwn && !search && !category ? {} : "skip",
     { initialNumItems: 50 },
+  );
+  const inCategory = useQuery(
+    api.catalog.norms.listBaseCategory,
+    browsing ? { category: category.key } : "skip",
   );
   const found = useQuery(
     api.catalog.norms.search,
     !isOwn && search
-      ? { organizationId: firm._id, text: search, scope: "public", limit: 50 }
+      ? {
+          organizationId: firm._id,
+          text: search,
+          category: category?.name,
+          scope: "public",
+          limit: 50,
+        }
       : "skip",
   );
   const own = useQuery(
@@ -86,9 +101,11 @@ export function CatalogPage() {
     ? own?.filter((norm) => matches(norm, words))
     : search
       ? found
-      : listed.status === "LoadingFirstPage"
-        ? undefined
-        : listed.results;
+      : browsing
+        ? inCategory
+        : listed.status === "LoadingFirstPage"
+          ? undefined
+          : listed.results;
   const columns = isOwn ? 4 : 3;
 
   const changeView = (next: CatalogView) => {
@@ -97,6 +114,13 @@ export function CatalogPage() {
       null,
       "",
       next === "own" ? "/catalog?view=own" : "/catalog",
+    );
+  };
+  const changeCategory = (key: string | null) => {
+    window.history.replaceState(
+      null,
+      "",
+      key ? `/catalog?category=${key}` : "/catalog",
     );
   };
 
@@ -143,6 +167,16 @@ export function CatalogPage() {
             className="w-full max-w-xs"
           />
         </CardHeader>
+        {!isOwn && (
+          <div className="px-5 pb-4">
+            <NormCategoryChips
+              label={t("categories.label")}
+              allLabel={t("categories.all")}
+              value={category?.key ?? null}
+              onChange={changeCategory}
+            />
+          </div>
+        )}
         <TickRule />
         <CardContent className="pt-4">
           {isOwn && !search && own?.length === 0 ? (
@@ -190,7 +224,9 @@ export function CatalogPage() {
                     <TableCell colSpan={columns} className="text-ink-3">
                       {search
                         ? t("noResults", { text: search })
-                        : t("catalogEmpty")}
+                        : category
+                          ? t("categoryEmpty", { category: category.name })
+                          : t("catalogEmpty")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -256,15 +292,18 @@ export function CatalogPage() {
               </TableBody>
             </Table>
           )}
-          {!isOwn && !search && listed.status === "CanLoadMore" && (
-            <Button
-              variant="ghost"
-              className="justify-self-center"
-              onClick={() => listed.loadMore(50)}
-            >
-              {tc("loadMore")}
-            </Button>
-          )}
+          {!isOwn &&
+            !search &&
+            !category &&
+            listed.status === "CanLoadMore" && (
+              <Button
+                variant="ghost"
+                className="justify-self-center"
+                onClick={() => listed.loadMore(50)}
+              >
+                {tc("loadMore")}
+              </Button>
+            )}
         </CardContent>
       </Card>
     </>

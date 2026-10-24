@@ -1,5 +1,6 @@
 "use client";
 
+import { baseCategoryByName } from "@devize/backend/convex/catalog/baseCategories";
 import {
   Card,
   CardContent,
@@ -48,11 +49,22 @@ export function AboutCard({ norm }: { norm: Norm }) {
       normSource(norm)
     );
 
+  // A category of the base catalog leads to the catalog browsed by it.
+  const baseCategory = baseCategoryByName(norm.category);
+  const category = baseCategory ? (
+    <Link
+      href={`/catalog?category=${baseCategory.key}`}
+      className="rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      {baseCategory.name}
+    </Link>
+  ) : (
+    norm.category
+  );
+
   const rows: { label: string; value: ReactNode }[] = [
     { label: t("about.source"), value: source },
-    ...(norm.category
-      ? [{ label: t("about.category"), value: norm.category }]
-      : []),
+    ...(norm.category ? [{ label: t("about.category"), value: category }] : []),
     { label: t("about.version"), value: `v${norm.version}` },
     ...(norm.edition
       ? [{ label: t("about.edition"), value: norm.edition }]

@@ -37,7 +37,7 @@ A Firmă's own Normă, seen and used only by that Firmă: written on the norm fo
 _Avoid_: Private norm, custom norm
 
 **Normă de bază** (base norm):
-A generic Normă with no brand, from Devize's own catalog, written from scratch with current terms and materials. Devize does not use the 1981 norm indicators. The catalog ships with the code, in editions that a super admin publishes from Admin → Catalog de bază; its codes are DV-, the category and a number. Example: DV-ZID-03, 25 cm AAC block masonry. In code: `catalog/baseNorms.ts`. See `docs/adr/0012`.
+A generic Normă with no brand, from Devize's own catalog, written from scratch with current terms and materials. Devize does not use the 1981 norm indicators. The catalog ships with the code, in editions that a super admin publishes from Admin → Catalog de bază; its codes are DV-, the category and a number. Example: DV-ZID-03, 25 cm AAC block masonry. In code: `catalog/base/`, one file per category, put together by `catalog/baseNorms.ts`. See `docs/adr/0012` and `docs/adr/0039`.
 _Avoid_: Standard norm, indicator norm
 
 **Articol de deviz** (line item):
