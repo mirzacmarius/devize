@@ -4,6 +4,7 @@ import {
   nextjsMiddlewareRedirect,
 } from "@convex-dev/auth/nextjs/server";
 import { createI18nMiddleware } from "next-international/middleware";
+import { legalPaths } from "./lib/legal";
 import { returnPath, signInPath } from "./lib/return-path";
 import { defaultLocale, locales } from "./locales/locale";
 
@@ -31,9 +32,10 @@ const isSignInPage = createRouteMatcher(inEveryLanguage(["/login"]));
 // page and comes from people not signed in.
 const isCodeRequest = createRouteMatcher(["/api/sign-in-code"]);
 // An Ofertă's link, which the firm's client opens without an account, and the
-// privacy page, which emails to producers link to.
+// legal documents, which emails to producers, the website and the sign-in page
+// link to.
 const isPublicPage = createRouteMatcher(
-  inEveryLanguage(["/o/:token", "/confidentialitate"]),
+  inEveryLanguage(["/o/:token", ...Object.values(legalPaths)]),
 );
 
 export const proxy = convexAuthNextjsMiddleware(

@@ -10,6 +10,8 @@ export const appLinks = {
   start: `${appUrl}/login`,
   /** The producers' list in the app, where a Producător claims its profile. */
   producers: `${appUrl}/producers`,
-  /** The privacy policy, which ships with the app. */
+  /** The legal documents, which ship with the app. */
+  terms: `${appUrl}/termeni`,
+  dpa: `${appUrl}/acord-prelucrare-date`,
   privacy: `${appUrl}/confidentialitate`,
 } as const;

@@ -12,6 +12,7 @@ import { deleteDetails } from "../producers/details";
 import { deleteFirmUsage } from "../producers/usage";
 import { deleteProposals } from "../proposals/proposals";
 import { deleteFirmTemplates } from "../templates/templates";
+import { deleteFirmTermsAcceptances } from "./organizations";
 
 const BATCH = 200;
 
@@ -259,6 +260,10 @@ async function deleteSome(
   const invoiceSettings = await deleteFirmInvoiceSettings(ctx, organizationId);
   if (invoiceSettings > 0) {
     return invoiceSettings;
+  }
+  const terms = await deleteFirmTermsAcceptances(ctx, organizationId, limit);
+  if (terms > 0) {
+    return terms;
   }
   const memberships = await ctx.db
     .query("memberships")

@@ -63,15 +63,22 @@ export function formatFileSize(bytes: number, locale: Locale): string {
     : `${decimalFormat(locale, 0, 1).format(kb / 1024)} MB`;
 }
 
-/** A calendar date stored as YYYY-MM-DD, such as a Deviz's price date: 21 oct. 2026. */
-export function formatCalendarDate(value: string, locale: Locale): string {
+/**
+ * A calendar date stored as YYYY-MM-DD, such as a Deviz's price date: 21 oct.
+ * 2026, or 21 octombrie 2026 with the month in full.
+ */
+export function formatCalendarDate(
+  value: string,
+  locale: Locale,
+  monthStyle: "short" | "long" = "short",
+): string {
   const [year, month, day] = value.split("-").map(Number);
   if (!year || !month || !day) {
     return value;
   }
   return new Intl.DateTimeFormat(intlLocale(locale), {
     day: "numeric",
-    month: "short",
+    month: monthStyle,
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(Date.UTC(year, month - 1, day)));
