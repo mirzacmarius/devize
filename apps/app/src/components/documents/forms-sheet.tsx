@@ -51,10 +51,11 @@ import {
   useDownloadDocuments,
 } from "./use-download-documents";
 
-// The official forms one PDF can hold, in the order they print.
-type FormKind = Exclude<DocumentKind, "DEVIZ">;
+// The official forms one PDF can hold, in the order they print; the
+// client's Deviz and its Antemăsurătoare download from their own buttons.
+type FormKind = Exclude<DocumentKind, "DEVIZ" | "AM">;
 const formKinds = documentKinds.filter(
-  (kind): kind is FormKind => kind !== "DEVIZ",
+  (kind): kind is FormKind => kind !== "DEVIZ" && kind !== "AM",
 );
 const resourceForms: readonly FormKind[] = ["C6", "C7", "C8", "C9"];
 // The forms that total the works by the Deviz general's subchapters.

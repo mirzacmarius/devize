@@ -11,8 +11,10 @@ import { materialTables } from "./materials/tables";
 import { offerTables } from "./offers/tables";
 import { priceTables } from "./prices/tables";
 import { producerTables } from "./producers/tables";
+import { progressTables } from "./progress/tables";
 import { proposalTables } from "./proposals/tables";
 import { systemTables } from "./systems/tables";
+import { takeoffTables } from "./takeoffs/tables";
 
 export default defineSchema({
   ...authTables,
@@ -49,5 +51,7 @@ export default defineSchema({
   ...proposalTables,
   ...materialTables,
   ...systemTables,
+  ...takeoffTables,
+  ...progressTables,
   ...invoiceTables,
 });

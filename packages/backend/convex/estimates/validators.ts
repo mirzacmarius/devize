@@ -93,13 +93,29 @@ export const recap = v.object({
 });
 
 // derived: worked out from the Deviz's other articles, by the Detector de
-// omisiuni.
+// omisiuni. rooms: generated from the Deviz's Camere (takeoffs/measures.ts).
 export const takeoffMethod = v.union(
   v.literal("manual"),
   v.literal("photo"),
   v.literal("plan"),
   v.literal("voice"),
   v.literal("derived"),
+  v.literal("rooms"),
+);
+
+// What of a Cameră an Articol measures: its floor, ceiling, walls net of
+// openings, both walls and ceiling, perimeter, skirting (the perimeter without
+// the doors), the area of its openings, or how many doors or windows it has.
+export const roomMeasure = v.union(
+  v.literal("floor"),
+  v.literal("ceiling"),
+  v.literal("walls"),
+  v.literal("wallsAndCeiling"),
+  v.literal("perimeter"),
+  v.literal("skirting"),
+  v.literal("openings"),
+  v.literal("doors"),
+  v.literal("windows"),
 );
 
 /** One row of an Antemăsurătoare: count × length × width × height. */

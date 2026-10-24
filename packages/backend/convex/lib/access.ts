@@ -60,6 +60,7 @@ type FirmTable =
   | "sections"
   | "lineItems"
   | "takeoffs"
+  | "rooms"
   | "variants"
   | "offers"
   | "offerQuestions"
@@ -70,7 +71,12 @@ type FirmTable =
   | "proposalItems"
   | "invoices"
   | "invoiceSettings"
-  | "invoiceSeries";
+  | "invoiceSeries"
+  | "workStatements"
+  | "workStatementRows"
+  | "receptions"
+  | "guarantees"
+  | "normRequests";
 
 /**
  * Loads a firm's row and checks that the signed-in user belongs to that firm.

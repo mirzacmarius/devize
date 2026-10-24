@@ -3,6 +3,8 @@ import {
   Calculator,
   ChartColumn,
   Check,
+  ClipboardCheck,
+  ClipboardList,
   Coins,
   Copy,
   Ellipsis,
@@ -12,6 +14,7 @@ import {
   History,
   House,
   Layers,
+  LayoutDashboard,
   Library,
   List,
   Loader2,
@@ -34,6 +37,7 @@ import {
 // Devize's fixed icon vocabulary (Lucide, 1.5px stroke from globals.css).
 // Use the same icon for the same meaning everywhere; `AI` means AI only.
 export const Icons = {
+  Home: LayoutDashboard,
   SignOut: LogOut,
   Copy,
   Check,
@@ -46,6 +50,10 @@ export const Icons = {
   Prices: Tags,
   Producers: Store,
   Survey: Ruler,
+  // Situații de lucrări: what was executed, period by period.
+  Progress: ClipboardList,
+  // A Proces-verbal de recepție.
+  Reception: ClipboardCheck,
   Deviz: FileText,
   Invoice: Receipt,
   OfficialForms: FileSpreadsheet,

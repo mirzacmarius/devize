@@ -32,6 +32,10 @@ _Avoid_: Branded norm, product recipe
 A Producător's document for one product: what it is, how much of it a unit of work takes, how it's packed and how to apply it. The Firmă that holds a Profil de producător uploads one as a PDF for Devize AI to write a draft Normă de producător from, with the sheet's page for every figure; the Producător corrects the draft and sends it for review. In code: `datasheetImports`, `producers/datasheets.ts`. See `docs/adr/0022`.
 _Avoid_: Spec sheet, product sheet
 
+**Normă proprie** (own norm):
+A Firmă's own Normă, seen and used only by that Firmă: written on the norm form, copied from the catalog to adjust, or written by Devize AI from a few sentences about a work the catalog lacks, with where each consumption comes from and orientative prices for materials; the Firmă checks it, and adding it to a Deviz publishes it in the Firmă's own catalog. In code: `norms` with source `organization`, `normRequests` and `catalog/aiNorms.ts` for the ones Devize AI writes. See `docs/adr/0034`.
+_Avoid_: Private norm, custom norm
+
 **Normă de bază** (base norm):
 A generic Normă with no brand, from Devize's own catalog, written from scratch with current terms and materials. Devize does not use the 1981 norm indicators. The catalog ships with the code, in editions that a super admin publishes from Admin → Catalog de bază; its codes are DV-, the category and a number. Example: DV-ZID-03, 25 cm AAC block masonry. In code: `catalog/baseNorms.ts`. See `docs/adr/0012`.
 _Avoid_: Standard norm, indicator norm
@@ -53,8 +57,12 @@ The percentages a Recapitulație adds on top of the direct costs: CAM (contribu�
 _Avoid_: Rates (a rate is a price per hour), fees
 
 **Antemăsurătoare** (quantity take-off):
-The measured quantities behind a Deviz's Articole, taken from plans, photos or site measurements. In code: `takeoffs`.
+The measured quantities behind a Deviz's Articole: rows of count × length × width × height, with the openings deducted, typed by hand or written from the Deviz's Camere, so an Articol's quantity is the sum of its rows and the Anexa Antemăsurătoare prints them after the Deviz. Devize AI writes rows too, from plans, photos or dictation. In code: `takeoffs`, `takeoffs/`. See `docs/adr/0033`.
 _Avoid_: Measurement, survey
+
+**Cameră** (room):
+One space of a Deviz's site, measured once: its name and level, its length, width and height, or a floor area and a perimeter for an irregular shape, and its openings (doors, windows, others) with their count and size. Devize works out its floor, ceiling, walls with the openings deducted, perimeter, skirting with the doors deducted, and openings; an Articol's Antemăsurătoare takes the measure that fits its unit (floor and walls in mp, perimeter and skirting in m, doors and windows in buc) and follows the Cameră when it changes. In code: `rooms`, `takeoffs/measures.ts`. See `docs/adr/0033`.
+_Avoid_: Încăpere, spațiu, zone
 
 **Mod de montaj** (laying method):
 How an Articol's covering is laid: straight, as its Normă assumes; offset, diagonally or in a herringbone for tiles and planks; with many cuts for boards. A method raises the covering's losses and the labour, always from the consumptions before any method, and the Deviz follows; the Firmă can change both figures before applying it. In code: `lineItems.layout`, `materials/layout.ts`. See `docs/adr/0027`.
@@ -91,6 +99,50 @@ _Avoid_: Extra, add-on
 **Asistentul ofertei** (offer assistant):
 Devize AI answering a client's questions on an Ofertă's link, only from what the link shows them. What the Ofertă doesn't say, or only the Firmă can decide, goes to the Firmă, who replies from the Deviz's page; the Firmă can also turn the assistant off for a link. In code: `offerQuestions`, `offers/assistant.ts`. See `docs/adr/0019`.
 _Avoid_: Chatbot, bot
+
+### Execution
+
+**Situație de lucrări** (progress statement):
+What an accepted Deviz's works came to in a period: each Articol with the quantity executed before, in the period and in all, what remains, and the period's value with the Deviz's Cote. One statement is open at a time; a new one starts once the beneficiary confirms the last, from the quantities it reached. In code: `workStatements`, `workStatementRows`, page `/estimates/<id>/progress`. See `docs/adr/0035`.
+_Avoid_: Progress report, invoice (the statement is what an invoice is made from), situație de plată
+
+**Atașament** (measurement sheet):
+The measurements behind a quantity in a Situație de lucrări, a line each: count × length × width × height, some subtracted. In code: `workStatementRows.attachment`.
+_Avoid_: Attachment (a file), annex
+
+**Proces-verbal de recepție** (reception report):
+The document that closes the works: la terminarea lucrărilor (at their end) and finală (at the end of the warranty), with the committee, its findings, the objections and their deadlines, and the decision to admit, postpone or reject (HG 343/2017). In code: `receptions`, kinds `completion` and `final`; the PDFs follow the regulation's models. See `docs/adr/0035`.
+_Avoid_: Handover protocol, acceptance certificate
+
+**Garanție de bună execuție** (performance guarantee):
+What the contractor leaves with the beneficiary against defects, at most 10 % of the contract: kept back from each Situație de lucrări, or given as a bank or insurance instrument. 70 % comes back after the reception at the end of the works and 30 % after the final one, each within 14 days (HG 395/2016, art. 40 and 42). In code: `guarantees`, `progress/arithmetic.ts`. See `docs/adr/0035`.
+_Avoid_: Retention money (only one way of holding it), warranty (the period, not the money)
+
+### Invoicing
+
+**Factură** (invoice):
+What a Firmă bills a client for: the advance of an accepted Ofertă, a confirmed Situație de lucrări, or the rest of the Deviz once the works are done, with the advances deducted. It is shaped as a draft (ciornă), then issued: issuing gives it the next number of its Serie de facturare and freezes it; from then on it is paid, cancelled while it never left the firm, or reversed by a Storno. Its client and firm are copied onto it when it is made, so a later change to the client's card changes no issued invoice. In code: `invoices`, page `/invoices/<id>`. See `docs/adr/0037`.
+_Avoid_: Bill, receipt, chitanță (the paper for cash received)
+
+**Serie de facturare** (invoice series):
+The letters an invoice's number starts with (DVZ, FA) and the number the next invoice gets. Numbers follow without gaps, so a wrong invoice is never deleted. A Firmă's first invoice starts the series DVZ at 1 unless it set up its own. In code: `invoiceSeries`, Setări → Facturare.
+_Avoid_: Number range, prefix
+
+**Factură de avans** (advance invoice):
+The invoice for the deposit an accepted Ofertă asked, as a share of the accepted value without VAT. The final invoice deducts it with a negative line, so the client pays the rest once.
+_Avoid_: Proforma (which is not an invoice), deposit receipt
+
+**Storno** (reversal invoice):
+The invoice that cancels an issued one, with its lines negated and a reference to it. Romanian practice and the Codul fiscal (art. 330) correct an invoice this way rather than by deleting it. In code: `invoices` with kind `storno`, `stornoOf` and `stornoedBy`.
+_Avoid_: Credit note (the EN 16931 name; Romanian invoices use a negative invoice), deletion
+
+**e-Factura**:
+ANAF's system every invoice between Romanian firms, and to consumers, must reach within five working days of issue (OUG 89/2025), as UBL 2.1 XML in the CIUS-RO 1.0.1 format. Devize writes the XML, checks it against the rules ANAF checks and against ANAF's public validator, and keeps the deadline in sight; sending from Devize through SPV (Spațiul Privat Virtual) needs the firm's connection to ANAF. In code: `invoices/ubl.ts`, `invoices/rules.ts`, `invoices/anaf.ts`.
+_Avoid_: E-invoice (generic), SPV (the portal, not the format)
+
+**Încasare** (payment received):
+Money the client paid on an invoice, with its date and how it came: transfer, cash, card. An invoice is paid once its încasări reach its total. In code: `invoices.payments`.
+_Avoid_: Payment (ambiguous with what the firm pays), receipt
 
 ### Public tenders
 

@@ -306,7 +306,7 @@ describe("invoices", () => {
         date: "2026-10-26",
         method: "cash",
       }),
-    ).rejects.toThrow(/amount/);
+    ).rejects.toThrow(/paymentAmount/);
     await firm.as.mutation(api.invoices.invoices.removePayment, {
       invoiceId: finalId,
       index: 1,

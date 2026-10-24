@@ -18,6 +18,7 @@ import { useRouteParam } from "@/components/use-route-param";
 import { formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { AboutCard } from "./about-card";
+import { AiRequestCard } from "./ai-request-card";
 import { DatasheetCard } from "./datasheet-card";
 import { NormActions } from "./norm-actions";
 import { ResourcesCard } from "./resources-card";
@@ -86,6 +87,7 @@ export function NormPage() {
               sourcePages={norm.sourcePages ?? []}
             />
           )}
+          {norm.aiRequest && <AiRequestCard request={norm.aiRequest} />}
           <AboutCard norm={norm} />
           <VersionsCard norm={norm} />
         </div>

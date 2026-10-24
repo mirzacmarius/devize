@@ -63,6 +63,24 @@ export function isKnownUnit(value: string): boolean {
   return unitByAlias.has(normalizeUnit(value).replace(/^[\d.]+ /, ""));
 }
 
+/**
+ * A norm code the catalog takes, from one a model or a person wrote:
+ * capitals, digits, dots and dashes, at most 20 characters, or `fallback`
+ * when nothing is left.
+ */
+export function cleanNormCode(value: string, fallback: string): string {
+  const code = value
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toUpperCase()
+    .replace(/[\s_/]+/g, "-")
+    .replace(/[^A-Z0-9.-]/g, "")
+    .replace(/-{2,}/g, "-")
+    .replace(/^[-.]+|[-.]+$/g, "")
+    .slice(0, 20);
+  return code || fallback;
+}
+
 /** A consumption written as a percentage of the norm's materials, such as "Material mărunt 3 %". */
 export function isPercentUnit(unit: string): boolean {
   return normalizeUnit(unit) === "%";

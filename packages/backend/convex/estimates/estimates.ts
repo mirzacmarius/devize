@@ -13,7 +13,9 @@ import { checkDate, romanianDate } from "../lib/dates";
 import { appError, invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import { store } from "../prices/validators";
+import { deleteProgressRows } from "../progress/cleanup";
 import { deleteProposals } from "../proposals/proposals";
+import { copyTakeoffs } from "../takeoffs/helpers";
 import {
   changeStatus,
   pricedFields,
@@ -52,7 +54,11 @@ async function checkClient(
   }
 }
 
-async function withClientNames(ctx: QueryCtx, estimates: Doc<"estimates">[]) {
+/** Devize as lists show them, each with its client's name. */
+export async function withClientNames(
+  ctx: QueryCtx,
+  estimates: Doc<"estimates">[],
+) {
   const names = new Map<Id<"clients">, string>();
   for (const estimate of estimates) {
     if (estimate.clientId && !names.has(estimate.clientId)) {
@@ -484,6 +490,8 @@ export const duplicate = mutation({
         }),
       });
     }
+    // The Antemăsurătoare: the rooms and the takeoffs behind the quantities.
+    await copyTakeoffs(ctx, source, estimateId, itemIds);
     return estimateId;
   },
 });
@@ -522,7 +530,12 @@ export const deleteRows = internalMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     let deleted = 0;
-    for (const table of ["lineItems", "sections", "variants"] as const) {
+    for (const table of [
+      "lineItems",
+      "sections",
+      "variants",
+      "rooms",
+    ] as const) {
       const rows = await ctx.db
         .query(table)
         .withIndex("by_estimateId_and_position", (q) =>
@@ -550,6 +563,11 @@ export const deleteRows = internalMutation({
       Math.max(BATCH - deleted, 0),
     );
     deleted += await deleteDraftInvoices(
+      ctx,
+      args.estimateId,
+      Math.max(BATCH - deleted, 0),
+    );
+    deleted += await deleteProgressRows(
       ctx,
       args.estimateId,
       Math.max(BATCH - deleted, 0),

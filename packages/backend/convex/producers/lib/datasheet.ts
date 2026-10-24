@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { NormResourceInput } from "../../catalog/resourceRows";
-import { normalizeUnit } from "../../lib/text";
+import { cleanNormCode, normalizeUnit } from "../../lib/text";
 
 // A producer's technical data sheet, read into a draft Normă de producător.
 // What the producer uploads is checked in ./datasheetFile.
@@ -166,20 +166,6 @@ function text(value: string | null | undefined, max: number) {
   return result ? result.slice(0, max) : undefined;
 }
 
-/** A code the norm form takes: capitals, digits, dots and dashes. */
-function cleanCode(value: string): string {
-  const code = value
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toUpperCase()
-    .replace(/[\s_/]+/g, "-")
-    .replace(/[^A-Z0-9.-]/g, "")
-    .replace(/-{2,}/g, "-")
-    .replace(/^[-.]+|[-.]+$/g, "")
-    .slice(0, 20);
-  return code || "FT-01";
-}
-
 /** Where a resource's figure comes from, for the line under it. */
 function sourceNote(row: {
   page?: number;
@@ -281,7 +267,7 @@ export function cleanDatasheetNorm(
         packaging: text(output.product.packaging, 100),
       },
       norm: {
-        code: cleanCode(output.norm.code),
+        code: cleanNormCode(output.norm.code, "FT-01"),
         title,
         unit,
         category: text(output.norm.category, 100),

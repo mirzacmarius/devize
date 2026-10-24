@@ -48,6 +48,7 @@ export function EstimateActions({
   const tc = useScopedI18n("common");
   const tBasket = useScopedI18n("prices.basket");
   const tMaterials = useScopedI18n("materials");
+  const tProgress = useScopedI18n("progress");
   const router = useRouter();
   const run = useRun();
   const setStatus = useMutation(api.estimates.estimates.setStatus);
@@ -185,6 +186,13 @@ export function EstimateActions({
               {tMaterials("open")}
             </Link>
           </DropdownMenuItem>
+          {status === "accepted" && (
+            <DropdownMenuItem asChild>
+              <Link href={`/estimates/${estimateId}/progress`}>
+                {tProgress("open")}
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onSelect={() => copy(false)}>
             {t("actions.copy")}
           </DropdownMenuItem>

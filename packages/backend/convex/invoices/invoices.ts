@@ -391,7 +391,7 @@ async function latestBuyer(
 }
 
 /** Starts a draft for a Deviz, with its firm and client as they stand now. */
-async function insertDraft(
+export async function insertDraft(
   ctx: MutationCtx,
   estimate: Doc<"estimates">,
   userId: Id<"users">,
@@ -486,7 +486,7 @@ export const createAdvance = mutation({
       percent <= 0 ||
       percent > 100
     ) {
-      throw invalid("percent");
+      throw invalid("advancePercent");
     }
     const firm = await ctx.db.get("organizations", estimate.organizationId);
     const vatRate = firm?.vatPayer ? estimate.markups.vat : 0;
@@ -900,7 +900,7 @@ export const addPayment = mutation({
     const owed = roundLei(invoice.totals.total - invoice.paidAmount);
     const amount = roundLei(args.amount ?? owed);
     if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_PRICE) {
-      throw invalid("amount");
+      throw invalid("paymentAmount");
     }
     const payments = [
       ...invoice.payments,

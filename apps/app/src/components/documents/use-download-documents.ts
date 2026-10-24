@@ -40,7 +40,7 @@ export function savePdf(bytes: Uint8Array, name: string) {
 /** What a Deviz's documents download as: one PDF, or one Excel workbook. */
 export type DocumentsFormat = "pdf" | "xlsx";
 
-const fileTypes: Record<DocumentsFormat, string> = {
+export const fileTypes: Record<DocumentsFormat, string> = {
   pdf: "application/pdf",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 };
@@ -53,7 +53,7 @@ type Writer = (
 ) => Promise<Uint8Array>;
 
 /** The PDF writer, with the library and the fonts it draws with. */
-async function pdfWriter(): Promise<Writer> {
+export async function pdfWriter(): Promise<Writer> {
   const [pdf, regular, bold] = await Promise.all([
     import("@devize/forms/pdf"),
     fontFile("/fonts/Geist-Regular.ttf"),
@@ -64,7 +64,7 @@ async function pdfWriter(): Promise<Writer> {
 }
 
 /** The Excel writer. */
-async function xlsxWriter(): Promise<Writer> {
+export async function xlsxWriter(): Promise<Writer> {
   const { renderXlsx } = await import("@devize/forms/xlsx");
   return async (documents, title, author) =>
     renderXlsx(documents, { title, author });
@@ -100,7 +100,13 @@ export function useDownloadDocuments(estimate: Estimate) {
           import("@devize/forms"),
           format === "xlsx" ? xlsxWriter() : pdfWriter(),
         ]);
-        const data = exportData(estimate, firm, client);
+        // The rooms and takeoffs, only for the Anexă · Antemăsurătoare.
+        const takeoff = kinds.includes("AM")
+          ? await convex.query(api.takeoffs.page.forExport, {
+              estimateId: estimate._id,
+            })
+          : null;
+        const data = { ...exportData(estimate, firm, client), takeoff };
         const documents = forms.buildDocuments(data, kinds, {
           ...options,
           date: todayInput(),

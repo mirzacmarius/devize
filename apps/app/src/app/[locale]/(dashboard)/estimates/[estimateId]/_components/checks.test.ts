@@ -1,10 +1,27 @@
 import { describe, expect, test } from "bun:test";
 import { type CheckInput, runChecks } from "./checks";
 
+type Resource = CheckInput["lineItems"][number]["resources"][number];
+
+const adhesive: Resource = {
+  name: "Adeziv",
+  priceSource: "listing",
+  kind: "material",
+  unit: "kg",
+  unitPrice: 2.4,
+};
+const labor: Resource = {
+  name: "Manoperă",
+  priceSource: "reference",
+  kind: "labor",
+  unit: "oră",
+  unitPrice: 45,
+};
+
 const ready: CheckInput = {
   lineItems: [
-    { resources: [{ name: "Adeziv", priceSource: "listing" }] },
-    { resources: [{ name: "Manoperă", priceSource: "own" }] },
+    { resources: [adhesive] },
+    { resources: [{ ...labor, priceSource: "own" }] },
   ],
   client: { name: "Maria Ionescu" },
   tender: false,
@@ -30,18 +47,18 @@ const states = (input: CheckInput) =>
 
 describe("runChecks", () => {
   test("passes a priced Deviz with a client and the firm's VAT", () => {
-    expect(Object.values(states(ready))).toEqual(Array(8).fill("passed"));
+    expect(Object.values(states(ready))).toEqual(Array(9).fill("passed"));
   });
 
   test("names each resource without a price once", () => {
     const checks = runChecks({
       ...ready,
       lineItems: [
-        { resources: [{ name: "Adeziv", priceSource: "missing" }] },
+        { resources: [{ ...adhesive, priceSource: "missing" }] },
         {
           resources: [
-            { name: "Adeziv", priceSource: "missing" },
-            { name: "Plasă", priceSource: "missing" },
+            { ...adhesive, priceSource: "missing" },
+            { ...adhesive, name: "Plasă", priceSource: "missing" },
           ],
         },
       ],
@@ -50,6 +67,29 @@ describe("runChecks", () => {
       id: "prices",
       state: "failed",
       missing: ["Adeziv", "Plasă"],
+    });
+  });
+
+  test("names labour by the hour priced under the legal minimum, once", () => {
+    const checks = runChecks({
+      ...ready,
+      lineItems: [
+        { resources: [{ ...labor, name: "Zidar", unitPrice: 20 }] },
+        {
+          resources: [
+            { ...labor, name: "Zidar", unitPrice: 25 },
+            // Per m², the price says nothing about the wage behind it.
+            { ...labor, name: "Faianțar", unit: "mp", unitPrice: 5 },
+            { ...labor, name: "Dulgher", unitPrice: 30 },
+          ],
+        },
+      ],
+    });
+    expect(checks.find((check) => check.id === "labor")).toEqual({
+      id: "labor",
+      state: "warning",
+      names: ["Zidar"],
+      floor: 27.71,
     });
   });
 
@@ -73,7 +113,7 @@ describe("runChecks", () => {
   });
 
   test("checks VAT against the firm, and waits while loading", () => {
-    // 0% can be right for a VAT payer, with taxare inversă.
+    // 0% can be right for a VAT payer, for exempt or reverse-charge supplies.
     expect(states({ ...ready, vat: 0 }).vat).toBe("warning");
     expect(states({ ...ready, vatPayer: false }).vat).toBe("failed");
     expect(states({ ...ready, vat: 0, vatPayer: false }).vat).toBe("passed");

@@ -13,11 +13,13 @@ import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { Check, CircleAlert, TriangleAlert } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useRun } from "@/components/use-run";
-import { formatMoney, formatPercent } from "@/lib/format";
+import { formatAmount, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { useStartOmissions } from "../_proposal/omissions-sheet";
+import { laborFloor } from "@devize/backend/convex/lib/labor";
 import type { Check as CheckResult, CheckState } from "./checks";
 import { useRefreshedMessage } from "./estimate-actions";
 import type { Estimate, OpenPanel, Updates } from "./types";
@@ -243,6 +245,30 @@ function useCheckText() {
               : t("checks.prices.failed", { names: named }),
         };
       }
+      case "labor": {
+        const floor = formatMoney(check.floor, locale);
+        if (check.state === "passed") {
+          return {
+            title: t("checks.labor.title"),
+            detail: t("checks.labor.passed", { floor }),
+          };
+        }
+        const monthly = formatAmount(laborFloor.monthlyGross, locale);
+        const named = check.names.slice(0, NAMED).join(", ");
+        const more = check.names.length - NAMED;
+        return {
+          title: t("checks.labor.warningTitle"),
+          detail:
+            more > 0
+              ? t("checks.labor.warningMore", {
+                  floor,
+                  monthly,
+                  names: named,
+                  count: more,
+                })
+              : t("checks.labor.warning", { floor, monthly, names: named }),
+        };
+      }
       case "current": {
         if (check.state === "passed") {
           return {
@@ -317,6 +343,11 @@ function useCheckText() {
 
 type OmissionsCheck = Extract<CheckResult, { id: "omissions" }>;
 
+/** A check's one-click fix: an action here, or the page where it is fixed. */
+type Fix =
+  | { label: string; onClick: () => void }
+  | { label: string; href: string };
+
 /**
  * The omissions check's button, whatever its state: one click starts a check
  * and shows it working, and any other opens what the check found.
@@ -390,13 +421,16 @@ function CheckFix({
     setBusy(false);
   };
 
-  const fix = (() => {
+  const fix = ((): Fix | null => {
     switch (check.id) {
       case "items":
         return {
           label: t("checks.items.fix"),
           onClick: () => open({ kind: "addNorm" }),
         };
+      case "labor":
+        // The firm's Tarife are where an hour of labour gets its price.
+        return { label: t("checks.labor.fix"), href: "/rates" };
       case "current":
         return {
           label: t("checks.current.fix"),
@@ -444,6 +478,13 @@ function CheckFix({
 
   if (!fix) {
     return null;
+  }
+  if ("href" in fix) {
+    return (
+      <Button asChild variant="link" className="mt-1 text-meta">
+        <Link href={fix.href}>{fix.label}</Link>
+      </Button>
+    );
   }
   return (
     <Button

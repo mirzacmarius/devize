@@ -21,10 +21,12 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { InvoicesCard } from "../_invoices/invoices-card";
 import { PackagingCard } from "../_materials/packaging-card";
 import { OfferCard } from "../_offer/offer-card";
+import { ProgressCard } from "../_progress/progress-card";
 import { OmissionsSheet } from "../_proposal/omissions-sheet";
 import { ProposalBanner } from "../_proposal/proposal-banner";
 import { ProposalSheet } from "../_proposal/proposal-sheet";
 import { CompatibilityCard } from "../_systems/compatibility-card";
+import { TakeoffCard } from "../_takeoff/takeoff-card";
 import { AddNormSheet } from "./add-norm-sheet";
 import { runChecks } from "./checks";
 import { ChecksCard } from "./checks-card";
@@ -153,7 +155,11 @@ export function EstimatePage() {
             open={setPanel}
           />
           <CompatibilityCard estimate={estimate} editable={editable} />
+          <TakeoffCard estimate={estimate} />
           <OfferCard estimate={estimate} />
+          {estimate.status === "accepted" && (
+            <ProgressCard estimate={estimate} />
+          )}
           <InvoicesCard estimate={estimate} />
           <DocumentsCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />
