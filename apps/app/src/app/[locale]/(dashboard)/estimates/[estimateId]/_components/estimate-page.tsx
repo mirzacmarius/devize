@@ -41,6 +41,7 @@ import { MarkupsDialog } from "./markups-dialog";
 import { RecapCard } from "./recap-card";
 import { RevisionsCard } from "./revisions-card";
 import { SectionDialog } from "./section-dialog";
+import { TargetPriceDialog } from "./target-dialog";
 import type { Panel } from "./types";
 
 /**
@@ -180,6 +181,11 @@ export function EstimatePage() {
       <MarkupsDialog
         estimate={estimate}
         open={panel?.kind === "markups"}
+        onClose={close}
+      />
+      <TargetPriceDialog
+        estimate={estimate}
+        open={panel?.kind === "target"}
         onClose={close}
       />
       <ProposalSheet

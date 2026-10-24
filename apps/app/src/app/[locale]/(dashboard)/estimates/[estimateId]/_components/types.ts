@@ -14,6 +14,7 @@ export type Updates = FunctionReturnType<
 export type Panel =
   | { kind: "details" }
   | { kind: "markups" }
+  | { kind: "target" }
   | { kind: "proposal" }
   | { kind: "omissions" }
   | { kind: "addNorm"; sectionId?: Id<"sections"> }

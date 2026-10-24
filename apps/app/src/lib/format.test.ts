@@ -11,6 +11,7 @@ import {
   formatPercent,
   formatQuantity,
   parseDecimal,
+  parseMoney,
 } from "./format";
 
 describe("formatting", () => {
@@ -56,6 +57,25 @@ describe("formatting", () => {
     expect(estimateCode(142)).toBe("DVZ-0142");
     expect(estimateCode(142, 2)).toBe("DVZ-0142-R2");
     expect(estimateCode(12345)).toBe("DVZ-12345");
+  });
+});
+
+describe("parseMoney", () => {
+  test("reads groups of three digits as thousands", () => {
+    expect(parseMoney("48.000")).toBe(48000);
+    expect(parseMoney("48,000")).toBe(48000);
+    expect(parseMoney("1.250.000")).toBe(1250000);
+    expect(parseMoney("1,250,000")).toBe(1250000);
+    expect(parseMoney("48,000.50")).toBe(48000.5);
+  });
+
+  test("reads lei and bani like any decimal", () => {
+    expect(parseMoney("48.000,50")).toBe(48000.5);
+    expect(parseMoney("48000")).toBe(48000);
+    expect(parseMoney("4800,5")).toBe(4800.5);
+    expect(parseMoney("4800.50")).toBe(4800.5);
+    expect(parseMoney("")).toBeUndefined();
+    expect(parseMoney("lei")).toBeUndefined();
   });
 });
 

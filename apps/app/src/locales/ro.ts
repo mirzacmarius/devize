@@ -239,6 +239,69 @@ export default {
       submit: "Salvează",
     },
   },
+  eur: {
+    amount: "≈ {amount} EUR la cursul BNR din {date} (1 EUR = {rate} lei).",
+    paidInLei: "Plata se face în lei.",
+  },
+  targetPrice: {
+    open: "Preț țintă",
+    title: "Potrivește devizul la un preț",
+    description:
+      "Scrii cât vrea să plătească clientul, iar Devize ajustează profitul sau manopera și îți arată ce marjă rămâne. Materialele nu se schimbă.",
+    target: "Prețul țintă",
+    basis: "Prețul este",
+    bases: {
+      total: "cu TVA",
+      subtotal: "fără TVA",
+    },
+    method: "Ajustează",
+    methods: {
+      profit: "Profitul",
+      labor: "Manopera",
+    },
+    methodHints: {
+      profit: "Se schimbă doar cota de profit. Prețurile din deviz rămân.",
+      labor:
+        "Toate prețurile manoperei se schimbă în aceeași proporție. Rămân apoi fixate de mână, așa că actualizarea prețurilor nu le mai schimbă.",
+    },
+    caption: "Devizul acum și după ajustare, în lei",
+    columns: {
+      item: "Ce se schimbă",
+      now: "Acum",
+      after: "După",
+    },
+    rows: {
+      labor: "Manoperă",
+      profit: "Profit ({rate})",
+      subtotal: "Total fără TVA",
+      total: "Total cu TVA",
+      margin: "Marja de profit",
+    },
+    difference:
+      "Cel mai aproape de țintă se ajunge la {total} lei, cu {difference} lei față de ea.",
+    laborChange: "Fiecare preț al manoperei se schimbă cu {change}.",
+    belowFloor:
+      "Cea mai ieftină oră de manoperă ajunge la {price} lei, sub minimul legal de {floor} lei/oră.",
+    misses: {
+      profitBelowCost:
+        "Chiar fără profit, devizul are {limit} lei. Încearcă din manoperă sau schimbă materialele.",
+      profitTooHigh:
+        "Ar trebui un profit de peste 100%. Cel mult se ajunge la {limit} lei.",
+      laborBelowCost: "Chiar fără manoperă, devizul are {limit} lei.",
+      laborTooHigh:
+        "Ar trebui o manoperă de peste zece ori mai scumpă. Cel mult se ajunge la {limit} lei.",
+      noLabor: "Devizul nu are manoperă de ajustat.",
+      noCost:
+        "Devizul nu are încă prețuri, așa că totalul rămâne 0 lei orice ai ajusta. Pune întâi prețurile.",
+    },
+    enterTarget: "Scrie prețul pe care îl vrea clientul.",
+    empty: "Devizul nu are încă articole.",
+    apply: "Aplică",
+    applied: {
+      total: "Devizul are acum {total} lei cu TVA.",
+      subtotal: "Devizul are acum {total} lei fără TVA.",
+    },
+  },
   estimates: {
     title: "Devize",
     description: "Devizele firmei, de la ciornă la oferta acceptată.",
@@ -1578,6 +1641,9 @@ export default {
       assistant: "Asistentul AI răspunde la întrebările clientului",
       assistantHint:
         "Răspunde doar din ofertă. Ce nu știe sau doar tu poți hotărî îți trimite ție.",
+      showEur: "Arată prețul și în EUR",
+      showEurHint:
+        "La cursul BNR din ziua în care clientul deschide oferta. Prețul rămâne în lei.",
       submit: "Creează linkul",
       created: "Linkul e gata și l-am copiat.",
       createdNotCopied: "Linkul e gata.",
@@ -3420,6 +3486,8 @@ export default {
     invalidPaymentSchedule:
       "Etapele de plată au un nume și o cotă între 0 și 100%, iar cotele adunate nu trec de 100%.",
     invalidEvidence: "Datele browserului sunt prea lungi.",
+    invalidTarget:
+      "Prețul țintă nu se poate atinge astfel. Verifică suma și ce ajustezi.",
     invalidTemplateName: "Numele șablonului are între 1 și 120 de caractere.",
     invalidTemplateItems: "Un șablon are nevoie de cel puțin un articol.",
     invalidTemplateSize:
@@ -3482,6 +3550,8 @@ export default {
       "Factura se emite doar pentru o situație de lucrări confirmată de beneficiar.",
     inUseStatement: "Situația de lucrări are deja o factură.",
     inUseTemplateName: "Există deja un șablon cu acest nume.",
+    inUseTemplateNameTaken:
+      "Numele e folosit de șablonul unui coleg. Alege alt nume.",
   },
   markups: {
     cam: {

@@ -56,6 +56,7 @@ export const create = mutation({
     baseLabel: v.optional(v.string()),
     optionalItems: v.optional(v.array(optionalItem)),
     assistant: v.optional(v.boolean()),
+    showEur: v.optional(v.boolean()),
   },
   returns: v.object({ offerId: v.id("offers"), token: v.string() }),
   handler: async (ctx, args) => {
@@ -154,6 +155,7 @@ export const create = mutation({
           : undefined,
       optionalItems,
       assistant: args.assistant ?? true,
+      showEur: args.showEur ?? false,
       expiresAt,
       sentAt: now,
       viewCount: 0,
@@ -308,6 +310,7 @@ export const forEstimate = query({
       status: offer.status,
       message: offer.message,
       assistant: offer.assistant,
+      showEur: offer.showEur ?? false,
       sentAt: offer.sentAt,
       expiresAt: offer.expiresAt,
       depositPercent: offer.depositPercent,

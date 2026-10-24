@@ -13,8 +13,8 @@ import {
   resolverFor,
   snapshotResources,
 } from "../estimates/helpers";
-import { requireFirmDoc, requireMember } from "../lib/access";
-import { appError, invalid, notFound } from "../lib/errors";
+import { getMembership, requireFirmDoc, requireMember } from "../lib/access";
+import { appError, forbidden, invalid, notFound } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import {
   type Starter,
@@ -56,14 +56,43 @@ async function byName(
 }
 
 /** Members change the templates they made; admins change all of them. */
+async function canChange(
+  ctx: QueryCtx,
+  template: Doc<"estimateTemplates">,
+  userId: Id<"users">,
+) {
+  if (template.createdBy === userId) {
+    return true;
+  }
+  const membership = await getMembership(ctx, template.organizationId, userId);
+  return membership !== null && membership.role !== "member";
+}
+
 async function requireChange(
   ctx: QueryCtx,
   template: Doc<"estimateTemplates">,
   userId: Id<"users">,
 ) {
-  if (template.createdBy !== userId) {
-    await requireMember(ctx, template.organizationId, "admin");
+  if (!(await canChange(ctx, template, userId))) {
+    throw forbidden("admin");
   }
+}
+
+/** A template's contents row, if it has one. */
+async function contentsRow(ctx: QueryCtx, templateId: Id<"estimateTemplates">) {
+  return await ctx.db
+    .query("estimateTemplateContents")
+    .withIndex("by_templateId", (q) => q.eq("templateId", templateId))
+    .unique();
+}
+
+/** A template's sections and works, wherever it keeps them. */
+async function contentsOf(ctx: QueryCtx, template: Doc<"estimateTemplates">) {
+  const row = await contentsRow(ctx, template._id);
+  return {
+    sections: row?.sections ?? template.sections ?? [],
+    lineItems: row?.lineItems ?? template.lineItems ?? [],
+  };
 }
 
 /** The published Normă de bază with this code, if the catalog has it. */
@@ -112,8 +141,8 @@ export const list = query({
         _id: template._id,
         name: template.name,
         description: template.description,
-        itemCount: template.lineItems.length,
-        sectionCount: template.sections.length,
+        itemCount: template.itemCount ?? template.lineItems?.length ?? 0,
+        sectionCount: template.sectionCount ?? template.sections?.length ?? 0,
         total: template.total,
         updatedAt: template.updatedAt,
         usedCount: template.usedCount,
@@ -123,8 +152,11 @@ export const list = query({
       starters: await Promise.all(
         starters.map(async (starter) => ({
           key: starter.key,
-          // Usable once every norm it is written with is published.
-          available: (await missingCodes(ctx, starter)).length === 0,
+          // Usable once any norm it is written with is published; starting
+          // it leaves out and names the works whose norm isn't.
+          available:
+            (await missingCodes(ctx, starter)).length <
+            new Set(starter.lines.map((line) => line.code)).size,
         })),
       ),
     };
@@ -201,18 +233,35 @@ export const save = mutation({
       name,
       nameKey,
       description,
-      ...content,
+      itemCount: content.lineItems.length,
+      sectionCount: content.sections.length,
       total: estimate.totals.total,
       sourceEstimateId: estimate._id,
       updatedAt: Date.now(),
     };
     const existing = await byName(ctx, estimate.organizationId, nameKey);
     if (existing) {
+      // A name only someone else may replace is simply taken.
+      if (!(await canChange(ctx, existing, userId))) {
+        throw appError("in_use", "templateNameTaken");
+      }
       if (!args.replace) {
         throw appError("in_use", "templateName");
       }
-      await requireChange(ctx, existing, userId);
-      await ctx.db.patch("estimateTemplates", existing._id, fields);
+      await ctx.db.patch("estimateTemplates", existing._id, {
+        ...fields,
+        sections: undefined,
+        lineItems: undefined,
+      });
+      const row = await contentsRow(ctx, existing._id);
+      if (row) {
+        await ctx.db.patch("estimateTemplateContents", row._id, content);
+      } else {
+        await ctx.db.insert("estimateTemplateContents", {
+          templateId: existing._id,
+          ...content,
+        });
+      }
       return existing._id;
     }
     const count = await ctx.db
@@ -224,12 +273,14 @@ export const save = mutation({
     if (count.length >= MAX_TEMPLATES) {
       throw invalid("templates");
     }
-    return await ctx.db.insert("estimateTemplates", {
+    const templateId = await ctx.db.insert("estimateTemplates", {
       organizationId: estimate.organizationId,
       ...fields,
       createdBy: userId,
       usedCount: 0,
     });
+    await ctx.db.insert("estimateTemplateContents", { templateId, ...content });
+    return templateId;
   },
 });
 
@@ -275,6 +326,10 @@ export const remove = mutation({
       args.templateId,
     );
     await requireChange(ctx, template, userId);
+    const row = await contentsRow(ctx, template._id);
+    if (row) {
+      await ctx.db.delete("estimateTemplateContents", row._id);
+    }
     await ctx.db.delete("estimateTemplates", template._id);
     return null;
   },
@@ -289,8 +344,9 @@ async function applyTemplate(
   estimate: Doc<"estimates">,
   template: Doc<"estimateTemplates">,
 ) {
+  const { sections, lineItems } = await contentsOf(ctx, template);
   const sectionIds = new Map<string, Id<"sections">>();
-  for (const section of template.sections) {
+  for (const section of sections) {
     sectionIds.set(
       section.key,
       await ctx.db.insert("sections", {
@@ -303,7 +359,7 @@ async function applyTemplate(
       }),
     );
   }
-  for (const section of template.sections) {
+  for (const section of sections) {
     const id = sectionIds.get(section.key);
     const parentId = section.parentKey
       ? sectionIds.get(section.parentKey)
@@ -314,7 +370,7 @@ async function applyTemplate(
   }
   const resolver = resolverFor(ctx, estimate);
   const now = Date.now();
-  for (const item of template.lineItems) {
+  for (const item of lineItems) {
     const resources: Doc<"lineItems">["resources"] = [];
     for (const resource of item.resources) {
       if (resource.priceSource === "manual") {

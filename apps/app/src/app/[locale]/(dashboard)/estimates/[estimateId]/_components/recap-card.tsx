@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -9,6 +10,8 @@ import {
   TickRule,
 } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
+import { useQuery } from "convex/react";
+import { EurAmount } from "@/components/eur-amount";
 import { formatHours, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate, OpenPanel } from "./types";
@@ -40,8 +43,10 @@ export function RecapCard({
   const t = useScopedI18n("estimate");
   const tMarkups = useScopedI18n("markups");
   const tResources = useScopedI18n("resources");
+  const tTarget = useScopedI18n("targetPrice");
   const locale = useCurrentLocale();
   const { totals, markups } = estimate;
+  const eur = useQuery(api.exchange.rates.latest, {});
   const rate = (value: number) => formatPercent(value, locale);
 
   const rows: Row[] = [
@@ -79,13 +84,24 @@ export function RecapCard({
       <CardHeader>
         <CardTitle>{t("recap.title")}</CardTitle>
         {editable && (
-          <Button
-            type="button"
-            variant="link"
-            onClick={() => open({ kind: "markups" })}
-          >
-            {t("recap.editRates")}
-          </Button>
+          <div className="flex flex-wrap items-center gap-x-4">
+            {estimate.lineItems.length > 0 && (
+              <Button
+                type="button"
+                variant="link"
+                onClick={() => open({ kind: "target" })}
+              >
+                {tTarget("open")}
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => open({ kind: "markups" })}
+            >
+              {t("recap.editRates")}
+            </Button>
+          </div>
         )}
       </CardHeader>
       <TickRule />
@@ -156,6 +172,7 @@ export function RecapCard({
             })}
           </span>
         </p>
+        {eur && totals.total > 0 && <EurAmount lei={totals.total} rate={eur} />}
       </CardContent>
     </Card>
   );

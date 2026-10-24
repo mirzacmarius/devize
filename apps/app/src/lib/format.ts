@@ -161,6 +161,23 @@ export function parseDecimal(input: string): number | undefined {
   return Number.isFinite(value) ? value : undefined;
 }
 
+/**
+ * Reads an amount of money as people type it. Like parseDecimal, except that
+ * groups of three digits after a dot or a comma are thousands ("48.000" and
+ * "48,000" are 48000), since lei don't have three decimals.
+ */
+export function parseMoney(input: string): number | undefined {
+  const text = input.trim().replace(/\s/g, "");
+  if (/^\d{1,3}(\.\d{3})+$/.test(text) || /^\d{1,3}(,\d{3})+$/.test(text)) {
+    return Number(text.replace(/[.,]/g, ""));
+  }
+  if (/^\d{1,3}(,\d{3})+\.\d{1,2}$/.test(text)) {
+    // 48,000.50, the English way.
+    return Number(text.replace(/,/g, ""));
+  }
+  return parseDecimal(text);
+}
+
 /** A Deviz's number as the design writes codes: DVZ-0142, and DVZ-0142-R2 for its second revision. */
 export function estimateCode(number: number, revision = 1): string {
   const code = `DVZ-${String(number).padStart(4, "0")}`;

@@ -8,7 +8,13 @@ import {
 } from "bun:test";
 import { api } from "../_generated/api";
 import { devizFor } from "../offers/test.helper";
-import { firmOwner, publishBaseCatalog, setup, signIn } from "../test.helper";
+import {
+  firmOwner,
+  publishBaseCatalog,
+  publishedBaseNorm,
+  setup,
+  signIn,
+} from "../test.helper";
 
 // Publishing the base catalog's six hundred norms takes convex-test longer
 // than bun's five seconds.
@@ -197,13 +203,16 @@ describe("a firm's templates", () => {
         templateId: owners,
       }),
     ).rejects.toThrow(/forbidden/);
-    await expect(
-      cristi.as.mutation(api.templates.templates.save, {
-        estimateId,
-        name: "baie",
-        replace: true,
-      }),
-    ).rejects.toThrow(/forbidden/);
+    // Someone else's name is taken, not offered for replacing.
+    for (const replace of [false, true]) {
+      await expect(
+        cristi.as.mutation(api.templates.templates.save, {
+          estimateId,
+          name: "baie",
+          replace,
+        }),
+      ).rejects.toThrow(/templateNameTaken/);
+    }
     await cristi.as.mutation(api.templates.templates.rename, {
       templateId: mine,
       name: "Baie de serviciu",
@@ -215,6 +224,75 @@ describe("a firm's templates", () => {
     await firm.as.mutation(api.templates.templates.remove, {
       templateId: owners,
     });
+  });
+
+  test("keeps its works apart from the list, and deletes them with it", async () => {
+    const t = setup();
+    const { firm, estimateId } = await devizFor(t);
+    const templateId = await firm.as.mutation(api.templates.templates.save, {
+      estimateId,
+      name: "Baie",
+    });
+    const rows = () =>
+      t.run(async (ctx) => {
+        const template = await ctx.db.get("estimateTemplates", templateId);
+        const contents = await ctx.db
+          .query("estimateTemplateContents")
+          .collect();
+        return { template, contents };
+      });
+    const saved = await rows();
+    expect(saved.template?.lineItems).toBeUndefined();
+    expect(saved.template?.itemCount).toBe(2);
+    expect(saved.contents).toHaveLength(1);
+    expect(saved.contents[0]?.lineItems).toHaveLength(2);
+
+    await firm.as.mutation(api.templates.templates.save, {
+      estimateId,
+      name: "Baie",
+      replace: true,
+    });
+    expect((await rows()).contents).toHaveLength(1);
+    await firm.as.mutation(api.templates.templates.remove, { templateId });
+    expect(await rows()).toEqual({ template: null, contents: [] });
+  });
+
+  test("a template saved with its works inline still starts a Deviz", async () => {
+    const t = setup();
+    const { firm, estimateId } = await devizFor(t);
+    const templateId = await firm.as.mutation(api.templates.templates.save, {
+      estimateId,
+      name: "Baie",
+    });
+    // As the first templates were written, before the contents table.
+    await t.run(async (ctx) => {
+      const row = await ctx.db
+        .query("estimateTemplateContents")
+        .withIndex("by_templateId", (q) => q.eq("templateId", templateId))
+        .unique();
+      if (!row) {
+        throw new Error("no contents");
+      }
+      await ctx.db.patch("estimateTemplates", templateId, {
+        sections: row.sections,
+        lineItems: row.lineItems,
+        itemCount: undefined,
+        sectionCount: undefined,
+      });
+      await ctx.db.delete("estimateTemplateContents", row._id);
+    });
+    const listed = await firm.as.query(api.templates.templates.list, {
+      organizationId: firm.organizationId,
+    });
+    expect(listed.templates[0]?.itemCount).toBe(2);
+    const { estimateId: started } = await firm.as.mutation(
+      api.templates.templates.start,
+      { organizationId: firm.organizationId, title: "Baie 2", templateId },
+    );
+    const deviz = await firm.as.query(api.estimates.estimates.get, {
+      estimateId: started,
+    });
+    expect(deviz.lineItems).toHaveLength(2);
   });
 
   test("another firm's template is not found", async () => {
@@ -269,6 +347,42 @@ describe("Devize's starters", () => {
       organizationId: ana.organizationId,
     });
     expect(home.recent).toEqual([]);
+  });
+
+  test("start with the works whose norms are published, naming the rest", async () => {
+    const t = setup();
+    await publishedBaseNorm(t, { code: "DV-PLC-01", title: "Faianță" });
+    const ana = await firmOwner(t, "Ana");
+    const listed = await ana.as.query(api.templates.templates.list, {
+      organizationId: ana.organizationId,
+    });
+    const available = Object.fromEntries(
+      listed.starters.map((starter) => [starter.key, starter.available]),
+    );
+    expect(available).toMatchObject({
+      bathroom: true,
+      kitchen: true,
+      apartment: false,
+    });
+    const { estimateId, skipped } = await ana.as.mutation(
+      api.templates.templates.start,
+      {
+        organizationId: ana.organizationId,
+        title: "Baie",
+        starter: {
+          key: "bathroom",
+          values: { length: 2.5, width: 2, tileHeight: 2.4 },
+        },
+      },
+    );
+    expect(skipped).toHaveLength(15);
+    expect(skipped).not.toContain("DV-PLC-01");
+    const deviz = await ana.as.query(api.estimates.estimates.get, {
+      estimateId,
+    });
+    expect(deviz.lineItems.map((item) => [item.code, item.quantity])).toEqual([
+      ["DV-PLC-01", 20],
+    ]);
   });
 
   test("measure a bathroom into a Deviz by chapters", async () => {
