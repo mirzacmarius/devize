@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 import { query } from "../_generated/server";
+import { confirmedFirst } from "../catalog/norms";
 import { withClientNames } from "../estimates/estimates";
 import { invoiceCode, seriesOf } from "../invoices/helpers";
 import { requireMember } from "../lib/access";
@@ -9,6 +10,8 @@ import { normalizeText } from "../lib/text";
 
 // Enough to choose from in a menu; the lists have the rest.
 const PER_GROUP = 5;
+// The public norms "Adaugă din catalog" reads before it ranks them.
+const SHARED_WINDOW = 30;
 
 /**
  * What the search menu (Ctrl+K) finds for the words typed, in one read: the
@@ -22,6 +25,10 @@ export const find = query({
     const organizationId = args.organizationId;
     const text = normalizeText(args.text);
     if (!text) {
+      // Only punctuation typed: nothing to look for.
+      if (args.text.trim()) {
+        return { estimates: [], clients: [], invoices: [], norms: [] };
+      }
       const recent = await ctx.db
         .query("estimates")
         .withIndex("by_organizationId_and_updatedAt", (q) =>
@@ -72,10 +79,13 @@ async function invoicesNumbered(
     return [];
   }
   const number = Number(match[2]);
-  const named = match[1]?.trim();
+  // Without its dashes, as the separator before the number swallows a
+  // series' own trailing one ("FACT--0017").
+  const key = (code: string) => code.replace(/[\s-]/g, "");
+  const named = key(match[1] ?? "");
   const series = (await seriesOf(ctx, organizationId))
     .map((row) => row.code)
-    .filter((code) => !named || code === named);
+    .filter((code) => !named || key(code) === named);
   const found: Doc<"invoices">[] = [];
   for (const code of series) {
     const invoice = await ctx.db
@@ -112,7 +122,10 @@ async function invoicesNumbered(
   );
 }
 
-/** Published norms the firm can use, its own first, as the catalog finds them. */
+/**
+ * Published norms the firm can use as "Adaugă din catalog" finds them: its own
+ * first, then the public ones, those their producer confirmed first.
+ */
 async function norms(
   ctx: QueryCtx,
   organizationId: Id<"organizations">,
@@ -137,10 +150,14 @@ async function norms(
               .eq("visibility", "public")
               .eq("status", "published"),
           )
-          .take(PER_GROUP)
+          // As many as the sheet reads, so the confirmed ones rank the same.
+          .take(SHARED_WINDOW)
       : [];
   const seen = new Set(own.map((norm) => norm._id));
-  return [...own, ...shared.filter((norm) => !seen.has(norm._id))]
+  return [
+    ...own,
+    ...confirmedFirst(shared).filter((norm) => !seen.has(norm._id)),
+  ]
     .slice(0, PER_GROUP)
     .map((norm) => ({
       _id: norm._id,

@@ -2,11 +2,30 @@ import { afterEach, describe, expect, setSystemTime, test } from "bun:test";
 import { api } from "../_generated/api";
 import { issuedAdvance } from "../invoices/test.helper";
 import { devizFor } from "../offers/test.helper";
-import { firmOwner, setup } from "../test.helper";
+import { firmOwner, setup, tilingResources } from "../test.helper";
 
 afterEach(() => {
   setSystemTime();
 });
+
+/** A norm of the firm's own, published unless asked for a draft. */
+async function ownNorm(
+  firm: Awaited<ReturnType<typeof firmOwner>>,
+  fields: { code: string; title: string; draft?: boolean },
+) {
+  const normId = await firm.as.mutation(api.catalog.norms.create, {
+    source: "organization",
+    organizationId: firm.organizationId,
+    code: fields.code,
+    title: fields.title,
+    unit: "mp",
+    resources: tilingResources,
+  });
+  if (!fields.draft) {
+    await firm.as.mutation(api.catalog.norms.publish, { normId });
+  }
+  return normId;
+}
 
 describe("the search menu", () => {
   test("with nothing typed, shows the devize changed last", async () => {
@@ -101,6 +120,78 @@ describe("the search menu", () => {
       });
       expect(found.invoices).toEqual([]);
     }
+  });
+
+  test("finds the firm's own norms first, never another firm's or a draft", async () => {
+    const t = setup();
+    const { firm, normId } = await devizFor(t);
+    const own = await ownNorm(firm, {
+      code: "AN-FAI-01",
+      title: "Faianță pe pereți, rețeta firmei",
+    });
+    await ownNorm(firm, {
+      code: "AN-FAI-02",
+      title: "Faianță în lucru",
+      draft: true,
+    });
+    const other = await firmOwner(t, "Mihai");
+    await ownNorm(other, {
+      code: "MH-FAI-01",
+      title: "Faianță la Mihai",
+    });
+    const found = await firm.as.query(api.search.everywhere.find, {
+      organizationId: firm.organizationId,
+      text: "faianta",
+    });
+    expect(found.norms.map((norm) => [norm._id, norm.own])).toEqual([
+      [own, true],
+      [normId, false],
+    ]);
+  });
+
+  test("finds an invoice in a series that ends in a dash", async () => {
+    const t = setup();
+    const { firm, estimateId, organizationId } = await issuedAdvance(t);
+    await firm.as.mutation(api.invoices.settings.addSeries, {
+      organizationId,
+      code: "fact-",
+      nextNumber: 7,
+    });
+    const finalId = await firm.as.mutation(api.invoices.invoices.createFinal, {
+      estimateId,
+    });
+    const { code } = await firm.as.mutation(api.invoices.invoices.issue, {
+      invoiceId: finalId,
+      series: "FACT-",
+    });
+    expect(code).toBe("FACT--0007");
+    for (const text of ["FACT--0007", "fact 7", "7"]) {
+      const found = await firm.as.query(api.search.everywhere.find, {
+        organizationId,
+        text,
+      });
+      expect(found.invoices.map((invoice) => invoice._id)).toEqual([finalId]);
+    }
+    const dvz = await firm.as.query(api.search.everywhere.find, {
+      organizationId,
+      text: "DVZ-0007",
+    });
+    expect(dvz.invoices).toEqual([]);
+  });
+
+  test("finds nothing for punctuation alone", async () => {
+    const t = setup();
+    const { firm } = await devizFor(t);
+    const found = await firm.as.query(api.search.everywhere.find, {
+      organizationId: firm.organizationId,
+      text: " — ",
+    });
+    expect(found).toEqual({
+      estimates: [],
+      clients: [],
+      invoices: [],
+      norms: [],
+    });
   });
 
   test("shows only the firm's own rows, and only to its members", async () => {

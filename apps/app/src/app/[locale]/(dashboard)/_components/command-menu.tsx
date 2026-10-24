@@ -33,6 +33,7 @@ import {
   useEffect,
   useId,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -73,13 +74,32 @@ export function CommandMenuProvider({
   // The panel stays set while it closes, so it doesn't change as it slides out.
   const [panel, setPanel] = useState<Panel>({ kind: "estimate" });
   const [panelOpen, setPanelOpen] = useState(false);
-  const openMenu = useCallback(() => setOpen(true), []);
-  const close = useCallback(() => setOpen(false), []);
-  const openPanel = useCallback((next: Panel) => {
-    setOpen(false);
-    setPanel(next);
-    setPanelOpen(true);
+  // Where the focus goes back to when the menu closes without going anywhere.
+  const returnFocus = useRef<HTMLElement | null>(null);
+  const show = useCallback((next: boolean) => {
+    if (next) {
+      returnFocus.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+    }
+    setOpen(next);
   }, []);
+  const openMenu = useCallback(() => show(true), [show]);
+  const close = useCallback(() => show(false), [show]);
+  // Off to a page or a panel, which takes the focus instead.
+  const leave = useCallback(() => {
+    returnFocus.current = null;
+    setOpen(false);
+  }, []);
+  const openPanel = useCallback(
+    (next: Panel) => {
+      leave();
+      setPanel(next);
+      setPanelOpen(true);
+    },
+    [leave],
+  );
 
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
@@ -91,26 +111,37 @@ export function CommandMenuProvider({
       ) {
         return;
       }
-      event.preventDefault();
-      // Not over another dialog or sheet, whose form would lose its focus.
-      const other = document.querySelector(
-        '[role="dialog"][data-state="open"]:not([data-command-menu]), [role="alertdialog"][data-state="open"]',
-      );
-      if (!other) {
-        setOpen((current) => !current);
+      // Not from another dialog or sheet, whose form would lose its focus.
+      // (A dialog left open on a page kept hidden can't hold the focus.)
+      const dialog =
+        document.activeElement?.closest(
+          '[role="dialog"], [role="alertdialog"]',
+        ) ?? null;
+      if (dialog && !dialog.hasAttribute("data-command-menu")) {
+        return;
       }
+      event.preventDefault();
+      show(!dialog);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [show]);
 
   return (
     <OpenContext.Provider value={openMenu}>
       {children}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={show}>
         <DialogContent
           data-command-menu
           closeLabel={tc("close")}
+          onCloseAutoFocus={(event) => {
+            const target = returnFocus.current;
+            returnFocus.current = null;
+            if (target?.isConnected) {
+              event.preventDefault();
+              target.focus();
+            }
+          }}
           className="top-[12vh] max-w-xl translate-y-0 gap-0 overflow-hidden p-0"
         >
           <DialogTitle className="sr-only">{t("title")}</DialogTitle>
@@ -121,6 +152,7 @@ export function CommandMenuProvider({
             <CommandSearch
               isSuperAdmin={isSuperAdmin}
               onDone={close}
+              onLeave={leave}
               onPanel={openPanel}
             />
           )}
@@ -198,19 +230,25 @@ type Entry = {
 
 /** Every word typed starts a word of the label or of its other names. */
 function matches(query: string, ...texts: string[]) {
+  const parts = normalizeText(query).split(" ").filter(Boolean);
   const words = normalizeText(texts.join(" ")).split(" ");
-  return normalizeText(query)
-    .split(" ")
-    .every((part) => words.some((word) => word.startsWith(part)));
+  return (
+    parts.length > 0 &&
+    parts.every((part) => words.some((word) => word.startsWith(part)))
+  );
 }
 
 function CommandSearch({
   isSuperAdmin,
   onDone,
+  onLeave,
   onPanel,
 }: {
   isSuperAdmin: boolean;
+  /** Closes the menu, the focus back where it was. */
   onDone: () => void;
+  /** Closes the menu for a page that opens. */
+  onLeave: () => void;
   onPanel: (panel: Panel) => void;
 }) {
   const t = useScopedI18n("commandMenu");
@@ -229,16 +267,24 @@ function CommandSearch({
     organizationId: firm._id,
     text: query,
   });
-  // The last results stay while the next ones load, so the list doesn't jump.
-  const [found, setFound] = useState(live);
-  if (live !== undefined && live !== found) {
-    setFound(live);
+  // The last results stay while the next ones load, so the list doesn't jump,
+  // with the words they answer, which may no longer be the words typed.
+  const [found, setFound] = useState<{
+    query: string;
+    results: NonNullable<typeof live>;
+  }>();
+  if (live !== undefined && found?.results !== live) {
+    setFound({ query, results: live });
   }
+  const settled = found !== undefined && found.query === text.trim();
   const [activeId, setActiveId] = useState<string>();
+  // Enter pressed before the results for the words typed came: it opens the
+  // first of them once they do, not an older result.
+  const [enterPending, setEnterPending] = useState(false);
 
   const entries = useMemo((): Entry[] => {
     const go = (href: string) => () => {
-      onDone();
+      onLeave();
       router.push(href);
     };
     const page = (
@@ -297,7 +343,6 @@ function CommandSearch({
         ? [page("page:admin", "/admin", Icons.Admin, tn("admin"))]
         : []),
     ];
-    // Found when asked for; the empty menu is for getting around.
     const themes = (["light", "dark", "system"] as const).map(
       (theme): Entry & { keywords: string } => ({
         id: `theme:${theme}`,
@@ -327,11 +372,12 @@ function CommandSearch({
     );
 
     const money = (value: number) => `${formatMoney(value, locale)} lei`;
-    const estimates: Entry[] = (found?.estimates ?? []).map((estimate) => {
+    const results = found?.results;
+    const estimates: Entry[] = (results?.estimates ?? []).map((estimate) => {
       const href = `/estimates/${estimate._id}`;
       return {
         id: `estimate:${estimate._id}`,
-        group: query ? "estimates" : "recent",
+        group: found?.query ? "estimates" : "recent",
         icon: Icons.Deviz,
         label: estimate.title,
         meta: [
@@ -346,10 +392,7 @@ function CommandSearch({
         run: go(href),
       };
     });
-    if (!query) {
-      return [...estimates, ...actions, ...pages];
-    }
-    const clients: Entry[] = (found?.clients ?? []).map((client) => ({
+    const clients: Entry[] = (results?.clients ?? []).map((client) => ({
       id: `client:${client._id}`,
       group: "clients",
       icon: Icons.Clients,
@@ -359,7 +402,7 @@ function CommandSearch({
         .join(" · "),
       run: () => onPanel({ kind: "client", client }),
     }));
-    const invoices: Entry[] = (found?.invoices ?? []).map((invoice) => {
+    const invoices: Entry[] = (results?.invoices ?? []).map((invoice) => {
       const href = `/invoices/${invoice._id}`;
       return {
         id: `invoice:${invoice._id}`,
@@ -372,7 +415,7 @@ function CommandSearch({
         run: go(href),
       };
     });
-    const norms: Entry[] = (found?.norms ?? []).map((norm) => {
+    const norms: Entry[] = (results?.norms ?? []).map((norm) => {
       const href = `/catalog/${norm._id}`;
       return {
         id: `norm:${norm._id}`,
@@ -386,17 +429,23 @@ function CommandSearch({
         run: go(href),
       };
     });
+    // Typed words filter the actions and pages here, at once; with none, the
+    // menu is for getting around.
     return [
       ...estimates,
       ...clients,
       ...invoices,
       ...norms,
-      ...[...actions, ...themes].filter((entry) =>
-        matches(query, entry.label, entry.keywords),
-      ),
-      ...[...pages, ...settingsTabs].filter((entry) =>
-        matches(query, entry.label),
-      ),
+      ...(query
+        ? [...actions, ...themes].filter((entry) =>
+            matches(query, entry.label, entry.keywords),
+          )
+        : actions),
+      ...(query
+        ? [...pages, ...settingsTabs].filter((entry) =>
+            matches(query, entry.label),
+          )
+        : pages),
     ];
   }, [
     found,
@@ -405,6 +454,7 @@ function CommandSearch({
     isSuperAdmin,
     locale,
     onDone,
+    onLeave,
     onPanel,
     router,
     setTheme,
@@ -433,8 +483,19 @@ function CommandSearch({
       router.prefetch(activeHref);
     }
   }, [activeHref, router]);
+  useEffect(() => {
+    if (enterPending && settled) {
+      setEnterPending(false);
+      entries[0]?.run();
+    }
+  }, [enterPending, settled, entries]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && !settled && activeId === undefined) {
+      event.preventDefault();
+      setEnterPending(true);
+      return;
+    }
     if (entries.length === 0) {
       return;
     }
@@ -467,9 +528,8 @@ function CommandSearch({
     <div className="grid">
       <div className="flex items-center gap-2 border-b border-border px-4">
         <Search aria-hidden className="size-4 shrink-0 text-ink-3" />
+        {/* The dialog focuses it as it opens, the first thing in it. */}
         <input
-          // biome-ignore lint/a11y/noAutofocus: the menu exists to be typed in
-          autoFocus
           role="combobox"
           aria-expanded
           aria-controls={listId}
@@ -481,6 +541,7 @@ function CommandSearch({
           onChange={(event) => {
             setText(event.target.value);
             setActiveId(undefined);
+            setEnterPending(false);
           }}
           onKeyDown={onKeyDown}
           autoComplete="off"
@@ -492,6 +553,8 @@ function CommandSearch({
         id={listId}
         role="listbox"
         aria-label={t("results")}
+        aria-busy={!settled}
+        hidden={entries.length === 0}
         className="max-h-[min(60vh,28rem)] overflow-y-auto p-2"
       >
         {groups.map(({ group, entries: inGroup }) => (
@@ -547,12 +610,22 @@ function CommandSearch({
             })}
           </div>
         ))}
-        {entries.length === 0 && (
-          <p className="m-0 px-2 py-6 text-center text-meta text-ink-3">
-            {live === undefined ? t("searching") : t("nothing", { text })}
-          </p>
-        )}
       </div>
+      {/* Says what the list holds, out loud too: how many, or nothing yet. */}
+      <p
+        role="status"
+        className={
+          entries.length === 0
+            ? "m-0 px-6 py-8 text-center text-meta text-ink-3"
+            : "sr-only"
+        }
+      >
+        {entries.length > 0
+          ? t("count", { count: entries.length })
+          : settled
+            ? t("nothing", { text: text.trim() })
+            : t("searching")}
+      </p>
       <p className="m-0 hidden border-t border-border px-4 py-2 text-meta text-ink-3 sm:block">
         {t("hints")}
       </p>
