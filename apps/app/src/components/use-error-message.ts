@@ -122,6 +122,7 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     sections: "inUseSections",
     lineItems: "inUseSections",
     invoices: "inUseInvoices",
+    firmInvoices: "inUseFirmInvoices",
     series: "inUseSeries",
     statement: "inUseStatement",
     templateName: "inUseTemplateName",

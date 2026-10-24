@@ -307,8 +307,8 @@ export async function seriesFor(
 
 /**
  * Deletes a deleted firm's invoice settings and series, and returns how many
- * rows it deleted; 0 means none is left. Issued invoices carry their own copy
- * of the seller's details and their number, so they don't need either.
+ * rows it deleted; 0 means none is left. The firm's invoices are deleted
+ * just before (ADR 0050).
  */
 export async function deleteFirmInvoiceSettings(
   ctx: MutationCtx,

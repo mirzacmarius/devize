@@ -91,6 +91,7 @@ import type * as exchange_tables from "../exchange/tables.js";
 import type * as home from "../home.js";
 import type * as http from "../http.js";
 import type * as invoices_anaf from "../invoices/anaf.js";
+import type * as invoices_archive from "../invoices/archive.js";
 import type * as invoices_counties from "../invoices/counties.js";
 import type * as invoices_deadline from "../invoices/deadline.js";
 import type * as invoices_helpers from "../invoices/helpers.js";
@@ -330,6 +331,7 @@ declare const fullApi: ApiFromModules<{
   home: typeof home;
   http: typeof http;
   "invoices/anaf": typeof invoices_anaf;
+  "invoices/archive": typeof invoices_archive;
   "invoices/counties": typeof invoices_counties;
   "invoices/deadline": typeof invoices_deadline;
   "invoices/helpers": typeof invoices_helpers;
