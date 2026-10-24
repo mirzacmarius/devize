@@ -72,7 +72,8 @@ type FirmTable =
   | "workStatements"
   | "workStatementRows"
   | "receptions"
-  | "guarantees";
+  | "guarantees"
+  | "normRequests";
 
 /**
  * Loads a firm's row and checks that the signed-in user belongs to that firm.

@@ -164,6 +164,30 @@ export const catalogTables = {
     .index("by_productId", ["productId"])
     .index("by_resourceId", ["resourceId"]),
 
+  // A firm's request for a Normă proprie written by Devize AI from its
+  // description of a work the catalog lacks: how the writing went and the
+  // draft it made, with what the model assumed and what the firm should
+  // check.
+  normRequests: defineTable({
+    organizationId: v.id("organizations"),
+    // The Deviz the firm was working on, for the model's context.
+    estimateId: v.optional(v.id("estimates")),
+    description: v.string(),
+    aiJobId: v.id("aiJobs"),
+    status: v.union(
+      v.literal("writing"),
+      v.literal("done"),
+      v.literal("failed"),
+    ),
+    error: v.optional(v.string()),
+    normId: v.optional(v.id("norms")),
+    assumptions: v.optional(v.array(v.string())),
+    checks: v.optional(v.array(v.string())),
+    createdBy: v.id("users"),
+  })
+    .index("by_organizationId", ["organizationId"])
+    .index("by_normId", ["normId"]),
+
   // How firms use catalog norms, so producers see aggregate statistics: never
   // which firm, only counts, quantities and counties.
   usageEvents: defineTable({

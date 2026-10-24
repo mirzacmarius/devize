@@ -477,6 +477,56 @@ export default {
       add: "Adaugă în deviz",
       added: "{code} a fost adăugat în deviz.",
       addedCount: "Adăugate acum: {count}",
+      ai: {
+        offer: "Scrie norma cu Devize AI",
+        offerMore: "Nu e ce căutai? Scrie o normă nouă cu Devize AI",
+        resume: "Înapoi la norma scrisă de Devize AI",
+        title: "Normă nouă cu Devize AI",
+        description:
+          "Descrie lucrarea și Devize AI scrie o normă pentru firma ta: consumurile pe unitate, cu de unde vine fiecare cifră, și prețuri orientative la materiale. O verifici înainte să intre în deviz.",
+        work: "Lucrarea",
+        workPlaceholder:
+          "ex. Hidroizolație la terasă cu membrană bituminoasă autoadezivă, în două straturi, pe șapă existentă",
+        workHint:
+          "Spune ce se execută, cu ce material, grosimi sau formate și unde (interior, exterior, baie). Cel mult {max} de caractere.",
+        workRequired: "Descrie lucrarea în câteva cuvinte.",
+        privacy:
+          "Descrierea merge la Claude, modelul AI al Anthropic, doar pentru această normă. Norma rămâne a firmei tale.",
+        submit: "Scrie norma",
+        writing: "Devize AI scrie norma…",
+        writingHint:
+          "Durează până la un minut. Poți închide panoul: norma apare în normele firmei.",
+        done: "Norma e gata. Verifică consumurile și prețurile, apoi adaugă cantitatea.",
+        assumptions: "Ce a presupus Devize AI",
+        checks: "De verificat",
+        referencePrices:
+          "Prețurile materialelor sunt orientative: tarifele și prețurile din magazin ale firmei le înlocuiesc.",
+        addAndPublish: "Publică și adaugă în deviz",
+        published:
+          "Norma {code} e acum în normele firmei și a fost adăugată în deviz.",
+        edit: "Modifică norma",
+        discard: "Șterge ciorna",
+        discarded: "Ciorna a fost ștearsă.",
+        retry: "Încearcă din nou",
+        failed: {
+          unknown: "Devize AI nu a putut scrie norma. Încearcă din nou.",
+          not_work:
+            "Descrierea nu pare o lucrare de construcții sau e prea vagă. Spune ce se execută și cu ce.",
+          invalid_output:
+            "Răspunsul nu a ieșit o normă întreagă. Încearcă din nou, cu mai multe detalii.",
+          max_tokens:
+            "Răspunsul nu a ieșit o normă întreagă. Încearcă din nou, cu mai multe detalii.",
+          missing_api_key: "Devize AI nu e configurat încă pe acest server.",
+          api_key_rejected:
+            "Cheia Devize AI nu e acceptată. Spune-i echipei Devize.",
+          no_credit: "Devize AI nu mai are credit. Spune-i echipei Devize.",
+          timeout: "Devize AI nu a răspuns la timp. Încearcă din nou.",
+          busy: "Devize AI e ocupat acum. Încearcă în câteva minute.",
+          refusal: "Devize AI a refuzat descrierea. Reformuleaz-o.",
+        },
+        rateLimited:
+          "Ai cerut multe norme în ultima oră. Încearcă din nou mai târziu.",
+      },
     },
     custom: {
       title: "Articol propriu",
@@ -1595,6 +1645,15 @@ export default {
       notVerified: "Neverificată",
       copiedFrom: "Copiată din",
     },
+    aiRequest: {
+      title: "Scrisă din descriere",
+      badge: "Scrisă de Devize AI",
+      description:
+        "Devize AI a scris norma după descrierea firmei. Fiecare resursă are în notă de unde vine cifra; prețurile materialelor sunt orientative.",
+      request: "Descrierea",
+      assumptions: "Ce a presupus Devize AI",
+      checks: "De verificat înainte să folosești norma",
+    },
     datasheet: {
       title: "Fișa tehnică",
       badge: "Citită de Devize AI",
@@ -1998,6 +2057,7 @@ export default {
       tender_import: "Import liste de cantități",
       offer_question: "Întrebare la o ofertă",
       omission_check: "Detector de omisiuni",
+      norm_draft: "Normă din descriere",
     },
     confidence: {
       high: "Încredere mare",
