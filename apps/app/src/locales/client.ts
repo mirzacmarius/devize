@@ -7,9 +7,9 @@ import {
   type ReactNode,
   useMemo,
 } from "react";
+import type { ClientDictionary } from "./client-dictionary";
 import { loaders } from "./loaders";
 import type { Locale } from "./locale";
-import type { Dictionary } from "./types";
 
 export const {
   useI18n,
@@ -35,7 +35,8 @@ function flatten(
 }
 
 /**
- * Gives client components the dictionary the server already loaded. The
+ * Gives client components the dictionary the server already loaded, without
+ * the scopes only server components print (client-dictionary.ts). The
  * library's own provider imports it again in the browser and suspends while it
  * does, which makes React 19 throw away the server-rendered page on hydration.
  */
@@ -45,7 +46,7 @@ export function I18nProvider({
   children,
 }: {
   locale: Locale;
-  dictionary: Dictionary;
+  dictionary: ClientDictionary;
   children: ReactNode;
 }) {
   const value = useMemo(

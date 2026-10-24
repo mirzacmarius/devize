@@ -11,6 +11,7 @@ import { AppToaster } from "@/components/app-toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { brand } from "@/lib/brand";
 import { I18nProvider } from "@/locales/client";
+import { clientDictionary } from "@/locales/client-dictionary";
 import { loaders } from "@/locales/loaders";
 import { defaultLocale, isLocale, locales } from "@/locales/locale";
 import { getI18n } from "@/locales/server";
@@ -61,7 +62,10 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider delayDuration={0}>
-            <I18nProvider locale={locale} dictionary={dictionary}>
+            <I18nProvider
+              locale={locale}
+              dictionary={clientDictionary(dictionary)}
+            >
               {/* The sign-in reads the request's cookies, so the pages under
                   it stream in after the shell the build prepared (ADR 0029). */}
               <Suspense>
