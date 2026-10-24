@@ -36,7 +36,9 @@ export const accountTables = {
     createdBy: v.id("users"),
   })
     .index("by_manufacturerId", ["manufacturerId"])
-    .index("by_cui", ["cui"]),
+    .index("by_cui", ["cui"])
+    // Whether a fresh upload became a firm's logo (accounts/uploads.ts).
+    .index("by_logoId", ["logoId"]),
 
   memberships: defineTable({
     organizationId: v.id("organizations"),

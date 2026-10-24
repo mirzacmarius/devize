@@ -12,6 +12,21 @@ crons.interval(
   {},
 );
 
+// Deletes the uploads nobody claimed every hour, and every day what signing
+// in left behind that is of no more use (docs/adr/0045).
+crons.interval(
+  "delete uploads nobody claimed",
+  { hours: 1 },
+  internal.accounts.uploads.sweep,
+  {},
+);
+crons.cron(
+  "delete what signing in left behind",
+  "45 3 * * *",
+  internal.signInLeftovers.sweep,
+  {},
+);
+
 // Checks sent and accepted devize against today's prices, before the
 // working day starts in Romania (04:00 UTC).
 crons.cron(

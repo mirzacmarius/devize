@@ -5,8 +5,10 @@ import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import { unclaimedUpload } from "./accounts/files";
+import { EMAIL_CODE_PROVIDER } from "./emailSignIn";
 import { invalid } from "./lib/errors";
 import { forgetSender } from "./manufacturers/outreach";
+import { forgetAddress } from "./signInLeftovers";
 import { username } from "./utils/validators";
 
 // A photo for the account menu: a picture every browser shows, and not a big
@@ -178,6 +180,20 @@ export const deleteCurrentUserAccount = mutation({
       .take(100);
     for (const row of emails) {
       await ctx.db.delete("invitationEmails", row._id);
+    }
+    // The codes sent to the account's addresses, and the wrong ones typed.
+    const addresses = new Set(user?.email === undefined ? [] : [user.email]);
+    const codeAccounts = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) =>
+        q.eq("userId", userId).eq("provider", EMAIL_CODE_PROVIDER),
+      )
+      .take(20);
+    for (const account of codeAccounts) {
+      addresses.add(account.providerAccountId);
+    }
+    for (const address of addresses) {
+      await forgetAddress(ctx, address);
     }
     const accounts = ctx.db
       .query("authAccounts")
