@@ -11,6 +11,7 @@ import {
   racordWc,
   robinetColtar,
   robinetSferic,
+  robinetSferic1,
   setPrindere,
   sifonLavoar,
   siliconSanitar,
@@ -464,7 +465,7 @@ export const sanitareObiecte: BaseNorm[] = [
     resources: [
       statieDedurizare(1),
       filtruSedimente(1),
-      robinetSferic(3),
+      robinetSferic1(3),
       sareDedurizare(1),
       smallMaterials(3),
       instalator(5),

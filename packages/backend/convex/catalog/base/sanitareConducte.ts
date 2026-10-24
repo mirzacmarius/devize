@@ -12,7 +12,6 @@ import {
   clema,
   cutieDistribuitor,
   electrician,
-  equipment,
   fitingCanal40,
   fitingCanal50,
   fitingCanal110,
@@ -31,9 +30,11 @@ import {
   nisip,
   presaFitinguri,
   racordFlexibil,
+  racordInox,
   racordWc,
   robinetColtar,
   robinetSferic,
+  robinetSferic1,
   setPrindere,
   sifonLavoar,
   siliconSanitar,
@@ -135,12 +136,21 @@ const aerisitor = material(
   60,
 );
 const piesaCuratire = material("Piesă de curățire Ø110", "buc", 35);
+const racordPex16 = material(
+  "Racord de compresiune pentru țeavă PEX Ø16",
+  "buc",
+  12,
+);
+const cotPeretePex16 = material(
+  "Cot de perete pentru țeavă PEX Ø16",
+  "buc",
+  18,
+);
 const dezinfectant = material(
   "Soluție de dezinfectare pentru instalații de apă",
   "l",
   30,
 );
-const pompaProba = equipment("Pompă de probă de presiune", "ora", 6);
 const cabluDegivrare = material(
   "Cablu de degivrare autoreglabil pentru conducte",
   "m",
@@ -378,7 +388,7 @@ export const sanitareConducte: BaseNorm[] = [
     unit: "m",
     includes:
       "Derularea și fixarea țevii în tubul ei pe traseu, fără îmbinări în șapă, și proba de presiune înainte de turnarea șapei.",
-    excludes: "Distribuitorul și racordurile de la capete.",
+    excludes: "Distribuitorul și racordurile de la capete (DV-SAN-14).",
     measurement: "Lungimea conductei.",
     resources: [tevaPexTub(1.05), instalator(0.12), necalificat(0.05)],
   },
@@ -389,13 +399,15 @@ export const sanitareConducte: BaseNorm[] = [
       "Distribuitor sanitar din alamă cu 4 circuite, montat în cutie îngropată, cu robineți",
     unit: "buc",
     includes:
-      "Fixarea cutiei în zidărie, montarea distribuitorului cu robineții de închidere, racordarea circuitelor și proba.",
+      "Fixarea cutiei în zidărie, montarea distribuitorului cu robineții de închidere, racordarea circuitelor la distribuitor și coturile de perete de la consumatori, proba.",
     excludes: "Conductele de alimentare și circuitele.",
     measurement: "Numărul de distribuitoare.",
     resources: [
       distribuitor(1),
       cutieDistribuitor(1),
       robinetSferic(2),
+      racordPex16(4),
+      cotPeretePex16(4),
       instalator(1.5),
       necalificat(0.3),
     ],
@@ -583,7 +595,7 @@ export const sanitareConducte: BaseNorm[] = [
     resources: [
       fosa(1),
       betonC16(0.6),
-      nisip(1.5),
+      nisip(3.5),
       instalator(4),
       necalificat(8),
       automacara(0.5),
@@ -603,7 +615,7 @@ export const sanitareConducte: BaseNorm[] = [
     resources: [
       statieEpurare(1),
       betonC16(0.8),
-      nisip(1.5),
+      nisip(4.5),
       instalator(8),
       electrician(2),
       necalificat(10),
@@ -655,8 +667,8 @@ export const sanitareConducte: BaseNorm[] = [
     measurement: "Numărul de grupuri.",
     resources: [
       hidrofor(1),
-      robinetSferic(2),
-      racordFlexibil(2),
+      robinetSferic1(2),
+      racordInox(2),
       instalator(3),
       electrician(1),
       necalificat(0.5),
@@ -678,6 +690,8 @@ export const sanitareConducte: BaseNorm[] = [
       cabluSubmersibil(35),
       cabluSiguranta(32),
       capPut(1),
+      fitingPehd32(2),
+      smallMaterials(3),
       instalator(6),
       electrician(2),
       necalificat(3),
@@ -775,13 +789,14 @@ export const sanitareConducte: BaseNorm[] = [
     code: "DV-SAN-39",
     category,
     title:
-      "Proba de presiune, spălarea și dezinfectarea instalației de apă a unei locuințe",
+      "Spălarea și dezinfectarea instalației de apă a unei locuințe, înainte de punerea în funcțiune",
     unit: "buc",
     includes:
-      "Umplerea și aerisirea instalației, proba de presiune cu pompa pe durata cerută, spălarea și dezinfectarea conductelor, procesul-verbal.",
+      "Umplerea și aerisirea instalației, spălarea și dezinfectarea conductelor, golirea și procesul-verbal.",
+    excludes: "Proba de presiune, cuprinsă în normele conductelor.",
     measurement:
-      "Numărul de instalații probate, pentru o locuință sau un apartament.",
-    resources: [dezinfectant(0.5), instalator(3), pompaProba(2)],
+      "Numărul de instalații spălate și dezinfectate, pentru o locuință sau un apartament.",
+    resources: [dezinfectant(0.5), instalator(2)],
   },
   {
     code: "DV-SAN-40",
@@ -790,8 +805,9 @@ export const sanitareConducte: BaseNorm[] = [
       "Protecția la îngheț a conductelor exterioare cu cablu de degivrare autoreglabil, sub izolație",
     unit: "m",
     includes:
-      "Fixarea cablului pe conductă cu bandă de aluminiu, legarea la alimentare prin termostat și verificarea.",
-    excludes: "Izolația conductei; circuitul electric până la cablu.",
+      "Fixarea cablului pe conductă cu bandă de aluminiu, legarea la termostat și verificarea.",
+    excludes:
+      "Izolația conductei; termostatul și kiturile de conectare și de capăt ale cablului; circuitul electric până la cablu.",
     measurement: "Lungimea conductei protejate.",
     resources: [
       cabluDegivrare(1.05),

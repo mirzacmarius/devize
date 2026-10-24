@@ -193,7 +193,7 @@ export const aparatSpalat = equipment(
   12,
 );
 export const suduraPe = equipment(
-  "Aparat de sudură cap la cap pentru țevi PE",
+  "Aparat de sudură prin electrofuziune pentru țevi PE",
   "ora",
   25,
 );
@@ -629,6 +629,8 @@ export const robinetSferic = material(
   "buc",
   22,
 );
+export const robinetSferic1 = material('Robinet cu sferă de 1"', "buc", 45);
+export const racordInox = material('Racord flexibil din inox, 1"', "buc", 60);
 export const tevaOtelNegru = material(
   'Țeavă din oțel negru, 1/2" – 1"',
   "m",

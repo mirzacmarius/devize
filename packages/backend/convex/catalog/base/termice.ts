@@ -24,6 +24,7 @@ import {
   polizor,
   pompaVid,
   presaFitinguri,
+  racordInox,
   robinetSferic,
   smallMaterials,
   sudor,
@@ -88,7 +89,6 @@ const suportPompa = material(
   "set",
   450,
 );
-const racordInox = material('Racord flexibil din inox, 1"', "buc", 60);
 const boilerIndirect = material("Boiler cu serpentină, 200 l", "buc", 2800);
 const vasExpansiuneAcm = material(
   "Vas de expansiune pentru apă caldă menajeră, 12 l",
