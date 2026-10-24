@@ -14,14 +14,16 @@ export const producerTables = {
   // Someone taking over a Producător's profile for the producer's own firm.
   // A claim by link or by domain is approved on the spot; a manual one waits
   // for a super admin. Kept after the decision, as the record of who claimed
-  // the profile and how.
+  // the profile and how; when that person deletes their account, a pending
+  // claim goes and a decided one keeps only how and when.
   manufacturerClaims: defineTable({
     manufacturerId: v.id("manufacturers"),
     method: claimMethod,
     status: claimStatus,
     userId: v.id("users"),
-    // The verified address they were signed in with, lowercase.
-    email: v.string(),
+    // The verified address they were signed in with, lowercase; gone once
+    // they delete their account.
+    email: v.optional(v.string()),
     // Who they are at the producer, for a manual claim.
     message: v.optional(v.string()),
     // The producer's CUI as they gave it, checked with ANAF.
@@ -53,7 +55,9 @@ export const producerTables = {
     usedAt: v.optional(v.number()),
   })
     .index("by_token", ["token"])
-    .index("by_manufacturerId", ["manufacturerId"]),
+    .index("by_manufacturerId", ["manufacturerId"])
+    // For the daily run that deletes links a month after they expire.
+    .index("by_expiresAt", ["expiresAt"]),
 
   // Email domains that belong to a Producător, typed by a super admin, never
   // taken from research. A verified address on one claims the profile without
@@ -68,12 +72,14 @@ export const producerTables = {
     .index("by_manufacturerId", ["manufacturerId"]),
 
   // Someone asking Devize to take a profile it created down. A super admin
-  // decides; removing hides the profile and withdraws its norms.
+  // decides; removing hides the profile and withdraws its norms. When that
+  // person deletes their account, a pending request goes and a decided one
+  // loses their address and words.
   removalRequests: defineTable({
     manufacturerId: v.id("manufacturers"),
     userId: v.id("users"),
     email: v.optional(v.string()),
-    message: v.string(),
+    message: v.optional(v.string()),
     status: removalStatus,
     decidedBy: v.optional(v.id("users")),
     decidedAt: v.optional(v.number()),

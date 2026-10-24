@@ -518,3 +518,28 @@ export const start = mutation({
     return { estimateId, skipped };
   },
 });
+
+/**
+ * Deletes the next batch of a deleted firm's templates with their works, and
+ * returns how many it deleted; 0 means none is left.
+ */
+export async function deleteFirmTemplates(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">,
+  limit: number,
+): Promise<number> {
+  const templates = await ctx.db
+    .query("estimateTemplates")
+    .withIndex("by_organizationId_and_nameKey", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(Math.min(limit, 50));
+  for (const template of templates) {
+    const contents = await contentsRow(ctx, template._id);
+    if (contents) {
+      await ctx.db.delete("estimateTemplateContents", contents._id);
+    }
+    await ctx.db.delete("estimateTemplates", template._id);
+  }
+  return templates.length;
+}

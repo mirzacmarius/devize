@@ -4,11 +4,13 @@ import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { internalMutation } from "../_generated/server";
 import { deleteFirmNormRequests } from "../catalog/aiNorms";
+import { deleteFirmInvoiceSettings } from "../invoices/settings";
 import { deletePackagingRows } from "../materials/packagings";
 import { deleteFirmDatasheets } from "../producers/datasheets";
 import { deleteDetails } from "../producers/details";
 import { deleteFirmUsage } from "../producers/usage";
 import { deleteProposals } from "../proposals/proposals";
+import { deleteFirmTemplates } from "../templates/templates";
 
 const BATCH = 200;
 
@@ -37,6 +39,10 @@ async function deleteSome(
   }
   if (deleted > 0) {
     return deleted;
+  }
+  const templates = await deleteFirmTemplates(ctx, organizationId, limit);
+  if (templates > 0) {
+    return templates;
   }
   const clients = await ctx.db
     .query("clients")
@@ -83,24 +89,32 @@ async function deleteSome(
   if (files.length > 0) {
     return files.length;
   }
+  // A listing goes once its whole price history has, a batch at a time:
+  // nothing leads to the history rows once their listing is gone.
   const listings = await ctx.db
     .query("listings")
     .withIndex("by_organizationId_and_productId", (q) =>
       q.eq("organizationId", organizationId),
     )
-    .take(limit);
+    .take(Math.min(limit, 20));
+  let prices = 0;
   for (const listing of listings) {
     const history = await ctx.db
       .query("priceHistory")
       .withIndex("by_listingId_and_at", (q) => q.eq("listingId", listing._id))
-      .take(1000);
+      .take(limit - prices);
     for (const row of history) {
       await ctx.db.delete("priceHistory", row._id);
     }
+    prices += history.length;
+    if (prices >= limit) {
+      return prices;
+    }
     await ctx.db.delete("listings", listing._id);
+    prices++;
   }
-  if (listings.length > 0) {
-    return listings.length;
+  if (prices > 0) {
+    return prices;
   }
   const choices = await ctx.db
     .query("storeChoices")
@@ -236,6 +250,10 @@ async function deleteSome(
   const packagings = await deletePackagingRows(ctx, organizationId, limit);
   if (packagings > 0) {
     return packagings;
+  }
+  const invoiceSettings = await deleteFirmInvoiceSettings(ctx, organizationId);
+  if (invoiceSettings > 0) {
+    return invoiceSettings;
   }
   const memberships = await ctx.db
     .query("memberships")

@@ -2723,6 +2723,7 @@ export default {
         noLinks: "No links.",
         requests: "Requests",
         noRequests: "No requests.",
+        deletedAccount: "deleted account",
         queue: "Open the waiting requests",
         methods: {
           link: "by link",
@@ -3436,7 +3437,7 @@ export default {
       retention:
         "while we are in touch with the firm. If the firm doesn't answer or declines, we delete a person's address within 6 months of the last message sent to it, and a person's address we never wrote to within a month of finding it. We keep the messages sent to the firm without these addresses, as proof that we wrote. The report in which the assistant describes what it found on the firm's site is deleted within a month. We keep the proof of the consent to publish the norms even after the firm takes its profile off Devize, because the norms published until then stay in the estimates made with them.",
       claims:
-        "If you take over your firm's profile in Devize, we keep the request as proof of who took it over and how: the email address you signed in with, what you told us about your role and the firm's CUI, which we check in ANAF's public register. We keep requests to remove a profile the same way. The name, email and phone of the contact person a firm puts on its profile are seen by everyone who uses Devize. From the firms' estimates, a manufacturer gets only monthly statistics about its norms and products, without learning which firm used them.",
+        "If you take over your firm's profile in Devize, we keep the request as proof of who took it over and how: the email address you signed in with, what you told us about your role and the firm's CUI, which we check in ANAF's public register. We keep requests to remove a profile the same way. When you delete your account, we delete the requests still waiting, and of those decided we keep only what was decided, how and when, without your address and what you wrote to us. We delete the claim link you received by email a month after it expires. The name, email and phone of the contact person a firm puts on its profile are seen by everyone who uses Devize; if the contact person is you, with your account's address, we take them off the profile when you delete your account. From the firms' estimates, a manufacturer gets only monthly statistics about its norms and products, without learning which firm used them.",
     },
     users: {
       title: "People who use Devize",

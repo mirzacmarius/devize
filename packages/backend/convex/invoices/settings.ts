@@ -304,3 +304,28 @@ export async function seriesFor(
   }
   return made;
 }
+
+/**
+ * Deletes a deleted firm's invoice settings and series, and returns how many
+ * rows it deleted; 0 means none is left. Issued invoices carry their own copy
+ * of the seller's details and their number, so they don't need either.
+ */
+export async function deleteFirmInvoiceSettings(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">,
+): Promise<number> {
+  const settings = await ctx.db
+    .query("invoiceSettings")
+    .withIndex("by_organizationId", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(10);
+  for (const row of settings) {
+    await ctx.db.delete("invoiceSettings", row._id);
+  }
+  const series = await seriesOf(ctx, organizationId);
+  for (const row of series) {
+    await ctx.db.delete("invoiceSeries", row._id);
+  }
+  return settings.length + series.length;
+}

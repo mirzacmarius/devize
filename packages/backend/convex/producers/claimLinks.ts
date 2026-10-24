@@ -1,7 +1,8 @@
 import { v } from "convex/values";
+import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
-import { env, mutation, query } from "../_generated/server";
+import { env, internalMutation, mutation, query } from "../_generated/server";
 import { cleanEmail } from "../accounts/invitations";
 import { isProducer } from "../lib/access";
 import { appError, notFound } from "../lib/errors";
@@ -15,6 +16,9 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // Asking again for the same address gives the link already out while it has
 // at least this long left, so a redrafted email doesn't mint a new one.
 const REUSE_MS = 14 * DAY_MS;
+// How long a link, used or not, stays listed in Admin after it expires.
+export const KEEP_EXPIRED_DAYS = 30;
+const SWEEP_BATCH = 200;
 
 /** The page that opens a claim link, or null when SITE_URL isn't set. */
 export function claimUrl(token: string): string | null {
@@ -153,5 +157,32 @@ export const claim = mutation({
     });
     await ctx.db.patch("claimLinks", link._id, { usedAt: now });
     return { organizationId, manufacturerId: manufacturer._id };
+  },
+});
+
+/**
+ * Deletes the claim links that expired more than a month ago, used or not: a
+ * used one's claim keeps how and when the profile was claimed. Runs daily.
+ */
+export const deleteExpired = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async (ctx) => {
+    const before = Date.now() - KEEP_EXPIRED_DAYS * DAY_MS;
+    const links = await ctx.db
+      .query("claimLinks")
+      .withIndex("by_expiresAt", (q) => q.lt("expiresAt", before))
+      .take(SWEEP_BATCH);
+    for (const link of links) {
+      await ctx.db.delete("claimLinks", link._id);
+    }
+    if (links.length === SWEEP_BATCH) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.producers.claimLinks.deleteExpired,
+        {},
+      );
+    }
+    return null;
   },
 });

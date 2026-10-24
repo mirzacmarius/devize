@@ -2714,6 +2714,7 @@ export default {
         noLinks: "Niciun link.",
         requests: "Cereri",
         noRequests: "Nicio cerere.",
+        deletedAccount: "cont șters",
         queue: "Deschide cererile în așteptare",
         methods: {
           link: "prin link",
@@ -3428,7 +3429,7 @@ export default {
       retention:
         "cât discutăm cu firma. Dacă firma nu răspunde sau refuză, ștergem adresa unei persoane în cel mult 6 luni de la ultimul mesaj trimis la ea, iar adresa unei persoane căreia nu i-am scris o ștergem în cel mult o lună de când am găsit-o. Mesajele trimise firmei le păstrăm fără aceste adrese, ca dovadă că i-am scris. Raportul în care asistentul descrie ce a găsit pe site-ul firmei îl ștergem după cel mult o lună. Dovada acordului de a publica normele o păstrăm și după ce firma își scoate profilul din Devize, pentru că normele publicate până atunci rămân în devizele făcute cu ele.",
       claims:
-        "Dacă preluați în Devize profilul firmei la care lucrați, păstrăm cererea, ca dovadă a cui a preluat profilul și cum: adresa de email cu care ați intrat, ce ne-ați scris despre rolul dumneavoastră și CUI-ul firmei, pe care îl verificăm în registrul public ANAF. La fel păstrăm cererile de a scoate un profil. Numele, emailul și telefonul persoanei de contact pe care firma le trece pe profil le văd toți cei care folosesc Devize. Din devizele firmelor, producătorul primește doar statistici lunare despre normele și produsele lui, fără să afle care firmă le-a folosit.",
+        "Dacă preluați în Devize profilul firmei la care lucrați, păstrăm cererea, ca dovadă a cui a preluat profilul și cum: adresa de email cu care ați intrat, ce ne-ați scris despre rolul dumneavoastră și CUI-ul firmei, pe care îl verificăm în registrul public ANAF. La fel păstrăm cererile de a scoate un profil. Când vă ștergeți contul, ștergem cererile care încă așteaptă, iar din cele hotărâte păstrăm doar ce s-a hotărât, cum și când, fără adresa dumneavoastră și ce ne-ați scris. Linkul de preluare primit pe email îl ștergem la o lună după ce expiră. Numele, emailul și telefonul persoanei de contact pe care firma le trece pe profil le văd toți cei care folosesc Devize; dacă persoana de contact sunteți dumneavoastră, cu adresa contului, le scoatem de pe profil când vă ștergeți contul. Din devizele firmelor, producătorul primește doar statistici lunare despre normele și produsele lui, fără să afle care firmă le-a folosit.",
     },
     users: {
       title: "Cei care folosesc Devize",

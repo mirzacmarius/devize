@@ -13,7 +13,7 @@ crons.interval(
 );
 
 // Deletes the uploads nobody claimed every hour, and every day what signing
-// in left behind that is of no more use (docs/adr/0045).
+// in left behind that is of no more use (docs/adr/0046).
 crons.interval(
   "delete uploads nobody claimed",
   { hours: 1 },
@@ -52,6 +52,14 @@ crons.cron(
   "erase producer contacts past their time",
   "15 3 * * *",
   internal.manufacturers.retention.sweep,
+  {},
+);
+
+// Deletes claim links a month after they expire (docs/adr/0046).
+crons.cron(
+  "delete expired claim links",
+  "30 3 * * *",
+  internal.producers.claimLinks.deleteExpired,
   {},
 );
 
