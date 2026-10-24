@@ -94,7 +94,9 @@ export function ImportsPanel({
     >
       <ErrorText error={error} />
       {normImports.length === 0 ? (
-        <p className="text-sm text-primary/60">{t("empty")}</p>
+        keptConsents.length === 0 && (
+          <p className="text-sm text-primary/60">{t("empty")}</p>
+        )
       ) : (
         <ul className="flex flex-col divide-y divide-border">
           {normImports.map((normImport) => (
@@ -168,7 +170,7 @@ export function ImportsPanel({
         </ul>
       )}
       {keptConsents.length > 0 && (
-        <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+        <div className="flex flex-col gap-2 border-t border-border pt-4 first:border-t-0 first:pt-0">
           <p className="text-sm font-medium text-primary">{t("kept")}</p>
           <p className="text-xs text-primary/50">{t("keptHint")}</p>
           <ul className="flex flex-col gap-2">

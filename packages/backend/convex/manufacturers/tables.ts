@@ -136,6 +136,15 @@ export const manufacturerTables = {
     // Who saved the signature, which is taken to be their own: it goes when
     // they delete their account. Missing on settings saved before.
     signedBy: v.optional(v.id("users")),
+    // The signature of someone who deleted their account, kept only while
+    // the drafts are cleared of it, a page at a time.
+    forgetting: v.optional(
+      v.object({
+        firstName: v.optional(v.string()),
+        lastName: v.optional(v.string()),
+        phone: v.optional(v.string()),
+      }),
+    ),
   }),
 
   // Addresses and domains that asked not to be contacted again. Kept for good.
@@ -173,6 +182,9 @@ export const manufacturerTables = {
     edition: v.optional(v.string()),
     laborRate: v.optional(v.number()),
     consent: v.optional(normConsent),
+    // When a norm from it first reached the catalog. Its rows may be
+    // extracted again later, which unlinks them from the published norms.
+    publishedAt: v.optional(v.number()),
     // The document's table of contents, from the first pass.
     articles: v.array(normImportArticle),
     articlesDone: v.number(),

@@ -10,6 +10,7 @@ import {
   NO_ANSWER_MS,
   NOT_WRITTEN_MS,
   retentionPlan,
+  scrubSender,
   scrubText,
 } from "./retention";
 
@@ -325,5 +326,42 @@ describe("scrubText", () => {
     expect(
       mentions("office@termotest.example", ["ion@termotest.example"]),
     ).toBe(false);
+  });
+});
+
+describe("scrubSender", () => {
+  const sender = { firstName: "Dan", lastName: "Pop", phone: "0711 111 111" };
+
+  test("puts the placeholders back for the names and the phone", () => {
+    expect(
+      scrubSender(
+        "Sunt Dan, fondatorul Devize.\n\nDan Pop\nFondator, Devize · 0711 111 111. Sau 0711-111-111, 0711.111.111, 0711111111.",
+        sender,
+      ),
+    ).toBe(
+      "Sunt {Prenume}, fondatorul Devize.\n\n{Prenume} {Nume}\nFondator, Devize · {telefon}. Sau {telefon}, {telefon}, {telefon}.",
+    );
+  });
+
+  test("leaves words and numbers that only contain them", () => {
+    const text =
+      "Danubiu Construct, Popescu și Populare; dan; 10711111111; 07111111112.";
+    expect(scrubSender(text, sender)).toBe(text);
+  });
+
+  test("names with diacritics match whole, not inside other words", () => {
+    expect(
+      scrubSender("Ștefan Țepeș, Ștefania", {
+        firstName: "Ștefan",
+        lastName: "Țepeș",
+      }),
+    ).toBe("{Prenume} {Nume}, Ștefania");
+  });
+
+  test("a short phone or no signature changes nothing", () => {
+    expect(scrubSender("Camera 112, Dan", { phone: "112" })).toBe(
+      "Camera 112, Dan",
+    );
+    expect(scrubSender("Dan Pop", {})).toBe("Dan Pop");
   });
 });

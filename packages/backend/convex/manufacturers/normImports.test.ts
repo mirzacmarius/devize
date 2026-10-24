@@ -167,6 +167,38 @@ describe("deleting a document", () => {
     expect(data?.manufacturer.keptConsents).toHaveLength(1);
   });
 
+  test("keeps the agreement after its published rows were extracted again", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    const manufacturerId = await insertManufacturer(t, admin.userId);
+    const normImportId = await publishedImport(
+      t,
+      admin,
+      manufacturerId,
+      "Email, 21.10.2026",
+    );
+    // What a retry does: the rows are deleted and extracted again.
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("importedNorms")
+        .withIndex("by_normImportId_and_baseCode", (q) =>
+          q.eq("normImportId", normImportId),
+        )
+        .collect();
+      for (const { _id, _creationTime, ...row } of rows) {
+        await ctx.db.delete("importedNorms", _id);
+        await ctx.db.insert("importedNorms", { ...row, status: "review" });
+      }
+    });
+
+    await admin.as.mutation(api.manufacturers.normImports.remove, {
+      normImportId,
+    });
+    expect(
+      (await leftOf(t, manufacturerId)).manufacturer?.keptConsents,
+    ).toMatchObject([{ note: "Email, 21.10.2026" }]);
+  });
+
   test("a profile taken down loses the documents its producer sent", async () => {
     const t = setup();
     const admin = await signIn(t, { name: "Admin", superadmin: true });

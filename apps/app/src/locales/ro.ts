@@ -2675,7 +2675,7 @@ export default {
       remove: "Elimină profilul",
       removeTitle: "Elimini profilul {name}?",
       removeDescription:
-        "Producătorul trece la „Exclus”: profilul dispare, normele lui publicate ies din catalog și nu-i mai scriem. Devizele făcute deja își păstrează copiile.",
+        "Producătorul trece la „Exclus”: profilul dispare, normele lui publicate ies din catalog și nu-i mai scriem. Devizele făcute deja își păstrează copiile. Documentele cu norme trimise de el se șterg; păstrăm doar acordul pentru normele publicate deja.",
       removed: "Profilul {name} a fost eliminat.",
       dismiss: "Păstrează profilul",
       dismissed: "Cererea a fost închisă, iar profilul rămâne.",
@@ -3438,7 +3438,7 @@ export default {
       basis:
         "contractul cu dumneavoastră (art. 6 alin. (1) lit. b) din GDPR) și interesul nostru legitim de a ține aplicația sigură, de exemplu limitând câte coduri și invitații pleacă spre aceeași adresă și câte cereri face fiecare persoană către inteligența artificială, sau verificând, înainte să trimitem un cod de intrare, că îl cere un om (art. 6 alin. (1) lit. f)). Statisticile pentru producători nu conțin date personale.",
       retention:
-        "cât aveți cont. Ne puteți cere oricând să ștergem contul și datele firmei; păstrăm doar ce ne obligă legea să păstrăm.",
+        "cât aveți cont. Ne puteți cere oricând să ștergem contul și datele firmei; păstrăm doar ce ne obligă legea să păstrăm. Dacă cereți un cod de intrare și nu intrați în cont, ștergem adresa și codurile în cel mult două zile. O sesiune se încheie la 30 de zile după intrare și o ștergem în cel mult o zi după aceea. Un fișier încărcat și nefolosit îl ștergem în cel mult trei ore.",
     },
     clients: {
       title: "Clienții firmelor și ceilalți trecuți în documente",

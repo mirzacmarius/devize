@@ -391,7 +391,7 @@ export async function deleteNormImport(
   ctx: MutationCtx,
   normImport: Doc<"normImports">,
 ) {
-  let published = false;
+  let published = normImport.publishedAt !== undefined;
   const norms = ctx.db
     .query("importedNorms")
     .withIndex("by_normImportId_and_baseCode", (q) =>

@@ -167,6 +167,9 @@ export const publishImportedNorms = mutation({
       }
       published++;
     }
+    if (published > 0 && normImport.publishedAt === undefined) {
+      await ctx.db.patch("normImports", normImport._id, { publishedAt: now });
+    }
     return { published, skipped };
   },
 });
