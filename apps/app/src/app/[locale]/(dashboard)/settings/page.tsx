@@ -20,6 +20,8 @@ import { cn, useDoubleCheck } from "@devize/ui/utils";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
+import { useState } from "react";
+import { InvoiceArchiveButton } from "@/components/invoice-archive";
 import { useRun } from "@/components/use-run";
 import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
@@ -37,7 +39,6 @@ export default function DashboardSettings() {
   const deleteCurrentUserAccount = useMutation(
     api.users.deleteCurrentUserAccount,
   );
-  const { doubleCheck, getButtonProps } = useDoubleCheck();
   const run = useRun();
 
   const handleUpdateUserImage = (uploaded: UploadedFile[]) => {
@@ -50,9 +51,13 @@ export default function DashboardSettings() {
     );
   };
 
-  const handleDeleteAccount = async () => {
-    await deleteCurrentUserAccount();
-    await signOut();
+  const handleDeleteAccount = async (deleteInvoices: boolean) => {
+    const result = await run(() =>
+      deleteCurrentUserAccount({ deleteInvoices }),
+    );
+    if (result.ok) {
+      await signOut();
+    }
   };
 
   if (!user) {
@@ -112,31 +117,93 @@ export default function DashboardSettings() {
 
       <UsernameForm username={user.username ?? ""} />
 
-      <Card className="overflow-hidden border-danger-border">
-        <CardHeader>
-          <div className="grid gap-1">
-            <CardTitle>{t("deleteAccount.title")}</CardTitle>
-            <CardDescription>{t("deleteAccount.description")}</CardDescription>
-          </div>
-        </CardHeader>
-        <CardFooter className={cn(footer, "border-danger-border")}>
-          <p className="m-0 text-meta text-danger">
-            {t("deleteAccount.warning")}
-          </p>
-          <Button
-            size="sm"
-            variant="destructive"
-            {...getButtonProps({
-              onClick: doubleCheck ? handleDeleteAccount : undefined,
-            })}
-          >
-            {doubleCheck
-              ? t("deleteAccount.confirm")
-              : t("deleteAccount.button")}
-          </Button>
-        </CardFooter>
-      </Card>
+      <DeleteAccountCard onDelete={handleDeleteAccount} />
     </>
+  );
+}
+
+/**
+ * Deleting the account, and what goes with it: each firm the user is the
+ * only member of, with its invoices. A firm with numbered invoices offers
+ * their archive first and asks the user to confirm they go too (ADR 0050).
+ */
+function DeleteAccountCard({
+  onDelete,
+}: {
+  onDelete: (deleteInvoices: boolean) => Promise<void>;
+}) {
+  const t = useScopedI18n("settings.deleteAccount");
+  const firms = useQuery(api.users.deletionPreview);
+  const { doubleCheck, getButtonProps } = useDoubleCheck();
+  const [confirmed, setConfirmed] = useState(false);
+  const withInvoices = (firms ?? []).some((firm) => firm.invoices > 0);
+  const blocked = firms === undefined || (withInvoices && !confirmed);
+
+  return (
+    <Card className="overflow-hidden border-danger-border">
+      <CardHeader>
+        <div className="grid gap-1">
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
+        </div>
+      </CardHeader>
+      {firms && firms.length > 0 && (
+        <CardContent className="gap-3">
+          {firms.map((firm) => (
+            <div
+              key={firm._id}
+              className="grid gap-2 rounded-md border border-border p-3"
+            >
+              <p className="m-0 font-medium text-ink">
+                {t("firmTitle", { firm: firm.name })}
+              </p>
+              <p className="m-0 text-meta text-ink-2">{t("firmDescription")}</p>
+              {firm.invoices > 0 && (
+                <>
+                  <p className="m-0 text-body text-danger">
+                    {firm.invoices > 100
+                      ? t("manyInvoices")
+                      : t("invoices", { count: firm.invoices })}
+                  </p>
+                  <p className="m-0 text-meta text-ink-2">{t("law")}</p>
+                  <div>
+                    <InvoiceArchiveButton
+                      size="sm"
+                      organizationId={firm._id}
+                      firmName={firm.name}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+          {withInvoices && (
+            <label className="flex items-start gap-3 text-body text-ink">
+              <input
+                type="checkbox"
+                checked={confirmed}
+                onChange={(event) => setConfirmed(event.target.checked)}
+                className="mt-0.5 size-4 shrink-0 accent-primary"
+              />
+              {t("confirmInvoices")}
+            </label>
+          )}
+        </CardContent>
+      )}
+      <CardFooter className={cn(footer, "border-danger-border")}>
+        <p className="m-0 text-meta text-danger">{t("warning")}</p>
+        <Button
+          size="sm"
+          variant="destructive"
+          disabled={blocked}
+          {...getButtonProps({
+            onClick: doubleCheck ? () => onDelete(confirmed) : undefined,
+          })}
+        >
+          {doubleCheck ? t("confirm") : t("button")}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
 

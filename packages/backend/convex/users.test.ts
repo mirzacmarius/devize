@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { api } from "./_generated/api";
+import { issuedAdvance } from "./invoices/test.helper";
 import { firmOwner, publishedBaseNorm, setup, signIn } from "./test.helper";
 
 describe("deleteCurrentUserAccount", () => {
@@ -66,5 +67,58 @@ describe("deleteCurrentUserAccount", () => {
     expect(firms.map((firm) => [firm._id, firm.role])).toEqual([
       [ana.organizationId, "owner"],
     ]);
+  });
+
+  test("takes a firm's invoices only once its last member confirms", async () => {
+    const t = setup();
+    const { firm, organizationId, advanceId } = await issuedAdvance(t);
+    const bogdan = await firmOwner(t, "Bogdan");
+
+    expect(await firm.as.query(api.users.deletionPreview, {})).toEqual([
+      { _id: organizationId, name: "Ana Construct SRL", invoices: 1 },
+    ]);
+    // Bogdan's firm has no invoices, so nothing stops him.
+    expect(await bogdan.as.query(api.users.deletionPreview, {})).toEqual([
+      { _id: bogdan.organizationId, name: "Bogdan Construct SRL", invoices: 0 },
+    ]);
+
+    await expect(
+      firm.as.mutation(api.users.deleteCurrentUserAccount, {}),
+    ).rejects.toThrow(/firmInvoices/);
+    expect(
+      await t.run(async (ctx) => await ctx.db.get("invoices", advanceId)),
+    ).not.toBeNull();
+
+    await firm.as.mutation(api.users.deleteCurrentUserAccount, {
+      deleteInvoices: true,
+    });
+    await t.finishAllScheduledFunctions(() => {});
+    const left = await t.run(async (ctx) => ({
+      firm: await ctx.db.get("organizations", organizationId),
+      invoices: await ctx.db.query("invoices").collect(),
+    }));
+    expect(left.firm).toBeNull();
+    expect(left.invoices).toEqual([]);
+  });
+
+  test("leaves a firm's invoices alone while a colleague stays", async () => {
+    const t = setup();
+    const { firm, organizationId, advanceId } = await issuedAdvance(t);
+    const bogdan = await signIn(t, { name: "Bogdan" });
+    await t.run(async (ctx) => {
+      await ctx.db.insert("memberships", {
+        organizationId,
+        userId: bogdan.userId,
+        role: "admin",
+        lastActiveAt: Date.now(),
+      });
+    });
+
+    expect(await firm.as.query(api.users.deletionPreview, {})).toEqual([]);
+    await firm.as.mutation(api.users.deleteCurrentUserAccount, {});
+    await t.finishAllScheduledFunctions(() => {});
+    expect(
+      await t.run(async (ctx) => await ctx.db.get("invoices", advanceId)),
+    ).not.toBeNull();
   });
 });

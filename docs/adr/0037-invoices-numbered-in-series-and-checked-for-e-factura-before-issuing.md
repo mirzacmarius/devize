@@ -6,7 +6,7 @@ A Deviz accepted by the client ends in invoices: the advance the Ofertă asked, 
 
 An invoice is a draft (`status: "draft"`) until it is issued. Issuing (`invoices.issue`) reads the series (`invoiceSeries`), takes its `nextNumber`, writes it on the invoice and moves the series on, all in one mutation, so two people issuing at once never get the same number and the numbers of a series have no gaps, as the law on fiscal documents expects (OMFP 2634/2015). A firm that set up no series gets `DVZ` starting at 1 the first time it issues; it can add its own series in Setări → Facturare, continue the numbering it had before Devize, and move the next number forward but never back. The issue date can't be in the future, nor before the last invoice of the series.
 
-An issued invoice never changes and is never deleted: a wrong one is reversed by a Storno (`kind: "storno"`, lines negated, `stornoOf` and `stornoedBy` linking the two), as Romanian practice and the Codul fiscal (art. 330) expect, and only an invoice that never left the firm (not sent to ANAF, unpaid) can be cancelled, keeping its number taken. Drafts are deleted freely, and a Deviz with an issued invoice can't be deleted.
+An issued invoice never changes and is never deleted, except with its firm (ADR 0050): a wrong one is reversed by a Storno (`kind: "storno"`, lines negated, `stornoOf` and `stornoedBy` linking the two), as Romanian practice and the Codul fiscal (art. 330) expect, and only an invoice that never left the firm (not sent to ANAF, unpaid) can be cancelled, keeping its number taken. Drafts are deleted freely, and a Deviz with an issued invoice can't be deleted.
 
 ## The client and the firm are copied onto the invoice
 

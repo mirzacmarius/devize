@@ -1006,3 +1006,30 @@ export async function deleteDraftInvoices(
   }
   return drafts.length;
 }
+
+/**
+ * Deletes the next batch of a deleted firm's invoices, issued ones included,
+ * and returns how many; 0 means none is left. Its last member was warned and
+ * offered the archive before deleting their account (ADR 0050).
+ */
+export async function deleteFirmInvoices(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">,
+  limit: number,
+): Promise<number> {
+  // An invoice keeps its lines and payments in its own row, so a batch is
+  // kept well under what a transaction may read.
+  const invoices = await ctx.db
+    .query("invoices")
+    .withIndex("by_organizationId_and_updatedAt", (q) =>
+      q.eq("organizationId", organizationId),
+    )
+    .take(Math.min(limit, 50));
+  for (const invoice of invoices) {
+    if (invoice.efactura.responseStorageId) {
+      await ctx.storage.delete(invoice.efactura.responseStorageId);
+    }
+    await ctx.db.delete("invoices", invoice._id);
+  }
+  return invoices.length;
+}

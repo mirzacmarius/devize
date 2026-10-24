@@ -1,11 +1,20 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { strFromU8, unzipSync } from "fflate";
 import { PDFDocument } from "pdf-lib";
 import { amountsOf, rowLabelled, tablesOf } from "./documents.helper";
-import { type InvoiceInput, invoiceCodeOf, invoiceDocument } from "./invoice";
+import {
+  type InvoiceInput,
+  invoiceCodeOf,
+  invoiceDocument,
+  invoiceRegister,
+  type RegisterInvoice,
+} from "./invoice";
 import type { Block, FormDocument } from "./model";
 import { renderPdf } from "./pdf";
+import { renderXlsx } from "./xlsx";
+import { zipFiles } from "./zip";
 
 // A made-up invoice: Ana's firm bills Ion for his bathroom.
 
@@ -271,5 +280,117 @@ describe("the invoice document", () => {
       "Stornează factura DVZ-0002 din 23.10.2026",
     );
     expect(textOf(storno)).toContain("sumă greșită");
+  });
+});
+
+describe("the register of a firm's invoices", () => {
+  const registered = (
+    fields: Partial<RegisterInvoice> = {},
+  ): RegisterInvoice => ({
+    ...invoice(),
+    efactura: { status: "accepted" },
+    ...fields,
+  });
+
+  test("lists each invoice and sums those that weren't cancelled", () => {
+    const document = invoiceRegister(
+      [
+        registered({ kind: "advance", number: 1, paidAmount: 1124.39 }),
+        registered(),
+        registered({
+          number: 3,
+          status: "cancelled",
+          efactura: { status: "not_sent" },
+        }),
+      ],
+      "Ana Construct SRL",
+      "2026-10-24",
+    );
+    const [table] = tablesOf(document);
+    expect(
+      table?.rows.map((row) => row.cells.map((cell) => cell.text)),
+    ).toEqual([
+      [
+        "1",
+        "DVZ-0001",
+        "23.10.2026",
+        "Avans",
+        "Ion Popescu",
+        "CNP 1900101123456",
+        "2.168,25",
+        "455,33",
+        "2.623,58",
+        "1.124,39",
+        "Emisă",
+        "Acceptată",
+      ],
+      [
+        "2",
+        "DVZ-0002",
+        "23.10.2026",
+        "Finală",
+        "Ion Popescu",
+        "CNP 1900101123456",
+        "2.168,25",
+        "455,33",
+        "2.623,58",
+        "0,00",
+        "Emisă",
+        "Acceptată",
+      ],
+      [
+        "3",
+        "DVZ-0003",
+        "23.10.2026",
+        "Finală",
+        "Ion Popescu",
+        "CNP 1900101123456",
+        "2.168,25",
+        "455,33",
+        "2.623,58",
+        "0,00",
+        "Anulată",
+        "Netrimisă",
+      ],
+      [
+        "Total, fără facturile anulate",
+        "4.336,50",
+        "910,66",
+        "5.247,16",
+        "1.124,39",
+        "",
+        "",
+      ],
+    ]);
+  });
+
+  test("packs into an archive with the invoices and the workbook", async () => {
+    const register = invoiceRegister(
+      [registered()],
+      "Ana Construct SRL",
+      "2026-10-24",
+    );
+    const pdf = await renderPdf([invoiceDocument(invoice())], {
+      fonts,
+      title: "Factura DVZ-0002",
+    });
+    const files = unzipSync(
+      zipFiles({
+        "2026/Factura-DVZ-0002.pdf": pdf,
+        "2026/Factura-DVZ-0002.xml": new TextEncoder().encode("<Invoice/>"),
+        "Registrul facturilor.xlsx": renderXlsx([register], {
+          title: "Registrul facturilor",
+        }),
+      }),
+    );
+    expect(Object.keys(files).sort()).toEqual([
+      "2026/Factura-DVZ-0002.pdf",
+      "2026/Factura-DVZ-0002.xml",
+      "Registrul facturilor.xlsx",
+    ]);
+    expect(files["2026/Factura-DVZ-0002.pdf"]?.length).toBe(pdf.length);
+    expect(
+      strFromU8(files["2026/Factura-DVZ-0002.xml"] ?? new Uint8Array()),
+    ).toBe("<Invoice/>");
   });
 });

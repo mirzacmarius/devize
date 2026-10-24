@@ -12,7 +12,8 @@
     "./progress": "./src/progress/index.ts",
     "./sheet": "./src/sheet.ts",
     "./workbook": "./src/workbook/index.ts",
-    "./xlsx": "./src/xlsx/index.ts"
+    "./xlsx": "./src/xlsx/index.ts",
+    "./zip": "./src/zip.ts"
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",

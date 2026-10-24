@@ -2285,6 +2285,15 @@ export default {
       warning: "Acțiunea nu poate fi anulată.",
       button: "Șterge contul",
       confirm: "Sigur? Apasă din nou",
+      firmTitle: "Firma {firm} se șterge odată cu contul",
+      firmDescription:
+        "Ești singurul ei membru, așa că se șterg și devizele, clienții și tarifele ei.",
+      invoices: "Facturi cu număr: {count}. Se șterg și ele, definitiv.",
+      manyInvoices:
+        "Peste 100 de facturi cu număr. Se șterg și ele, definitiv.",
+      law: "Legea contabilității (Legea 82/1991, art. 25) cere firmei să păstreze facturile 5 ani, socotiți de la 1 iulie a anului de după cel în care le-a emis. Descarcă arhiva înainte: după ștergere nu le mai putem recupera.",
+      confirmInvoices:
+        "Înțeleg că facturile firmei se șterg definitiv din Devize și că păstrarea lor e obligația firmei.",
     },
     firm: {
       logoTitle: "Logo",
@@ -3487,11 +3496,11 @@ export default {
       basis:
         "contractul cu dumneavoastră (art. 6 alin. (1) lit. b) din GDPR) și interesul nostru legitim de a ține aplicația sigură, de exemplu limitând câte coduri și invitații pleacă spre aceeași adresă și câte cereri face fiecare persoană către inteligența artificială, sau verificând, înainte să trimitem un cod de intrare, că îl cere un om (art. 6 alin. (1) lit. f)). Statisticile pentru producători nu conțin date personale.",
       retention:
-        "cât aveți cont. Ne puteți cere oricând să ștergem contul și datele firmei; păstrăm doar ce ne obligă legea să păstrăm. Dacă cereți un cod de intrare și nu intrați în cont, ștergem adresa și codurile în cel mult două zile. O sesiune se încheie la 30 de zile după intrare și o ștergem în cel mult o zi după aceea. Un fișier încărcat și nefolosit îl ștergem în cel mult trei ore.",
+        "cât aveți cont. Ne puteți cere oricând să ștergem contul și datele firmei; păstrăm doar ce ne obligă legea să păstrăm. Dacă sunteți singurul membru al firmei, firma se șterge odată cu contul, cu tot cu facturile ei; înainte vă oferim arhiva lor, pentru că legea contabilității obligă firma să le păstreze 5 ani. Dacă cereți un cod de intrare și nu intrați în cont, ștergem adresa și codurile în cel mult două zile. O sesiune se încheie la 30 de zile după intrare și o ștergem în cel mult o zi după aceea. Un fișier încărcat și nefolosit îl ștergem în cel mult trei ore.",
     },
     clients: {
       title: "Clienții firmelor și ceilalți trecuți în documente",
-      body: "Când o firmă lucrează cu dumneavoastră prin Devize, firma răspunde de datele dumneavoastră, iar Devize le prelucrează în numele ei. Pentru ofertă: numele și datele de contact trecute de firmă, adresa lucrării, când ați deschis linkul ofertei, ce ați ales în ea, întrebările puse și motivul, dacă o refuzați. Dacă o acceptați: numele scris, semnătura desenată, momentul, o amprentă a ceea ce ați acceptat, ce spune browserul despre el (tipul, limba, fusul orar, ecranul) și adresa IP de la care ați trimis acceptarea; dacă firma v-a trecut emailul, vă trimitem confirmarea. Pentru facturi: numele, CUI-ul sau, dacă l-ați dat firmei, CNP-ul, adresa, emailul și telefonul, ce vi s-a facturat și plățile înregistrate de firmă. Dacă sunteți firmă, denumirea, sediul și numărul de înregistrare pot fi preluate din registrul public al ANAF. Pentru aceste date, scrieți întâi firmei.",
+      body: "Când o firmă lucrează cu dumneavoastră prin Devize, firma răspunde de datele dumneavoastră, iar Devize le prelucrează în numele ei. Pentru ofertă: numele și datele de contact trecute de firmă, adresa lucrării, când ați deschis linkul ofertei, ce ați ales în ea, întrebările puse și motivul, dacă o refuzați. Dacă o acceptați: numele scris, semnătura desenată, momentul, o amprentă a ceea ce ați acceptat, ce spune browserul despre el (tipul, limba, fusul orar, ecranul) și adresa IP de la care ați trimis acceptarea; dacă firma v-a trecut emailul, vă trimitem confirmarea. Pentru facturi: numele, CUI-ul sau, dacă l-ați dat firmei, CNP-ul, adresa, emailul și telefonul, ce vi s-a facturat și plățile înregistrate de firmă; le păstrăm cât există firma în Devize. Dacă sunteți firmă, denumirea, sediul și numărul de înregistrare pot fi preluate din registrul public al ANAF. Pentru aceste date, scrieți întâi firmei.",
       others:
         "Tot în numele firmei păstrăm numele, rolul și firma sau instituția celor trecuți în procesele-verbale de recepție (membrii comisiei, dirigintele de șantier, proiectantul, invitații), locul lucrării și numele celui care a confirmat o situație de lucrări. Le trece firma, iar documentele le descarcă și le trimite tot ea.",
     },
@@ -3685,6 +3694,8 @@ export default {
       "Fiecare rând are nevoie de o denumire de cel mult 200 de caractere.",
     invalidVatRate: "Cota de TVA e între 0% și 100%.",
     inUseInvoices: "Devizul are facturi emise, așa că nu poate fi șters.",
+    inUseFirmInvoices:
+      "Firma ta are facturi cu număr, care se șterg odată cu contul. Bifează că știi asta, apoi încearcă din nou.",
     inUseSeries: "Seria există deja sau a numerotat facturi.",
     lockedInvoice:
       "Factura e emisă și nu se mai modifică. O factură greșită se stornează.",
@@ -3748,6 +3759,14 @@ export default {
       cancelled: "Anulate",
     },
     noneHere: "Nicio factură aici.",
+    archive: {
+      button: "Descarcă arhiva facturilor",
+      reading: "Citesc facturile… {count}",
+      drawing: "Fac PDF-urile… {done} din {total}",
+      done: "Arhiva e descărcată. Facturi în ea: {count}.",
+      empty: "Firma nu are încă facturi cu număr.",
+      failed: "Nu am putut face arhiva. Încearcă din nou.",
+    },
     columns: {
       invoice: "Factura",
       client: "Client",

@@ -4,7 +4,7 @@ import { issuedAdvance } from "../invoices/test.helper";
 import { firmOwner, setup } from "../test.helper";
 
 describe("deleting a firm", () => {
-  test("deletes its templates, invoice settings, series and draft invoices", async () => {
+  test("deletes its templates, invoice settings, series and invoices, issued ones too", async () => {
     const t = setup();
     const { firm, estimateId, organizationId, advanceId } =
       await issuedAdvance(t);
@@ -40,8 +40,8 @@ describe("deleting a firm", () => {
     expect(left.settings).toEqual([]);
     expect(left.series).toEqual([]);
     expect(left.draft).toBeNull();
-    // An issued invoice carries its own copy of the seller and its number.
-    expect(left.issued).toMatchObject({ series: "DVZ", number: 1 });
+    // Its last member was warned and offered the archive (ADR 0050).
+    expect(left.issued).toBeNull();
   });
 
   test("deletes its own prices with their whole history, a batch at a time", async () => {

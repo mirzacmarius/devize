@@ -1,13 +1,13 @@
 # A deleted firm or account leaves no settings, requests or stale claim links
 
-An audit of what outlives its purpose found rows that deleting a firm or an account left behind, and claim links nothing ever deleted. GDPR asks that personal data be kept no longer than its purpose needs (art. 5(1)(e)) and erased when the person asks (art. 17). ADR 0045 does the same for what signing in and uploads leave behind. Issued invoices and the evidence of an accepted Ofertă are left out here: how long they stay is the operator's decision, by the accounting law and the limitation periods, and gets its own ADR.
+An audit of what outlives its purpose found rows that deleting a firm or an account left behind, and claim links nothing ever deleted. GDPR asks that personal data be kept no longer than its purpose needs (art. 5(1)(e)) and erased when the person asks (art. 17). ADR 0045 does the same for what signing in and uploads leave behind. Issued invoices and the evidence of an accepted Ofertă are left out here: how long they stay is the operator's decision, by the accounting law and the limitation periods. Invoices now go with their firm, after a warning and their archive (ADR 0050); the evidence of an accepted Ofertă still waits for its own ADR.
 
 ## Deleting a firm
 
 `accounts/cleanup.ts` deletes a firm a batch at a time. It now also deletes:
 
 - its Șabloane de deviz with their works (`deleteFirmTemplates`), ten at a time: one template's works can take 800 KB, so ten stay well under the 16 MiB a mutation may read;
-- its invoice settings and series (`deleteFirmInvoiceSettings`). An issued invoice carries its own copy of the seller's details and its number, so it needs neither; draft invoices already went with their Deviz;
+- its invoice settings and series (`deleteFirmInvoiceSettings`), after its invoices (ADR 0050); draft invoices already went with their Deviz;
 - its own prices with their whole history, at most one batch of history rows per run. A listing goes only once its history has, because nothing else leads to the history rows. Before, one run read up to 1000 history rows for each of 200 listings, past what a mutation may write.
 
 ## Deleting an account

@@ -172,6 +172,10 @@ _Avoid_: E-invoice (generic), SPV (the portal, not the format)
 Money the client paid on an invoice, with its date and how it came: transfer, cash, card. An invoice is paid once its încasări reach its total. In code: `invoices.payments`.
 _Avoid_: Payment (ambiguous with what the firm pays), receipt
 
+**Arhiva facturilor** (invoice archive):
+A Firmă's numbered invoices in one .zip it keeps itself: each one's PDF and e-Factura XML, in a folder per year of issue, and the Registrul facturilor, an Excel workbook listing them all. The firm keeps its invoices 5 years (Legea 82/1991 art. 25); Devize deletes them with the firm when its last member deletes their account, after offering the archive. In code: `invoices/archive.ts`, `InvoiceArchiveButton`, on `/invoices` and in Setări → Șterge contul. See `docs/adr/0050`.
+_Avoid_: Backup, export (the archive is the firm's legal copy)
+
 ### Public tenders
 
 **Licitație** (tender):
