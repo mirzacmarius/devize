@@ -36,9 +36,16 @@ import { useSummaryText } from "./use-summary-text";
 /**
  * Comparare revizii: what changed between two revisions of a Deviz, in its
  * Recapitulație and article by article, with a summary to send the client.
- * It compares with the revision named in ?with=, or the one before.
+ * It compares with the revision named in ?with=, or the one before. Following
+ * a link starts it afresh from the address, though Next.js keeps the page from
+ * an earlier visit (ADR 0029); Back and Forward find it as it was left.
  */
 export function ComparePage() {
+  const { bfcacheId } = useRouter();
+  return <Comparison key={bfcacheId} />;
+}
+
+function Comparison() {
   const estimateId = useRouteParam("estimateId") as Id<"estimates">;
   const t = useScopedI18n("compare");
   const tEstimate = useScopedI18n("estimate");
@@ -46,7 +53,7 @@ export function ComparePage() {
   const locale = useCurrentLocale();
   const router = useRouter();
   const params = useSearchParams();
-  // Kept as the page opened, since a page left hidden follows the address.
+  // The revision chosen, from the address and then from the list.
   const [asked, setAsked] = useState(() => params.get("with"));
   const revisions = useQuery(api.estimates.estimates.revisions, {
     estimateId,

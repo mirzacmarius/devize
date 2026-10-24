@@ -16,7 +16,8 @@ const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
 
 /**
  * The articles added, removed and changed, each with its quantity and unit
- * price before and after and what it adds to the direct costs.
+ * price before and after and what it adds to or takes from the Deviz before
+ * its Cote.
  */
 export function LinesCard({ comparison }: { comparison: Comparison }) {
   const t = useScopedI18n("compare.lines");

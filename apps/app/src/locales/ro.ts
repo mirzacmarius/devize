@@ -4222,13 +4222,13 @@ export default {
   compare: {
     title: "Comparare revizii",
     breadcrumb: "Comparare",
-    description: "{before} față de {after} · {title}",
+    description: "{after} față de {before} · {title}",
     backToEstimate: "Înapoi la deviz",
     with: "Compară cu",
     option: "{code} · {total} lei",
     singleTitle: "Devizul are o singură revizie",
     singleDescription:
-      "Fă o revizie din meniul devizului, schimb-o, și aici vezi ce s-a schimbat față de cea dinainte.",
+      "Fă o revizie din meniul devizului, schimb-o și vezi aici ce s-a schimbat față de cea dinainte.",
     copy: "Copiază rezumatul",
     copied: "Rezumatul e copiat. Îl poți lipi într-un email către client.",
     summary: {
@@ -4236,7 +4236,7 @@ export default {
       total: "Total cu TVA",
       difference: "Diferență",
       counts:
-        "{added} adăugate · {removed} scoase · {changed} modificate · {unchanged} neschimbate",
+        "Adăugate: {added} · Scoase: {removed} · Modificate: {changed} · Neschimbate: {unchanged}",
       markups: "Cote schimbate",
       markup: "{name}: {before} → {after}",
     },
@@ -4249,7 +4249,7 @@ export default {
     lines: {
       title: "Articole",
       description:
-        "Valorile sunt cele din deviz, fără cheltuieli indirecte, profit și TVA.",
+        "Valorile sunt cele din deviz, fără CAM, cheltuieli indirecte, profit și TVA.",
       added: "Adăugate ({count})",
       removed: "Scoase ({count})",
       changed: "Modificate ({count})",
@@ -4275,7 +4275,7 @@ export default {
       recoded: "codul era {code}",
       markups: "Cote: {changes}",
       same: "Articolele au rămas la fel.",
-      note: "Sumele pe articole sunt fără cheltuieli indirecte, profit și TVA.",
+      note: "Sumele pe articole sunt fără CAM, cheltuieli indirecte, profit și TVA.",
     },
   },
   materials: {

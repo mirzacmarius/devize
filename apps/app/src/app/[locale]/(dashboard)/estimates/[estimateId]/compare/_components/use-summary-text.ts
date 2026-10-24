@@ -88,9 +88,12 @@ export function useSummaryText(
         );
       }
       if (row.fields.includes("price")) {
+        const was = money(then.unitPrice);
         changes.push(
           t("price", {
-            before: money(then.unitPrice),
+            before: unitChanged
+              ? `${was} lei/${formatUnit(then.unit, locale)}`
+              : was,
             after: money(now.unitPrice),
             unit,
           }),

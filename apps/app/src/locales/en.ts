@@ -4230,13 +4230,13 @@ export default {
   compare: {
     title: "Compare revisions",
     breadcrumb: "Compare",
-    description: "{before} against {after} · {title}",
+    description: "{after} against {before} · {title}",
     backToEstimate: "Back to the estimate",
     with: "Compare with",
     option: "{code} · {total} lei",
     singleTitle: "The estimate has a single revision",
     singleDescription:
-      "Make a revision from the estimate's menu, change it, and see here what changed against the one before.",
+      "Make a revision from the estimate's menu, change it and see here what changed against the one before.",
     copy: "Copy the summary",
     copied:
       "The summary is copied. You can paste it into an email to the client.",
@@ -4245,7 +4245,7 @@ export default {
       total: "Total with VAT",
       difference: "Difference",
       counts:
-        "{added} added · {removed} removed · {changed} changed · {unchanged} unchanged",
+        "Added: {added} · Removed: {removed} · Changed: {changed} · Unchanged: {unchanged}",
       markups: "Markups changed",
       markup: "{name}: {before} → {after}",
     },
@@ -4258,7 +4258,7 @@ export default {
     lines: {
       title: "Items",
       description:
-        "The amounts are the estimate's own, without indirect costs, profit and VAT.",
+        "The amounts are the estimate's own, without CAM, indirect costs, profit and VAT.",
       added: "Added ({count})",
       removed: "Removed ({count})",
       changed: "Changed ({count})",
@@ -4284,7 +4284,7 @@ export default {
       recoded: "its code was {code}",
       markups: "Markups: {changes}",
       same: "The items stayed the same.",
-      note: "Item amounts are without indirect costs, profit and VAT.",
+      note: "Item amounts are without CAM, indirect costs, profit and VAT.",
     },
   },
   materials: {

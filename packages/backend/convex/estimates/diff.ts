@@ -3,8 +3,8 @@ import { normalizeText } from "../lib/text";
 import { type Amounts, lineTotals, roundLei } from "./recap";
 
 // What changed between two revisions of a Deviz, article by article, with no
-// database access. Amounts are the Deviz's own: direct costs, before indirect
-// costs, profit and VAT, as the client's Deviz prints them.
+// database access. Amounts are the Deviz's own, before CAM, indirect costs,
+// profit and VAT, as the client's Deviz prints them.
 
 export type DiffLine = {
   _id: Id<"lineItems">;
@@ -97,11 +97,14 @@ function fieldsChanged(before: LineState, after: LineState): LineField[] {
 }
 
 // The ways to recognise an article in the other revision, most certain
-// first: the article it was copied from, then its code, unit and words, its
-// code and unit, and its words and unit. A custom article's code is "—", so
-// a code alone never pairs it.
+// first: the article it was copied from; then, for revisions that share no
+// recorded lineage, its code, unit and words in the same Capitol, the same
+// anywhere, its code and unit, and its words and unit. A custom article's
+// code is "—", so a code alone never pairs it.
 const keys: ((line: DiffLine) => string | null)[] = [
   (line) => line.originId ?? line._id,
+  (line) =>
+    `${line.code.trim()}|${line.unit}|${normalizeText(line.title)}|${line.section ?? ""}`,
   (line) => `${line.code.trim()}|${line.unit}|${normalizeText(line.title)}`,
   (line) => (/\w/.test(line.code) ? `${line.code.trim()}|${line.unit}` : null),
   (line) => {
@@ -121,7 +124,12 @@ export function diffLines(
 ): LinesDiff {
   const pairOf = new Map<number, number>();
   const taken = new Set<number>();
-  for (const key of keys) {
+  for (const [pass, key] of keys.entries()) {
+    // Revisions that share recorded lineage need no guessing: whatever the
+    // first pass left unpaired was added or removed.
+    if (pass === 1 && pairOf.size > 0) {
+      break;
+    }
     const waiting = new Map<string, number[]>();
     before.forEach((line, index) => {
       const value = taken.has(index) ? null : key(line);

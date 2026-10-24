@@ -153,6 +153,70 @@ describe("comparing two revisions' articles", () => {
     expect(diff.added.map((change) => String(change._id))).toEqual(["b3"]);
   });
 
+  test("pairs by origin alone, even when nothing else is alike", () => {
+    const before = [
+      line("a1", { code: "—", title: "Curățenie finală", unit: "buc" }),
+    ];
+    const after = [
+      line("b1", {
+        originId: "a1",
+        code: "—",
+        title: "Curățenie după lucrări",
+        unit: "ora",
+      }),
+    ];
+    const diff = diffLines(before, after);
+    expect(
+      diff.changed.map((change) => [String(change._id), change.fields]),
+    ).toEqual([["b1", ["title", "unit"]]]);
+    expect(diff.added).toEqual([]);
+    expect(diff.removed).toEqual([]);
+  });
+
+  test("never pairs two custom articles by their dash alone", () => {
+    const before = [
+      line("a1", { code: "—", title: "Curățenie finală", unit: "buc" }),
+    ];
+    const after = [
+      line("b1", { code: "—", title: "Transport moloz", unit: "buc" }),
+    ];
+    const diff = diffLines(before, after);
+    expect(diff.changed).toEqual([]);
+    expect(diff.added.map((change) => String(change._id))).toEqual(["b1"]);
+    expect(diff.removed.map((change) => String(change._id))).toEqual(["a1"]);
+  });
+
+  test("doesn't guess pairs for revisions that remember their origin", () => {
+    const before = [
+      line("a1", { quantity: 30, section: "Living" }),
+      line("a2", { quantity: 40, section: "Dormitor" }),
+    ];
+    // The bedroom's tiles were taken out and the hall's added: the same
+    // article, but not the same work.
+    const after = [
+      line("b1", { originId: "a1", quantity: 30, section: "Living" }),
+      line("b3", { quantity: 15, section: "Hol" }),
+    ];
+    const diff = diffLines(before, after);
+    expect(diff.unchanged).toBe(1);
+    expect(diff.changed).toEqual([]);
+    expect(diff.added.map((change) => String(change._id))).toEqual(["b3"]);
+    expect(diff.removed.map((change) => String(change._id))).toEqual(["a2"]);
+  });
+
+  test("pairs an article in the same Capitol before one elsewhere", () => {
+    const before = [
+      line("a1", { quantity: 10, section: "Baie" }),
+      line("a2", { quantity: 20, section: "Bucătărie" }),
+    ];
+    const after = [line("b2", { quantity: 20, section: "Bucătărie" })];
+    const diff = diffLines(before, after);
+    expect(diff.unchanged).toBe(1);
+    expect(diff.changed).toEqual([]);
+    expect(diff.added).toEqual([]);
+    expect(diff.removed.map((change) => String(change._id))).toEqual(["a1"]);
+  });
+
   test("ignores differences the forms don't print", () => {
     const before = [line("a1", { quantity: 10.0001 })];
     const after = [
