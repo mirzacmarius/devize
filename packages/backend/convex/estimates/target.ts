@@ -19,12 +19,13 @@ export type TargetBasis = "total" | "subtotal";
 
 export type TargetMethod = "profit" | "labor";
 
-// Why a target can't be reached: it is below what the Deviz costs with no
-// profit (or no labour), the Deviz has no labour to change, or it would take
-// more than the limits allow (a 100% profit, labour ten times as dear).
+// Why a target can't be reached: the Deviz has no prices yet, so nothing
+// moves its total; the target is below what it costs with no profit (or no
+// labour); it has no labour to change; or it would take more than the limits
+// allow (a 100% profit, labour ten times as dear).
 export type TargetMiss = {
   ok: false;
-  reason: "belowCost" | "tooHigh" | "noLabor";
+  reason: "noCost" | "belowCost" | "tooHigh" | "noLabor";
   // The nearest the method gets, on the target's basis.
   limit: number;
 };
@@ -84,6 +85,9 @@ export function fitProfit(
     recap: applyMarkups(totals, totals.laborHours, { ...markups, profit }),
   });
   const none = at(0);
+  if (none.recap.subtotal === 0) {
+    return { ok: false, reason: "noCost", limit: 0 };
+  }
   if (target < onBasis(none.recap, basis)) {
     return {
       ok: false,
@@ -145,6 +149,9 @@ export function fitLabor<R extends PricedResource>(
   };
   const none = at(0);
   const most = at(MAX_LABOR_FACTOR);
+  if (most.recap.subtotal === 0) {
+    return { ok: false, reason: "noCost", limit: 0 };
+  }
   if (onBasis(none.recap, basis) === onBasis(most.recap, basis)) {
     return { ok: false, reason: "noLabor", limit: onBasis(none.recap, basis) };
   }
@@ -174,15 +181,18 @@ export function fitLabor<R extends PricedResource>(
     }
   }
   const best = nearer(low, high, target, basis);
-  const hourly = best.resources
-    .flat()
-    .filter(
-      (resource) =>
-        resource.kind === "labor" &&
-        isHourUnit(resource.unit) &&
-        resource.unitPrice > 0,
-    )
-    .map((resource) => resource.unitPrice);
+  // The hours that had a price before, even if the change takes it to 0;
+  // labour still unpriced says nothing about the wage.
+  const hourly = best.resources.flatMap((resources, index) =>
+    resources
+      .filter(
+        (resource, at) =>
+          resource.kind === "labor" &&
+          isHourUnit(resource.unit) &&
+          (lines[index]?.resources[at]?.unitPrice ?? 0) > 0,
+      )
+      .map((resource) => resource.unitPrice),
+  );
   return {
     ok: true,
     factor: best.factor,

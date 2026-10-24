@@ -287,6 +287,8 @@ export default {
       laborTooHigh:
         "Ar trebui o manoperă de peste zece ori mai scumpă. Cel mult se ajunge la {limit} lei.",
       noLabor: "Devizul nu are manoperă de ajustat.",
+      noCost:
+        "Devizul nu are încă prețuri, așa că totalul rămâne 0 lei orice ai ajusta. Pune întâi prețurile.",
     },
     enterTarget: "Scrie prețul pe care îl vrea clientul.",
     empty: "Devizul nu are încă articole.",
@@ -3527,6 +3529,8 @@ export default {
       "Factura se emite doar pentru o situație de lucrări confirmată de beneficiar.",
     inUseStatement: "Situația de lucrări are deja o factură.",
     inUseTemplateName: "Există deja un șablon cu acest nume.",
+    inUseTemplateNameTaken:
+      "Numele e folosit de șablonul unui coleg. Alege alt nume.",
   },
   markups: {
     cam: {

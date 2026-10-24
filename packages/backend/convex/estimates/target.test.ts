@@ -75,6 +75,25 @@ describe("fitting a target through the profit", () => {
     });
   });
 
+  test("says when the Deviz has no prices to work from", () => {
+    const unpriced = computeRecap([], markups);
+    expect(fitProfit(unpriced, markups, 1000, "total")).toEqual({
+      ok: false,
+      reason: "noCost",
+      limit: 0,
+    });
+    const free = [
+      {
+        quantity: 10,
+        resources: tiling.map((resource) => ({ ...resource, unitPrice: 0 })),
+      },
+    ];
+    expect(fitLabor(free, markups, 1000, "total")).toMatchObject({
+      ok: false,
+      reason: "noCost",
+    });
+  });
+
   test("won't go past a 100% profit", () => {
     const fit = fitProfit(totals, markups, 10_000, "total");
     expect(fit).toMatchObject({ ok: false, reason: "tooHigh" });
@@ -104,6 +123,15 @@ describe("fitting a target through the labour", () => {
         markups,
       ),
     ).toEqual(fit.recap);
+  });
+
+  test("warns about labour taken all the way to 0", () => {
+    const floor = fitLabor(lines, markups, 1, "total");
+    if (floor.ok) {
+      throw new Error("a target of 1 leu should be below cost");
+    }
+    const fit = fitLabor(lines, markups, floor.limit, "total");
+    expect(fit).toMatchObject({ ok: true, lowestHourly: 0 });
   });
 
   test("raises it too, on the total without VAT", () => {

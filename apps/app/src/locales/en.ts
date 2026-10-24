@@ -292,6 +292,8 @@ export default {
       laborTooHigh:
         "It would take labour over ten times as dear. The most it gets to is {limit} lei.",
       noLabor: "The estimate has no labour to adjust.",
+      noCost:
+        "The estimate has no prices yet, so its total stays 0 lei whatever you adjust. Price it first.",
     },
     enterTarget: "Type the price the client wants.",
     empty: "The estimate has no line items yet.",
@@ -3537,6 +3539,8 @@ export default {
       "An invoice is issued only for a work statement the beneficiary confirmed.",
     inUseStatement: "The work statement already has an invoice.",
     inUseTemplateName: "A template with this name already exists.",
+    inUseTemplateNameTaken:
+      "A colleague's template has this name. Choose another one.",
   },
   markups: {
     cam: {

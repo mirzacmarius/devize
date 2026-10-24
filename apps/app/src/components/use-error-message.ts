@@ -125,6 +125,7 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     series: "inUseSeries",
     statement: "inUseStatement",
     templateName: "inUseTemplateName",
+    templateNameTaken: "inUseTemplateNameTaken",
   },
   locked: {
     estimate: "lockedEstimate",

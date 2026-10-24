@@ -27,7 +27,7 @@ import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
 import { SegmentedControl } from "@/components/segmented-control";
 import { useRun } from "@/components/use-run";
-import { formatMoney, formatPercent, parseDecimal } from "@/lib/format";
+import { formatMoney, formatPercent, parseMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./types";
 
@@ -80,7 +80,7 @@ function TargetForm({
   );
   const [method, setMethod] = useState<TargetMethod>("profit");
   const [saving, setSaving] = useState(false);
-  const target = parseDecimal(text);
+  const target = parseMoney(text);
   const empty = estimate.lineItems.length === 0;
 
   const fit = useMemo(() => {
@@ -122,6 +122,9 @@ function TargetForm({
       return undefined;
     }
     const limit = money(fit.limit);
+    if (fit.reason === "noCost") {
+      return t("misses.noCost");
+    }
     if (fit.reason === "noLabor") {
       return t("misses.noLabor");
     }
