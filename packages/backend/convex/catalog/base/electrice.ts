@@ -36,6 +36,7 @@ const tubFlexibil25 = material("Tub flexibil de protecție Ø25", "m", 1.6);
 const tubFlexibil32 = material("Tub flexibil de protecție Ø32", "m", 2.2);
 const tubRigid = material("Tub rigid din PVC Ø20, cu accesorii", "m", 3.5);
 const tubRigid32 = material("Tub rigid din PVC Ø32, cu accesorii", "m", 5.5);
+const tubRigid50 = material("Tub rigid din PVC Ø50, cu accesorii", "m", 10);
 const cablu4 = material("Cablu CYY-F 3 × 4 mm²", "m", 9.5);
 const cablu6 = material("Cablu CYY-F 3 × 6 mm²", "m", 14);
 const cablu10 = material("Cablu CYY-F 3 × 10 mm²", "m", 24);
@@ -159,7 +160,7 @@ const tablouFv = material(
   "buc",
   950,
 );
-const baterie = material("Baterie LiFePO4 de 5 kWh", "buc", 9800);
+const baterie = material("Baterie LiFePO4 de 5 kWh", "buc", 4500);
 const cabluBaterie = material(
   "Cablu de baterie 25 mm² cu papuci, set",
   "set",
@@ -191,6 +192,10 @@ const termostatDegivrare = material(
   950,
 );
 
+// A Ø32 tube needs a slot of about 5 × 5 cm, larger than DV-ELE-03's.
+const slituriTub32 =
+  "Șlițurile și astuparea lor (tubul Ø32 cere un șliț de circa 5 × 5 cm, mai mare decât cel din DV-ELE-03); aparatajul.";
+
 function circuit(
   code: string,
   title: string,
@@ -198,6 +203,7 @@ function circuit(
   cablu: ReturnType<typeof material>,
   ore: number,
   necalificatOre: number,
+  excludes = "Șlițurile și astuparea lor (DV-ELE-03); aparatajul.",
 ): BaseNorm {
   return {
     code,
@@ -206,7 +212,7 @@ function circuit(
     unit: "m",
     includes:
       "Pozarea tubului în șliț sau pe traseu, tragerea cablului, legăturile în doze și verificarea circuitului.",
-    excludes: "Șlițurile și astuparea lor (DV-ELE-03); aparatajul.",
+    excludes,
     measurement:
       "Lungimea circuitului, de la tablou până la ultimul consumator.",
     resources: [
@@ -328,6 +334,7 @@ export const electrice: BaseNorm[] = [
     cablu10,
     0.25,
     0.08,
+    slituriTub32,
   ),
   circuit(
     "DV-ELE-10",
@@ -344,19 +351,20 @@ export const electrice: BaseNorm[] = [
     cablu5x6,
     0.25,
     0.08,
+    slituriTub32,
   ),
   {
     code: "DV-ELE-12",
     category,
     title:
-      "Coloană de alimentare cu cablu CYY-F 5 × 16 mm² în tub rigid Ø32, de la blocul de măsură la tablou",
+      "Coloană de alimentare cu cablu CYY-F 5 × 16 mm² în tub rigid Ø50, de la blocul de măsură la tablou",
     unit: "m",
     includes:
       "Pozarea tubului rigid cu accesorii, tragerea cablului, legarea la blocul de măsură și la tablou și verificarea.",
     excludes: "Blocul de măsură și protecție, montat de distribuitor.",
     measurement: "Lungimea coloanei.",
     resources: [
-      tubRigid32(1.05),
+      tubRigid50(1.05),
       cablu5x16(1.05),
       dibluCui(2),
       electrician(0.35),
@@ -692,8 +700,9 @@ export const electrice: BaseNorm[] = [
     title: "Priză de pământ cu 3 electrozi și platbandă, cu piesă de separație",
     unit: "set",
     includes:
-      "Săpătura șanțului, baterea electrozilor, sudarea platbandei de electrozi, piesa de separație, umplerea șanțului și măsurarea rezistenței de dispersie.",
-    excludes: "Tratarea solului cu bentonită, dacă rezistența o cere.",
+      "Baterea electrozilor, sudarea platbandei de electrozi, piesa de separație și măsurarea rezistenței de dispersie.",
+    excludes:
+      "Săpătura și umplutura șanțului (DV-TER-11, DV-TER-03); tratarea solului cu bentonită, dacă rezistența o cere.",
     measurement: "Numărul de prize de pământ.",
     resources: [
       electrod(3),

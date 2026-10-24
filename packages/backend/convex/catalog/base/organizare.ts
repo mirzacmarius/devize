@@ -71,12 +71,13 @@ export const organizare: BaseNorm[] = [
     code: "DV-ORG-01",
     category,
     title:
-      "Împrejmuire provizorie de șantier cu panouri mobile din plasă zincată, cu montare, chirie o lună și demontare",
+      "Montarea și demontarea împrejmuirii provizorii de șantier din panouri mobile din plasă zincată",
     unit: "m",
     includes:
-      "Aducerea panourilor, așezarea picioarelor, legarea panourilor cu cleme, chiria pe o lună și demontarea.",
-    measurement: "Lungimea împrejmuirii, pentru fiecare lună.",
-    resources: [panouMobil(1), necalificat(0.15)],
+      "Aducerea panourilor, așezarea picioarelor, legarea panourilor cu cleme și demontarea la final.",
+    excludes: "Chiria panourilor (DV-ORG-20).",
+    measurement: "Lungimea împrejmuirii.",
+    resources: [necalificat(0.15)],
   },
   {
     code: "DV-ORG-02",
@@ -211,10 +212,11 @@ export const organizare: BaseNorm[] = [
     code: "DV-ORG-12",
     category,
     title:
-      "Încărcarea și descărcarea manuală a materialelor din mijlocul de transport",
+      "Încărcarea sau descărcarea manuală a materialelor, în sau din mijlocul de transport",
     unit: "t",
     includes: "Încărcarea sau descărcarea și stivuirea la locul de depozitare.",
-    measurement: "Masa manipulată.",
+    measurement:
+      "Masa manipulată, pentru fiecare operație: o dată la încărcare și o dată la descărcare.",
     resources: [necalificat(0.8)],
   },
   {
@@ -295,5 +297,15 @@ export const organizare: BaseNorm[] = [
       "Cască, vestă reflectorizantă, bocanci cu bombeu, mănuși și ochelari de protecție, pentru un lucrător pe durata lucrării.",
     measurement: "Numărul de lucrători echipați.",
     resources: [echipamentProtectie(1)],
+  },
+  {
+    code: "DV-ORG-20",
+    category,
+    title:
+      "Chiria panourilor mobile de împrejmuire din plasă zincată, pe o lună",
+    unit: "m",
+    includes: "Chiria panourilor cu picioare și cleme pentru o lună.",
+    measurement: "Lungimea împrejmuirii, pentru fiecare lună de folosire.",
+    resources: [panouMobil(1)],
   },
 ];

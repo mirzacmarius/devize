@@ -669,11 +669,6 @@ export const brataraMetalica = material(
   "buc",
   4,
 );
-export const linieFrigorifica = material(
-  'Linie frigorifică izolată din cupru, 3/8" – 5/8"',
-  "m",
-  95,
-);
 // Joints of insulation and ducts.
 export const bandaAluminiu = material("Bandă adezivă din aluminiu", "m", 0.6);
 

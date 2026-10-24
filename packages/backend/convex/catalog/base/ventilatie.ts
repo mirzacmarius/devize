@@ -7,7 +7,6 @@ import {
   electrician,
   frigotehnist,
   instalator,
-  linieFrigorifica,
   material,
   necalificat,
   pompaVid,
@@ -165,6 +164,17 @@ const ventiloconvector = material(
 );
 const racordInoxMic = material('Racord flexibil din inox, 1/2"', "buc", 35);
 
+const linieFrigorificaMedie = material(
+  'Linie frigorifică izolată din cupru, 1/4" – 1/2"',
+  "m",
+  70,
+);
+const suportRectangular = material(
+  "Suport de suspendare pentru tubulatură rectangulară, cu profil și două tije filetate M8",
+  "buc",
+  15,
+);
+
 function split(
   code: string,
   title: string,
@@ -216,7 +226,7 @@ export const ventilatie: BaseNorm[] = [
     "DV-VEN-03",
     "Aparat de aer condiționat split inverter de 18000 BTU, cu montaj și punere în funcțiune",
     split18,
-    linieFrigorifica,
+    linieFrigorificaMedie,
     5,
   ),
   {
@@ -250,7 +260,7 @@ export const ventilatie: BaseNorm[] = [
       "Traseu frigorific suplimentar pentru aparat de aer condiționat, în canal de mascare",
     unit: "m",
     includes:
-      "Linia frigorifică izolată, tubul de condens și cablul de interconectare pozate în canal de mascare fixat pe perete.",
+      'Linia frigorifică izolată, tubul de condens și cablul de interconectare pozate în canal de mascare fixat pe perete. Pentru aparatele de 18000 BTU, linia de 1/4" – 3/8" se înlocuiește cu cea de 1/4" – 1/2".',
     measurement: "Lungimea traseului peste cel inclus în norma aparatului.",
     resources: [
       linieFrigorificaMica(1),
@@ -380,6 +390,7 @@ export const ventilatie: BaseNorm[] = [
     measurement: "Lungimea tubulaturii montate.",
     resources: [
       tubulaturaRectangulara(1.02),
+      suportRectangular(0.7),
       dibluMetalic(1.4),
       smallMaterials(3),
       instalator(0.8),

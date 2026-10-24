@@ -17,7 +17,6 @@ import {
   instalator,
   izolatieTeava,
   izolatieTeava13,
-  linieFrigorifica,
   material,
   mortarZidarie,
   necalificat,
@@ -186,6 +185,26 @@ const placaNuturi = material(
   32,
 );
 const tevaPert = material("Țeavă PE-RT cu barieră de oxigen Ø16", "m", 3.2);
+const racordStrangere16 = material(
+  "Racord de strângere (eurocon) pentru țeavă PE-RT Ø16",
+  "buc",
+  10,
+);
+const vanaAnticondens = material(
+  'Vană termostatică anticondens cu trei căi pentru protecția returului, 1"',
+  "buc",
+  300,
+);
+const garnituriRadiator = material(
+  "Set de garnituri și material de etanșare pentru racordurile radiatorului",
+  "set",
+  15,
+);
+const linieFrigorifica = material(
+  'Linie frigorifică izolată din cupru, 3/8" – 5/8"',
+  "m",
+  95,
+);
 const distribuitorPardoseala = material(
   "Distribuitor-colector din inox cu debitmetre, 8 circuite",
   "buc",
@@ -284,13 +303,14 @@ export const termice: BaseNorm[] = [
     title: "Cazan pe lemne cu gazeificare, 25 kW, cu montaj și racordare",
     unit: "buc",
     includes:
-      "Aducerea în centrala termică, așezarea pe postament, racordarea hidraulică cu robineți de izolare și ventil termic de siguranță, racordarea la coșul de fum, umplerea și punerea în funcțiune.",
+      "Aducerea în centrala termică, așezarea pe postament, racordarea hidraulică cu robineți de izolare, ventil termic de siguranță și vană anticondens pe retur, racordarea la coșul de fum, umplerea și punerea în funcțiune.",
     excludes:
-      "Coșul de fum, pufferul obligatoriu (DV-INC-08), postamentul și circuitul electric.",
+      "Coșul de fum, pufferul obligatoriu (DV-INC-08), pompa circuitului cazanului (DV-INC-10), postamentul și circuitul electric.",
     measurement: "Numărul de cazane montate.",
     resources: [
       cazanLemne(1),
       ventilTermic(1),
+      vanaAnticondens(1),
       robinetSferic(4),
       racordInox(2),
       smallMaterials(3),
@@ -546,8 +566,8 @@ export const termice: BaseNorm[] = [
       "Conductă multistrat Ø16 izolată pentru încălzire, montată în pardoseală sau în șliț",
     unit: "m",
     includes:
-      "Tăierea, calibrarea, pozarea țevii în izolație de 9 mm, fitingurile presate la capete și proba de presiune. Un radiator are de regulă tur și retur, deci două lungimi.",
-    excludes: "Șlițurile și șapa.",
+      "Tăierea, calibrarea, pozarea țevii în izolație de 9 mm, fitingurile presate la capete. Un radiator are de regulă tur și retur, deci două lungimi.",
+    excludes: "Șlițurile, șapa și proba de presiune (DV-INC-36).",
     measurement: "Lungimea țevii montate.",
     resources: [
       tevaPexAl16(1.02),
@@ -565,7 +585,8 @@ export const termice: BaseNorm[] = [
       "Conductă multistrat Ø20 izolată pentru încălzire, montată în pardoseală sau aparent",
     unit: "m",
     includes:
-      "Tăierea, calibrarea, pozarea țevii în izolație de 9 mm, fixarea cu cleme sau brățări, fitingurile presate și proba de presiune.",
+      "Tăierea, calibrarea, pozarea țevii în izolație de 9 mm, fixarea cu cleme sau brățări și fitingurile presate.",
+    excludes: "Proba de presiune (DV-INC-36).",
     measurement: "Lungimea țevii montate.",
     resources: [
       tevaPexAl20(1.02),
@@ -584,7 +605,8 @@ export const termice: BaseNorm[] = [
       "Conductă multistrat Ø26 izolată pentru încălzire, coloană sau distribuție",
     unit: "m",
     includes:
-      "Tăierea, calibrarea, pozarea țevii în izolație de 13 mm, fixarea cu brățări, fitingurile presate și proba de presiune.",
+      "Tăierea, calibrarea, pozarea țevii în izolație de 13 mm, fixarea cu brățări și fitingurile presate.",
+    excludes: "Proba de presiune (DV-INC-36).",
     measurement: "Lungimea țevii montate.",
     resources: [
       tevaPexAl26(1.02),
@@ -603,7 +625,8 @@ export const termice: BaseNorm[] = [
       "Distribuitor-colector din alamă pentru radiatoare, 6 circuite, în cutie îngropată",
     unit: "buc",
     includes:
-      "Montarea cutiei în perete, a distribuitorului și colectorului cu robineți de izolare, aerisitoare și robineți de golire, racordarea circuitelor și proba de presiune.",
+      "Montarea cutiei în perete, a distribuitorului și colectorului cu robineți de izolare, aerisitoare și robineți de golire și racordarea circuitelor.",
+    excludes: "Proba de presiune (DV-INC-36).",
     measurement: "Numărul de distribuitoare montate.",
     resources: [
       distribuitorRadiatoare(1),
@@ -620,8 +643,9 @@ export const termice: BaseNorm[] = [
       'Conductă din oțel negru 1/2" – 1" sudată, pentru încălzire, montată aparent',
     unit: "m",
     includes:
-      "Tăierea, pregătirea capetelor, sudarea și filetarea, fixarea cu brățări, grunduirea anticorozivă și proba de presiune.",
-    excludes: "Izolația (DV-INC-23, DV-INC-24) și vopsitoria de finisaj.",
+      "Tăierea, pregătirea capetelor, sudarea și filetarea, fixarea cu brățări și grunduirea anticorozivă.",
+    excludes:
+      "Izolația (DV-INC-23, DV-INC-24), vopsitoria de finisaj și proba de presiune (DV-INC-36).",
     measurement: "Lungimea conductei montate.",
     resources: [
       tevaOtelNegru(1.02),
@@ -644,8 +668,9 @@ export const termice: BaseNorm[] = [
       'Conductă din oțel negru 1 1/4" – 2" sudată, pentru încălzire, montată aparent',
     unit: "m",
     includes:
-      "Tăierea, pregătirea capetelor, sudarea, fixarea cu brățări, grunduirea anticorozivă și proba de presiune.",
-    excludes: "Izolația (DV-INC-23, DV-INC-24) și vopsitoria de finisaj.",
+      "Tăierea, pregătirea capetelor, sudarea, fixarea cu brățări și grunduirea anticorozivă.",
+    excludes:
+      "Izolația (DV-INC-23, DV-INC-24), vopsitoria de finisaj și proba de presiune (DV-INC-36).",
     measurement: "Lungimea conductei montate.",
     resources: [
       tevaOtelMare(1.02),
@@ -693,7 +718,7 @@ export const termice: BaseNorm[] = [
       "Încălzire în pardoseală pe plăci cu nuturi, țeavă PE-RT Ø16 la pas de 15 cm",
     unit: "mp",
     includes:
-      "Așezarea plăcilor cu nuturi, pozarea țevii în serpentină la pas de 15 cm, legarea la distribuitor și proba de presiune menținută pe durata turnării șapei.",
+      "Așezarea plăcilor cu nuturi, pozarea țevii în serpentină la pas de 15 cm și proba de presiune menținută pe durata turnării șapei.",
     excludes:
       "Șapa, cu banda perimetrală și aditivul ei (DV-PRD-10), termoizolația suplimentară de sub plăci, distribuitorul (DV-INC-26) și grupul de pompare (DV-INC-27).",
     measurement: "Suprafața încălzită, fără zonele fără țeavă.",
@@ -712,12 +737,14 @@ export const termice: BaseNorm[] = [
       "Distribuitor-colector din inox cu debitmetre, 8 circuite, în cutie îngropată",
     unit: "buc",
     includes:
-      "Montarea cutiei în perete, a distribuitorului cu debitmetre, aerisitoare și robineți de golire, racordarea celor opt circuite cu fitinguri de strângere și proba de presiune.",
+      "Montarea cutiei în perete, a distribuitorului cu debitmetre, aerisitoare și robineți de golire și racordarea celor opt circuite cu fitinguri de strângere.",
+    excludes: "Proba de presiune (DV-INC-36).",
     measurement: "Numărul de distribuitoare montate.",
     resources: [
       distribuitorPardoseala(1),
       cutieDistribuitor(1),
       robinetSferic(2),
+      racordStrangere16(16),
       smallMaterials(3),
       instalator(4),
       necalificat(0.5),
@@ -799,7 +826,9 @@ export const termice: BaseNorm[] = [
       "Accesorii pentru coș de fum din inox: placă de bază, teu, capac de curățare, colector de condens și pălărie",
     unit: "set",
     includes:
-      "Montarea plăcii de bază cu consolă, a teului de racord, a capacului de curățare și a colectorului de condens la bază, a pălăriei la cap și racordarea cazanului.",
+      "Montarea plăcii de bază cu consolă, a teului de racord, a capacului de curățare și a colectorului de condens la bază și a pălăriei la cap.",
+    excludes:
+      "Racordarea cazanului sau a focarului la teu, cuprinsă în normele lor (DV-INC-02, DV-INC-03, DV-INC-35).",
     measurement: "Numărul de seturi montate.",
     resources: [
       accesoriiCos(1),
@@ -906,7 +935,7 @@ export const termice: BaseNorm[] = [
     includes:
       "Închiderea robineților, golirea radiatorului, demontarea, depozitarea, remontarea cu garnituri noi, umplerea și aerisirea.",
     measurement: "Numărul de radiatoare demontate și remontate.",
-    resources: [smallMaterials(2), instalator(1.5)],
+    resources: [garnituriRadiator(1), smallMaterials(2), instalator(1.5)],
   },
   {
     code: "DV-INC-39",

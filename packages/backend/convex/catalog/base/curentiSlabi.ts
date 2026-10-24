@@ -5,6 +5,7 @@ import {
   dibluCui,
   dibluMetalic,
   dozaAparat,
+  electrician,
   material,
   necalificat,
   smallMaterials,
@@ -13,6 +14,8 @@ import {
 } from "./resources";
 
 const category = "Curenți slabi";
+
+const injectorPoe = material("Injector PoE gigabit", "buc", 80);
 
 // Rețele de date, TV, interfon, alarmă antiefracție, camere de supraveghere,
 // detecție de incendiu, sonerie și automatizări simple.
@@ -142,11 +145,12 @@ export const curentiSlabi: BaseNorm[] = [
   {
     code: "DV-CSL-02",
     category,
-    title: "Cablu UTP cat. 6 în canal de cablu din PVC, aparent",
+    title: "Canal de cablu din PVC 40 × 25 mm, aparent, cu un cablu UTP cat. 6",
     unit: "m",
     includes:
       "Fixarea canalului, pozarea cablului, închiderea capacului, etichetarea.",
-    measurement: "Lungimea fiecărui cablu.",
+    measurement:
+      "Lungimea canalului; pentru fiecare cablu în plus din același canal se adaugă 1,05 m de cablu UTP și 0,05 ore de tehnician pe metru.",
     resources: [
       canalCablu(1.05),
       cabluUtp(1.05),
@@ -206,10 +210,15 @@ export const curentiSlabi: BaseNorm[] = [
       "Punct de acces Wi-Fi de tavan alimentat PoE, cu montaj și configurare",
     unit: "buc",
     includes:
-      "Fixarea pe tavan, legarea la cablul UTP, configurarea rețelelor și verificarea acoperirii.",
+      "Fixarea pe tavan, legarea la cablul UTP și la injectorul PoE din rack, configurarea rețelelor și verificarea acoperirii.",
     excludes: "Cablul UTP (DV-CSL-01).",
     measurement: "Numărul de puncte de acces.",
-    resources: [accessPoint(1), dibluCui(2), tehnicianCurentiSlabi(1.2)],
+    resources: [
+      accessPoint(1),
+      injectorPoe(1),
+      dibluCui(2),
+      tehnicianCurentiSlabi(1.2),
+    ],
   },
   {
     code: "DV-CSL-07",
@@ -280,7 +289,7 @@ export const curentiSlabi: BaseNorm[] = [
     code: "DV-CSL-11",
     category,
     title:
-      "Detector de mișcare sau contact magnetic suplimentar pentru alarmă, montat și programat",
+      "Detector de mișcare PIR suplimentar pentru alarmă, montat și programat",
     unit: "buc",
     includes:
       "Fixarea detectorului, legarea la cablul sosit și programarea zonei.",
@@ -296,7 +305,7 @@ export const curentiSlabi: BaseNorm[] = [
     includes:
       "Montarea postului exterior la poartă, a postului interior, a yalei electromagnetice și a sursei, cablul de interfon de până la 30 m în tub, programarea și proba.",
     excludes:
-      "Șanțul sau tubul îngropat până la poartă (categoria Terasamente).",
+      "Săpătura și umplutura șanțului până la poartă (categoria Terasamente) și tubul de protecție pentru pozarea în pământ.",
     measurement: "Numărul de seturi.",
     resources: [
       interfon(1),
@@ -316,7 +325,7 @@ export const curentiSlabi: BaseNorm[] = [
     includes:
       "Montarea postului exterior cu cameră, a monitorului, a yalei electromagnetice și a sursei, cablul de până la 30 m în tub, configurarea și proba.",
     excludes:
-      "Șanțul sau tubul îngropat până la poartă (categoria Terasamente).",
+      "Săpătura și umplutura șanțului până la poartă (categoria Terasamente) și tubul de protecție pentru pozarea în pământ.",
     measurement: "Numărul de seturi.",
     resources: [
       videointerfon(1),
@@ -407,7 +416,7 @@ export const curentiSlabi: BaseNorm[] = [
     code: "DV-CSL-19",
     category,
     title:
-      "Cablu rezistent la foc pentru bucla de detecție incendiu, în tub, îngropat sau aparent",
+      "Cablu rezistent la foc pentru bucla de detecție incendiu, în tub, îngropat sub tencuială",
     unit: "m",
     includes:
       "Pozarea tubului, tragerea cablului cu păstrarea ecranului continuu, etichetarea.",
@@ -416,7 +425,6 @@ export const curentiSlabi: BaseNorm[] = [
     resources: [
       tubFlexibil(1.05),
       cabluIncendiu(1.05),
-      dibluCui(1),
       tehnicianCurentiSlabi(0.12),
       necalificat(0.04),
     ],
@@ -434,7 +442,8 @@ export const curentiSlabi: BaseNorm[] = [
       cabluAlarma(15),
       tubFlexibil(15),
       smallMaterials(2),
-      tehnicianCurentiSlabi(1.5),
+      electrician(0.5),
+      tehnicianCurentiSlabi(1),
     ],
   },
   {
@@ -478,7 +487,7 @@ export const curentiSlabi: BaseNorm[] = [
     includes:
       "Montarea releului în doza aparatului, legarea la circuit și la întrerupător, configurarea în aplicație și proba.",
     measurement: "Numărul de relee.",
-    resources: [releuSmart(1), smallMaterials(2), tehnicianCurentiSlabi(0.7)],
+    resources: [releuSmart(1), smallMaterials(2), electrician(0.7)],
   },
   {
     code: "DV-CSL-24",

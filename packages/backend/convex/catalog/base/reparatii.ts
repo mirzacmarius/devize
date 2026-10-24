@@ -77,6 +77,11 @@ const lamelaCarbon = material(
   95,
 );
 const adezivLamela = material("Adeziv epoxidic pentru lamele", "kg", 90);
+const pastaEtansare = material(
+  "Pastă epoxidică pentru etanșarea fisurilor",
+  "kg",
+  70,
+);
 const popMetalic = equipment("Pop metalic reglabil, chirie pe zi", "zi", 4);
 const buiandrug = material(
   "Buiandrug prefabricat din beton armat, 1,5 m",
@@ -113,6 +118,7 @@ export const reparatii: BaseNorm[] = [
     resources: [
       rasinaEpoxidica(0.5),
       packer(4),
+      pastaEtansare(0.3),
       smallMaterials(3),
       betonist(1),
       pompaInjectare(0.3),
@@ -221,7 +227,7 @@ export const reparatii: BaseNorm[] = [
     measurement: "Lungimea lamelelor montate.",
     resources: [
       lamelaCarbon(1.02),
-      adezivLamela(0.6),
+      adezivLamela(0.35),
       amorsaEpoxidica(0.05),
       betonist(0.6),
       polizor(0.1),
@@ -277,7 +283,7 @@ export const reparatii: BaseNorm[] = [
     code: "DV-REP-10",
     category,
     title:
-      "Înlocuirea unui buiandrug deteriorat cu buiandrug prefabricat, deschidere până la 1,5 m",
+      "Înlocuirea unui buiandrug deteriorat cu buiandrug prefabricat, deschidere până la 1 m",
     unit: "buc",
     includes:
       "Sprijinirea provizorie a zidăriei, desfacerea buiandrugului vechi, montarea celui nou pe pat de mortar, rezidirea cu cărămidă plină, scoaterea sprijinirilor și evacuarea molozului.",
@@ -298,12 +304,13 @@ export const reparatii: BaseNorm[] = [
     code: "DV-REP-11",
     category,
     title:
-      "Țeserea și repararea zidăriei fisurate cu cărămidă plină, pe tronsoane",
+      "Țeserea și repararea zidăriei fisurate cu cărămidă plină, pe tronsoane, pe grosimea de 1/2 cărămidă (12,5 cm)",
     unit: "mp",
     includes:
       "Desfacerea zidăriei fisurate în trepte, curățarea, rezidirea țesută cu cărămidă plină și agrafe din oțel, umplerea rosturilor.",
     excludes: "Tencuiala de refacere.",
-    measurement: "Suprafața de zidărie refăcută.",
+    measurement:
+      "Suprafața de zidărie refăcută, pe grosimea de 12,5 cm; pentru zidurile de o cărămidă se dublează cantitățile.",
     resources: [
       caramidaPlina(60),
       mortarZidarie(0.05),

@@ -60,8 +60,9 @@ export const schele: BaseNorm[] = [
       "Montarea și demontarea schelei metalice de fațadă, între 10 și 20 m înălțime",
     unit: "mp",
     includes:
-      "Aducerea elementelor, montarea cu ancoraje suplimentare, podine, balustrade și scări de acces, demontarea și stivuirea.",
-    excludes: "Chiria schelei (DV-SCH-02); plasa de protecție (DV-SCH-04).",
+      "Aducerea elementelor, montarea cu podine, balustrade și scări de acces, prinderea schelei de ancoraje, demontarea și stivuirea.",
+    excludes:
+      "Chiria schelei (DV-SCH-02); plasa de protecție (DV-SCH-04); ancorajele în fațadă (DV-SCH-06).",
     measurement: "Suprafața fațadei acoperite de schelă.",
     resources: [schelar(0.3), necalificat(0.16)],
   },
@@ -97,7 +98,7 @@ export const schele: BaseNorm[] = [
     title: "Ancorarea schelei în fațadă, cu astuparea găurilor la demontare",
     unit: "buc",
     includes:
-      "Forarea, montarea ancorei cu ochi și a tijei de ancorare, scoaterea la demontare și astuparea găurii cu mortar.",
+      "Forarea, montarea ancorei cu ochi, scoaterea ei la demontare și astuparea găurii cu mortar; prinderea schelei de ancoră este cuprinsă în DV-SCH-01 și DV-SCH-03.",
     measurement: "Numărul de ancoraje.",
     resources: [ancoraSchela(1), mortarReparatii(0.2), schelar(0.15)],
   },

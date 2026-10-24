@@ -80,8 +80,9 @@ export const gaze: BaseNorm[] = [
       'Conductă din oțel pentru gaze 1/2" – 1", montată aparent, sudată, vopsită galben',
     unit: "m",
     includes:
-      "Tăierea, pregătirea capetelor, sudarea sau filetarea, fixarea cu brățări, grunduirea și vopsirea în galben, proba de etanșeitate.",
-    excludes: "Robineții (DV-GAZ-05) și trecerile prin pereți (DV-GAZ-09).",
+      "Tăierea, pregătirea capetelor, sudarea sau filetarea, fixarea cu brățări, grunduirea și vopsirea în galben.",
+    excludes:
+      "Robineții (DV-GAZ-05), trecerile prin pereți (DV-GAZ-09) și probele (DV-GAZ-10).",
     measurement: "Lungimea conductei montate.",
     resources: [
       tevaOtelGaz(1.02),
@@ -104,8 +105,9 @@ export const gaze: BaseNorm[] = [
       'Conductă din oțel pentru gaze 1 1/4" – 2", montată aparent, sudată, vopsită galben',
     unit: "m",
     includes:
-      "Tăierea, pregătirea capetelor, sudarea, fixarea cu brățări, grunduirea și vopsirea în galben, proba de etanșeitate.",
-    excludes: "Robineții și trecerile prin pereți.",
+      "Tăierea, pregătirea capetelor, sudarea, fixarea cu brățări, grunduirea și vopsirea în galben.",
+    excludes:
+      "Robineții (DV-GAZ-05), trecerile prin pereți (DV-GAZ-09) și probele (DV-GAZ-10).",
     measurement: "Lungimea conductei montate.",
     resources: [
       tevaOtelGazMare(1.02),
@@ -129,7 +131,8 @@ export const gaze: BaseNorm[] = [
       "Conductă multistrat pentru gaze Ø20 cu fitinguri de presare, montată aparent",
     unit: "m",
     includes:
-      "Tăierea, calibrarea, fitingurile presate, fixarea cu brățări la distanțele cerute și proba de etanșeitate.",
+      "Tăierea, calibrarea, fitingurile presate și fixarea cu brățări la distanțele cerute.",
+    excludes: "Probele (DV-GAZ-10).",
     measurement: "Lungimea conductei montate.",
     resources: [
       multistratGaz(1.02),
@@ -167,7 +170,8 @@ export const gaze: BaseNorm[] = [
     title: "Robinet de gaz cu sferă, montat pe conductă",
     unit: "buc",
     includes:
-      "Filetarea capetelor, montarea robinetului cu etanșare omologată pentru gaz și proba de etanșeitate.",
+      "Filetarea capetelor și montarea robinetului cu etanșare omologată pentru gaz.",
+    excludes: "Probele (DV-GAZ-10).",
     measurement: "Numărul de robineți montați.",
     resources: [robinetGaz(1), smallMaterials(2), instalator(0.5)],
   },
