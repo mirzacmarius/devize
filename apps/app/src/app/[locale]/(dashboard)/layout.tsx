@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { FirmProvider } from "@/components/firm-provider";
 import { convexToken } from "@/lib/convex-server";
+import { CommandMenuProvider } from "./_components/command-menu";
 import { MobileNav } from "./_components/mobile-nav";
 import { SidebarContent } from "./_components/sidebar-content";
 
@@ -45,21 +46,23 @@ async function Dashboard({ children }: { children: React.ReactNode }) {
   }
   return (
     <FirmProvider preloadedFirms={preloadedFirms}>
-      <AppShell>
-        <AppSidebar>
-          <SidebarContent
-            preloadedUser={preloadedUser}
-            isSuperAdmin={isSuperAdmin}
-          />
-        </AppSidebar>
-        <AppMain>
-          <MobileNav
-            preloadedUser={preloadedUser}
-            isSuperAdmin={isSuperAdmin}
-          />
-          {children}
-        </AppMain>
-      </AppShell>
+      <CommandMenuProvider isSuperAdmin={isSuperAdmin}>
+        <AppShell>
+          <AppSidebar>
+            <SidebarContent
+              preloadedUser={preloadedUser}
+              isSuperAdmin={isSuperAdmin}
+            />
+          </AppSidebar>
+          <AppMain>
+            <MobileNav
+              preloadedUser={preloadedUser}
+              isSuperAdmin={isSuperAdmin}
+            />
+            {children}
+          </AppMain>
+        </AppShell>
+      </CommandMenuProvider>
     </FirmProvider>
   );
 }

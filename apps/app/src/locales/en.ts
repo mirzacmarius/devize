@@ -41,6 +41,41 @@ export default {
     dark: "Dark",
     system: "System",
   },
+  commandMenu: {
+    title: "Search",
+    description:
+      "Search for an estimate, a client, an invoice or a norm, or pick an action.",
+    button: "Search…",
+    placeholder: "Search for an estimate, a client, a norm or an action",
+    results: "Results",
+    groups: {
+      recent: "Recent estimates",
+      estimates: "Estimates",
+      clients: "Clients",
+      invoices: "Invoices",
+      norms: "Norms",
+      actions: "Actions",
+      pages: "Pages",
+    },
+    actions: {
+      newEstimate: "New estimate",
+      newClient: "New client",
+      newNorm: "New norm",
+      theme: "Theme: {theme}",
+    },
+    keywords: {
+      newEstimate: "add create deviz quote offer job",
+      newClient: "add create customer",
+      newNorm: "add create item catalog",
+      theme: "appearance colours light dark system",
+    },
+    settingsPage: "Settings: {tab}",
+    invoice: "Invoice {code}",
+    ownNorm: "own norm",
+    searching: "Searching…",
+    nothing: "Nothing found for “{text}”.",
+    hints: "↑ ↓ to choose · Enter to open · Esc to close",
+  },
   login: {
     title: "Sign in to Devize",
     description:
