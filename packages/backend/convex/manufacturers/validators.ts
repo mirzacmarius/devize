@@ -164,6 +164,16 @@ export const normConsent = v.object({
   recordedAt: v.number(),
 });
 
+// The agreement of a document deleted after some of its norms reached the
+// catalog, kept as proof that they were published with it.
+export const keptConsent = v.object({
+  ...normConsent.fields,
+  fileName: v.string(),
+  edition: v.optional(v.string()),
+  // When the document itself was deleted.
+  deletedAt: v.number(),
+});
+
 // What manufacturer research returns, after the action checked its sources.
 export const researchFindings = v.object({
   displayName: v.string(),

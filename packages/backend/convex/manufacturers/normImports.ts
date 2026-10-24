@@ -274,6 +274,37 @@ export const remove = mutation({
   },
 });
 
+/**
+ * Deletes the norm documents of a profile taken down, one per run, with the
+ * norms extracted from them. Proof of the agreements under which some were
+ * published stays on the manufacturer.
+ */
+export const dropImports = internalMutation({
+  args: { manufacturerId: v.id("manufacturers") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const manufacturer = await ctx.db.get("manufacturers", args.manufacturerId);
+    if (manufacturer?.status !== "excluded") {
+      return null;
+    }
+    const normImport = await ctx.db
+      .query("normImports")
+      .withIndex("by_manufacturerId", (q) =>
+        q.eq("manufacturerId", manufacturer._id),
+      )
+      .first();
+    if (normImport) {
+      await deleteNormImport(ctx, normImport);
+      await ctx.scheduler.runAfter(
+        0,
+        internal.manufacturers.normImports.dropImports,
+        args,
+      );
+    }
+    return null;
+  },
+});
+
 /** Marks an extraction job running; `resume` continues one already running. */
 export const begin = internalMutation({
   args: { jobId: v.id("aiJobs"), resume: v.boolean() },

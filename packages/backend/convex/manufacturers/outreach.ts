@@ -2,11 +2,12 @@ import { ConvexError, v } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
-import { mutation, query } from "../_generated/server";
+import { internalMutation, mutation, query } from "../_generated/server";
 import { requireSuperAdmin } from "../lib/roles";
 import { getController, privacyPageUrl } from "../privacy";
 import { checkEmail, draftThanksEmail, rerenderDraft } from "./drafts";
 import { hasBlockingIssue } from "./lib/emailTemplate";
+import { scrubSender } from "./lib/retention";
 import { isEmail, normalizeEmail } from "./lib/text";
 
 // Statuses the pipeline moves past once a first email is approved or sent; a
@@ -354,7 +355,90 @@ export const updateSettings = mutation({
       firstName: args.firstName.trim() || undefined,
       lastName: args.lastName.trim() || undefined,
       phone: args.phone.trim() || undefined,
+      signedBy: admin._id,
     });
+    return null;
+  },
+});
+
+/**
+ * Takes the signature out of the settings when the person who saved it
+ * deletes their account, then clears it from the drafts a page at a time.
+ */
+export async function forgetSender(ctx: MutationCtx, userId: Id<"users">) {
+  const settings = await ctx.db.query("outreachSettings").first();
+  if (!settings || (settings.signedBy ?? settings.updatedBy) !== userId) {
+    return;
+  }
+  const { firstName, lastName, phone } = settings;
+  const signed = Boolean(firstName || lastName || phone);
+  await ctx.db.patch("outreachSettings", settings._id, {
+    firstName: undefined,
+    lastName: undefined,
+    phone: undefined,
+    signedBy: undefined,
+    ...(signed ? { forgetting: { firstName, lastName, phone } } : {}),
+  });
+  if (signed) {
+    await ctx.scheduler.runAfter(
+      0,
+      internal.manufacturers.outreach.forgetSenderDrafts,
+      { cursor: null },
+    );
+  }
+}
+
+/**
+ * Renders drafts nobody edited again without the signature of someone who
+ * left, so they wait for a new one; in edited drafts, that person's names and
+ * phone become placeholders again. The signature is dropped from the settings
+ * after the last page. Takes only a cursor, so the scheduler never holds it.
+ */
+export const forgetSenderDrafts = internalMutation({
+  args: { cursor: v.union(v.string(), v.null()) },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const settings = await ctx.db.query("outreachSettings").first();
+    const forgetting = settings?.forgetting;
+    if (!settings || !forgetting) {
+      return null;
+    }
+    const page = await ctx.db
+      .query("outreachMessages")
+      .withIndex("by_status", (q) => q.eq("status", "draft"))
+      .paginate({ numItems: 50, cursor: args.cursor });
+    for (const draft of page.page) {
+      if (!draft.edited) {
+        await rerenderDraft(ctx, draft);
+        continue;
+      }
+      const subject = scrubSender(draft.subject, forgetting);
+      const body = scrubSender(draft.body, forgetting);
+      if (subject === draft.subject && body === draft.body) {
+        continue;
+      }
+      await ctx.db.patch("outreachMessages", draft._id, {
+        subject,
+        body,
+        issues: await checkEmail(ctx, draft.manufacturerId, {
+          ...draft,
+          subject,
+          body,
+        }),
+        updatedAt: Date.now(),
+      });
+    }
+    if (page.isDone) {
+      await ctx.db.patch("outreachSettings", settings._id, {
+        forgetting: undefined,
+      });
+    } else {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.manufacturers.outreach.forgetSenderDrafts,
+        { cursor: page.continueCursor },
+      );
+    }
     return null;
   },
 });

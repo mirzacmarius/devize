@@ -387,12 +387,13 @@ export async function redirectDraft(
 
 /**
  * Renders a draft again from its saved values and the current signature. A
- * thank-you also gets a claim link for its recipient as it now stands.
+ * thank-you also gets a claim link for its recipient as it now stands, from
+ * `adminId`; without one it keeps the link it has.
  */
 export async function rerenderDraft(
   ctx: MutationCtx,
   message: Doc<"outreachMessages">,
-  adminId: Id<"users">,
+  adminId?: Id<"users">,
 ) {
   const sender = await getSender(ctx);
   let vars = message.vars;
@@ -403,7 +404,12 @@ export async function rerenderDraft(
       message.manufacturerId,
     );
     const to = message.to ? normalizeEmail(message.to) : undefined;
-    if (manufacturer && to && (await canGetClaimLink(ctx, manufacturer, to))) {
+    if (
+      adminId &&
+      manufacturer &&
+      to &&
+      (await canGetClaimLink(ctx, manufacturer, to))
+    ) {
       vars = await thanksVarsFor(ctx, manufacturer, to, adminId);
     }
     email = renderThanksEmail(vars, sender);

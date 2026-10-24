@@ -385,6 +385,45 @@ export function scrubText(
   return result;
 }
 
+// The signature's placeholders in the email templates (emailTemplate.ts).
+const SIGNATURE = {
+  firstName: "{Prenume}",
+  lastName: "{Nume}",
+  phone: "{telefon}",
+} as const;
+
+/** Matches `pattern` as a whole, not inside a longer word or number. */
+function whole(pattern: string) {
+  return new RegExp(`(?<![\\p{L}\\p{N}])${pattern}(?![\\p{L}\\p{N}])`, "gu");
+}
+
+/**
+ * Puts the signature's placeholders back wherever a signer's names and phone
+ * are in a text, so an edited email signed by someone who left waits for a new
+ * signature. Names match as whole words in their letter case; the phone,
+ * whatever spaces, dots or dashes split its digits.
+ */
+export function scrubSender(
+  text: string,
+  sender: { firstName?: string; lastName?: string; phone?: string },
+): string {
+  let result = text;
+  for (const key of ["firstName", "lastName"] as const) {
+    const name = sender[key]?.trim();
+    if (name) {
+      result = result.replace(whole(escapeRegExp(name)), SIGNATURE[key]);
+    }
+  }
+  const digits = sender.phone?.replace(/\D/g, "") ?? "";
+  if (digits.length >= 6) {
+    result = result.replace(
+      whole([...digits].join("[\\s.-]*")),
+      SIGNATURE.phone,
+    );
+  }
+  return result;
+}
+
 /** Whether a text holds one of the addresses, in any of those forms. */
 export function mentions(text: string, addresses: Iterable<string>): boolean {
   return scrubText(text, addresses, "\u0000") !== text;

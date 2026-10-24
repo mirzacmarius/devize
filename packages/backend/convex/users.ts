@@ -7,6 +7,7 @@ import { mutation, query } from "./_generated/server";
 import { unclaimedUpload } from "./accounts/files";
 import { EMAIL_CODE_PROVIDER } from "./emailSignIn";
 import { invalid } from "./lib/errors";
+import { forgetSender } from "./manufacturers/outreach";
 import { forgetAddress } from "./signInLeftovers";
 import { username } from "./utils/validators";
 
@@ -218,6 +219,7 @@ export const deleteCurrentUserAccount = mutation({
       }
       await ctx.db.delete("authSessions", session._id);
     }
+    await forgetSender(ctx, userId);
     await ctx.db.delete("users", userId);
   },
 });
