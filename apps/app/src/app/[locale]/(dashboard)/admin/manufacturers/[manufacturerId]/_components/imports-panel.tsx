@@ -17,14 +17,16 @@ import {
   useFormat,
   useRun,
 } from "../../../_components/ui";
-import type { NormImport } from "./types";
+import type { KeptConsent, NormImport } from "./types";
 
 export function ImportsPanel({
   manufacturerId,
   normImports,
+  keptConsents,
 }: {
   manufacturerId: Id<"manufacturers">;
   normImports: NormImport[];
+  keptConsents: KeptConsent[];
 }) {
   const t = useScopedI18n("admin.manufacturer.imports");
   const tAdmin = useScopedI18n("admin");
@@ -164,6 +166,35 @@ export function ImportsPanel({
             </li>
           ))}
         </ul>
+      )}
+      {keptConsents.length > 0 && (
+        <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+          <p className="text-sm font-medium text-primary">{t("kept")}</p>
+          <p className="text-xs text-primary/50">{t("keptHint")}</p>
+          <ul className="flex flex-col gap-2">
+            {keptConsents.map((kept) => (
+              <li
+                key={`${kept.fileName}-${kept.deletedAt}`}
+                className="flex flex-col gap-0.5 text-xs"
+              >
+                <span className="text-primary/70">
+                  {t("keptFile", {
+                    file: kept.fileName,
+                    date: format.date(kept.deletedAt),
+                  })}
+                  {kept.edition &&
+                    ` · ${t("keptEdition", { edition: kept.edition })}`}
+                </span>
+                <span className="text-primary">
+                  {t("keptConsent", {
+                    date: format.date(kept.recordedAt),
+                    note: kept.note,
+                  })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </Panel>
   );

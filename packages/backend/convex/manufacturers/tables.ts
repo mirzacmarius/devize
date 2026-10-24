@@ -9,6 +9,7 @@ import {
   existingNorm,
   importedNormStatus,
   issue,
+  keptConsent,
   manufacturerStatus,
   messageStatus,
   messageStep,
@@ -59,6 +60,8 @@ export const manufacturerTables = {
     // When the next research report kept on its jobs is due to be deleted; 0
     // when none is kept. Missing on manufacturers from before ADR 0043.
     reportsUntil: v.optional(v.number()),
+    // Agreements of deleted norm documents whose norms reached the catalog.
+    keptConsents: v.optional(v.array(keptConsent)),
     createdBy: v.id("users"),
   })
     .index("by_nameKey", ["nameKey"])
@@ -130,6 +133,9 @@ export const manufacturerTables = {
     controllerAddress: v.optional(v.string()),
     controllerEmail: v.optional(v.string()),
     updatedBy: v.id("users"),
+    // Who saved the signature, which is taken to be their own: it goes when
+    // they delete their account. Missing on settings saved before.
+    signedBy: v.optional(v.id("users")),
   }),
 
   // Addresses and domains that asked not to be contacted again. Kept for good.

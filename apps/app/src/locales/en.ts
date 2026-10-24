@@ -2862,6 +2862,12 @@ export default {
         retry: "Retry",
         remove: "Delete",
         noConsent: "No consent to publish",
+        kept: "Kept agreements",
+        keptHint:
+          "The documents were deleted, but some of their norms reached the catalog, so the producer's agreement is kept as proof.",
+        keptFile: "{file} · deleted on {date}",
+        keptEdition: "edition {edition}",
+        keptConsent: "Agreement recorded on {date}: {note}",
       },
       jobs: {
         title: "AI jobs",
@@ -3428,7 +3434,7 @@ export default {
       optOut:
         "reply “stop” and we won't write again. We then delete your address from our contacts and messages, including the emails we sent. We keep it only on our exclusion list, so we never write to it again, and if the firm consented to our publishing its norms, we also keep the proof of that consent.",
       retention:
-        "while we are in touch with the firm. If the firm doesn't answer or declines, we delete a person's address within 6 months of the last message sent to it, and a person's address we never wrote to within a month of finding it. We keep the messages sent to the firm without these addresses, as proof that we wrote. The report in which the assistant describes what it found on the firm's site is deleted within a month.",
+        "while we are in touch with the firm. If the firm doesn't answer or declines, we delete a person's address within 6 months of the last message sent to it, and a person's address we never wrote to within a month of finding it. We keep the messages sent to the firm without these addresses, as proof that we wrote. The report in which the assistant describes what it found on the firm's site is deleted within a month. We keep the proof of the agreement to publish the norms even after the firm takes its profile off Devize, because the norms published until then stay in the devize made with them.",
       claims:
         "If you take over your firm's profile in Devize, we keep the request as proof of who took it over and how: the email address you signed in with, what you told us about your role and the firm's CUI, which we check in ANAF's public register. We keep requests to remove a profile the same way. The name, email and phone of the contact person a firm puts on its profile are seen by everyone who uses Devize. From the firms' estimates, a manufacturer gets only monthly statistics about its norms and products, without learning which firm used them.",
     },

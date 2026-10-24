@@ -382,17 +382,45 @@ export const remove = mutation({
   },
 });
 
+/**
+ * Deletes a norms document with the norms extracted from it. When some of them
+ * reached the catalog, the manufacturer keeps the document's recorded
+ * agreement, as proof that they were published with it.
+ */
 export async function deleteNormImport(
   ctx: MutationCtx,
   normImport: Doc<"normImports">,
 ) {
+  let published = false;
   const norms = ctx.db
     .query("importedNorms")
     .withIndex("by_normImportId_and_baseCode", (q) =>
       q.eq("normImportId", normImport._id),
     );
   for await (const norm of norms) {
+    published ||=
+      (await ctx.db
+        .query("norms")
+        .withIndex("by_importedNormId", (q) => q.eq("importedNormId", norm._id))
+        .first()) !== null;
     await ctx.db.delete("importedNorms", norm._id);
+  }
+  const manufacturer = await ctx.db.get(
+    "manufacturers",
+    normImport.manufacturerId,
+  );
+  if (published && normImport.consent && manufacturer) {
+    await ctx.db.patch("manufacturers", manufacturer._id, {
+      keptConsents: [
+        ...(manufacturer.keptConsents ?? []),
+        {
+          ...normImport.consent,
+          fileName: normImport.fileName,
+          edition: normImport.edition,
+          deletedAt: Date.now(),
+        },
+      ],
+    });
   }
   await ctx.storage.delete(normImport.fileId);
   await ctx.db.delete("normImports", normImport._id);

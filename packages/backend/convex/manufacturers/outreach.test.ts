@@ -264,3 +264,110 @@ describe("draftThanks", () => {
     expect(await claimLinksOf(t, manufacturerId)).toHaveLength(1);
   });
 });
+
+describe("the signer deleting their account", () => {
+  async function settingsOf(t: TestConvex) {
+    return await t.run(
+      async (ctx) => await ctx.db.query("outreachSettings").first(),
+    );
+  }
+
+  test("takes the signature out of the settings and the drafts", async () => {
+    const t = setup();
+    const { admin, manufacturerId } = await producerWithNorms(t);
+    await admin.as.mutation(outreach.updateSettings, {
+      firstName: "Ioana",
+      lastName: "Pop",
+      phone: "0711 111 111",
+    });
+    await admin.as.mutation(outreach.updatePrivacy, {
+      controllerName: "Exemplu SRL",
+      controllerRegistration: "",
+      controllerAddress: "",
+      controllerEmail: "date@exemplu.example",
+      privacyUrl: "",
+    });
+    const rendered = await admin.as.mutation(outreach.draftThanks, {
+      manufacturerId,
+      to: "tehnic@termotest.example",
+    });
+    const edited = await t.run(
+      async (ctx) =>
+        await ctx.db.insert("outreachMessages", {
+          manufacturerId,
+          step: "initial",
+          status: "draft",
+          to: "office@termotest.example",
+          subject: "Normele de deviz Termo Test",
+          body: "Bună ziua,\n\nScris de mână.\n\nIoana Pop\nFondator, Devize · 0711 111 111",
+          vars: { firm: "Termo Test" },
+          issues: [],
+          edited: true,
+          updatedAt: Date.now(),
+        }),
+    );
+
+    await admin.as.mutation(api.users.deleteCurrentUserAccount, {});
+
+    expect(await settingsOf(t)).toMatchObject({
+      controllerName: "Exemplu SRL",
+      controllerEmail: "date@exemplu.example",
+    });
+    const settings = await settingsOf(t);
+    expect(settings?.firstName).toBeUndefined();
+    expect(settings?.lastName).toBeUndefined();
+    expect(settings?.phone).toBeUndefined();
+    expect(settings?.signedBy).toBeUndefined();
+
+    const thanks = await messageOf(t, rendered);
+    expect(thanks?.body).not.toContain("Ioana");
+    expect(thanks?.body).not.toContain("0711 111 111");
+    expect(thanks?.issues.map((issue) => issue.code)).toContain("placeholder");
+    // No new claim link is made in the name of someone who left.
+    expect(await claimLinksOf(t, manufacturerId)).toHaveLength(1);
+
+    const handWritten = await messageOf(t, edited);
+    expect(handWritten?.body).toBe(
+      "Bună ziua,\n\nScris de mână.\n\n{Prenume} {Nume}\nFondator, Devize · {telefon}",
+    );
+    expect(handWritten?.edited).toBe(true);
+    expect(handWritten?.issues.map((issue) => issue.code)).toContain(
+      "placeholder",
+    );
+  });
+
+  test("another admin's account going leaves the signature", async () => {
+    const t = setup();
+    const { admin } = await producerWithNorms(t);
+    await admin.as.mutation(outreach.updateSettings, {
+      firstName: "Ioana",
+      lastName: "Pop",
+      phone: "0711 111 111",
+    });
+    const other = await signIn(t, { name: "Mihai", superadmin: true });
+    // Saving the privacy details doesn't make the signature theirs.
+    await other.as.mutation(outreach.updatePrivacy, {
+      controllerName: "Exemplu SRL",
+      controllerRegistration: "",
+      controllerAddress: "",
+      controllerEmail: "date@exemplu.example",
+      privacyUrl: "",
+    });
+    await other.as.mutation(api.users.deleteCurrentUserAccount, {});
+
+    expect(await settingsOf(t)).toMatchObject({
+      firstName: "Ioana",
+      lastName: "Pop",
+      phone: "0711 111 111",
+      signedBy: admin.userId,
+    });
+  });
+
+  test("a signature saved before goes with whoever saved the settings last", async () => {
+    const t = setup();
+    // producerWithNorms saves its signature without a signer.
+    const { admin } = await producerWithNorms(t);
+    await admin.as.mutation(api.users.deleteCurrentUserAccount, {});
+    expect((await settingsOf(t))?.firstName).toBeUndefined();
+  });
+});

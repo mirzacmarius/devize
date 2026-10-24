@@ -2855,6 +2855,12 @@ export default {
         retry: "Reia",
         remove: "Șterge",
         noConsent: "Fără acord de publicare",
+        kept: "Acorduri păstrate",
+        keptHint:
+          "Documentele s-au șters, dar unele norme din ele au ajuns în catalog, așa că păstrăm acordul producătorului ca dovadă.",
+        keptFile: "{file} · șters pe {date}",
+        keptEdition: "ediția {edition}",
+        keptConsent: "Acord înregistrat pe {date}: {note}",
       },
       jobs: {
         title: "Joburi AI",
@@ -3420,7 +3426,7 @@ export default {
       optOut:
         "răspundeți „stop” și nu vă mai scriem. Ștergem atunci adresa dumneavoastră din contactele și din mesajele noastre, inclusiv din emailurile trimise. O păstrăm doar pe lista de excludere, ca să nu vă scriem din nou, iar dacă firma ne-a dat acordul să publicăm normele, păstrăm și dovada acordului.",
       retention:
-        "cât discutăm cu firma. Dacă firma nu răspunde sau refuză, ștergem adresa unei persoane în cel mult 6 luni de la ultimul mesaj trimis la ea, iar adresa unei persoane căreia nu i-am scris o ștergem în cel mult o lună de când am găsit-o. Mesajele trimise firmei le păstrăm fără aceste adrese, ca dovadă că i-am scris. Raportul în care asistentul descrie ce a găsit pe site-ul firmei îl ștergem după cel mult o lună.",
+        "cât discutăm cu firma. Dacă firma nu răspunde sau refuză, ștergem adresa unei persoane în cel mult 6 luni de la ultimul mesaj trimis la ea, iar adresa unei persoane căreia nu i-am scris o ștergem în cel mult o lună de când am găsit-o. Mesajele trimise firmei le păstrăm fără aceste adrese, ca dovadă că i-am scris. Raportul în care asistentul descrie ce a găsit pe site-ul firmei îl ștergem după cel mult o lună. Dovada acordului de a publica normele o păstrăm și după ce firma își scoate profilul din Devize, pentru că normele publicate până atunci rămân în devizele făcute cu ele.",
       claims:
         "Dacă preluați în Devize profilul firmei la care lucrați, păstrăm cererea, ca dovadă a cui a preluat profilul și cum: adresa de email cu care ați intrat, ce ne-ați scris despre rolul dumneavoastră și CUI-ul firmei, pe care îl verificăm în registrul public ANAF. La fel păstrăm cererile de a scoate un profil. Numele, emailul și telefonul persoanei de contact pe care firma le trece pe profil le văd toți cei care folosesc Devize. Din devizele firmelor, producătorul primește doar statistici lunare despre normele și produsele lui, fără să afle care firmă le-a folosit.",
     },

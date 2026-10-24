@@ -6,6 +6,7 @@ import type { MutationCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import { unclaimedUpload } from "./accounts/files";
 import { invalid } from "./lib/errors";
+import { forgetSender } from "./manufacturers/outreach";
 import { username } from "./utils/validators";
 
 // A photo for the account menu: a picture every browser shows, and not a big
@@ -202,6 +203,7 @@ export const deleteCurrentUserAccount = mutation({
       }
       await ctx.db.delete("authSessions", session._id);
     }
+    await forgetSender(ctx, userId);
     await ctx.db.delete("users", userId);
   },
 });

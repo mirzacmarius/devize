@@ -475,7 +475,10 @@ export const dismiss = mutation({
   },
 });
 
-/** Archives a removed producer's published norms, a batch per run. */
+/**
+ * Archives a removed producer's published norms, a batch per run, then deletes
+ * the norm documents it sent us.
+ */
 export const withdrawNorms = internalMutation({
   args: { manufacturerId: v.id("manufacturers") },
   returns: v.null(),
@@ -497,6 +500,12 @@ export const withdrawNorms = internalMutation({
       await ctx.scheduler.runAfter(
         0,
         internal.producers.admin.withdrawNorms,
+        args,
+      );
+    } else {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.manufacturers.normImports.dropImports,
         args,
       );
     }

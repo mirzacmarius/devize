@@ -1,7 +1,36 @@
 import { describe, expect, test } from "bun:test";
-import { api } from "../_generated/api";
-import { setup, signIn } from "../test.helper";
+import { api, internal } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
+import { setup, signIn, type TestConvex } from "../test.helper";
 import { insertManufacturer, insertNormImport } from "./test.helper";
+
+/** A document whose approved Normă was published with the given agreement. */
+async function publishedImport(
+  t: TestConvex,
+  admin: Awaited<ReturnType<typeof signIn>>,
+  manufacturerId: Id<"manufacturers">,
+  note: string,
+) {
+  const normImportId = await insertNormImport(t, admin.userId, manufacturerId);
+  await admin.as.mutation(api.manufacturers.normImports.recordConsent, {
+    normImportId,
+    note,
+  });
+  await admin.as.mutation(api.catalog.publishing.publishImportedNorms, {
+    normImportId,
+  });
+  return normImportId;
+}
+
+async function leftOf(t: TestConvex, manufacturerId: Id<"manufacturers">) {
+  return await t.run(async (ctx) => ({
+    manufacturer: await ctx.db.get("manufacturers", manufacturerId),
+    normImports: await ctx.db.query("normImports").collect(),
+    importedNorms: await ctx.db.query("importedNorms").collect(),
+    files: await ctx.db.system.query("_storage").collect(),
+    norms: await ctx.db.query("norms").collect(),
+  }));
+}
 
 describe("recordConsent", () => {
   test("records how the manufacturer agreed, for super admins only", async () => {
@@ -92,5 +121,93 @@ describe("get", () => {
       difference: 0.0429,
       matches: false,
     });
+  });
+});
+
+describe("deleting a document", () => {
+  test("keeps the agreement under which its norms reached the catalog", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    const manufacturerId = await insertManufacturer(t, admin.userId);
+    const published = await publishedImport(
+      t,
+      admin,
+      manufacturerId,
+      "Emailul biroului tehnic din 21.10.2026",
+    );
+    // Agreed to, but nothing from it was published.
+    const unpublished = await insertNormImport(t, admin.userId, manufacturerId);
+    await admin.as.mutation(api.manufacturers.normImports.recordConsent, {
+      normImportId: unpublished,
+      note: "Telefon, 22.10.2026",
+    });
+
+    const remove = api.manufacturers.normImports.remove;
+    await admin.as.mutation(remove, { normImportId: unpublished });
+    await admin.as.mutation(remove, { normImportId: published });
+
+    const left = await leftOf(t, manufacturerId);
+    expect(left.normImports).toEqual([]);
+    expect(left.importedNorms).toEqual([]);
+    expect(left.files).toEqual([]);
+    expect(left.norms).toHaveLength(1);
+    expect(left.manufacturer?.keptConsents).toEqual([
+      {
+        note: "Emailul biroului tehnic din 21.10.2026",
+        recordedBy: admin.userId,
+        recordedAt: expect.any(Number),
+        fileName: "norme-test.pdf",
+        edition: "2026",
+        deletedAt: expect.any(Number),
+      },
+    ]);
+    const data = await admin.as.query(api.manufacturers.admin.get, {
+      manufacturerId,
+    });
+    expect(data?.manufacturer.keptConsents).toHaveLength(1);
+  });
+
+  test("a profile taken down loses the documents its producer sent", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    const manufacturerId = await insertManufacturer(t, admin.userId);
+    await publishedImport(t, admin, manufacturerId, "Email, 21.10.2026");
+    await insertNormImport(t, admin.userId, manufacturerId);
+    await insertNormImport(t, admin.userId, manufacturerId, {
+      fileName: "norme-test-2.pdf",
+    });
+
+    // What a removal request ends with (producers/admin.ts remove).
+    await t.run(async (ctx) => {
+      await ctx.db.patch("manufacturers", manufacturerId, {
+        status: "excluded",
+      });
+    });
+    await t.mutation(internal.producers.admin.withdrawNorms, {
+      manufacturerId,
+    });
+    await t.finishAllScheduledFunctions(() => {});
+
+    const left = await leftOf(t, manufacturerId);
+    expect(left.norms.map((norm) => norm.status)).toEqual(["archived"]);
+    expect(left.normImports).toEqual([]);
+    expect(left.importedNorms).toEqual([]);
+    expect(left.files).toEqual([]);
+    expect(left.manufacturer?.keptConsents).toMatchObject([
+      { note: "Email, 21.10.2026", fileName: "norme-test.pdf" },
+    ]);
+  });
+
+  test("documents stay while the producer isn't excluded", async () => {
+    const t = setup();
+    const admin = await signIn(t, { name: "Admin", superadmin: true });
+    const manufacturerId = await insertManufacturer(t, admin.userId);
+    await insertNormImport(t, admin.userId, manufacturerId);
+
+    await t.mutation(internal.manufacturers.normImports.dropImports, {
+      manufacturerId,
+    });
+    await t.finishAllScheduledFunctions(() => {});
+    expect((await leftOf(t, manufacturerId)).normImports).toHaveLength(1);
   });
 });

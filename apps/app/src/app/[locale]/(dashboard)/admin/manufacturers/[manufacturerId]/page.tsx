@@ -145,6 +145,7 @@ export default function ManufacturerPage() {
           <ImportsPanel
             manufacturerId={manufacturerId}
             normImports={data.normImports}
+            keptConsents={manufacturer.keptConsents ?? []}
           />
           <ThanksPanel
             manufacturer={manufacturer}

@@ -354,10 +354,60 @@ export const updateSettings = mutation({
       firstName: args.firstName.trim() || undefined,
       lastName: args.lastName.trim() || undefined,
       phone: args.phone.trim() || undefined,
+      signedBy: admin._id,
     });
     return null;
   },
 });
+
+/**
+ * Takes the signature out of the settings when the person who saved it
+ * deletes their account. Drafts nobody edited are rendered again without it,
+ * so they wait for a new one; in edited drafts their name and phone become
+ * placeholders again.
+ */
+export async function forgetSender(ctx: MutationCtx, userId: Id<"users">) {
+  const settings = await ctx.db.query("outreachSettings").first();
+  if (!settings || (settings.signedBy ?? settings.updatedBy) !== userId) {
+    return;
+  }
+  const { firstName, lastName, phone } = settings;
+  await ctx.db.patch("outreachSettings", settings._id, {
+    firstName: undefined,
+    lastName: undefined,
+    phone: undefined,
+    signedBy: undefined,
+  });
+  if (!firstName && !lastName && !phone) {
+    return;
+  }
+  const name = [firstName, lastName].filter(Boolean).join(" ");
+  const namePlaceholder = [firstName && "{Prenume}", lastName && "{Nume}"]
+    .filter(Boolean)
+    .join(" ");
+  const drafts = await ctx.db
+    .query("outreachMessages")
+    .withIndex("by_status", (q) => q.eq("status", "draft"))
+    .take(200);
+  for (const draft of drafts) {
+    if (!draft.edited) {
+      await rerenderDraft(ctx, draft);
+      continue;
+    }
+    let body = draft.body;
+    if (name) {
+      body = body.replaceAll(name, namePlaceholder);
+    }
+    if (phone) {
+      body = body.replaceAll(phone, "{telefon}");
+    }
+    await ctx.db.patch("outreachMessages", draft._id, {
+      body,
+      issues: await checkEmail(ctx, draft.manufacturerId, { ...draft, body }),
+      updatedAt: Date.now(),
+    });
+  }
+}
 
 function isWebAddress(value: string) {
   try {
