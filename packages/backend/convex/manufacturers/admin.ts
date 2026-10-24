@@ -7,12 +7,14 @@ import { createJob, JOB_TIMEOUT_MS } from "../ai/jobs";
 import { aiModel } from "../ai/models";
 import { requireSuperAdmin } from "../lib/roles";
 import { deleteProducerRows } from "../producers/handover";
+import { REPORT_MS } from "./lib/retention";
 import {
   isEmail,
   nameKey,
   normalizeEmail,
   parseManufacturerLines,
 } from "./lib/text";
+import { dropReports, planFor } from "./retention";
 import { contactKind, manufacturerStatus } from "./validators";
 
 // Research jobs started together run this far apart, to stay under the API's
@@ -152,18 +154,42 @@ export const get = query({
       (job) =>
         job.kind === "manufacturer_research" && job.status === "succeeded",
     );
+    // When each person's address goes, as the contacts panel shows it.
+    const plan = new Map(
+      (await planFor(ctx, manufacturer, contacts, messages)).map((entry) => [
+        entry.address,
+        entry,
+      ]),
+    );
+    const erasures = await ctx.db
+      .query("outreachErasures")
+      .withIndex("by_manufacturerId", (q) =>
+        q.eq("manufacturerId", manufacturerId),
+      )
+      .order("desc")
+      .take(20);
     return {
       manufacturer,
-      contacts: contacts.map((contact) => ({
-        ...contact,
-        suppressed: contact.email ? suppressed.has(contact.email) : false,
-      })),
+      contacts: contacts.map((contact) => {
+        const entry = contact.email ? plan.get(contact.email) : undefined;
+        return {
+          ...contact,
+          suppressed: contact.email ? suppressed.has(contact.email) : false,
+          retention: entry ? { at: entry.at, rule: entry.rule } : null,
+        };
+      }),
       messages,
       normImports,
       jobs: jobs.map(({ result: _result, ...job }) => job),
       research: research?.result as
         | { report: string; sources: { url: string; title?: string }[] }
         | undefined,
+      // The research report was deleted after 25 days (ADR 0043).
+      reportDeletedAt:
+        research && research.result === undefined
+          ? (research.finishedAt ?? research._creationTime) + REPORT_MS
+          : undefined,
+      erasures,
     };
   },
 });
@@ -244,6 +270,14 @@ export const update = mutation({
     if (name !== undefined && !name.trim()) {
       throw new ConvexError({ code: "invalid", field: "name" });
     }
+    const manufacturer = await ctx.db.get("manufacturers", manufacturerId);
+    if (!manufacturer) {
+      throw new ConvexError({ code: "not_found" });
+    }
+    // The first answer is kept when the status changes again (ADR 0043).
+    const answered =
+      manufacturer.answeredAt === undefined &&
+      (status === "replied" || status === "norms_received");
     // An empty text clears the field; a field left out stays as it is.
     const cleared: Partial<Record<keyof typeof texts, string | undefined>> = {};
     for (const [key, value] of Object.entries(texts)) {
@@ -256,6 +290,7 @@ export const update = mutation({
       ...(name ? { name: name.trim(), nameKey: nameKey(name) } : {}),
       ...(wave !== undefined ? { wave } : {}),
       ...(status ? { status } : {}),
+      ...(answered ? { answeredAt: Date.now() } : {}),
     });
     return null;
   },
@@ -300,9 +335,10 @@ async function isInUse(ctx: QueryCtx, manufacturer: Doc<"manufacturers">) {
 }
 
 /**
- * Deletes a manufacturer with its contacts, emails and norm imports. Its AI
- * jobs stay, so their cost is still counted. One that a firm claimed or the
- * catalog uses can't be deleted; exclude it instead.
+ * Deletes a manufacturer with its contacts, emails, erasure records and norm
+ * imports. Its AI jobs stay without their research reports, so their cost
+ * is still counted. One that a firm claimed or the catalog uses can't be
+ * deleted; exclude it instead.
  */
 export const remove = mutation({
   args: { manufacturerId: v.id("manufacturers") },
@@ -317,7 +353,11 @@ export const remove = mutation({
     if (await isInUse(ctx, manufacturer)) {
       throw new ConvexError({ code: "in_use" });
     }
-    for (const table of ["manufacturerContacts", "outreachMessages"] as const) {
+    for (const table of [
+      "manufacturerContacts",
+      "outreachMessages",
+      "outreachErasures",
+    ] as const) {
       const rows = ctx.db
         .query(table)
         .withIndex("by_manufacturerId", (q) =>
@@ -336,6 +376,7 @@ export const remove = mutation({
       await deleteNormImport(ctx, normImport);
     }
     await deleteProducerRows(ctx, manufacturerId);
+    await dropReports(ctx, manufacturerId, Number.POSITIVE_INFINITY);
     await ctx.db.delete("manufacturers", manufacturerId);
     return null;
   },
@@ -385,6 +426,7 @@ export const addContact = mutation({
       sourceUrl: args.sourceUrl?.trim() || undefined,
       sourceVerified: false,
       origin: "manual",
+      foundAt: Date.now(),
     });
   },
 });

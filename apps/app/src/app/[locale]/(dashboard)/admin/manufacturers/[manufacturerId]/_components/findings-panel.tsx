@@ -23,9 +23,11 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 export function FindingsPanel({
   manufacturer,
   research,
+  reportDeletedAt,
 }: {
   manufacturer: Manufacturer;
   research: ManufacturerData["research"];
+  reportDeletedAt: ManufacturerData["reportDeletedAt"];
 }) {
   const t = useScopedI18n("admin.manufacturer.findings");
   const tAdmin = useScopedI18n("admin");
@@ -137,6 +139,11 @@ export function FindingsPanel({
         )}
       </dl>
 
+      {reportDeletedAt !== undefined && (
+        <p className="text-sm text-primary/60">
+          {t("reportDeleted", { date: format.date(reportDeletedAt) })}
+        </p>
+      )}
       {research && (
         <>
           <details className="text-sm">

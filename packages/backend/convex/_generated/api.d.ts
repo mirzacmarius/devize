@@ -116,11 +116,13 @@ import type * as manufacturers_lib_emailTemplate from "../manufacturers/lib/emai
 import type * as manufacturers_lib_findings from "../manufacturers/lib/findings.js";
 import type * as manufacturers_lib_norms from "../manufacturers/lib/norms.js";
 import type * as manufacturers_lib_prompts from "../manufacturers/lib/prompts.js";
+import type * as manufacturers_lib_retention from "../manufacturers/lib/retention.js";
 import type * as manufacturers_lib_schemas from "../manufacturers/lib/schemas.js";
 import type * as manufacturers_lib_text from "../manufacturers/lib/text.js";
 import type * as manufacturers_normImports from "../manufacturers/normImports.js";
 import type * as manufacturers_outreach from "../manufacturers/outreach.js";
 import type * as manufacturers_research from "../manufacturers/research.js";
+import type * as manufacturers_retention from "../manufacturers/retention.js";
 import type * as manufacturers_tables from "../manufacturers/tables.js";
 import type * as manufacturers_validators from "../manufacturers/validators.js";
 import type * as materials_layout from "../materials/layout.js";
@@ -346,11 +348,13 @@ declare const fullApi: ApiFromModules<{
   "manufacturers/lib/findings": typeof manufacturers_lib_findings;
   "manufacturers/lib/norms": typeof manufacturers_lib_norms;
   "manufacturers/lib/prompts": typeof manufacturers_lib_prompts;
+  "manufacturers/lib/retention": typeof manufacturers_lib_retention;
   "manufacturers/lib/schemas": typeof manufacturers_lib_schemas;
   "manufacturers/lib/text": typeof manufacturers_lib_text;
   "manufacturers/normImports": typeof manufacturers_normImports;
   "manufacturers/outreach": typeof manufacturers_outreach;
   "manufacturers/research": typeof manufacturers_research;
+  "manufacturers/retention": typeof manufacturers_retention;
   "manufacturers/tables": typeof manufacturers_tables;
   "manufacturers/validators": typeof manufacturers_validators;
   "materials/layout": typeof materials_layout;

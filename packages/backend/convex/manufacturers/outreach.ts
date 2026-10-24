@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import { internal } from "../_generated/api";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 import { mutation, query } from "../_generated/server";
@@ -96,8 +97,10 @@ export const updateMessage = mutation({
       body: args.body ?? message.body,
       to,
     };
+    const now = Date.now();
     await ctx.db.patch("outreachMessages", message._id, {
       ...email,
+      ...(to === message.to ? {} : { toSetAt: now }),
       issues: await checkEmail(ctx, message.manufacturerId, {
         ...email,
         step: message.step,
@@ -107,7 +110,7 @@ export const updateMessage = mutation({
       status: "draft",
       approvedBy: undefined,
       approvedAt: undefined,
-      updatedAt: Date.now(),
+      updatedAt: now,
     });
     return null;
   },
@@ -140,6 +143,7 @@ export const chooseContact = mutation({
     await ctx.db.patch("outreachMessages", message._id, {
       to: contact.email,
       vars,
+      ...(contact.email === message.to ? {} : { toSetAt: Date.now() }),
     });
     await rerenderDraft(
       ctx,
@@ -408,8 +412,9 @@ export const listSuppressed = query({
 
 /**
  * Stops all contact with an address, or with a whole domain written as
- * "@domain.ro". When the request came from a manufacturer, it is marked
- * excluded and its open drafts are rejected.
+ * "@domain.ro". The people's addresses it covers are then erased from every
+ * manufacturer's records; the entry itself stays. When the request came from
+ * a manufacturer, it is marked excluded and its open drafts are rejected.
  */
 export const suppress = mutation({
   args: {
@@ -438,6 +443,13 @@ export const suppress = mutation({
         manufacturerId: args.manufacturerId,
         addedBy: admin._id,
       });
+      // Erases the people's addresses it covers, at every manufacturer, each
+      // in its own transaction (ADR 0043).
+      await ctx.scheduler.runAfter(
+        0,
+        internal.manufacturers.retention.sweepBatch,
+        { cursor: null },
+      );
     }
     if (args.manufacturerId) {
       await ctx.db.patch("manufacturers", args.manufacturerId, {

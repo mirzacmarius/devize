@@ -5,6 +5,7 @@ import {
   contactKind,
   declaredConsumption,
   emailVariant,
+  erasureRule,
   existingNorm,
   importedNormStatus,
   issue,
@@ -52,6 +53,12 @@ export const manufacturerTables = {
     confidence: v.optional(aiConfidence),
     needsReview: v.optional(v.string()),
     researchedAt: v.optional(v.number()),
+    // The first time the firm answered or sent norms. A status set back later
+    // doesn't take it away, so its people's addresses stay (ADR 0043).
+    answeredAt: v.optional(v.number()),
+    // When the next research report kept on its jobs is due to be deleted; 0
+    // when none is kept. Missing on manufacturers from before ADR 0043.
+    reportsUntil: v.optional(v.number()),
     createdBy: v.id("users"),
   })
     .index("by_nameKey", ["nameKey"])
@@ -71,6 +78,9 @@ export const manufacturerTables = {
     // rather than only from the model's answer.
     sourceVerified: v.boolean(),
     origin: v.union(v.literal("research"), v.literal("manual")),
+    // When the address was first found for this manufacturer, kept across
+    // research runs; a person's address nobody writes to goes 25 days later.
+    foundAt: v.optional(v.number()),
   })
     .index("by_manufacturerId", ["manufacturerId"])
     .index("by_email", ["email"]),
@@ -95,6 +105,12 @@ export const manufacturerTables = {
     approvedAt: v.optional(v.number()),
     sentBy: v.optional(v.id("users")),
     sentAt: v.optional(v.number()),
+    // When `to` was last changed, which starts the clock of an address typed
+    // by hand.
+    toSetAt: v.optional(v.number()),
+    // The recipient's address was erased from the email (ADR 0043); the rest
+    // stays as the record that we wrote to the firm.
+    recipientErasedAt: v.optional(v.number()),
   })
     .index("by_manufacturerId", ["manufacturerId"])
     .index("by_status", ["status"]),
@@ -124,6 +140,23 @@ export const manufacturerTables = {
     manufacturerId: v.optional(v.id("manufacturers")),
     addedBy: v.id("users"),
   }).index("by_value", ["value"]),
+
+  // What the daily run erased from a manufacturer's records, without the
+  // addresses themselves: the record that the privacy page's promise was kept,
+  // and the subjects of the emails to delete from the team's mailbox too.
+  outreachErasures: defineTable({
+    manufacturerId: v.id("manufacturers"),
+    rule: erasureRule,
+    erasedAt: v.number(),
+    addresses: v.number(),
+    // Subjects of emails sent to those addresses, at most 5.
+    subjects: v.array(v.string()),
+    // Set when nothing is left to delete from the mailbox, or someone did it.
+    mailboxClearedAt: v.optional(v.number()),
+    mailboxClearedBy: v.optional(v.id("users")),
+  })
+    .index("by_manufacturerId", ["manufacturerId"])
+    .index("by_mailboxClearedAt", ["mailboxClearedAt"]),
 
   // A norms document a manufacturer sent us, and how far its extraction got.
   normImports: defineTable({

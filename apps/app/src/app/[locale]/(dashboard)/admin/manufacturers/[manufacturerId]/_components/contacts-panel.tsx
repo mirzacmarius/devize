@@ -4,6 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
 import { Input } from "@devize/ui/input";
+import { useDoubleCheck } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { useScopedI18n } from "@/locales/client";
@@ -14,6 +15,7 @@ import {
   NativeSelect,
   Panel,
   Pill,
+  useFormat,
   useRun,
 } from "../../../_components/ui";
 import type { Contact, Message } from "./types";
@@ -35,10 +37,12 @@ export function ContactsPanel({
   const suppress = useMutation(api.manufacturers.outreach.suppress);
   const removeContact = useMutation(api.manufacturers.admin.removeContact);
   const { run, error, pending } = useRun();
+  const format = useFormat();
   const canUse = message?.status === "draft";
 
   return (
     <Panel title={t("title")} description={t("description")}>
+      <p className="text-sm text-primary/60">{t("retention")}</p>
       <ErrorText error={error} />
       {contacts.length === 0 ? (
         <p className="text-sm text-primary/60">{t("empty")}</p>
@@ -67,6 +71,18 @@ export function ContactsPanel({
                 {message?.to && contact.email === message.to && (
                   <Pill tone="info">{tAdmin("manufacturer.email.to")}</Pill>
                 )}
+                {contact.retention &&
+                  (contact.retention.at === null ? (
+                    <Pill>{t("kept")}</Pill>
+                  ) : (
+                    <Pill tone="warning">
+                      {contact.retention.at === 0
+                        ? t("erasesNow")
+                        : t("erasesOn", {
+                            date: format.date(contact.retention.at),
+                          })}
+                    </Pill>
+                  ))}
               </div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-primary/60">
                 {contact.role && <span>{contact.role}</span>}
@@ -98,16 +114,12 @@ export function ContactsPanel({
                     </Button>
                   )}
                 {contact.email && !contact.suppressed && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
+                  <SuppressButton
                     disabled={pending}
-                    onClick={() =>
+                    onConfirm={() =>
                       run(() => suppress({ value: contact.email ?? "" }))
                     }
-                  >
-                    {t("suppress")}
-                  </Button>
+                  />
                 )}
                 <Button
                   size="sm"
@@ -126,6 +138,29 @@ export function ContactsPanel({
       )}
       <AddContact manufacturerId={manufacturerId} />
     </Panel>
+  );
+}
+
+// Excluding an address also erases a person's address everywhere, so it
+// asks twice.
+function SuppressButton({
+  disabled,
+  onConfirm,
+}: {
+  disabled: boolean;
+  onConfirm: () => void;
+}) {
+  const t = useScopedI18n("admin.manufacturer.contacts");
+  const { doubleCheck, getButtonProps } = useDoubleCheck();
+  return (
+    <Button
+      size="sm"
+      variant="ghost"
+      disabled={disabled}
+      {...getButtonProps({ onClick: doubleCheck ? onConfirm : undefined })}
+    >
+      {doubleCheck ? t("suppressConfirm") : t("suppress")}
+    </Button>
   );
 }
 

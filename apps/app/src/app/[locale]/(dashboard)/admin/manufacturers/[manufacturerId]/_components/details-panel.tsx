@@ -138,8 +138,12 @@ function DetailsForm({ manufacturer }: { manufacturer: Manufacturer }) {
           id="details_notes"
           rows={3}
           value={notes}
+          aria-describedby="details_notes_hint"
           onChange={(event) => setNotes(event.target.value)}
         />
+        <p id="details_notes_hint" className="text-xs text-primary/50">
+          {t("notesHint")}
+        </p>
       </Field>
       <div className="flex items-center gap-3 sm:col-span-2">
         <Button type="submit" size="sm" disabled={pending}>

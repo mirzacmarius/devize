@@ -2534,6 +2534,24 @@ export default {
         "Profilul a fost revendicat între timp, așa că linkul din mulțumire nu mai merge.",
       missing_controller:
         "Pagina de confidențialitate nu spune încă cine răspunde de date. Completează operatorul în Setări.",
+      recipient_erased:
+        "Adresa destinatarului s-a șters, cum promite pagina de confidențialitate. Alege alt contact.",
+    },
+    erasures: {
+      title: "Date șterse",
+      description:
+        "Adresele persoanelor de la această firmă care s-au șters singure. Emailurile trimise rămân în istoric, fără adrese.",
+      rules: {
+        no_answer: "Firma nu a răspuns în 175 de zile",
+        not_written: "Nu le-a scris nimeni în 25 de zile",
+        opt_out: "Au cerut să nu le mai scriem",
+        excluded: "Firma a fost exclusă",
+      },
+      addresses: "Adrese șterse: {count}",
+      mailbox:
+        "Șterge și din căsuța de email mesajele trimise lor. Le găsești după subiect: {subjects}.",
+      mailboxDone: "Am șters din căsuța de email",
+      mailboxCleared: "Șterse și din căsuța de email pe {date}.",
     },
     manufacturers: {
       title: "Producători",
@@ -2693,6 +2711,8 @@ export default {
         website: "Site",
         hints: "Ce știm deja",
         notes: "Note interne",
+        notesHint:
+          "Nu trece aici nume de persoane: notele nu se șterg singure, doar adresele de email din ele.",
         save: "Salvează",
         saved: "Salvat.",
       },
@@ -2714,6 +2734,8 @@ export default {
         report: "Raportul complet",
         sources: "Surse văzute ({count})",
         source: "sursa",
+        reportDeleted:
+          "Raportul complet și sursele s-au șters pe {date}, la 25 de zile după cercetare, pentru că numesc persoane. Ce a găsit cercetarea rămâne mai sus.",
       },
       contacts: {
         title: "Contacte",
@@ -2727,6 +2749,12 @@ export default {
         source: "sursa",
         use: "Folosește în email",
         suppress: "Exclude",
+        suppressConfirm: "Sigur? Se șterge peste tot",
+        retention:
+          "Adresele persoanelor se șterg singure: la 25 de zile de când le-am găsit, dacă nu le-a scris nimeni, și la 175 de zile după ultimul email trimis lor, dacă firma nu răspunde. La „stop” sau dacă excluzi firma, se șterg imediat. Adresele generale ale firmei rămân.",
+        kept: "Rămâne cât discutăm cu firma",
+        erasesOn: "Se șterge pe {date}",
+        erasesNow: "Se șterge acum",
         remove: "Șterge",
         add: {
           title: "Adaugă un contact",
@@ -2768,6 +2796,7 @@ export default {
         sentAt: "Trimis pe {date}",
         rules: "Respectă toate regulile.",
         history: "Mesaje anterioare",
+        recipientErased: "Adresă ștearsă pe {date}",
       },
       thanks: {
         title: "Mulțumire",
@@ -2866,6 +2895,11 @@ export default {
       open: "Deschide",
       problems: "Probleme: {count}",
       thanks: "Mulțumire",
+      mailbox: {
+        title: "De șters și din căsuța de email",
+        description:
+          "Devize a șters adresele acestor persoane. Șterge și emailurile trimise lor din căsuța din care le-ai trimis, apoi apasă butonul.",
+      },
     },
     catalog: {
       title: "Catalogul de bază",
@@ -3313,9 +3347,9 @@ export default {
     title: "Politica de confidențialitate",
     description:
       "Ce date personale folosește Devize, de unde le are, de ce, cât timp le păstrează și ce drepturi aveți.",
-    updated: "Actualizată pe 23 octombrie 2026",
+    updated: "Actualizată pe 24 octombrie 2026",
     intro:
-      "Devize este o aplicație web în care firmele de construcții își fac devizele, cu norme de la producători și prețuri din magazine. Aici scrie ce date personale folosim, de unde le avem, de ce, cât timp le păstrăm și ce drepturi aveți.",
+      "Devize este o aplicație web în care firmele de construcții își fac devizele, cu norme de la producători și prețuri din magazine, și un site de prezentare care o descrie. Aici scrie ce date personale folosim, de unde le avem, de ce, cât timp le păstrăm și ce drepturi aveți.",
     labels: {
       data: "Ce date",
       source: "De unde le avem",
@@ -3334,13 +3368,13 @@ export default {
       contact:
         "Scrieți-ne la această adresă pentru orice întrebare sau cerere despre datele dumneavoastră.",
       missing:
-        "Datele operatorului se completează înainte de lansarea Devize. Până atunci, ne puteți scrie răspunzând la emailul primit de la noi.",
+        "Datele operatorului se completează înainte de lansarea Devize. Până atunci, producătorii cărora le-am scris ne pot răspunde la emailul primit de la noi.",
     },
     producers: {
       title: "Producătorii cărora le scriem",
       intro:
         "Construim un catalog de norme de deviz pentru produsele producătorilor de materiale de construcții. Ca să le cerem normele, le scriem la adresele de contact publicate pe site-urile lor.",
-      data: "adresa de email de serviciu (de obicei una generală, ca office@ sau tehnic@, uneori a unei persoane), funcția, dacă apare pe site, pagina pe care am găsit-o și mesajele schimbate cu noi.",
+      data: "adresa de email de serviciu (de obicei una generală, ca office@ sau tehnic@, uneori a unei persoane), funcția, dacă apare pe site, pagina pe care am găsit-o, mesajele schimbate cu noi și, dacă firma ne dă acordul să publicăm normele, cine și-a dat acordul.",
       source:
         "site-ul firmei. Le găsește asistentul Claude, care caută pe web și citește paginile publice ale firmei, sau le trece un om din echipa Devize. Nu ghicim adrese și nu cumpărăm liste.",
       purpose:
@@ -3348,51 +3382,70 @@ export default {
       basis:
         "interesul nostru legitim de a construi un catalog de norme corecte, cu datele producătorilor (art. 6 alin. (1) lit. f) din GDPR). Fiecare email îl aprobă și îl trimite un om, către o singură firmă.",
       optOut:
-        "răspundeți „stop” și nu vă mai scriem. Păstrăm doar adresa, pe lista de excludere, ca să nu vă scriem din nou.",
+        "răspundeți „stop” și nu vă mai scriem. Ștergem atunci adresa dumneavoastră din contactele și din mesajele noastre, inclusiv din emailurile trimise. O păstrăm doar pe lista de excludere, ca să nu vă scriem din nou, iar dacă firma ne-a dat acordul să publicăm normele, păstrăm și dovada acordului.",
       retention:
-        "cât discutăm cu firma. Dacă nu primim răspuns, ștergem adresele persoanelor în cel mult 6 luni de la ultimul mesaj.",
+        "cât discutăm cu firma. Dacă firma nu răspunde sau refuză, ștergem adresa unei persoane în cel mult 6 luni de la ultimul mesaj trimis la ea, iar adresa unei persoane căreia nu i-am scris o ștergem în cel mult o lună de când am găsit-o. Mesajele trimise firmei le păstrăm fără aceste adrese, ca dovadă că i-am scris. Raportul în care asistentul descrie ce a găsit pe site-ul firmei îl ștergem după cel mult o lună.",
+      claims:
+        "Dacă preluați în Devize profilul firmei la care lucrați, păstrăm cererea, ca dovadă a cui a preluat profilul și cum: adresa de email cu care ați intrat, ce ne-ați scris despre rolul dumneavoastră și CUI-ul firmei, pe care îl verificăm în registrul public ANAF. La fel păstrăm cererile de a scoate un profil. Numele, emailul și telefonul persoanei de contact pe care firma le trece pe profil le văd toți cei care folosesc Devize. Din devizele firmelor, producătorul primește doar statistici lunare despre normele și produsele lui, fără să afle care firmă le-a folosit.",
     },
     users: {
       title: "Cei care folosesc Devize",
-      data: "adresa de email, numele și poza de profil, dacă intrați cu Google; datele firmei (denumire, CUI, adresă, email, telefon), colegii și invitațiile; ce creați în aplicație: devize, oferte, clienții firmei și fișierele încărcate (fotografii, liste de cantități, fișe tehnice).",
+      data: "adresa de email; numele și poza de profil, din contul Google sau alese de dumneavoastră în Setări (le văd colegii din firmă, iar numele apare și în invitațiile pe care le trimiteți); datele firmei (denumire, CUI, adresă, email, telefon) și datele ei de facturare (contul bancar, banca, capitalul social); colegii și invitațiile; ce creați în aplicație: devize, oferte, situații de lucrări, procese-verbale de recepție, facturi și încasări, clienții firmei și fișierele încărcate (fotografii, liste de cantități, documente de licitație, fișe tehnice).",
       purpose:
-        "ca să vă dăm aplicația: contul, firma, devizele, formularele și ofertele.",
+        "ca să vă dăm aplicația: contul, firma, devizele, formularele, ofertele, situațiile de lucrări și facturile. Din devize mai numărăm, fără să arătăm care firmă, cât de des apar normele și produsele unui producător, ca să îi dăm statistici lunare; un județ apare doar dacă datele vin de la cel puțin trei firme.",
       basis:
-        "contractul cu dumneavoastră (art. 6 alin. (1) lit. b) din GDPR) și interesul nostru legitim de a ține aplicația sigură, de exemplu limitând câte coduri și invitații pleacă spre aceeași adresă (art. 6 alin. (1) lit. f)).",
+        "contractul cu dumneavoastră (art. 6 alin. (1) lit. b) din GDPR) și interesul nostru legitim de a ține aplicația sigură, de exemplu limitând câte coduri și invitații pleacă spre aceeași adresă și câte cereri face fiecare persoană către inteligența artificială, sau verificând, înainte să trimitem un cod de intrare, că îl cere un om (art. 6 alin. (1) lit. f)). Statisticile pentru producători nu conțin date personale.",
       retention:
         "cât aveți cont. Ne puteți cere oricând să ștergem contul și datele firmei; păstrăm doar ce ne obligă legea să păstrăm.",
     },
     clients: {
-      title: "Clienții firmelor",
-      body: "Când o firmă vă trimite o ofertă prin Devize, firma răspunde de datele dumneavoastră, iar Devize le prelucrează în numele ei: numele și datele de contact trecute de firmă, când ați deschis linkul ofertei, ce ați ales în ea, întrebările puse și semnătura, dacă o acceptați. Pentru aceste date, scrieți întâi firmei care v-a trimis oferta.",
+      title: "Clienții firmelor și ceilalți trecuți în documente",
+      body: "Când o firmă lucrează cu dumneavoastră prin Devize, firma răspunde de datele dumneavoastră, iar Devize le prelucrează în numele ei. Pentru ofertă: numele și datele de contact trecute de firmă, adresa lucrării, când ați deschis linkul ofertei, ce ați ales în ea, întrebările puse și motivul, dacă o refuzați. Dacă o acceptați: numele scris, semnătura desenată, momentul, o amprentă a ceea ce ați acceptat, ce spune browserul despre el (tipul, limba, fusul orar, ecranul) și adresa IP de la care ați trimis acceptarea; dacă firma v-a trecut emailul, vă trimitem confirmarea. Pentru facturi: numele, CUI-ul sau, dacă l-ați dat firmei, CNP-ul, adresa, emailul și telefonul, ce vi s-a facturat și plățile înregistrate de firmă. Dacă sunteți firmă, denumirea, sediul și numărul de înregistrare pot fi preluate din registrul public al ANAF. Pentru aceste date, scrieți întâi firmei.",
+      others:
+        "Tot în numele firmei păstrăm numele, rolul și firma sau instituția celor trecuți în procesele-verbale de recepție (membrii comisiei, dirigintele de șantier, proiectantul, invitații), locul lucrării și numele celui care a confirmat o situație de lucrări. Le trece firma, iar documentele le descarcă și le trimite tot ea.",
+    },
+    visitors: {
+      title: "Cei care vizitează site-ul sau aplicația",
+      data: "adresa IP, tipul browserului și al dispozitivului, paginile cerute și ora la care le-ați cerut. Le primesc Vercel, care găzduiește site-ul de prezentare și aplicația, și Convex, cu care vorbește aplicația. Pe site nu vă cerem date și nu vă urmărim.",
+      purpose:
+        "ca să vă trimitem paginile și să le apărăm de abuzuri și atacuri.",
+      basis:
+        "interesul nostru legitim de a ține site-ul și aplicația funcționale și sigure (art. 6 alin. (1) lit. f) din GDPR).",
+      retention:
+        "doar cât le țin furnizorii în jurnalele tehnice, apoi se șterg singure.",
     },
     ai: {
       title: "Inteligența artificială",
-      body: "Unele funcții trimit către Claude, modelul de inteligență artificială al Anthropic, ce le dați: descrierea sau fotografiile unei lucrări, listele de cantități, fișele tehnice și, dacă firma a pornit asistentul ofertei, întrebările clienților. Anthropic nu își antrenează modelele cu datele primite astfel.",
+      body: "Unele funcții trimit către Claude, modelul de inteligență artificială al Anthropic, ce le dați: descrierea sau fotografiile unei lucrări, listele de cantități și documentele unei licitații, fișele tehnice, datele devizului la care lucrați (titlul, descrierea, județul și articolele lui), când cereți o normă nouă sau verificarea omisiunilor, denumirea firmei și denumirile tarifelor ei și, dacă firma a pornit asistentul ofertei, oferta, cu datele de contact ale firmei, numele clientului și adresa lucrării, și întrebările clientului. Dacă scrieți în titlul sau în descrierea devizului numele ori adresa clientului, ajung și ele la Claude. Anthropic nu își antrenează modelele cu datele primite astfel.",
       dictation:
         "Dictarea folosește recunoașterea vocală a browserului: sunetul îl prelucrează furnizorul browserului, iar Devize primește doar textul.",
     },
     processors: {
       title: "Cine mai primește datele",
       intro:
-        "Nu vindem date personale și nu le folosim pentru reclame. Le primesc doar furnizorii care ne ajută să rulăm Devize, fiecare pentru partea lui:",
+        "Nu vindem date personale și nu le folosim pentru reclame. Le primesc furnizorii care ne ajută să rulăm Devize, fiecare pentru partea lui:",
       convex: "Convex: baza de date și funcțiile aplicației",
-      vercel: "Vercel: găzduirea paginilor",
+      vercel:
+        "Vercel: găzduirea site-ului de prezentare și a aplicației, cu jurnalele tehnice ale vizitelor",
       anthropic:
         "Anthropic: Claude, pentru funcțiile de inteligență artificială",
       resend:
-        "Resend: emailurile automate ale aplicației, cum sunt codurile de intrare, invitațiile și notificările",
-      google: "Google: intrarea cu contul Google, dacă o alegeți",
+        "Resend: emailurile automate ale aplicației, cum sunt codurile de intrare, invitațiile, notificările și confirmarea unei oferte acceptate",
+      cloudflare:
+        "Cloudflare: verificarea anti-robot (Turnstile) de pe pagina de intrare, care deosebește oamenii de programele automate înainte să trimitem un cod pe email. Primește adresa IP și câteva date tehnice ale browserului; adresa de email nu i-o trimitem.",
+      google:
+        "Google: intrarea cu contul Google, dacă o alegeți; poza de profil Google a unui coleg o încarcă browserul direct de la Google",
       sentry: "Sentry: rapoartele de erori, fără date care să vă identifice",
       outreach:
-        "Emailurile către producători le trimitem din căsuța noastră de email, nu din aplicație.",
+        "Emailurile către producători le trimitem din căsuța noastră de email, nu din aplicație; furnizorul căsuței de email le primește și le păstrează pentru noi. Când ștergem adresa unei persoane, ștergem și emailurile trimise ei din căsuță.",
       transfers:
         "Unii dintre acești furnizori prelucrează datele în Statele Unite. Pentru aceste transferuri folosim garanțiile cerute de GDPR: clauzele contractuale standard ale Comisiei Europene sau Cadrul de confidențialitate a datelor UE–SUA.",
-      authorities: "Dăm date autorităților doar când legea ne obligă.",
+      anaf: "În afară de acești furnizori, primește date și ANAF, când firmele își fac facturile în Devize. Dacă un membru al firmei apasă „Validează XML la ANAF”, trimitem fișierul XML al facturii, cu datele firmei și ale clientului trecute pe ea, la validatorul public e-Factura al ANAF. Când se face o ciornă de factură pentru un client care e firmă sau cineva apasă „Verifică la ANAF”, trimitem CUI-ul clientului la registrul public al plătitorilor de TVA și preluăm de acolo denumirea, sediul și dacă plătește TVA; la fel verificăm CUI-ul unui producător al cărui profil e preluat. Devize nu trimite facturile în SPV: firma descarcă XML-ul și îl încarcă ea.",
+      authorities: "În rest, dăm date autorităților doar când legea ne obligă.",
     },
     cookies: {
       title: "Cookie-uri",
-      body: "Folosim doar cookie-urile fără de care aplicația nu merge: cele care vă țin conectat și cel care ține minte limba aleasă. Tema luminoasă sau întunecată o păstrează browserul. Nu folosim cookie-uri de analiză sau de reclamă.",
+      body: "Folosim doar cookie-urile fără de care aplicația nu merge: cele care vă țin conectat, cele de câteva minute care verifică intrarea cu Google și cel care ține minte limba aleasă. Tot în browser, aplicația mai păstrează sesiunea, tema luminoasă sau întunecată și, pentru formularele unui deviz, ultimele alegeri, inclusiv numele beneficiarului, al proiectantului și al celui care semnează oferta, ca să nu le scrieți din nou; acestea rămân pe dispozitivul dumneavoastră. Pe pagina de intrare rulează verificarea anti-robot Cloudflare Turnstile, care citește câteva date tehnice ale browserului ca să deosebească oamenii de programele automate. Nu folosim cookie-uri de analiză sau de reclamă.",
     },
     rights: {
       title: "Drepturile dumneavoastră",
@@ -3404,7 +3457,7 @@ export default {
     },
     security: {
       title: "Siguranța datelor",
-      body: "Totul circulă criptat. Datele unei firme le văd doar membrii ei, iar echipa Devize are acces doar la ce îi trebuie ca să administreze aplicația.",
+      body: "Totul circulă criptat. Datele unei firme le văd doar membrii ei. Excepție face profilul unui producător: ce scrie firma pe el, inclusiv persoana de contact tehnic, cu emailul și telefonul ei, îl văd toți cei care folosesc Devize. Echipa Devize are acces doar la ce îi trebuie ca să administreze aplicația.",
     },
     changes: {
       title: "Schimbări",

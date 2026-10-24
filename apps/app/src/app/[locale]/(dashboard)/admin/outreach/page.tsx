@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import { gmailComposeUrl, mailtoUrl } from "../_components/email-links";
+import { ErasureRow } from "../_components/erasure-row";
 import {
   confidenceTone,
   ErrorText,
@@ -31,6 +32,7 @@ function startOfToday() {
 export default function OutreachPage() {
   const t = useScopedI18n("admin.outreach");
   const messages = useQuery(api.manufacturers.outreach.queue);
+  const mailbox = useQuery(api.manufacturers.retention.mailboxPending);
   const [since] = useState(startOfToday);
   const sentToday = useQuery(api.manufacturers.outreach.sentSince, { since });
 
@@ -48,6 +50,22 @@ export default function OutreachPage() {
           {t("pace", { count: sentToday ?? 0 })}
         </p>
       </div>
+      {mailbox && mailbox.length > 0 && (
+        <Panel
+          title={t("mailbox.title")}
+          description={t("mailbox.description")}
+        >
+          <ul className="flex flex-col divide-y divide-border">
+            {mailbox.map((erasure) => (
+              <ErasureRow
+                key={erasure._id}
+                erasure={erasure}
+                manufacturerName={erasure.manufacturerName}
+              />
+            ))}
+          </ul>
+        </Panel>
+      )}
       {messages === undefined ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
       ) : (

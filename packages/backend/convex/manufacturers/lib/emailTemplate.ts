@@ -14,7 +14,7 @@ const requestWithoutNorms =
 
 const bodyTemplate = `Bună ziua,
 
-Sunt {Prenume}, fondatorul Devize, o aplicație web în care constructorii și proiectanții își fac devizele cu norme puse la dispoziție de producători și cu prețuri actualizate din Dedeman, Leroy Merlin, Hornbach și Brico Depot.
+Sunt {Prenume}, fondatorul Devize, o aplicație web în care constructorii și proiectanții își fac devizele cu norme puse la dispoziție de producători și cu prețuri actualizate din Dedeman, Leroy Merlin, Hornbach și BRICO.
 
 {Fraza personalizată}
 
@@ -214,7 +214,8 @@ export type EmailIssue = {
     | "recipient_other_domain"
     | "claim_link_mismatch"
     | "already_claimed"
-    | "missing_controller";
+    | "missing_controller"
+    | "recipient_erased";
   level: "error" | "warning";
   detail?: string;
 };

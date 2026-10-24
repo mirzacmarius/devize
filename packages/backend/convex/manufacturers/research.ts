@@ -1,9 +1,18 @@
 import { v } from "convex/values";
+import { internal } from "../_generated/api";
 import { internalMutation } from "../_generated/server";
 import { failJob, finishJob, startJob } from "../ai/jobs";
 import { defaultModel } from "../ai/models";
 import { aiUsage } from "../ai/validators";
+import { isSuppressed } from "./admin";
 import { draftInitialEmail } from "./drafts";
+import {
+  firmWords,
+  isPersonAddress,
+  mentions,
+  REPORT_MS,
+  scrubText,
+} from "./lib/retention";
 import { isEmail, normalizeEmail } from "./lib/text";
 import { researchFindings } from "./validators";
 
@@ -85,6 +94,9 @@ export const save = internalMutation({
       researchedAt: Date.now(),
     });
 
+    // An address found again keeps the day it was first found, which starts
+    // its clock (ADR 0043).
+    const foundAt = new Map<string, number>();
     const previous = ctx.db
       .query("manufacturerContacts")
       .withIndex("by_manufacturerId", (q) =>
@@ -92,12 +104,35 @@ export const save = internalMutation({
       );
     for await (const contact of previous) {
       if (contact.origin === "research") {
+        if (contact.email) {
+          const at = contact.foundAt ?? contact._creationTime;
+          foundAt.set(
+            contact.email,
+            Math.min(foundAt.get(contact.email) ?? at, at),
+          );
+        }
         await ctx.db.delete("manufacturerContacts", contact._id);
       }
     }
+    const now = Date.now();
+    const stopped: string[] = [];
+    const firm = firmWords({
+      ...manufacturer,
+      ...fields,
+      website: fields.website ?? manufacturer.website,
+    });
     for (const contact of contacts.slice(0, 20)) {
       const email = contact.email ? normalizeEmail(contact.email) : undefined;
       if (email ? !isEmail(email) : !contact.url) {
+        continue;
+      }
+      // A person who asked us to stop isn't written down again.
+      if (
+        email &&
+        isPersonAddress(email, firm, contact.kind) &&
+        (await isSuppressed(ctx, email))
+      ) {
+        stopped.push(email);
         continue;
       }
       await ctx.db.insert("manufacturerContacts", {
@@ -105,6 +140,7 @@ export const save = internalMutation({
         email,
         manufacturerId: manufacturer._id,
         origin: "research",
+        foundAt: (email && foundAt.get(email)) || now,
       });
     }
 
@@ -123,8 +159,26 @@ export const save = internalMutation({
     await finishJob(ctx, job._id, {
       status: "succeeded",
       usage: args.usage,
-      result: { report: args.report, sources: args.sources },
+      result: {
+        report: scrubText(args.report, stopped),
+        sources: args.sources.filter(
+          (source) => !mentions(`${source.url} ${source.title ?? ""}`, stopped),
+        ),
+      },
       confidence: fields.confidence,
+    });
+    // The report names people, so it is deleted 25 days from now.
+    const { reportsUntil } = manufacturer;
+    if (reportsUntil !== undefined) {
+      await ctx.db.patch("manufacturers", manufacturer._id, {
+        reportsUntil: Math.min(
+          reportsUntil || Number.POSITIVE_INFINITY,
+          now + REPORT_MS,
+        ),
+      });
+    }
+    await ctx.scheduler.runAfter(0, internal.manufacturers.retention.review, {
+      manufacturerId: manufacturer._id,
     });
     return null;
   },

@@ -29,7 +29,7 @@ export const researchFindingsSchema = z.object({
   retailers: z
     .array(z.string())
     .describe(
-      "Magazinele dintre Dedeman, Leroy Merlin, Hornbach și Brico Depot.",
+      "Magazinele dintre Dedeman, Leroy Merlin, Hornbach și BRICO (fostul Brico Dépôt, scris BRICO).",
     ),
   contacts: z.array(
     z.object({
