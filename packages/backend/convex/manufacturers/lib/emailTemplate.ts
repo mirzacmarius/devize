@@ -44,6 +44,7 @@ export type ThanksVars = {
   claimExpiresAt?: number;
   articles?: number;
   variants?: number;
+  totals?: { compared: number; differing: number };
   consentRecorded: boolean;
 };
 
@@ -115,7 +116,7 @@ const thanksBodyTemplate = `Bună ziua,
 
 Vă mulțumesc pentru normele de deviz {Firma}. {Stadiul normelor}
 
-{Acordul}Vă invit și să revendicați profilul {Firma} din Devize: acolo confirmați normele, adăugați altele noi și vă invitați colegii. Linkul de mai jos funcționează o singură dată, până pe {data linkului}, pentru cine intră în Devize cu adresa {adresa}:
+{Calculele}{Acordul}Vă invit și să revendicați profilul {Firma} din Devize: acolo confirmați normele, adăugați altele noi și vă invitați colegii. Linkul de mai jos funcționează o singură dată, până pe {data linkului}, pentru cine intră în Devize cu adresa {adresa}:
 {link de revendicare}
 
 Mulțumesc,
@@ -126,6 +127,11 @@ Dacă nu doriți alte mesaje de la Devize, răspundeți „stop” și nu vă ma
 
 const askConsent =
   "Dacă nu mi-ați scris deja că sunteți de acord, vă rog să-mi confirmați printr-un răspuns că le putem publica în Devize, cu {Firma} menționată ca sursă.\n\n";
+
+// The quality report the outreach plan promised: what a producer would want
+// to fix in their next edition, said so that it doesn't read as a complaint.
+const totalsNote =
+  "Am verificat și calculele: la {diferite} din cele {comparate} cu prețuri unitare, totalul tipărit nu iese din cantitățile și prețurile din tabel. Pentru Devize nu contează, fiindcă folosim doar consumurile și luăm prețurile din magazine. Vă spun doar ca să știți, pentru o ediție nouă.\n\n";
 
 const months = [
   "ianuarie",
@@ -164,8 +170,9 @@ export function countOf(count: number, one: string, many: string): string {
 
 /**
  * Renders the thank-you for the norms a manufacturer sent: what we extracted
- * from them, a request for their written consent unless it's on record, and
- * the claim link for the address they came from.
+ * from them, the printed totals that don't add up if most don't, a request for
+ * their written consent unless it's on record, and the claim link for the
+ * address they came from.
  */
 export function renderThanksEmail(
   vars: TemplateVars,
@@ -176,8 +183,17 @@ export function renderThanksEmail(
     thanks?.articles !== undefined && thanks.variants !== undefined
       ? `Le-am digitizat deja în Devize: ${countOf(thanks.articles, "articol", "articole")} și ${countOf(thanks.variants, "variantă", "variante")}.`
       : "Le digitizăm acum în Devize.";
+  const totals = thanks?.totals
+    ? totalsNote
+        .replace("{diferite}", `${thanks.totals.differing}`)
+        .replace(
+          "{comparate}",
+          countOf(thanks.totals.compared, "variantă", "variante"),
+        )
+    : "";
   const body = thanksBodyTemplate
     .replace("{Stadiul normelor}", extracted)
+    .replace("{Calculele}", totals)
     .replace("{Acordul}", thanks?.consentRecorded ? "" : askConsent);
   const values = {
     Firma: vars.firm,

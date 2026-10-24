@@ -13,6 +13,7 @@ import {
   type Sender,
   type TemplateVars,
 } from "./lib/emailTemplate";
+import { printedTotals, totalsMostlyDiffer } from "./lib/norms";
 import {
   emailDomain,
   isEmail,
@@ -229,7 +230,7 @@ export async function draftInitialEmail(
 /**
  * What the thank-you to `email` is rendered from: a claim link for that
  * address (the one already out while it has two weeks left), and the latest
- * document extracted from the norms.
+ * document extracted from the norms, with how its printed totals compare.
  */
 async function thanksVarsFor(
   ctx: MutationCtx,
@@ -252,6 +253,18 @@ async function thanksVarsFor(
   const extracted = normImports.find(
     (normImport) => normImport.status === "review",
   );
+  const norms = extracted
+    ? await ctx.db
+        .query("importedNorms")
+        .withIndex("by_normImportId_and_baseCode", (q) =>
+          q.eq("normImportId", extracted._id),
+        )
+        .take(2000)
+    : [];
+  const totals = printedTotals(
+    norms.filter((norm) => norm.status !== "rejected"),
+    extracted?.laborRate,
+  );
   return {
     firm: manufacturer.displayName ?? manufacturer.name,
     address: email,
@@ -264,6 +277,7 @@ async function thanksVarsFor(
         (sum, article) => sum + article.variantCodes.length,
         0,
       ),
+      ...(totalsMostlyDiffer(totals) ? { totals } : {}),
       consentRecorded: extracted?.consent !== undefined,
     },
   };

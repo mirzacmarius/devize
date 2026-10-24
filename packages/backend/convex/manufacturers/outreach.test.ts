@@ -190,6 +190,64 @@ describe("draftThanks", () => {
     expect(message?.issues).toEqual([]);
   });
 
+  test("points out printed totals only when most don't add up", async () => {
+    const t = setup();
+    const { admin, manufacturerId, normImportId } = await producerWithNorms(t);
+    // 1.05 m² at 60 lei is 63 lei; the document printed other totals.
+    const addVariant = (
+      code: string,
+      totalPrice: number,
+      status: Doc<"importedNorms">["status"] = "approved",
+    ) =>
+      t.run(async (ctx) => {
+        await ctx.db.insert("importedNorms", {
+          normImportId,
+          manufacturerId,
+          baseCode: "TT-02",
+          code,
+          title: "Termosistem Test, soclu",
+          unit: "mp",
+          unitRaw: "mp",
+          pages: [4],
+          resources: [
+            {
+              kind: "material",
+              name: "Placă termoizolantă Test 100 mm",
+              unit: "mp",
+              unitRaw: "mp",
+              quantity: 1.05,
+              unitPrice: 60,
+            },
+          ],
+          totalPrice,
+          checks: [],
+          status,
+        });
+      });
+    await addVariant("TT-02A01", 63);
+    await addVariant("TT-02A02", 70);
+
+    // One of two differs: possibly a misread row, not the document's doing.
+    const messageId = await admin.as.mutation(outreach.draftThanks, {
+      manufacturerId,
+      to: "tehnic@termotest.example",
+    });
+    let message = await messageOf(t, messageId);
+    expect(message?.vars.thanks?.totals).toBeUndefined();
+    expect(message?.body).not.toContain("Am verificat și calculele");
+
+    // A rejected row doesn't count.
+    await addVariant("TT-02A03", 71);
+    await addVariant("TT-02A04", 90, "rejected");
+    await admin.as.mutation(outreach.rerender, { messageId });
+    message = await messageOf(t, messageId);
+    expect(message?.vars.thanks?.totals).toEqual({ compared: 3, differing: 2 });
+    expect(message?.body).toContain(
+      "Am verificat și calculele: la 2 din cele 3 variante cu prețuri unitare",
+    );
+    expect(message?.issues).toEqual([]);
+  });
+
   test("gives no link to a suppressed address or for a claimed profile", async () => {
     const t = setup();
     const { admin, manufacturerId } = await producerWithNorms(t);

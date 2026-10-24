@@ -2863,7 +2863,7 @@ export default {
       thanks: {
         title: "Mulțumire",
         description:
-          "Răspunsul către cine ne-a trimis normele, cu linkul prin care revendică profilul producătorului. O aprobi și o trimiți din căsuța ta, ca pe primul email.",
+          "Răspunsul către cine ne-a trimis normele, cu linkul prin care revendică profilul producătorului. Dacă la majoritatea variantelor totalul tipărit nu iese din prețurile unitare ale documentului, îi spune și asta, pentru o ediție nouă. O aprobi și o trimiți din căsuța ta, ca pe primul email.",
         to: "Adresa care ne-a trimis normele",
         prepare: "Pregătește mulțumirea",
         claimed: "Profilul e deja revendicat, așa că nu mai trimitem link.",
