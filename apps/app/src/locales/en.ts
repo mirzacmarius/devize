@@ -244,6 +244,63 @@ export default {
       submit: "Save",
     },
   },
+  targetPrice: {
+    open: "Target price",
+    title: "Fit the estimate to a price",
+    description:
+      "Type what the client wants to pay, and Devize adjusts the profit or the labour and shows the margin left. Materials don't change.",
+    target: "Target price",
+    basis: "The price is",
+    bases: {
+      total: "with VAT",
+      subtotal: "without VAT",
+    },
+    method: "Adjust",
+    methods: {
+      profit: "The profit",
+      labor: "The labour",
+    },
+    methodHints: {
+      profit: "Only the profit rate changes. The estimate's prices stay.",
+      labor:
+        "Every labour price changes by the same proportion. They then count as set by hand, so refreshing prices leaves them.",
+    },
+    caption: "The estimate now and after the change, in lei",
+    columns: {
+      item: "What changes",
+      now: "Now",
+      after: "After",
+    },
+    rows: {
+      labor: "Labour",
+      profit: "Profit ({rate})",
+      subtotal: "Total without VAT",
+      total: "Total with VAT",
+      margin: "Profit margin",
+    },
+    difference:
+      "The nearest it gets is {total} lei, {difference} lei from the target.",
+    laborChange: "Every labour price changes by {change}.",
+    belowFloor:
+      "The cheapest hour of labour comes to {price} lei, under the legal minimum of {floor} lei/h.",
+    misses: {
+      profitBelowCost:
+        "Even with no profit, the estimate comes to {limit} lei. Try the labour, or change the materials.",
+      profitTooHigh:
+        "It would take a profit over 100%. The most it gets to is {limit} lei.",
+      laborBelowCost: "Even with no labour, the estimate comes to {limit} lei.",
+      laborTooHigh:
+        "It would take labour over ten times as dear. The most it gets to is {limit} lei.",
+      noLabor: "The estimate has no labour to adjust.",
+    },
+    enterTarget: "Type the price the client wants.",
+    empty: "The estimate has no line items yet.",
+    apply: "Apply",
+    applied: {
+      total: "The estimate now comes to {total} lei with VAT.",
+      subtotal: "The estimate now comes to {total} lei without VAT.",
+    },
+  },
   estimates: {
     title: "Estimates",
     description: "The company's estimates, from draft to accepted offer.",
@@ -3416,6 +3473,8 @@ export default {
     invalidPaymentSchedule:
       "Payment stages have a name and a share between 0 and 100%, and the shares add up to 100% at most.",
     invalidEvidence: "The browser's details are too long.",
+    invalidTarget:
+      "That target price can't be reached this way. Check the amount and what you adjust.",
     invalidTemplateName: "A template's name has 1 to 120 characters.",
     invalidTemplateItems: "A template needs at least one line item.",
     invalidTemplateSize:

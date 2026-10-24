@@ -40,6 +40,7 @@ export function RecapCard({
   const t = useScopedI18n("estimate");
   const tMarkups = useScopedI18n("markups");
   const tResources = useScopedI18n("resources");
+  const tTarget = useScopedI18n("targetPrice");
   const locale = useCurrentLocale();
   const { totals, markups } = estimate;
   const rate = (value: number) => formatPercent(value, locale);
@@ -79,13 +80,24 @@ export function RecapCard({
       <CardHeader>
         <CardTitle>{t("recap.title")}</CardTitle>
         {editable && (
-          <Button
-            type="button"
-            variant="link"
-            onClick={() => open({ kind: "markups" })}
-          >
-            {t("recap.editRates")}
-          </Button>
+          <div className="flex flex-wrap items-center gap-x-4">
+            {estimate.lineItems.length > 0 && (
+              <Button
+                type="button"
+                variant="link"
+                onClick={() => open({ kind: "target" })}
+              >
+                {tTarget("open")}
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => open({ kind: "markups" })}
+            >
+              {t("recap.editRates")}
+            </Button>
+          </div>
         )}
       </CardHeader>
       <TickRule />

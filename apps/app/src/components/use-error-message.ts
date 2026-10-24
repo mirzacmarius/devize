@@ -61,6 +61,7 @@ const detailKeys: Record<string, Record<string, ErrorKey>> = {
     takeoffs: "invalidTakeoffs",
     paymentSchedule: "invalidPaymentSchedule",
     evidence: "invalidEvidence",
+    target: "invalidTarget",
     templateName: "invalidTemplateName",
     templateSize: "invalidTemplateSize",
     templateItems: "invalidTemplateItems",
