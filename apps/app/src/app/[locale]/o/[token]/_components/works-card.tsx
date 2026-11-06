@@ -142,13 +142,27 @@ function ItemRow({
   const id = useId();
   const materialsId = `${id}-materials`;
   const switchId = `${id}-include`;
+  const dimmed = !included && "opacity-60";
   return (
     <li className="grid gap-2 border-b border-border py-4 last:border-b-0">
-      <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-start gap-x-2 sm:grid-cols-[1.75rem_minmax(0,1fr)_auto] sm:gap-x-3">
+      <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-start gap-x-2 max-sm:items-baseline max-sm:gap-y-1 sm:grid-cols-[1.75rem_minmax(0,1fr)_auto] sm:gap-x-3">
         <span className="pt-px text-meta tabular-nums text-ink-3">{index}</span>
-        <div className={cn("grid min-w-0 gap-1", !included && "opacity-60")}>
-          <span className="text-body text-ink">{item.title}</span>
-          <span className="text-meta tabular-nums text-ink-3">
+        {/* On a phone the title has the whole width, and the amount sits on the quantity's line. */}
+        <div className="grid min-w-0 gap-1 max-sm:contents">
+          <span
+            className={cn(
+              "text-body text-ink max-sm:col-span-2 max-sm:col-start-2",
+              dimmed,
+            )}
+          >
+            {item.title}
+          </span>
+          <span
+            className={cn(
+              "text-meta tabular-nums text-ink-3 max-sm:col-start-2",
+              dimmed,
+            )}
+          >
             {t("line", {
               quantity: formatQuantity(item.quantity, locale),
               unit: formatUnit(item.unit, locale),
@@ -158,13 +172,16 @@ function ItemRow({
           {item.changes.map((change) => (
             <span
               key={`${change.from}:${change.to}`}
-              className="text-meta text-ink-2"
+              className={cn(
+                "text-meta text-ink-2 max-sm:col-span-2 max-sm:col-start-2",
+                dimmed,
+              )}
             >
               {t("changed", change)}
             </span>
           ))}
         </div>
-        <div className="grid justify-items-end gap-1 text-right">
+        <div className="grid justify-items-end gap-1 text-right max-sm:col-start-3 max-sm:row-start-2">
           <span
             className={cn(
               "text-body tabular-nums text-ink",

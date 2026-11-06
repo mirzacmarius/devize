@@ -172,7 +172,9 @@ function MaterialRow({
       </TableCell>
       <TableCell className={numberClass}>
         <div className="grid justify-items-end gap-0.5">
-          <span>{formatMoney(row.boughtCost, locale)}</span>
+          <span className="font-medium">
+            {formatMoney(row.boughtCost, locale)}
+          </span>
           {row.leftoverCost > 0 && (
             <span className="text-meta text-ink-3">
               {t("leftoverCost", {

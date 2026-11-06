@@ -137,16 +137,15 @@ export default {
       title: "De făcut azi",
       empty:
         "Nimic urgent: ofertele sunt citite, întrebările au răspuns și prețurile sunt la zi.",
-      questionOne: "O întrebare de la client așteaptă răspunsul tău la {code}.",
-      question:
-        "{count} întrebări de la client așteaptă răspunsul tău la {code}.",
-      alert: "Prețurile de azi schimbă totalul la {code} cu {percent}.",
-      deadlineToday: "Termenul de depunere la {code} e azi.",
-      deadlineOne: "Termenul de depunere la {code} e mâine.",
-      deadline: "Termenul de depunere la {code} e în {days} zile, pe {date}.",
-      expiringOne: "Oferta {code} expiră mâine.",
-      expiring: "Oferta {code} expiră în {days} zile.",
-      unread: "Clientul nu a deschis oferta {code} de {days} zile. Sună-l.",
+      questionOne: "Răspunde la o întrebare · {code}",
+      question: "Răspunde la {count} întrebări · {code}",
+      alert: "Verifică prețurile: total {percent} · {code}",
+      deadlineToday: "Depune azi · {code}",
+      deadlineOne: "Depune mâine · {code}",
+      deadline: "Depune în {days} zile, pe {date} · {code}",
+      expiringOne: "Oferta expiră mâine · {code}",
+      expiring: "Oferta expiră în {days} zile · {code}",
+      unread: "Sună clientul: n-a deschis oferta de {days} zile · {code}",
     },
     recent: {
       title: "Devize recente",
@@ -343,6 +342,7 @@ export default {
   estimates: {
     title: "Devize",
     new: "Deviz nou",
+    allWithVat: "Sume cu TVA",
     emptyTitle: "Încă nu ai niciun deviz",
     emptyDescription:
       "Pornești de la normele din catalog, cu tarifele tale și prețurile magazinelor, iar recapitulația se calculează singură.",

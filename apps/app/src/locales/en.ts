@@ -139,18 +139,15 @@ export default {
       title: "To do today",
       empty:
         "Nothing urgent: the offers are read, the questions answered and the prices up to date.",
-      questionOne: "A client's question is waiting for your answer on {code}.",
-      question:
-        "{count} client questions are waiting for your answer on {code}.",
-      alert: "Today's prices change the total of {code} by {percent}.",
-      deadlineToday: "The submission deadline for {code} is today.",
-      deadlineOne: "The submission deadline for {code} is tomorrow.",
-      deadline:
-        "The submission deadline for {code} is in {days} days, on {date}.",
-      expiringOne: "Offer {code} expires tomorrow.",
-      expiring: "Offer {code} expires in {days} days.",
-      unread:
-        "The client hasn't opened offer {code} for {days} days. Give them a call.",
+      questionOne: "Answer a question · {code}",
+      question: "Answer {count} questions · {code}",
+      alert: "Check prices: total {percent} · {code}",
+      deadlineToday: "Submit today · {code}",
+      deadlineOne: "Submit tomorrow · {code}",
+      deadline: "Submit in {days} days, on {date} · {code}",
+      expiringOne: "Offer expires tomorrow · {code}",
+      expiring: "Offer expires in {days} days · {code}",
+      unread: "Call the client: offer unopened for {days} days · {code}",
     },
     recent: {
       title: "Recent estimates",
@@ -348,6 +345,7 @@ export default {
   estimates: {
     title: "Estimates",
     new: "New estimate",
+    allWithVat: "Amounts with VAT",
     emptyTitle: "No estimates yet",
     emptyDescription:
       "Start from the catalog's norms, with your rates and store prices, and the summary adds itself up.",

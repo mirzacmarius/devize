@@ -40,7 +40,8 @@ export function EstimateStepper({ estimate }: { estimate: Estimate }) {
         };
   return (
     <Stepper
-      className="pb-1 lg:ml-auto lg:max-w-[560px]"
+      // The status pill says where it stands; a phone gets to the work sooner.
+      className="pb-1 max-sm:hidden lg:ml-auto lg:max-w-[560px]"
       aria-label={t("steps.label")}
       stateLabels={{
         done: t("steps.states.done"),
