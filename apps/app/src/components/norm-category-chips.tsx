@@ -44,7 +44,7 @@ export function NormCategoryChips({
       aria-label={label}
       // Beside a long list it stays in view, with its own scroll; pulled up so
       // its first row sits level with the table's head.
-      className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto border-0 px-1 pb-1.5 pt-0.5 [mask-image:linear-gradient(to_left,transparent,#000_32px)] [scrollbar-width:thin] md:sticky md:top-4 md:m-0 md:-mt-[7px] md:grid md:max-h-[calc(100dvh-2rem)] md:content-start md:gap-0 md:overflow-y-auto md:overscroll-contain md:p-0 md:[mask-image:none] md:[scrollbar-width:none]"
+      className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto border-0 px-1 pb-1.5 pt-0.5 [mask-image:linear-gradient(to_left,transparent,#000_32px)] [scrollbar-width:thin] md:sticky md:top-4 md:my-0 md:-ml-2.5 md:mr-0 md:-mt-[7px] md:grid md:max-h-[calc(100dvh-2rem)] md:content-start md:gap-0 md:overflow-y-auto md:overscroll-contain md:p-0 md:[mask-image:none] md:[scrollbar-width:none]"
     >
       {options.map((option) => {
         const pressed = option.key === value;
@@ -55,7 +55,7 @@ export function NormCategoryChips({
             aria-pressed={pressed}
             onClick={() => onChange(option.key)}
             className={cn(
-              "inline-flex min-h-8 shrink-0 items-center whitespace-nowrap rounded-md px-2.5 py-1 text-left text-meta text-ink-2 transition-colors hover:bg-tile hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:-ml-2.5 md:whitespace-normal",
+              "inline-flex min-h-8 shrink-0 items-center whitespace-nowrap rounded-md px-2.5 py-1 text-left text-meta text-ink-2 transition-colors hover:bg-tile hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:whitespace-normal",
               pressed &&
                 "bg-nav-active font-medium text-ink hover:bg-nav-active",
             )}

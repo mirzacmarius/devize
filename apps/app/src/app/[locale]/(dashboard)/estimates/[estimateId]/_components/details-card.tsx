@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import type { ReactNode } from "react";
 import { Fact, FactList } from "@/components/fact-list";
+import { FoldCard } from "@/components/fold-card";
 import { formatCalendarDate } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate, OpenPanel } from "./types";
@@ -54,33 +54,32 @@ export function DetailsCard({
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("details.title")}</CardTitle>
-        {editable && (
-          <Button
-            type="button"
-            variant="link"
-            onClick={() => open({ kind: "details" })}
-          >
-            {t("details.edit")}
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent>
-        <FactList>
-          {rows.map((row) => (
-            <Fact key={row.label} label={row.label}>
-              {row.value || <span className="text-ink-3">{tc("notSet")}</span>}
-            </Fact>
-          ))}
-        </FactList>
-        {estimate.description && (
-          <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
-            {estimate.description}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+    <FoldCard
+      title={t("details.title")}
+      lead={tFields(`kinds.${estimate.kind}`)}
+    >
+      <FactList>
+        {rows.map((row) => (
+          <Fact key={row.label} label={row.label}>
+            {row.value || <span className="text-ink-3">{tc("notSet")}</span>}
+          </Fact>
+        ))}
+      </FactList>
+      {estimate.description && (
+        <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
+          {estimate.description}
+        </p>
+      )}
+      {editable && (
+        <Button
+          type="button"
+          variant="link"
+          className="justify-self-start"
+          onClick={() => open({ kind: "details" })}
+        >
+          {t("details.edit")}
+        </Button>
+      )}
+    </FoldCard>
   );
 }

@@ -84,7 +84,7 @@ function TotalBlock({
       <span
         aria-live="polite"
         className={cn(
-          "text-kpi tabular-nums text-ink transition-opacity",
+          "text-kpi tabular-nums text-ink transition-opacity sm:text-[38px] sm:leading-[42px]",
           updating && "opacity-60",
         )}
       >

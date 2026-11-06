@@ -79,6 +79,18 @@ export default {
     title: "Intră în Devize",
     heading: "Intră în cont",
     description: "Creează devize cu norme de la producători și prețuri la zi.",
+    brand: {
+      headline: "Devizul corect, cu prețurile de azi.",
+    },
+    sample: {
+      title: "Renovare baie",
+      meta: "Apartament, str. Teilor 8 · 14 articole",
+      total: "Total cu TVA",
+      materials: "Materiale",
+      labour: "Manoperă",
+      equipment: "Utilaj și transport",
+      withoutVat: "{amount} lei fără TVA",
+    },
     google: "Continuă cu Google",
     or: "sau",
     email: "Email",
@@ -128,10 +140,10 @@ export default {
       sentMeta: "Necitite de client: {count}",
       accepted: "Acceptate în 30 de zile",
       acceptedMeta: "Acceptate în total: {count}",
-      acceptance: "Rata de acceptare",
-      acceptanceMeta: "{accepted} din {decided} oferte decise",
-      acceptanceNone: "Încă nicio ofertă decisă",
-      acceptanceLabel: "Rata de acceptare: {percent}",
+      acceptanceRate: "Rată de acceptare: {percent}",
+      receivable: "De încasat",
+      overdue: "Restant: {amount} lei",
+      noneOverdue: "Nimic restant",
     },
     todo: {
       title: "De făcut azi",
@@ -369,7 +381,7 @@ export default {
     noCounty: "Fără județ",
     newTitle: "Deviz nou",
     newDescription:
-      "Spune ce lucrare e și pentru cine; articolele le adaugi apoi din catalog.",
+      "E de ajuns numele lucrării. Restul îl poți completa și după.",
     fields: {
       title: "Lucrarea",
       titlePlaceholder: "ex. Renovare baie, apartament 2 camere",
@@ -398,6 +410,15 @@ export default {
     create: "Creează devizul",
   },
   estimate: {
+    jump: {
+      label: "Secțiunile devizului",
+      recap: "Recapitulație",
+      checks: "Verificări",
+      offer: "Ofertă",
+      progress: "Execuție",
+      invoices: "Facturi",
+      documents: "Documente",
+    },
     breadcrumb: "Unde ești",
     breadcrumbList: "Devize",
     noClient: "Fără client",
@@ -439,6 +460,7 @@ export default {
       },
     },
     actions: {
+      createOffer: "Creează oferta",
       details: "Date deviz",
       markSent: "Marchează ca trimis",
       markAccepted: "Acceptat de client",
@@ -1059,6 +1081,7 @@ export default {
   },
   documents: {
     title: "Documente",
+    lead: "PDF, Excel, formulare oficiale",
     empty: "Adaugă articole ca să poți descărca documente.",
     failed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
     failedExcel: "Fișierul Excel nu a putut fi făcut. Încearcă din nou.",
@@ -1427,6 +1450,7 @@ export default {
     hint: "Clientul deschide linkul fără cont, vede devizul pe înțeles și acceptă online.",
     create: "Creează linkul",
     empty: "Adaugă articole ca să poți trimite oferta.",
+    paymentStages: "Etape de plată: {count}",
     closed: "Devizul e închis. Fă o revizie ca să trimiți o ofertă nouă.",
     status: {
       draft: "Ciornă",
@@ -1910,6 +1934,7 @@ export default {
   },
   catalog: {
     title: "Catalog",
+    unconfirmed: "Neconfirmată",
     newNorm: "Normă nouă",
     views: {
       label: "Normele afișate",
@@ -2515,6 +2540,11 @@ export default {
       high: "Încredere mare",
       medium: "Încredere medie",
       low: "Încredere mică",
+    },
+    confidenceLevel: {
+      high: "Mare",
+      medium: "Medie",
+      low: "Mică",
     },
     contactKind: {
       generic: "Generică",
@@ -3138,6 +3168,7 @@ export default {
   },
   producers: {
     title: "Producători",
+    description: "Un profil revendicat e administrat chiar de producător.",
     empty:
       "Încă nu e niciun producător în catalog. Profilurile apar pe măsură ce publicăm normele lor.",
     columns: {
@@ -4167,14 +4198,10 @@ export default {
     efacturaDue: "până la {date}",
     card: {
       title: "Facturi",
-      noOffer:
-        "Facturile pornesc de la oferta acceptată de client: avansul cerut în ofertă, apoi factura finală cu avansul scăzut.",
-      accepted: "Acceptat de client",
-      invoiced: "Facturat",
-      remaining: "Rămas de facturat",
+      invoicedOf: "Facturat {invoiced} din {accepted} lei, fără TVA",
+      remainingLead: "{amount} lei de facturat",
       advance: "Factură de avans {percent}",
       final: "Factură finală",
-      amountsWithoutVat: "Sume fără TVA.",
       finalHint: "Avansurile emise se scad automat din factura finală.",
       created: "Ciorna a fost creată. Verifică datele și emite factura.",
       all: "Toate facturile",
@@ -4249,6 +4276,7 @@ export default {
     },
     details: {
       title: "Detalii",
+      lead: "Scadență {date}",
       kind: "Tip",
       deviz: "Deviz",
       statement: "Situație de lucrări",
@@ -4755,13 +4783,10 @@ export default {
     },
     card: {
       title: "Ambalaje și pierderi",
-      hint: "Materialele în ambalaje întregi, ce rămâne și modul de montaj.",
-      summary: "Ambalaje întregi: {count} · resturi de {cost} lei",
+      lead: "Rest {cost} lei",
       hinted:
         "„{title}”: titlul spune „{method}”, dar consumul e cel din normă.",
       stale: "„{title}”: modul de montaj trebuie aplicat din nou.",
-      open: "Deschide",
-      empty: "Apare după ce adaugi articole cu materiale.",
     },
   },
   takeoff: {
@@ -4772,13 +4797,10 @@ export default {
     download: { pdf: "Anexa în PDF", xlsx: "Anexa în Excel" },
     card: {
       title: "Antemăsurătoare",
-      hint: "Camerele cu dimensiunile lor și rândurile L × l × h din spatele fiecărei cantități.",
-      empty: "Niciun articol nu e încă măsurat.",
-      summary: "Camere: {rooms} · articole măsurate: {measured} din {items}",
+      lead: "Măsurate: {measured} din {items}",
       drifted: "„{title}”: cantitatea din deviz nu mai e cea măsurată.",
       unchecked: "Măsurători scrise de Devize AI, neverificate: {count}.",
       orphans: "Măsurători fără articol: {count}.",
-      open: "Deschide",
       start: "Măsoară",
     },
     summary: {
@@ -4972,6 +4994,7 @@ export default {
     title: "Sisteme compatibile",
     loading: "Verific materialele…",
     clear: "Materialele se potrivesc cu locul lucrărilor.",
+    clearLead: "Se potrivesc",
     empty: "Apare după ce adaugi articole.",
     errors: "Greșeli: {count}",
     warnings: "De verificat: {count}",
@@ -5105,6 +5128,7 @@ export default {
     locked: "Devizul e trimis: schimbările se fac într-o revizie a lui.",
     rest: {
       title: "Restul sistemului",
+      lead: "Lipsesc: {count}",
       missing: "Lipsește „{title}”",
       from: "{system}, pentru „{items}”",
       quantitySame: "{quantity} {unit}, ca articolele de mai sus",
@@ -5492,10 +5516,7 @@ export default {
     },
     card: {
       title: "Execuție",
-      description:
-        "Situațiile de lucrări, recepția și garanția de bună execuție ale devizului acceptat.",
       executed: "{percent} executat",
-      statements: "Situații de lucrări",
       approved: "Confirmat, fără TVA",
       noStatements: "Nicio situație de lucrări încă.",
       outstanding: "Garanție de recuperat",

@@ -1,10 +1,8 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { useQuery } from "convex/react";
-import Link from "next/link";
+import { LinkCard } from "@/components/fold-card";
 import { WarningNote } from "@/components/warning-note";
 import { formatCount } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -40,32 +38,22 @@ export function TakeoffCard({ estimate }: { estimate: Estimate }) {
     : [];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/estimates/${estimate._id}/takeoff`}>
-            {started ? t("open") : t("start")}
-          </Link>
-        </Button>
-      </CardHeader>
-      <CardContent className="gap-1">
-        <p className="m-0 text-body text-ink-2">
-          {summary === undefined || !started
-            ? t("hint")
-            : t("summary", {
-                rooms: formatCount(summary.rooms, locale),
+    <LinkCard
+      title={t("title")}
+      href={`/estimates/${estimate._id}/takeoff`}
+      lead={
+        summary === undefined
+          ? null
+          : started || estimate.status !== "draft"
+            ? t("lead", {
                 measured: formatCount(summary.measured, locale),
                 items: formatCount(summary.items, locale),
-              })}
-        </p>
-        {summary !== undefined && !started && (
-          <p className="m-0 text-meta text-ink-3">{t("empty")}</p>
-        )}
-        {notes.map((note) => (
-          <WarningNote key={note}>{note}</WarningNote>
-        ))}
-      </CardContent>
-    </Card>
+              })
+            : t("start")
+      }
+    >
+      {notes.length > 0 &&
+        notes.map((note) => <WarningNote key={note}>{note}</WarningNote>)}
+    </LinkCard>
   );
 }

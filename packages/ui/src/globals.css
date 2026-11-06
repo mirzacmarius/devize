@@ -302,18 +302,18 @@
   }
   /* Beside the main card, a column of sections rather than a stack of cards. */
   @media (min-width: 1280px) {
-    .rail-sections {
-      gap: 0;
-    }
     .rail-sections > [data-slot="card"] {
       border-width: 1px 0 0;
       border-radius: 0;
       background: transparent;
       box-shadow: none;
-      padding-bottom: 4px;
+      padding-bottom: 28px;
     }
     .rail-sections > [data-slot="card"]:first-child {
       border-top-width: 0;
+    }
+    .rail-sections > [data-fold] {
+      padding-bottom: 0;
     }
     .rail-sections > [data-slot="card"] > :is(
         [data-slot="card-header"],

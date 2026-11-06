@@ -2,12 +2,10 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { useQuery } from "convex/react";
-import Link from "next/link";
+import { LinkCard } from "@/components/fold-card";
 import { WarningNote } from "@/components/warning-note";
-import { formatCount, formatMoney } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 // How many Articole to name whose Mod de montaj needs a look.
@@ -22,7 +20,6 @@ export function PackagingCard({ estimateId }: { estimateId: Id<"estimates"> }) {
   const tLayout = useScopedI18n("materials.layout");
   const locale = useCurrentLocale();
   const list = useQuery(api.materials.list.forEstimate, { estimateId });
-  const empty = list !== undefined && list.rows.length === 0;
   // Articole whose words name a method the consumption doesn't have, or
   // whose method a changed consumption undid.
   const notes = (list?.layouts ?? [])
@@ -41,29 +38,17 @@ export function PackagingCard({ estimateId }: { estimateId: Id<"estimates"> }) {
     .slice(0, NAMED);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        {!empty && (
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/estimates/${estimateId}/materials`}>{t("open")}</Link>
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent className="gap-1">
-        <p className="m-0 text-body text-ink-2">
-          {list === undefined || empty
-            ? t("hint")
-            : t("summary", {
-                count: formatCount(list.totals.packages, locale),
-                cost: formatMoney(list.totals.leftoverCost, locale),
-              })}
-        </p>
-        {empty && <p className="m-0 text-meta text-ink-3">{t("empty")}</p>}
-        {notes.map((note) => (
-          <WarningNote key={note}>{note}</WarningNote>
-        ))}
-      </CardContent>
-    </Card>
+    <LinkCard
+      title={t("title")}
+      href={`/estimates/${estimateId}/materials`}
+      lead={
+        list === undefined || list.rows.length === 0
+          ? null
+          : t("lead", { cost: formatMoney(list.totals.leftoverCost, locale) })
+      }
+    >
+      {notes.length > 0 &&
+        notes.map((note) => <WarningNote key={note}>{note}</WarningNote>)}
+    </LinkCard>
   );
 }

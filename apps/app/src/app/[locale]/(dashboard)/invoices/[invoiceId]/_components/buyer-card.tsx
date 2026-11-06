@@ -25,6 +25,7 @@ import { useAction, useMutation } from "convex/react";
 import { type FormEvent, type ReactNode, useState } from "react";
 import { FactRows } from "@/components/fact-list";
 import { Field } from "@/components/field";
+import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import { counties } from "@/lib/counties";
 import { isValidCui } from "@/lib/validation";
@@ -76,19 +77,9 @@ function BuyerDetails({ buyer }: { buyer: Buyer }) {
     { label: t("phone"), value: buyer.phone },
   ];
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="m-0 text-body font-medium text-ink">
-          {buyer.name || (
-            <span className="font-normal text-ink-3">{tc("notSet")}</span>
-          )}
-        </p>
-        <FactRows rows={rows} />
-      </CardContent>
-    </Card>
+    <FoldCard title={t("title")} lead={buyer.name || tc("notSet")}>
+      <FactRows rows={rows} />
+    </FoldCard>
   );
 }
 

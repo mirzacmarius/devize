@@ -20,7 +20,7 @@ import {
 } from "@devize/ui/dropdown-menu";
 import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -33,8 +33,9 @@ import type { Estimate, OpenPanel } from "./types";
 type Status = Doc<"estimates">["status"];
 
 /**
- * The header's actions, which follow the Deviz's life: mark a draft sent,
- * record the client's answer, start a revision to change a sent one.
+ * The header's actions, which follow the Deviz's life: make the client's
+ * Ofertă from a draft, record the client's answer, start a revision to change
+ * a sent one. Marking a draft sent is for one that left some other way.
  */
 export function EstimateActions({
   estimate,
@@ -58,6 +59,9 @@ export function EstimateActions({
   const duplicate = useMutation(api.estimates.estimates.duplicate);
   const remove = useMutation(api.estimates.estimates.remove);
   const refreshPrices = useMutation(api.estimates.lineItems.refreshPrices);
+  const offer = useQuery(api.offers.offers.forEstimate, {
+    estimateId: estimate._id,
+  });
   const refreshedMessage = useRefreshedMessage();
   const [confirm, setConfirm] = useState<"send" | "delete" | null>(null);
   const [busy, setBusy] = useState(false);
@@ -106,11 +110,25 @@ export function EstimateActions({
     }
   };
 
+  const empty = estimate.lineItems.length === 0;
+  // Only one link at a time, and none once one is accepted.
+  const linkInUse =
+    offer?.status === "sent" ||
+    offer?.status === "viewed" ||
+    offer?.status === "accepted";
+
   const primary =
     status === "draft" ? (
-      <Button onClick={() => setConfirm("send")} disabled={busy}>
-        {t("actions.markSent")}
-      </Button>
+      // An empty draft's next step is in its Articole.
+      empty ? null : linkInUse ? (
+        <Button onClick={() => setConfirm("send")} disabled={busy}>
+          {t("actions.markSent")}
+        </Button>
+      ) : (
+        <Button onClick={() => open({ kind: "offer" })} disabled={busy}>
+          {t("actions.createOffer")}
+        </Button>
+      )
     ) : status === "sent" ? (
       <Button
         onClick={() => changeStatus("accepted", t("actions.acceptedDone"))}
@@ -126,11 +144,6 @@ export function EstimateActions({
 
   return (
     <>
-      {status === "draft" && (
-        <Button variant="outline" onClick={() => open({ kind: "details" })}>
-          {t("actions.details")}
-        </Button>
-      )}
       {status === "sent" && (
         <Button
           variant="outline"
@@ -150,6 +163,18 @@ export function EstimateActions({
         <DropdownMenuContent align="end" className="min-w-56">
           {status === "draft" ? (
             <>
+              {!linkInUse && (
+                <DropdownMenuItem
+                  disabled={empty}
+                  onSelect={() => setConfirm("send")}
+                >
+                  {t("actions.markSent")}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onSelect={() => open({ kind: "details" })}>
+                {t("actions.details")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => open({ kind: "markups" })}>
                 {t("actions.markups")}
               </DropdownMenuItem>

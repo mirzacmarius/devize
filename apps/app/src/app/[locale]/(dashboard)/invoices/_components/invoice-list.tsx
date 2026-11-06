@@ -25,7 +25,7 @@ import {
   InvoiceStatusPill,
 } from "@/components/invoice-status";
 import { SegmentedControl } from "@/components/segmented-control";
-import { formatCalendarDate, formatMoney, todayInput } from "@/lib/format";
+import { formatCalendarDay, formatMoney, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 type Filter = "all" | InvoiceStatus;
@@ -170,8 +170,12 @@ export function InvoiceList() {
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <span className="truncate text-meta tabular-nums text-ink-3">
-                          {row.code ?? t("draftCode")}
-                          {row.estimate && ` · ${row.estimate.code}`}
+                          {[
+                            row.code ?? (row.estimate ? null : t("draftCode")),
+                            row.estimate?.code,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
                           <span className="md:hidden">
                             {row.buyerName && ` · ${row.buyerName}`}
                           </span>
@@ -212,7 +216,7 @@ export function InvoiceList() {
                       )}
                     </TableCell>
                     <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
-                      {formatCalendarDate(row.dueDate, locale)}
+                      {formatCalendarDay(row.dueDate, locale)}
                     </TableCell>
                     <TableCell className="hidden pl-8 lg:table-cell">
                       {live ? (
@@ -224,7 +228,7 @@ export function InvoiceList() {
                           {row.efactura.status === "not_sent" && (
                             <span className="text-meta text-ink-3">
                               {t("efacturaDue", {
-                                date: formatCalendarDate(
+                                date: formatCalendarDay(
                                   row.efactura.deadline,
                                   locale,
                                 ),

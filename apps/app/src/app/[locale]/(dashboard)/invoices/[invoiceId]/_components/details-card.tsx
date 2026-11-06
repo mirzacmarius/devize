@@ -19,6 +19,7 @@ import { type FormEvent, type ReactNode, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { FactRows } from "@/components/fact-list";
 import { Field } from "@/components/field";
+import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
@@ -157,20 +158,18 @@ function DetailsList({ invoice }: { invoice: Invoice }) {
     ...references.slice(1),
   ];
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <FactRows rows={rows} />
-        {invoice.notes && (
-          <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
-            {invoice.notes}
-          </p>
-        )}
-        <Mentions invoice={invoice} />
-      </CardContent>
-    </Card>
+    <FoldCard
+      title={t("title")}
+      lead={t("lead", { date: formatCalendarDate(invoice.dueDate, locale) })}
+    >
+      <FactRows rows={rows} />
+      {invoice.notes && (
+        <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
+          {invoice.notes}
+        </p>
+      )}
+      <Mentions invoice={invoice} />
+    </FoldCard>
   );
 }
 

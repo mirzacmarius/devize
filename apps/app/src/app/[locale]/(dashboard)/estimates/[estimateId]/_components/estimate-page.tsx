@@ -22,6 +22,7 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { InvoicesCard } from "../_invoices/invoices-card";
 import { PackagingCard } from "../_materials/packaging-card";
 import { OfferCard } from "../_offer/offer-card";
+import { OfferDialog } from "../_offer/offer-dialog";
 import { ProgressCard } from "../_progress/progress-card";
 import { OmissionsSheet } from "../_proposal/omissions-sheet";
 import { ProposalBanner } from "../_proposal/proposal-banner";
@@ -43,7 +44,7 @@ import { RecapCard } from "./recap-card";
 import { RevisionsCard } from "./revisions-card";
 import { SectionDialog } from "./section-dialog";
 import { TargetPriceDialog } from "./target-dialog";
-import type { Panel } from "./types";
+import type { Estimate, Panel } from "./types";
 
 /**
  * A Deviz: its line items by section, the Recapitulație and, on the right,
@@ -140,6 +141,7 @@ export function EstimatePage() {
           />
           <EstimateStepper estimate={estimate} />
         </div>
+        <SectionLinks estimate={estimate} />
       </div>
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
         <div className="grid min-w-0 gap-6">
@@ -157,7 +159,7 @@ export function EstimatePage() {
           />
           <RecapCard estimate={estimate} editable={editable} open={setPanel} />
         </div>
-        <div className="rail-sections grid min-w-0 gap-6">
+        <div className="rail-sections grid min-w-0 gap-6 xl:gap-0">
           <ChecksCard
             estimate={estimate}
             checks={checks}
@@ -165,7 +167,10 @@ export function EstimatePage() {
             editable={editable}
             open={setPanel}
           />
-          <OfferCard estimate={estimate} />
+          <OfferCard
+            estimate={estimate}
+            onCreate={() => setPanel({ kind: "offer" })}
+          />
           {estimate.status === "accepted" && (
             <ProgressCard estimate={estimate} />
           )}
@@ -186,6 +191,11 @@ export function EstimatePage() {
       <DetailsSheet
         estimate={estimate}
         open={panel?.kind === "details"}
+        onClose={close}
+      />
+      <OfferDialog
+        estimate={estimate}
+        open={panel?.kind === "offer"}
         onClose={close}
       />
       <MarkupsDialog
@@ -235,5 +245,33 @@ export function EstimatePage() {
         onClose={close}
       />
     </>
+  );
+}
+
+/**
+ * Until the rail sits beside the Articole it comes after them all: the way to
+ * what's down there, by what the Deviz is at.
+ */
+function SectionLinks({ estimate }: { estimate: Estimate }) {
+  const t = useScopedI18n("estimate.jump");
+  const sections =
+    estimate.status === "accepted"
+      ? (["offer", "progress", "invoices", "documents"] as const)
+      : (["recap", "checks", "offer", "documents"] as const);
+  return (
+    <nav
+      aria-label={t("label")}
+      className="order-last -my-2 flex gap-4 overflow-x-auto [scrollbar-width:none] md:col-span-2 xl:hidden"
+    >
+      {sections.map((section) => (
+        <a
+          key={section}
+          href={`#${section}`}
+          className="inline-flex h-10 shrink-0 items-center rounded-xs text-meta font-medium text-ink-2 underline decoration-border underline-offset-[5px] transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {t(section)}
+        </a>
+      ))}
+    </nav>
   );
 }

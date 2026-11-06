@@ -80,6 +80,18 @@ export default {
   login: {
     title: "Sign in to Devize",
     heading: "Sign in",
+    brand: {
+      headline: "The right estimate, at today's prices.",
+    },
+    sample: {
+      title: "Bathroom renovation",
+      meta: "Apartment, 8 Teilor St. · 14 line items",
+      total: "Total with VAT",
+      materials: "Materials",
+      labour: "Labour",
+      equipment: "Equipment and transport",
+      withoutVat: "{amount} lei without VAT",
+    },
     description:
       "Build estimates with manufacturers' norms and up-to-date prices.",
     google: "Continue with Google",
@@ -130,10 +142,10 @@ export default {
       sentMeta: "Unread by the client: {count}",
       accepted: "Accepted in 30 days",
       acceptedMeta: "Accepted in total: {count}",
-      acceptance: "Acceptance rate",
-      acceptanceMeta: "{accepted} of {decided} decided offers",
-      acceptanceNone: "No decided offer yet",
-      acceptanceLabel: "Acceptance rate: {percent}",
+      acceptanceRate: "Acceptance rate: {percent}",
+      receivable: "To collect",
+      overdue: "Overdue: {amount} lei",
+      noneOverdue: "Nothing overdue",
     },
     todo: {
       title: "To do today",
@@ -371,8 +383,7 @@ export default {
     noClient: "No client",
     noCounty: "No county",
     newTitle: "New estimate",
-    newDescription:
-      "Say what the job is and who it's for; add the line items from the catalog next.",
+    newDescription: "The job's name is enough. You can fill in the rest later.",
     fields: {
       title: "Job",
       titlePlaceholder: "e.g. Bathroom renovation, 2-room flat",
@@ -401,6 +412,15 @@ export default {
     create: "Create the estimate",
   },
   estimate: {
+    jump: {
+      label: "Estimate sections",
+      recap: "Summary",
+      checks: "Checks",
+      offer: "Offer",
+      progress: "Execution",
+      invoices: "Invoices",
+      documents: "Documents",
+    },
     breadcrumb: "You are here",
     breadcrumbList: "Estimates",
     noClient: "No client",
@@ -443,6 +463,7 @@ export default {
       },
     },
     actions: {
+      createOffer: "Create the offer",
       details: "Estimate details",
       markSent: "Mark as sent",
       markAccepted: "Accepted by client",
@@ -1061,6 +1082,7 @@ export default {
   },
   documents: {
     title: "Documents",
+    lead: "PDF, Excel, official forms",
     empty: "Add line items to download documents.",
     failed: "The PDF couldn't be made. Try again.",
     failedExcel: "The Excel file couldn't be made. Try again.",
@@ -1430,6 +1452,7 @@ export default {
     hint: "The client opens the link without an account, reads the estimate in plain words and accepts online.",
     create: "Create the link",
     empty: "Add line items to send the offer.",
+    paymentStages: "Payment stages: {count}",
     closed: "The estimate is closed. Make a revision to send a new offer.",
     status: {
       draft: "Draft",
@@ -1915,6 +1938,7 @@ export default {
   },
   catalog: {
     title: "Catalog",
+    unconfirmed: "Unconfirmed",
     newNorm: "New norm",
     views: {
       label: "Norms shown",
@@ -2514,6 +2538,11 @@ export default {
       offer_question: "Question on an offer",
       omission_check: "Omissions check",
       norm_draft: "Norm from a description",
+    },
+    confidenceLevel: {
+      high: "High",
+      medium: "Medium",
+      low: "Low",
     },
     confidence: {
       high: "High confidence",
@@ -3143,6 +3172,7 @@ export default {
   },
   producers: {
     title: "Manufacturers",
+    description: "A claimed profile is managed by the manufacturer itself.",
     empty:
       "No manufacturers in the catalog yet. Profiles appear as we publish their norms.",
     columns: {
@@ -4173,14 +4203,10 @@ export default {
     efacturaDue: "by {date}",
     card: {
       title: "Invoices",
-      noOffer:
-        "Invoices start from the offer the client accepted: the advance the offer asked for, then the final invoice with the advance deducted.",
-      accepted: "Accepted by the client",
-      invoiced: "Invoiced",
-      remaining: "Left to invoice",
+      invoicedOf: "Invoiced {invoiced} of {accepted} lei, before VAT",
+      remainingLead: "{amount} lei to invoice",
       advance: "Advance invoice {percent}",
       final: "Final invoice",
-      amountsWithoutVat: "Amounts without VAT.",
       finalHint: "Issued advances are deducted from the final invoice.",
       created: "The draft is ready. Check it and issue the invoice.",
       all: "All invoices",
@@ -4256,6 +4282,7 @@ export default {
     },
     details: {
       title: "Details",
+      lead: "Due {date}",
       kind: "Kind",
       deviz: "Estimate",
       statement: "Work statement",
@@ -4762,13 +4789,10 @@ export default {
     },
     card: {
       title: "Packaging and waste",
-      hint: "Materials in whole packages, what is left over and the laying method.",
-      summary: "Whole packages: {count} · {cost} lei left over",
+      lead: "{cost} lei left over",
       hinted:
         "“{title}”: the title says “{method}”, but the consumption is the norm's.",
       stale: "“{title}”: the laying method needs applying again.",
-      open: "Open",
-      empty: "Shows once you add line items with materials.",
     },
   },
   takeoff: {
@@ -4779,14 +4803,11 @@ export default {
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
       title: "Quantity take-off",
-      hint: "The rooms with their dimensions and the L × W × H rows behind each quantity.",
-      empty: "No line item is measured yet.",
-      summary: "Rooms: {rooms} · measured line items: {measured} of {items}",
+      lead: "Measured: {measured} of {items}",
       drifted:
         "“{title}”: the estimate's quantity is no longer the measured one.",
       unchecked: "Take-offs written by Devize AI, unchecked: {count}.",
       orphans: "Take-offs without a line item: {count}.",
-      open: "Open",
       start: "Measure",
     },
     summary: {
@@ -4983,6 +5004,7 @@ export default {
     title: "Compatible systems",
     loading: "Checking the materials…",
     clear: "The materials suit where the work is done.",
+    clearLead: "All suit",
     empty: "Shows once you add line items.",
     errors: "Mistakes: {count}",
     warnings: "To check: {count}",
@@ -5116,6 +5138,7 @@ export default {
     locked: "The estimate was sent: changes go in a revision of it.",
     rest: {
       title: "Rest of the system",
+      lead: "Missing: {count}",
       missing: "“{title}” is missing",
       from: "{system}, for “{items}”",
       quantitySame: "{quantity} {unit}, like the line items above",
@@ -5502,10 +5525,7 @@ export default {
     },
     card: {
       title: "Execution",
-      description:
-        "The progress statements, the reception and the performance guarantee of the accepted estimate.",
       executed: "{percent} executed",
-      statements: "Progress statements",
       approved: "Confirmed, without VAT",
       noStatements: "No progress statement yet.",
       outstanding: "Guarantee to recover",

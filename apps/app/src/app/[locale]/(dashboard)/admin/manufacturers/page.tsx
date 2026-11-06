@@ -206,7 +206,8 @@ export default function ManufacturersPage() {
                       {tAdmin(`status.norms.${row.normsStatus}`)}
                     </TableCell>
                     <TableCell className="text-ink-2">
-                      {row.confidence && tAdmin(`confidence.${row.confidence}`)}
+                      {row.confidence &&
+                        tAdmin(`confidenceLevel.${row.confidence}`)}
                     </TableCell>
                     <TableCell
                       className={

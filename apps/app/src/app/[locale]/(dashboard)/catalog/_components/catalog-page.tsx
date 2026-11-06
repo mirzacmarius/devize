@@ -59,7 +59,6 @@ function matches(norm: NormRow, words: readonly string[]) {
 export function CatalogPage() {
   const t = useScopedI18n("catalog");
   const tc = useScopedI18n("common");
-  const tNorms = useScopedI18n("norms");
   const locale = useCurrentLocale();
   const normSource = useNormSource();
   const { firm } = useFirm();
@@ -273,8 +272,7 @@ export function CatalogPage() {
                             <span className={isOwn ? undefined : "lg:hidden"}>
                               {norm.source !== "base" &&
                                 ` · ${normSource(norm)}`}
-                              {unconfirmed(norm) &&
-                                ` · ${tNorms("unconfirmed")}`}
+                              {unconfirmed(norm) && ` · ${t("unconfirmed")}`}
                             </span>
                           </span>
                         </Link>
@@ -288,7 +286,7 @@ export function CatalogPage() {
                               </span>
                               {unconfirmed(norm) && (
                                 <span className="text-meta text-ink-3">
-                                  {tNorms("unconfirmed")}
+                                  {t("unconfirmed")}
                                 </span>
                               )}
                             </span>

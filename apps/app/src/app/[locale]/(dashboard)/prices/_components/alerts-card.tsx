@@ -233,7 +233,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
       )}
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button asChild variant="outline" size="sm">
+        <Button asChild size="sm">
           <Link href={`/estimates/${estimate._id}`}>{t("open")}</Link>
         </Button>
         <Button

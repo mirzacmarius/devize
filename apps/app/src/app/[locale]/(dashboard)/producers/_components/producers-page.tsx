@@ -58,6 +58,7 @@ export function ProducersPage() {
           </Breadcrumb>
         }
         title={t("title")}
+        description={t("description")}
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
@@ -110,9 +111,11 @@ export function ProducersPage() {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <StatusPill tone={producer.claimed ? "success" : "neutral"}>
-                      {producer.claimed ? t("claimed") : t("unclaimed")}
-                    </StatusPill>
+                    {producer.claimed ? (
+                      <StatusPill tone="success">{t("claimed")}</StatusPill>
+                    ) : (
+                      <span className="text-ink-3">{t("unclaimed")}</span>
+                    )}
                   </TableCell>
                   {hasEdition && (
                     <TableCell className="hidden text-ink-2 sm:table-cell">

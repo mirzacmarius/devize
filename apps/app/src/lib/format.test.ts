@@ -3,6 +3,7 @@ import {
   estimateCode,
   formatAmount,
   formatCalendarDate,
+  formatCalendarDay,
   formatConsumption,
   formatCount,
   formatFileSize,
@@ -35,6 +36,12 @@ describe("formatting", () => {
 
   test("writes a price date with a short month", () => {
     expect(formatCalendarDate("2026-10-21", "ro")).toBe("21 oct. 2026");
+  });
+
+  test("leaves out the year of a date in this year", () => {
+    const now = new Date("2026-11-06T12:00:00Z");
+    expect(formatCalendarDay("2026-10-21", "ro", now)).toBe("21 oct.");
+    expect(formatCalendarDay("2027-01-15", "ro", now)).toBe("15 ian. 2027");
   });
 
   test("writes the date of the terms with the month in full", () => {

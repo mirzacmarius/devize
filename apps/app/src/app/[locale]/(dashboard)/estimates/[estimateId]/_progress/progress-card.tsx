@@ -48,7 +48,7 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
   };
 
   return (
-    <Card>
+    <Card id="progress" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
         {overview.statements.length > 0 && (
@@ -70,9 +70,6 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
           />
         )}
         <FactList>
-          {overview.statements.length > 0 && (
-            <Fact label={t("statements")}>{overview.statements.length}</Fact>
-          )}
           {overview.approved && (
             <Fact label={t("approved")}>
               {formatMoney(overview.approved.subtotal, locale)} lei
@@ -83,11 +80,14 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
               {formatMoney(guarantee.outstanding, locale)} lei
             </Fact>
           )}
-          {(["completion", "final"] as const).map((kind) => (
-            <Fact key={kind} label={tStages(kind)}>
-              {receptionState(kind)}
-            </Fact>
-          ))}
+          {/* A reception says something once the work is done or one is begun. */}
+          {(["completion", "final"] as const)
+            .filter((kind) => percent >= 100 || guarantee.receptions[kind])
+            .map((kind) => (
+              <Fact key={kind} label={tStages(kind)}>
+                {receptionState(kind)}
+              </Fact>
+            ))}
         </FactList>
         <Button variant="link" className="justify-self-start" asChild>
           <Link href={`/estimates/${estimate._id}/progress`}>{t("open")}</Link>

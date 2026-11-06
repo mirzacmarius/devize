@@ -387,11 +387,11 @@ function SeriesCard({ settings }: { settings: Settings }) {
         )}
       </CardContent>
       {settings.canEdit && (
-        <CardFooter className={footer}>
+        <CardFooter className="rounded-b-[11px] border-t bg-sunken py-4">
           <form
             onSubmit={add}
             noValidate
-            className="grid w-full gap-3 sm:grid-cols-[160px_160px_auto] sm:items-end"
+            className="grid w-full gap-3 sm:grid-cols-[160px_160px_auto] sm:justify-start"
           >
             <Field label={t("code")} htmlFor="series-code" hint={t("codeHint")}>
               <Input
@@ -417,12 +417,12 @@ function SeriesCard({ settings }: { settings: Settings }) {
                 className="text-right tabular-nums"
               />
             </Field>
+            {/* In line with the fields under their labels, whatever their hints. */}
             <Button
               type="submit"
-              size="sm"
               variant="outline"
               disabled={adding || !code.trim()}
-              className="mb-6 sm:mb-0"
+              className="justify-self-start sm:mt-[26px]"
             >
               <Plus aria-hidden />
               {t("addSeries")}

@@ -10,7 +10,7 @@ import { toast } from "@devize/ui/sonner";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { ExternalLink, Mail, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Fact, FactList } from "@/components/fact-list";
@@ -25,7 +25,6 @@ import {
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
-import { OfferDialog } from "./offer-dialog";
 import { copyText, offerUrl, useOrigin, whatsappNumber } from "./offer-link";
 import { OfferQuestions } from "./offer-questions";
 import { OfferVariants } from "./variants-sheet";
@@ -49,12 +48,17 @@ const tones: Record<Offer["status"], StatusPillProps["tone"]> = {
  * sending it, the client's visits and what they look at, and their answer
  * with the signature.
  */
-export function OfferCard({ estimate }: { estimate: Estimate }) {
+export function OfferCard({
+  estimate,
+  onCreate,
+}: {
+  estimate: Estimate;
+  onCreate: () => void;
+}) {
   const t = useScopedI18n("offer");
   const offer = useQuery(api.offers.offers.forEstimate, {
     estimateId: estimate._id,
   });
-  const [creating, setCreating] = useState(false);
   if (offer === undefined) {
     return null;
   }
@@ -69,7 +73,7 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
           variant="outline"
           size="sm"
           disabled={empty}
-          onClick={() => setCreating(true)}
+          onClick={onCreate}
           className="justify-self-start"
         >
           {label}
@@ -84,8 +88,11 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
   if (offer === null) {
     body = (
       <>
-        <p className="m-0 text-meta text-ink-2">{t("hint")}</p>
-        {createButton(t("create"))}
+        <p className="m-0 text-meta text-ink-2">
+          {estimate.status === "draft" && empty ? t("empty") : t("hint")}
+        </p>
+        {/* A draft has it in its header; one already marked sent only here. */}
+        {estimate.status !== "draft" && createButton(t("create"))}
         <OfferVariants estimate={estimate} />
       </>
     );
@@ -110,7 +117,7 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
   }
 
   return (
-    <Card>
+    <Card id="offer" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
         {/* An accepted offer says so, with who and when, in its first line. */}
@@ -121,20 +128,36 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
         )}
       </CardHeader>
       <CardContent>{body}</CardContent>
-      <OfferDialog
-        estimate={estimate}
-        open={creating}
-        onClose={() => setCreating(false)}
-      />
     </Card>
   );
 }
 
 /** How the client pays the offer's choice, stage by stage. */
-function OfferPayment({ offer }: { offer: Offer }) {
+function OfferPayment({
+  offer,
+  folded = false,
+}: {
+  offer: Offer;
+  folded?: boolean;
+}) {
   const t = useScopedI18n("offer");
   if (offer.paymentSchedule.length === 0) {
     return null;
+  }
+  if (folded) {
+    return (
+      <details>
+        <summary className="text-meta text-ink-2 hover:text-ink">
+          {t("paymentStages", { count: offer.paymentSchedule.length })}
+        </summary>
+        <div className="mt-2">
+          <PaymentStages
+            stages={offer.paymentSchedule}
+            total={offer.choice.totals.total}
+          />
+        </div>
+      </details>
+    );
   }
   return (
     <div className="grid gap-1.5">
@@ -251,14 +274,13 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
             {t("email")}
           </a>
         </Button>
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="link" className="ml-1 text-meta" asChild>
           <a href={`/o/${offer.token}`} target="_blank" rel="noreferrer">
-            <ExternalLink aria-hidden />
             {t("openAsClient")}
           </a>
         </Button>
       </div>
-      <OfferPayment offer={offer} />
+      <OfferPayment offer={offer} folded />
       <div className="grid gap-1 text-meta text-ink-2">
         <span>{facts.join(" · ")}</span>
         <span>
@@ -277,9 +299,8 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
       <OfferQuestions offerId={offer._id} assistant={offer.assistant} live />
       <Button
         type="button"
-        variant="ghost"
-        size="sm"
-        className="justify-self-start"
+        variant="link"
+        className="justify-self-start text-meta text-ink-2"
         onClick={() => setConfirming(true)}
       >
         {t("withdraw")}
@@ -353,9 +374,14 @@ function AcceptedOffer({
           })}
         </p>
       )}
-      <ChoiceBox offer={offer} />
-      <OfferPayment offer={offer} />
-      <SigningEvidence estimate={estimate} offer={offer} />
+      {/* The total is the Deviz's own unless the client chose among some. */}
+      {(offer.variants.length > 0 || offer.optionalItems.length > 0) && (
+        <ChoiceBox offer={offer} />
+      )}
+      <div className="grid gap-2">
+        <OfferPayment offer={offer} folded />
+        <SigningEvidence estimate={estimate} offer={offer} />
+      </div>
       <OfferQuestions
         offerId={offer._id}
         assistant={offer.assistant}

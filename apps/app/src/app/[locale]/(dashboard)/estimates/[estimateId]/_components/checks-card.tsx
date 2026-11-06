@@ -62,7 +62,7 @@ export function ChecksCard({
     />
   );
   return (
-    <Card>
+    <Card id="checks" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("checks.title")}</CardTitle>
         <span className="text-meta tabular-nums text-ink-3">

@@ -74,7 +74,7 @@ export function RecapCard({
   ];
 
   return (
-    <Card>
+    <Card id="recap" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("recap.title")}</CardTitle>
         {editable && (

@@ -89,6 +89,24 @@ export function formatCalendarDate(
   }).format(new Date(Date.UTC(year, month - 1, day)));
 }
 
+/** A calendar date, without the year when it is this year's: 21 oct., or 21 oct. 2027. */
+export function formatCalendarDay(
+  value: string,
+  locale: Locale,
+  now = new Date(),
+): string {
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) {
+    return value;
+  }
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    day: "numeric",
+    month: "short",
+    year: year === now.getFullYear() ? undefined : "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, day)));
+}
+
 /** A month stored as YYYY-MM: oct., or oct. 2026 with its year. */
 export function formatMonth(
   value: string,

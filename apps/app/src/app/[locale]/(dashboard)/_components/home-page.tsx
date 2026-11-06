@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
-import { MeterBar } from "@devize/ui/meter";
 import { PageHeader } from "@devize/ui/page-header";
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
@@ -30,11 +29,12 @@ import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import {
   estimateCode,
-  formatCalendarDate,
+  formatCalendarDay,
   formatCount,
   formatDay,
   formatMoney,
   formatPercent,
+  todayInput,
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { NewEstimateDialog } from "../estimates/_components/new-estimate-dialog";
@@ -51,6 +51,10 @@ export function HomePage() {
   const locale = useCurrentLocale();
   const { firm } = useFirm();
   const home = useQuery(api.home.overview, { organizationId: firm._id });
+  const receivable = useQuery(api.invoices.invoices.receivable, {
+    organizationId: firm._id,
+    today: todayInput(),
+  });
   const [creating, setCreating] = useState(false);
 
   const money = (value: number | undefined) =>
@@ -61,7 +65,6 @@ export function HomePage() {
     home && decided > 0
       ? Math.round((home.acceptance.accepted / decided) * 100)
       : undefined;
-  const percent = rate === undefined ? "–" : formatPercent(rate, locale);
   // The first steps stay in the rail until the firm has taken all three.
   const showSetup =
     home !== undefined &&
@@ -101,28 +104,26 @@ export function HomePage() {
           unit={t("lei")}
           meta={
             home &&
-            t("kpi.acceptedMeta", { count: count(home.accepted.allTime) })
+            (rate === undefined
+              ? t("kpi.acceptedMeta", { count: count(home.accepted.allTime) })
+              : t("kpi.acceptanceRate", {
+                  percent: formatPercent(rate, locale),
+                }))
           }
         />
         <Kpi
-          label={t("kpi.acceptance")}
-          value={percent}
+          label={t("kpi.receivable")}
+          value={money(receivable?.total)}
+          unit={t("lei")}
           meta={
-            home &&
-            (decided > 0
-              ? t("kpi.acceptanceMeta", {
-                  accepted: count(home.acceptance.accepted),
-                  decided: count(decided),
+            receivable &&
+            (receivable.overdue > 0
+              ? t("kpi.overdue", {
+                  amount: formatMoney(receivable.overdue, locale),
                 })
-              : t("kpi.acceptanceNone"))
+              : t("kpi.noneOverdue"))
           }
-        >
-          <MeterBar
-            value={rate ?? 0}
-            label={t("kpi.acceptanceLabel", { percent })}
-            className="max-w-28 flex-1 self-center"
-          />
-        </Kpi>
+        />
       </Card>
       <div
         className={cn(
@@ -157,13 +158,11 @@ function Kpi({
   value,
   unit,
   meta,
-  children,
 }: {
   label: string;
   value: string;
   unit?: string;
   meta: ReactNode;
-  children?: ReactNode;
 }) {
   const t = useScopedI18n("home");
   return (
@@ -174,7 +173,6 @@ function Kpi({
           {value}
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}
-        {children}
       </div>
       <p className="m-0 min-h-[18px] truncate text-meta text-ink-3">
         {unit && <span className="max-sm:hidden">{t("withVat")} · </span>}
@@ -265,7 +263,7 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
             : t("deadline", {
                 code,
                 days,
-                date: formatCalendarDate(item.date, locale),
+                date: formatCalendarDay(item.date, locale),
               });
       break;
     case "expiring":

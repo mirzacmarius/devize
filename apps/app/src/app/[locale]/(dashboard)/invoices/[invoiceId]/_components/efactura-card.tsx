@@ -55,14 +55,14 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
         {live && efactura.status === "not_sent" && (
           <p className="m-0 text-body text-ink-2">{t("manual")}</p>
         )}
-        {efactura.uploadIndex && (
-          <p className="m-0 text-meta tabular-nums text-ink-2">
-            {t("uploadIndex", { index: efactura.uploadIndex })}
-          </p>
-        )}
-        {efactura.downloadId && (
-          <p className="m-0 text-meta tabular-nums text-ink-2">
-            {t("downloadId", { id: efactura.downloadId })}
+        {(efactura.uploadIndex || efactura.downloadId) && (
+          <p className="m-0 grid gap-0.5 text-meta tabular-nums text-ink-3">
+            {efactura.uploadIndex && (
+              <span>{t("uploadIndex", { index: efactura.uploadIndex })}</span>
+            )}
+            {efactura.downloadId && (
+              <span>{t("downloadId", { id: efactura.downloadId })}</span>
+            )}
           </p>
         )}
         {efactura.errors && efactura.errors.length > 0 && (
