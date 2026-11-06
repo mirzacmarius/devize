@@ -78,6 +78,18 @@ export function EstimateActions({
   const code = estimateCode(estimate.number, estimate.revision);
   const invoicing = useInvoiceActions(estimateId, status === "accepted");
   const [nextInvoice, ...laterInvoices] = invoicing.actions;
+  const work = useQuery(
+    api.progress.statements.forEstimate,
+    status === "accepted" ? { estimateId } : "skip",
+  );
+  // While the work goes on, what comes next is its next Situație; the final
+  // invoice waits in the menu.
+  const midWork =
+    nextInvoice?.key === "final" &&
+    work !== undefined &&
+    work.statements.length > 0 &&
+    work.executed.percent < 100;
+  const menuInvoices = midWork ? invoicing.actions : laterInvoices;
   const primaryClass = fill ? "max-sm:flex-1" : undefined;
 
   const changeStatus = async (next: Status, success: string) => {
@@ -154,6 +166,12 @@ export function EstimateActions({
         disabled={busy}
       >
         {t("actions.markAccepted")}
+      </Button>
+    ) : midWork ? (
+      <Button className={primaryClass} asChild>
+        <Link href={`/estimates/${estimateId}/progress`}>
+          {t("actions.openProgress")}
+        </Link>
       </Button>
     ) : nextInvoice ? (
       // Once accepted, what comes next is billing it.
@@ -234,7 +252,7 @@ export function EstimateActions({
             </>
           ) : (
             <>
-              {laterInvoices.map((action) => (
+              {menuInvoices.map((action) => (
                 <DropdownMenuItem
                   key={action.key}
                   disabled={invoicing.busy}
@@ -289,7 +307,7 @@ export function EstimateActions({
               {tMaterials("open")}
             </Link>
           </DropdownMenuItem>
-          {status === "accepted" && (
+          {status === "accepted" && !midWork && (
             <DropdownMenuItem asChild>
               <Link href={`/estimates/${estimateId}/progress`}>
                 {tProgress("open")}

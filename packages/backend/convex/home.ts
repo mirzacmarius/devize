@@ -39,10 +39,10 @@ type Todo = { estimate: EstimateSummary } & (
   | { kind: "unread"; days: number }
 );
 
-// Someone waiting first, then money moving, then what runs out soonest.
+// Money moving first, then someone waiting, then what runs out soonest.
 const todoOrder: Record<Todo["kind"], number> = {
-  question: 0,
-  alert: 1,
+  alert: 0,
+  question: 1,
   deadline: 2,
   expiring: 2,
   unread: 3,

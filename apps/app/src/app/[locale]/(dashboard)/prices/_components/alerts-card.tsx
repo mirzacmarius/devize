@@ -10,12 +10,10 @@ import {
   CardTitle,
 } from "@devize/ui/card";
 import { toast } from "@devize/ui/sonner";
-import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
-import { Amount } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
@@ -77,18 +75,13 @@ export function AlertsCard({ alerts }: { alerts: AlertList | undefined }) {
             canEdit={firm.role !== "member"}
           />
           {on && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={check}
-              disabled={checking}
-            >
+            <Button variant="outline" onClick={check} disabled={checking}>
               {t("checkNow")}
             </Button>
           )}
         </div>
       </CardHeader>
-      <CardContent className="gap-0">
+      <CardContent className="gap-4">
         {alerts === undefined ? (
           <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
         ) : (
@@ -101,13 +94,13 @@ export function AlertsCard({ alerts }: { alerts: AlertList | undefined }) {
               <p className="m-0 text-meta text-ink-3">{t("noneDescription")}</p>
             </div>
           ) : (
-            alerts.alerts.map((alert, index) => (
-              <AlertRow key={alert._id} alert={alert} first={index === 0} />
+            alerts.alerts.map((alert) => (
+              <AlertRow key={alert._id} alert={alert} />
             ))
           ))
         )}
         {on && alerts.dismissed > 0 && (
-          <p className="m-0 pt-3 text-meta text-ink-3">
+          <p className="m-0 text-meta text-ink-3">
             {t("dismissedCount", { count: alerts.dismissed, percent })}
           </p>
         )}
@@ -116,7 +109,7 @@ export function AlertsCard({ alerts }: { alerts: AlertList | undefined }) {
   );
 }
 
-function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
+function AlertRow({ alert }: { alert: PriceAlert }) {
   const t = useScopedI18n("prices.alerts");
   const locale = useCurrentLocale();
   const dismiss = useMutation(api.prices.alerts.dismiss);
@@ -127,75 +120,82 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
   const percent = formatPercent(Math.abs(alert.percent), locale);
   const more = alert.changeCount - alert.changes.length;
   const profitChange = alert.profitLeft - alert.sentProfit;
+  const code = estimateCode(estimate.number, estimate.revision);
 
   return (
     <section
-      aria-label={`${estimateCode(estimate.number, estimate.revision)} ${estimate.title}`}
-      className={cn(
-        "grid gap-4 py-4 last:pb-0",
-        first ? "pt-0" : "border-t border-border",
-      )}
+      aria-label={`${code} ${estimate.title}`}
+      className="grid gap-5 rounded-lg border border-card-border p-4 sm:p-5"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="grid min-w-0 gap-0.5">
-          <span className="text-meta tabular-nums text-ink-3">
-            {estimateCode(estimate.number, estimate.revision)}
-            {" · "}
-            {t("checked", { date: formatDay(alert.checkedAt, locale) })}
-          </span>
-          <span className="text-body-lg font-medium text-ink">
+        <div className="grid min-w-0 flex-1 basis-80 gap-0.5">
+          <h4 className="m-0 text-[17px] font-medium leading-6 text-ink">
             {estimate.title}
-            {estimate.clientName && (
-              <span className="font-normal text-ink-3">
-                {" "}
-                · {estimate.clientName}
-              </span>
-            )}
-          </span>
+          </h4>
+          <p className="m-0 flex flex-wrap items-center gap-x-1.5 text-meta tabular-nums text-ink-3">
+            {[
+              code,
+              estimate.clientName,
+              t("checked", { date: formatDay(alert.checkedAt, locale) }),
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+            <span aria-hidden>·</span>
+            <EstimateStatusPill status={estimate.status} plain />
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <EstimateStatusPill status={estimate.status} />
-          <StatusPill tone={dearer ? "warning" : "success"}>
-            {dearer ? t("up", { percent }) : t("down", { percent })}
-          </StatusPill>
+          <Button
+            variant="ghost"
+            onClick={() =>
+              run(() => dismiss({ alertId: alert._id }), t("dismissed"))
+            }
+          >
+            {t("dismiss")}
+          </Button>
+          <Button asChild>
+            <Link href={`/estimates/${estimate._id}`}>{t("open")}</Link>
+          </Button>
         </div>
       </div>
 
       {/* What it does to the profit first: it's what the firm stands to lose. */}
-      <div className="grid gap-x-10 gap-y-5 border-t border-border pt-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="grid gap-x-12 gap-y-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div className="grid content-start gap-3">
-          <div className="grid gap-0.5">
-            <p className="m-0 text-meta text-ink-2">{t("profit")}</p>
+          <div className="grid gap-1">
+            <p className="m-0 text-meta text-ink-2">
+              {profitChange < 0 ? t("profitDown") : t("profitUp")}
+            </p>
             <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
               <span
                 className={cn(
-                  "text-[26px] leading-8 tabular-nums tracking-[-0.01em] [font-weight:var(--weight-figure)]",
-                  alert.profitLeft < 0 ? "text-danger" : "text-ink",
-                )}
-              >
-                {alert.profitLeft < 0 ? (
-                  money(alert.profitLeft)
-                ) : (
-                  <Amount value={money(alert.profitLeft)} />
-                )}
-              </span>
-              <span className="text-meta text-ink-3">lei</span>
-            </p>
-            <p className="m-0 text-meta tabular-nums text-ink-3">
-              <span
-                className={cn(
-                  "font-medium",
+                  "text-kpi tabular-nums",
                   profitChange < 0 ? "text-warning" : "text-success",
                 )}
               >
-                {t("impact", { impact: signedMoney(profitChange, locale) })}
-              </span>{" "}
-              {t("profitWas", { amount: money(alert.sentProfit) })}
+                {signedMoney(profitChange, locale)}
+              </span>
+              <span className="text-meta text-ink-3">lei</span>
+            </p>
+            <p
+              className={cn(
+                "m-0 text-meta tabular-nums",
+                alert.profitLeft < 0 ? "text-danger" : "text-ink-2",
+              )}
+            >
+              {t("profitLeft", {
+                left: money(alert.profitLeft),
+                was: money(alert.sentProfit),
+              })}
             </p>
           </div>
           <dl className="m-0 grid text-meta">
             <div className="flex flex-wrap justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-ink-3">{t("total")}</dt>
+              <dt className="text-ink-3">
+                {t("total")}
+                {" · "}
+                {dearer ? t("up", { percent }) : t("down", { percent })}
+              </dt>
               <dd className="m-0 tabular-nums text-ink-2">
                 {t("fromTo", {
                   from: money(alert.sentTotal),
@@ -245,7 +245,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
                       <td className="hidden whitespace-nowrap py-1.5 pr-4 text-right text-meta tabular-nums text-ink-3 sm:table-cell">
                         {moved}
                       </td>
-                      <td className="whitespace-nowrap py-1.5 pr-0 text-right font-medium tabular-nums text-ink">
+                      <td className="whitespace-nowrap py-1.5 pr-0 text-right tabular-nums text-ink">
                         {t("impact", {
                           impact: signedMoney(change.impact, locale),
                         })}
@@ -262,21 +262,6 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
             )}
           </div>
         )}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Button asChild size="sm">
-          <Link href={`/estimates/${estimate._id}`}>{t("open")}</Link>
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() =>
-            run(() => dismiss({ alertId: alert._id }), t("dismissed"))
-          }
-        >
-          {t("dismiss")}
-        </Button>
       </div>
     </section>
   );

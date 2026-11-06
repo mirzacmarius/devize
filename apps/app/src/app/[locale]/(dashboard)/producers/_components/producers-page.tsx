@@ -12,19 +12,11 @@ import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@devize/ui/table";
 import { useQuery } from "convex/react";
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { SearchInput } from "@/components/search-input";
+import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
 
 /**
@@ -43,8 +35,6 @@ export function ProducersPage() {
     const name = normalizeText(producer.name);
     return words.every((word) => name.includes(word));
   });
-
-  const hasEdition = producers?.some((producer) => producer.edition);
 
   return (
     <>
@@ -77,78 +67,56 @@ export function ProducersPage() {
               className="w-full sm:max-w-xs"
             />
           </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("columns.name")}</TableHead>
-                <TableHead className="w-24 text-right">
-                  {t("columns.norms")}
-                </TableHead>
-                {hasEdition && (
-                  <TableHead className="hidden w-44 pl-10 md:table-cell">
-                    {t("columns.edition")}
-                  </TableHead>
-                )}
-                <TableHead className="hidden w-44 md:table-cell">
-                  {t("columns.profile")}
-                </TableHead>
-                <TableHead className="w-6" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows === undefined && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
-                    {tc("loading")}
-                  </TableCell>
-                </TableRow>
-              )}
-              {rows?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
-                    {t("noResults", { text: search })}
-                  </TableCell>
-                </TableRow>
-              )}
-              {rows?.map((producer) => (
-                // The whole row opens the profile.
-                <TableRow key={producer._id} className="relative">
-                  <TableCell>
-                    <Link
-                      href={`/producers/${producer._id}`}
-                      className="rounded-xs text-body font-medium text-ink after:absolute after:inset-0 after:content-[''] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      {producer.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-ink">
-                    {producer.moreNorms
-                      ? t("moreNorms", { count: producer.normCount })
-                      : producer.normCount}
-                  </TableCell>
-                  {hasEdition && (
-                    <TableCell className="hidden pl-10 text-ink-2 md:table-cell">
-                      {producer.edition ?? "–"}
-                    </TableCell>
-                  )}
-                  <TableCell className="hidden md:table-cell">
-                    <StatusPill
-                      tone={producer.claimed ? "success" : "draft"}
-                      plain
-                    >
-                      {producer.claimed ? t("claimed") : t("unclaimed")}
-                    </StatusPill>
-                  </TableCell>
-                  <TableCell>
-                    <ChevronRight
-                      aria-hidden
-                      className="ml-auto size-4 text-ink-3"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {rows === undefined && (
+            <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
+          )}
+          {rows?.length === 0 && (
+            <p className="m-0 text-body text-ink-3">
+              {t("noResults", { text: search })}
+            </p>
+          )}
+          <ul className="m-0 grid list-none gap-x-3 p-0 sm:grid-cols-2 sm:gap-y-3 xl:grid-cols-3">
+            {rows?.map((producer) => (
+              <li key={producer._id}>
+                <Link
+                  href={`/producers/${producer._id}`}
+                  className="grid grid-cols-[32px_minmax(0,1fr)] items-center gap-x-3 border-t border-border py-3 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-full sm:rounded-lg sm:border sm:border-card-border sm:p-4"
+                >
+                  <span
+                    aria-hidden
+                    className="grid size-8 place-items-center rounded-sm bg-tile text-[11px] font-semibold tracking-[0.02em] text-ink-2"
+                  >
+                    {initials(producer.name)}
+                  </span>
+                  <span className="grid min-w-0 gap-0.5">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className="min-w-0 truncate text-body font-medium text-ink">
+                        {producer.name}
+                      </span>
+                      {producer.claimed && (
+                        <StatusPill
+                          tone="success"
+                          plain
+                          className="shrink-0 self-center"
+                        >
+                          {t("claimed")}
+                        </StatusPill>
+                      )}
+                    </span>
+                    <span className="truncate text-meta tabular-nums text-ink-3">
+                      {t("normCount", {
+                        count: producer.moreNorms
+                          ? t("moreNorms", { count: producer.normCount })
+                          : producer.normCount,
+                      })}
+                      {producer.edition &&
+                        ` · ${t("edition", { edition: producer.edition })}`}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </>

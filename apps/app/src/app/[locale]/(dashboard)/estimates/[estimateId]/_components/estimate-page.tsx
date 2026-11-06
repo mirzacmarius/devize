@@ -13,12 +13,13 @@ import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
+import { useScrolledPast } from "@/components/use-scrolled-past";
 import {
   estimateCode,
   formatCalendarDate,
@@ -136,12 +137,13 @@ export function EstimatePage() {
     progress: <ProgressCard key="progress" estimate={estimate} />,
     invoices: <InvoicesCard key="invoices" estimate={estimate} />,
   };
-  const railOrder =
+  // What the Deviz is at first; the rest in two groups of rows.
+  const railLead =
     status === "accepted"
-      ? [rail.progress, rail.invoices, rail.offer, rail.checks]
+      ? [rail.progress, rail.invoices]
       : status === "draft"
-        ? [rail.checks, rail.offer, rail.invoices]
-        : [rail.offer, rail.invoices, rail.checks];
+        ? [rail.checks, rail.invoices]
+        : [rail.offer, rail.invoices];
 
   return (
     <>
@@ -181,9 +183,9 @@ export function EstimatePage() {
         />
         {/* Beside the title; on a phone, in a bar at the screen's foot, with the
             total once the one above has scrolled away. */}
-        <div className="flex flex-wrap items-center gap-2 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:border-t max-sm:border-border max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
+        <div className="flex flex-wrap items-center gap-2 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:border-t max-sm:border-border max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
           {pastHero && (
-            <div className="min-w-0 flex-1 sm:hidden">
+            <div className="min-w-0 flex-1 max-sm:!h-auto sm:hidden">
               <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
                 {total}{" "}
                 <span className="text-meta font-normal text-ink-3">lei</span>
@@ -207,7 +209,7 @@ export function EstimatePage() {
         </div>
         <div
           ref={hero}
-          className="grid gap-x-10 gap-y-3 md:col-span-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end"
+          className="grid gap-x-10 gap-y-3 md:col-span-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:[align-items:last_baseline]"
         >
           <TotalHero
             label={t("summary.total")}
@@ -218,7 +220,7 @@ export function EstimatePage() {
         </div>
         <SectionLinks estimate={estimate} checks={checks} />
       </div>
-      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-10">
         <div className="grid min-w-0 gap-6">
           {editable && (
             <ProposalBanner
@@ -236,10 +238,14 @@ export function EstimatePage() {
         </div>
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <div className="rail-sections grid min-w-0 gap-6 xl:sticky xl:top-14 xl:-mx-1 xl:max-h-[calc(100vh-4.5rem)] xl:gap-0 xl:overflow-y-auto xl:px-1 xl:[scrollbar-width:thin]">
-          {railOrder}
+          {railLead}
+          <RailGroup>{t("rail.preparation")}</RailGroup>
+          {status !== "draft" && rail.checks}
           <CompatibilityCard estimate={estimate} editable={editable} />
           <TakeoffCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />
+          <RailGroup>{t("rail.forClient")}</RailGroup>
+          {(status === "accepted" || status === "draft") && rail.offer}
           <DocumentsCard estimate={estimate} />
           <DetailsCard
             estimate={estimate}
@@ -310,25 +316,13 @@ export function EstimatePage() {
   );
 }
 
-/** Whether an element has scrolled away above the screen. */
-function useScrolledPast(
-  target: RefObject<HTMLElement | null>,
-  ready: boolean,
-) {
-  const [past, setPast] = useState(false);
-  useEffect(() => {
-    const element = target.current;
-    if (!ready || !element) {
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => setPast(entry ? !entry.isIntersecting : false),
-      { rootMargin: "-44px 0px 0px 0px" },
-    );
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [target, ready]);
-  return past;
+/** The heading of a group of the rail's rows, once they sit beside the Articole. */
+function RailGroup({ children }: { children: ReactNode }) {
+  return (
+    <p className="m-0 hidden border-t border-card-border pb-1 pt-4 text-caption text-ink-3 xl:mt-2 xl:block">
+      {children}
+    </p>
+  );
 }
 
 /**
@@ -425,7 +419,7 @@ function SectionLinks({
   return (
     <nav
       aria-label={t("jump.label")}
-      className="order-last grid grid-cols-2 gap-2 md:col-span-2 md:grid-cols-4 xl:hidden"
+      className="order-last grid auto-rows-fr grid-cols-2 gap-2 md:col-span-2 md:grid-cols-4 xl:hidden"
     >
       {sections.map((section) => {
         const tile = tiles[section];
@@ -433,7 +427,7 @@ function SectionLinks({
           <a
             key={section}
             href={`#${section}`}
-            className="flex min-h-[52px] min-w-0 items-center justify-between gap-2 rounded-md border border-card-border px-3 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-h-14 min-w-0 items-center justify-between gap-2 rounded-md bg-sunken px-3 py-2 transition-colors hover:bg-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="grid min-w-0">
               <span

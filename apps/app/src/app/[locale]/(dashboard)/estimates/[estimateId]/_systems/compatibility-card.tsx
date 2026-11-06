@@ -67,6 +67,7 @@ export function CompatibilityCard({
     <FoldCard
       title={t("title")}
       lead={lead}
+      flag={errors > 0 || warnings > 0 || openRest.length > 0}
       attention={errors > 0 || warnings > 0}
     >
       {check === undefined ? (

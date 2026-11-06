@@ -46,7 +46,7 @@ type Series = Settings["series"][number];
 
 // A settings card's footer: a hint on the left, the card's action on the right.
 const footer =
-  "sticky bottom-0 z-10 justify-between gap-4 rounded-b-[11px] border-t bg-sunken py-3";
+  "sticky bottom-0 z-10 justify-between gap-4 border-t bg-card py-3 sm:mt-5";
 
 /**
  * How the Firmă invoices: the details every invoice prints, the series its
@@ -387,7 +387,7 @@ function SeriesCard({ settings }: { settings: Settings }) {
         )}
       </CardContent>
       {settings.canEdit && (
-        <CardFooter className="rounded-b-[11px] border-t bg-sunken py-4">
+        <CardFooter className="border-t py-4 sm:mt-5">
           <form
             onSubmit={add}
             noValidate

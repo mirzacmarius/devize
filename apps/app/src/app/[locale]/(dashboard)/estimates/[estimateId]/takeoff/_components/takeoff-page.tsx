@@ -12,6 +12,7 @@ import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -153,7 +154,7 @@ function AppendixButtons({
           {downloading === format ? (
             <Icons.Loader className="animate-spin" aria-hidden />
           ) : (
-            <Icons.Deviz aria-hidden />
+            <Download aria-hidden />
           )}
           {t(`download.${format}`)}
         </Button>

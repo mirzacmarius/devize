@@ -98,11 +98,11 @@ function MaterialRow({
   const unit = formatUnit(row.unit, locale);
   const pkg = row.package;
   const source = !pkg
-    ? tSources("none")
+    ? null
     : pkg.source === "store"
-      ? tSources("store", {
-          store: pkg.store ? tStores(pkg.store as Store) : "",
-        })
+      ? pkg.store
+        ? tStores(pkg.store as Store)
+        : tSources("storeUnknown")
       : tSources(pkg.source);
   const leftover = row.purchase?.leftover ?? 0;
 
@@ -196,7 +196,7 @@ function Packages({ row }: { row: ListRow }) {
   const unit = formatUnit(row.unit, locale);
   const { purchase } = row;
   if (!purchase || !row.package) {
-    return <span className="text-ink-3">{t("bulk")}</span>;
+    return <span className="text-ink-2">{t("bulk")}</span>;
   }
   // One piece at a time needs no package: "5 buc", not "5 × bucată de 1 buc".
   if (

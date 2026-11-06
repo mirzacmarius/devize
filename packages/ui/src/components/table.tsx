@@ -21,7 +21,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     <div
       className={cn(
         "relative min-w-0 overflow-x-auto",
-        bleed ? "-mx-4 px-4 sm:-mx-5 sm:px-5" : "w-full",
+        bleed ? "-mx-[var(--card-pad)] px-[var(--card-pad)]" : "w-full",
       )}
     >
       <table

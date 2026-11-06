@@ -13,6 +13,7 @@ import {
 import { Icons } from "@devize/ui/icons";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
+import { Download } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRun } from "@/components/use-run";
@@ -185,8 +186,10 @@ function ReceptionRow({
               aria-label={t("downloadLabel", { name: t(kind) })}
               onClick={download}
             >
-              {downloading && (
+              {downloading ? (
                 <Icons.Loader className="animate-spin" aria-hidden />
+              ) : (
+                <Download aria-hidden />
               )}
               {t("download")}
             </Button>

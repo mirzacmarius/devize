@@ -6,6 +6,7 @@ import { Card, CardContent } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
+import { Download } from "lucide-react";
 import { Amount } from "@/components/amount";
 import { SignatureImage } from "@/components/signature/signature-image";
 import {
@@ -66,7 +67,7 @@ export function ChoiceSummary({
 }
 
 /** The total the client would accept, large, and the deposit it asks for. */
-function TotalBlock({
+export function TotalBlock({
   offer,
   updating,
 }: {
@@ -134,7 +135,11 @@ export function AnswerCard({
       disabled={downloading}
       onClick={onDownload}
     >
-      {downloading && <Icons.Loader className="animate-spin" aria-hidden />}
+      {downloading ? (
+        <Icons.Loader className="animate-spin" aria-hidden />
+      ) : (
+        <Download aria-hidden />
+      )}
       {t("decide.download")}
     </Button>
   );
@@ -283,10 +288,13 @@ export function AnswerCard({
 export function MobileAnswerBar({
   offer,
   updating,
+  showTotal,
   onAccept,
 }: {
   offer: OpenOfferView;
   updating: boolean;
+  // Once the total at the top has scrolled away.
+  showTotal: boolean;
   onAccept: () => void;
 }) {
   const t = useScopedI18n("offerPage");
@@ -305,22 +313,25 @@ export function MobileAnswerBar({
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur lg:hidden">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-        <div className="grid min-w-0">
-          <span
-            className={cn(
-              "truncate text-title-card tabular-nums text-ink transition-opacity",
-              updating && "opacity-60",
-            )}
-          >
-            {formatMoney(total, locale)}{" "}
-            <span className="text-meta text-ink-3">lei</span>
-          </span>
-          <span className="truncate text-meta tabular-nums text-ink-3">
-            {note || t("totalNoVat")}
-          </span>
-        </div>
+        {showTotal && (
+          <div className="grid min-w-0">
+            <span
+              className={cn(
+                "truncate text-title-card tabular-nums text-ink transition-opacity",
+                updating && "opacity-60",
+              )}
+            >
+              {formatMoney(total, locale)}{" "}
+              <span className="text-meta text-ink-3">lei</span>
+            </span>
+            <span className="truncate text-meta tabular-nums text-ink-3">
+              {note || t("totalNoVat")}
+            </span>
+          </div>
+        )}
         <Button
           type="button"
+          className={cn("h-11", !showTotal && "flex-1")}
           disabled={offer.preview || updating}
           onClick={onAccept}
         >

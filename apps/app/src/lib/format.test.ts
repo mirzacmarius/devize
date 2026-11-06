@@ -11,10 +11,25 @@ import {
   formatMonth,
   formatPercent,
   formatQuantity,
+  formatToday,
   keepUnits,
   parseDecimal,
   parseMoney,
 } from "./format";
+
+describe("formatToday", () => {
+  test("names the day and the date apart", () => {
+    const saturday = new Date(2026, 10, 7);
+    expect(formatToday("ro", saturday)).toEqual({
+      weekday: "Sâmbătă",
+      date: "7 noiembrie",
+    });
+    expect(formatToday("en", saturday)).toEqual({
+      weekday: "Saturday",
+      date: "7 November",
+    });
+  });
+});
 
 describe("keepUnits", () => {
   test("keeps a number on one line with its unit", () => {

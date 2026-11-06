@@ -22,10 +22,11 @@ import {
 import { toast } from "@devize/ui/sonner";
 import { Textarea } from "@devize/ui/textarea";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import Link from "next/link";
 import {
   type FormEvent,
+  Fragment,
   type ReactNode,
   useDeferredValue,
   useId,
@@ -256,33 +257,39 @@ function AddNorm({
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="-mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] gap-0.5 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="text-body text-ink [text-wrap:pretty]">
-                      <MatchedWords
-                        text={keepUnits(norm.title)}
-                        words={words}
-                      />
-                    </span>
-                    <span className="flex items-baseline justify-between gap-3 text-meta text-ink-3">
-                      <span className="min-w-0 truncate">
-                        <span className="tabular-nums">{norm.code}</span>
-                        {norm.category && ` · ${norm.category}`}
-                        {norm.source !== "base" && ` · ${normSource(norm)}`}
+                    <span className="grid min-w-0 gap-0.5">
+                      <span className="text-body text-ink [text-wrap:pretty]">
+                        <MatchedWords
+                          text={keepUnits(norm.title)}
+                          words={words}
+                        />
                       </span>
-                      <span className="shrink-0 whitespace-nowrap tabular-nums">
-                        {norm.referenceCost === undefined
-                          ? formatUnit(norm.unit, locale)
-                          : t("items.pricePerUnit", {
-                              price: (
-                                <span className="text-body font-medium text-ink">
-                                  {formatMoney(norm.referenceCost, locale)}
-                                </span>
-                              ),
-                              unit: formatUnit(norm.unit, locale),
-                            })}
+                      <span className="flex items-baseline justify-between gap-3 text-meta text-ink-3">
+                        <span className="min-w-0 truncate">
+                          <span className="tabular-nums">{norm.code}</span>
+                          {norm.category && ` · ${norm.category}`}
+                          {norm.source !== "base" && ` · ${normSource(norm)}`}
+                        </span>
+                        <span className="shrink-0 whitespace-nowrap tabular-nums">
+                          {norm.referenceCost === undefined
+                            ? formatUnit(norm.unit, locale)
+                            : t("items.pricePerUnit", {
+                                price: (
+                                  <span className="text-body font-medium text-ink">
+                                    {formatMoney(norm.referenceCost, locale)}
+                                  </span>
+                                ),
+                                unit: formatUnit(norm.unit, locale),
+                              })}
+                        </span>
                       </span>
                     </span>
+                    <Plus
+                      aria-hidden
+                      className="size-4 text-ink-3 transition-colors group-hover:text-ink"
+                    />
                   </button>
                 </li>
               ))}
@@ -342,12 +349,18 @@ function MatchedWords({
     const key = offset;
     offset += part.length;
     const plain = normalizeText(part);
-    return plain && words.some((word) => plain.includes(word)) ? (
-      <span key={key} className="font-semibold">
-        {part}
-      </span>
-    ) : (
-      part
+    if (!plain || !words.some((word) => plain.includes(word))) {
+      return part;
+    }
+    // The word stands out, not the comma after it.
+    const word = part.match(/[\p{L}\p{N}](?:.*[\p{L}\p{N}])?/su)?.[0] ?? part;
+    const at = part.indexOf(word);
+    return (
+      <Fragment key={key}>
+        {part.slice(0, at)}
+        <span className="font-semibold">{word}</span>
+        {part.slice(at + word.length)}
+      </Fragment>
     );
   });
 }

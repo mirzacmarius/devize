@@ -1,10 +1,10 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Fact, FactList } from "@/components/fact-list";
 import { RailFigure } from "@/components/rail-figure";
@@ -52,8 +52,15 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
     <Card id="progress" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
+        <Link
+          href={`/estimates/${estimate._id}/progress`}
+          aria-label={t("open")}
+          className="-mr-[5px] rounded-xs text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ChevronRight aria-hidden className="size-4" />
+        </Link>
       </CardHeader>
-      <CardContent>
+      <CardContent className="gap-2">
         {overview.statements.length === 0 ? (
           <p className="m-0 text-body text-ink-2">{t("noStatements")}</p>
         ) : (
@@ -91,9 +98,6 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
               </Fact>
             ))}
         </FactList>
-        <Button variant="link" className="justify-self-start" asChild>
-          <Link href={`/estimates/${estimate._id}/progress`}>{t("open")}</Link>
-        </Button>
       </CardContent>
     </Card>
   );

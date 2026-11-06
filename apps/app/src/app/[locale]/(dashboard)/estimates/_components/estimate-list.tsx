@@ -87,16 +87,14 @@ export function EstimateList() {
     <>
       <PageHeader
         title={t("title")}
+        // The column says it from a tablet up.
         description={t("allWithVat")}
+        className="md:[&_p]:hidden"
         actions={
           <>
-            <Button
-              variant="outline"
-              className="max-sm:size-9 max-sm:p-0"
-              onClick={() => setBrowsing(true)}
-            >
+            <Button variant="outline" onClick={() => setBrowsing(true)}>
               <LayoutTemplate aria-hidden />
-              <span className="max-sm:sr-only">{tt("open")}</span>
+              {tt("open")}
             </Button>
             <Button onClick={startBlank}>
               <Plus aria-hidden />
@@ -196,7 +194,10 @@ export function EstimateList() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <EstimateStatusPill status={row.status} />
+                    <EstimateStatusPill
+                      status={row.status}
+                      className="max-md:h-auto max-md:bg-transparent max-md:pl-0 max-md:pr-0 max-md:text-meta"
+                    />
                   </TableCell>
                   <TableCell className="text-right text-body-lg font-medium tabular-nums">
                     {formatMoney(row.total, locale)}

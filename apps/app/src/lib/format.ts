@@ -162,6 +162,18 @@ export function formatUnit(unit: string, locale: Locale): string {
 }
 
 /** Today's date as YYYY-MM-DD in the browser's time zone, for date inputs. */
+export function formatToday(locale: Locale, now = new Date()) {
+  const tag = intlLocale(locale);
+  const weekday = new Intl.DateTimeFormat(tag, { weekday: "long" }).format(now);
+  return {
+    weekday: weekday.charAt(0).toLocaleUpperCase(tag) + weekday.slice(1),
+    date: new Intl.DateTimeFormat(tag, {
+      day: "numeric",
+      month: "long",
+    }).format(now),
+  };
+}
+
 export function todayInput(now = new Date()): string {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");

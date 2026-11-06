@@ -2,7 +2,6 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import { Badge } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -20,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@devize/ui/select";
+import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -165,18 +165,24 @@ function ItemRow({
               })}
             </span>
             {measured ? (
-              <Badge tone={item.differs ? "warning" : "success"}>
+              <StatusPill tone={item.differs ? "warning" : "success"} plain>
                 {item.differs
                   ? t("differs")
                   : t("measured", {
                       measured: formatQuantity(item.measured, locale),
                       unit,
                     })}
-              </Badge>
+              </StatusPill>
             ) : (
-              <Badge>{t("unmeasured")}</Badge>
+              <StatusPill tone="draft" plain>
+                {t("unmeasured")}
+              </StatusPill>
             )}
-            {unchecked && <Badge tone="ai">{t("unchecked")}</Badge>}
+            {unchecked && (
+              <StatusPill tone="ai" plain>
+                {t("unchecked")}
+              </StatusPill>
+            )}
           </span>
         </div>
         {!locked && (

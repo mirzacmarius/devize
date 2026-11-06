@@ -54,10 +54,7 @@ export function DetailsCard({
   ];
 
   return (
-    <FoldCard
-      title={t("details.title")}
-      lead={tFields(`kinds.${estimate.kind}`)}
-    >
+    <FoldCard title={t("details.title")}>
       <FactList>
         {rows.map((row) => (
           <Fact key={row.label} label={row.label}>

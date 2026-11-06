@@ -6,12 +6,13 @@ import { Card, CardContent } from "@devize/ui/card";
 import { StatusPill } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import { useRouteParam } from "@/components/use-route-param";
+import { useScrolledPast } from "@/components/use-scrolled-past";
 import { estimateCode, formatCalendarDate, formatDay } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { AcceptDialog } from "./accept-dialog";
-import { AnswerCard, MobileAnswerBar } from "./answer-card";
+import { AnswerCard, MobileAnswerBar, TotalBlock } from "./answer-card";
 import { ClosedOffer, MissingOffer, OfferFrame } from "./closed-offer";
 import { DeclineDialog } from "./decline-dialog";
 import { OfferHeader } from "./offer-header";
@@ -140,6 +141,8 @@ export function OpenOffer({
   const [downloading, setDownloading] = useState(false);
   const downloadPdf = useOfferPdf(token);
   const open = offer.state === "open";
+  const heroTotal = useRef<HTMLDivElement>(null);
+  const pastTotal = useScrolledPast(heroTotal, open);
 
   const toggle = (itemId: Id<"lineItems">, included: boolean) => {
     const others = choice.excludedItemIds.filter((id) => id !== itemId);
@@ -159,7 +162,7 @@ export function OpenOffer({
       <OfferHeader firm={offer.firm} preview={offer.preview} />
       <div className="flex-1 bg-panel sm:mx-2 sm:mb-2 sm:rounded-2xl sm:shadow-panel">
         <main className="offer-main mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 max-sm:gap-6 max-sm:pt-5 sm:px-6 lg:pb-16">
-          <OfferHero offer={offer} />
+          <OfferHero offer={offer} updating={updating} totalRef={heroTotal} />
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
             <div className="grid min-w-0 gap-6">
               {offer.message && (
@@ -211,6 +214,7 @@ export function OpenOffer({
           <MobileAnswerBar
             offer={offer}
             updating={updating}
+            showTotal={pastTotal}
             onAccept={() => setDialog("accept")}
           />
           <AcceptDialog
@@ -232,7 +236,15 @@ export function OpenOffer({
 }
 
 /** The Ofertă's title, for whom and where, and how long its prices hold. */
-function OfferHero({ offer }: { offer: OpenOfferView }) {
+function OfferHero({
+  offer,
+  updating,
+  totalRef,
+}: {
+  offer: OpenOfferView;
+  updating: boolean;
+  totalRef: RefObject<HTMLDivElement | null>;
+}) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
   // An address often ends in its county already.
@@ -249,7 +261,7 @@ function OfferHero({ offer }: { offer: OpenOfferView }) {
       <span className="text-caption text-ink-3">
         {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
       </span>
-      <h1 className="m-0 text-title-screen text-ink sm:text-title-page">
+      <h1 className="m-0 text-title-screen text-ink [text-wrap:balance] sm:text-title-page">
         {offer.title}
       </h1>
       {/* A line each on a phone, a sentence where there's room. */}
@@ -287,6 +299,12 @@ function OfferHero({ offer }: { offer: OpenOfferView }) {
           {offer.description}
         </p>
       )}
+      {/* From the desktop width up, the answer card beside it says this. */}
+      {offer.state === "open" && (
+        <div ref={totalRef} className="pt-2 lg:hidden">
+          <TotalBlock offer={offer} updating={updating} />
+        </div>
+      )}
     </div>
   );
 }
@@ -296,7 +314,7 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
   const t = useScopedI18n("offerPage");
   return (
     <Card>
-      <CardContent className="gap-2 py-4 sm:py-5">
+      <CardContent className="gap-2 py-4 max-sm:pb-0 sm:py-5">
         <span className="text-meta font-medium text-ink-3">
           {t("messageFrom", { firm })}
         </span>

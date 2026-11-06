@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
 import { useDeferredValue, useState } from "react";
@@ -82,8 +83,7 @@ export function ClientList() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.name")}</TableHead>
-                <TableHead>{t("columns.phone")}</TableHead>
-                <TableHead>{t("columns.email")}</TableHead>
+                <TableHead>{t("columns.contact")}</TableHead>
                 <TableHead className="hidden md:table-cell">
                   {t("columns.address")}
                 </TableHead>
@@ -92,14 +92,14 @@ export function ClientList() {
             <TableBody>
               {clients === undefined && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={3} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {clients?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={3} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
@@ -121,26 +121,33 @@ export function ClientList() {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="whitespace-nowrap tabular-nums text-ink-2">
-                    {row.phone ? (
-                      <a href={`tel:${row.phone}`} className="hover:underline">
-                        {row.phone}
-                      </a>
-                    ) : (
-                      <span className="text-ink-3">–</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="max-w-64 truncate text-ink-2 max-md:text-right">
-                    {row.email ? (
-                      <a
-                        href={`mailto:${row.email}`}
-                        className="hover:underline"
-                      >
-                        {row.email}
-                      </a>
-                    ) : (
-                      <span className="text-ink-3">–</span>
-                    )}
+                  <TableCell data-stack="wide" className="max-w-64">
+                    <div className="grid min-w-0 justify-items-start gap-0.5">
+                      {row.phone && (
+                        <a
+                          href={`tel:${row.phone}`}
+                          className="text-body tabular-nums text-ink-2 hover:underline"
+                        >
+                          {row.phone}
+                        </a>
+                      )}
+                      {row.email && (
+                        <a
+                          href={`mailto:${row.email}`}
+                          className={cn(
+                            "max-w-full truncate hover:underline",
+                            row.phone
+                              ? "text-meta text-ink-3"
+                              : "text-body text-ink-2",
+                          )}
+                        >
+                          {row.email}
+                        </a>
+                      )}
+                      {!row.phone && !row.email && (
+                        <span className="text-ink-3">–</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="hidden max-w-xs truncate text-ink-2 md:table-cell">
                     {row.address ?? <span className="text-ink-3">–</span>}

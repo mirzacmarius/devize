@@ -86,8 +86,7 @@ export function WorksCard({
         {sectionName(section)}
       </h3>
       <span className="shrink-0 text-body font-medium tabular-nums text-ink">
-        {formatMoney(total, locale)}{" "}
-        <span className="text-meta font-normal text-ink-3">lei</span>
+        {formatMoney(total, locale)}
       </span>
     </div>
   );
@@ -96,8 +95,8 @@ export function WorksCard({
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        <span className="text-meta text-ink-3">
-          {t("count", { count: offer.items.length })}
+        <span className="text-right text-meta text-ink-3">
+          {t("count", { count: offer.items.length })} · {t("amounts")}
         </span>
       </CardHeader>
       <CardContent className="gap-0">

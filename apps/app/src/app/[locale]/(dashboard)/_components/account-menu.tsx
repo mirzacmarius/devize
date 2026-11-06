@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@devize/ui/dropdown-menu";
@@ -36,14 +37,7 @@ export function AccountMenu({
           {initials(name)}
         </AvatarFallback>
       </Avatar>
-      <div className="grid min-w-0">
-        <span className="truncate text-meta font-medium text-ink">{name}</span>
-        {email && email !== name && (
-          <span className="truncate text-[12px] leading-4 text-ink-3">
-            {email}
-          </span>
-        )}
-      </div>
+      <span className="truncate text-meta font-medium text-ink">{name}</span>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" aria-label={t("accountMenu")}>
@@ -56,6 +50,14 @@ export function AccountMenu({
           sideOffset={8}
           className="w-56"
         >
+          {email && email !== name && (
+            <>
+              <DropdownMenuLabel className="truncate text-meta font-normal text-ink-3">
+                {email}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+            </>
+          )}
           <ThemeMenu />
           <LanguageMenu />
           <DropdownMenuSeparator />

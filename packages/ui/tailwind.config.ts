@@ -65,8 +65,8 @@ const config = {
           { lineHeight: "26px", letterSpacing: "-0.01em", fontWeight: "400" },
         ],
         "title-card": [
-          "15px",
-          { lineHeight: "22px", letterSpacing: "-0.003em", fontWeight: "550" },
+          "16px",
+          { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "550" },
         ],
         "body-lg": ["15px", { lineHeight: "22px" }],
         body: ["14px", { lineHeight: "20px" }],

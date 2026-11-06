@@ -35,10 +35,12 @@ import {
   formatDay,
   formatMoney,
   formatPercent,
+  formatToday,
   todayInput,
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { NewEstimateDialog } from "../estimates/_components/new-estimate-dialog";
+import { signedMoney } from "../prices/_components/prices-view";
 
 type Overview = FunctionReturnType<typeof api.home.overview>;
 type Todo = Overview["todo"][number];
@@ -50,6 +52,7 @@ type Todo = Overview["todo"][number];
 export function HomePage() {
   const t = useScopedI18n("home");
   const locale = useCurrentLocale();
+  const today = formatToday(locale);
   const { firm } = useFirm();
   const home = useQuery(api.home.overview, { organizationId: firm._id });
   const receivable = useQuery(api.invoices.invoices.receivable, {
@@ -75,7 +78,14 @@ export function HomePage() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("allWithVat")}
+        description={t("subtitle", {
+          date: (
+            <>
+              <span className="max-sm:hidden">{today.weekday}, </span>
+              {today.date}
+            </>
+          ),
+        })}
         actions={
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden />
@@ -133,7 +143,11 @@ export function HomePage() {
         )}
       >
         <div
-          className={cn("grid min-w-0 gap-6", !showSetup && "xl:grid-cols-2")}
+          className={cn(
+            "grid min-w-0 gap-6",
+            !showSetup &&
+              "xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] xl:gap-x-12",
+          )}
         >
           <TodoCard todo={home?.todo} />
           <RecentCard
@@ -166,7 +180,7 @@ function Kpi({
   meta: ReactNode;
 }) {
   return (
-    <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-2.5 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:gap-1 sm:p-5 xl:[&:not(:first-child)]:border-l">
+    <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-2.5 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:gap-1 sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l">
       <p className="m-0 truncate text-meta text-ink-2">{label}</p>
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
         <span className="text-[22px] leading-8 tracking-[-0.01em] tabular-nums text-ink [font-weight:var(--weight-figure)] sm:text-kpi">
@@ -187,8 +201,11 @@ const todoIcons: Record<Todo["kind"], LucideIcon> = {
   unread: PhoneCall,
 };
 
-// What can't wait: someone asked, or money moved. The rest has a date.
-const isNow = (item: Todo) => item.kind === "question" || item.kind === "alert";
+// What can't wait: someone asked, money moved, or a date is on top of us.
+const isNow = (item: Todo) =>
+  item.kind === "question" ||
+  item.kind === "alert" ||
+  ((item.kind === "deadline" || item.kind === "expiring") && item.days <= 2);
 
 // On a phone the list stops here, so the recent devize aren't far below.
 const PHONE_TODO = 4;
@@ -258,54 +275,61 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   const t = useScopedI18n("home.todo");
   const locale = useCurrentLocale();
   const code = estimateCode(item.estimate.number, item.estimate.revision);
-  const days = "days" in item ? formatCount(item.days, locale) : "";
   const Icon = todoIcons[item.kind];
   const href =
     item.kind === "alert" ? "/prices" : `/estimates/${item.estimate._id}`;
-  // Colour only where time or money is running out: a price change, or a
-  // deadline within the week.
-  const urgent =
-    item.kind === "alert" ||
-    ((item.kind === "deadline" || item.kind === "expiring") && item.days <= 7);
+  const now = isNow(item);
+  const inDays = (days: number) =>
+    days <= 0
+      ? t("today")
+      : days === 1
+        ? t("tomorrow")
+        : t("inDays", { days: formatCount(days, locale) });
 
+  // What to do, on the left; how much or how soon, in the column on the right.
   let text: string;
+  let figure: string | undefined;
+  let figureClass = "text-ink-2";
+  const sub: string[] = [item.estimate.title];
   switch (item.kind) {
     case "question":
-      text =
+      text = t("question", { code });
+      figure =
         item.count === 1
-          ? t("questionOne", { code })
-          : t("question", { code, count: formatCount(item.count, locale) });
+          ? t("questionOne")
+          : t("questionCount", { count: formatCount(item.count, locale) });
       break;
     case "alert":
-      text =
-        item.profitChange === 0
-          ? t("alert", { code })
-          : t(item.profitChange < 0 ? "alertDown" : "alertUp", {
-              code,
-              amount: formatMoney(Math.abs(item.profitChange), locale),
-            });
+      if (item.profitChange === 0) {
+        text = t("alert", { code });
+      } else {
+        const down = item.profitChange < 0;
+        text = t(down ? "alertDown" : "alertUp", { code });
+        figure = t("alertAmount", {
+          amount: signedMoney(item.profitChange, locale),
+        });
+        figureClass = cn("font-medium", down ? "text-warning" : "text-success");
+        sub.unshift(
+          t("alertLeft", { left: formatMoney(item.profitLeft, locale) }),
+        );
+      }
       break;
     case "deadline":
-      text =
-        item.days === 0
-          ? t("deadlineToday", { code })
-          : item.days === 1
-            ? t("deadlineOne", { code })
-            : t("deadline", {
-                code,
-                days,
-                date: formatCalendarDay(item.date, locale),
-              });
+      text = t("deadline", { code });
+      figure = inDays(item.days);
+      sub.unshift(formatCalendarDay(item.date, locale));
       break;
     case "expiring":
-      text =
-        item.days <= 1
-          ? t("expiringOne", { code })
-          : t("expiring", { code, days });
+      text = t("expiring", { code });
+      figure = inDays(Math.max(item.days, 1));
       break;
     case "unread":
-      text = t("unread", { code, days });
+      text = t("unread", { code });
+      figure = t("unreadDays", { days: formatCount(item.days, locale) });
       break;
+  }
+  if ((item.kind === "deadline" || item.kind === "expiring") && now) {
+    figureClass = "font-medium text-warning";
   }
 
   return (
@@ -314,27 +338,33 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
     >
       <Link
         href={href}
-        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden
           className={cn(
             "grid size-7 place-items-center rounded-md [&_svg]:size-4",
-            urgent ? "bg-warning-soft text-warning" : "bg-muted text-ink-2",
+            now ? "bg-warning-soft text-warning" : "bg-muted text-ink-2",
           )}
         >
           <Icon />
         </span>
         <span className="grid min-w-0">
           <span className="text-body text-ink">{text}</span>
-          <span className="text-meta text-ink-3 max-sm:line-clamp-2 sm:truncate">
-            {item.kind === "alert" &&
-              `${t("alertLeft", {
-                left: formatMoney(item.profitLeft, locale),
-              })} · `}
-            {item.estimate.title}
+          <span className="truncate text-meta text-ink-3">
+            {sub.join(" · ")}
           </span>
         </span>
+        {figure && (
+          <span
+            className={cn(
+              "whitespace-nowrap text-right text-body tabular-nums",
+              figureClass,
+            )}
+          >
+            {figure}
+          </span>
+        )}
       </Link>
     </li>
   );
@@ -381,23 +411,27 @@ function RecentCard({
               >
                 <Link
                   href={`/estimates/${row._id}`}
-                  className="-mx-2 grid min-h-[59px] grid-cols-[minmax(0,1fr)_auto] content-center items-center gap-x-4 gap-y-0.5 rounded-md px-2 py-1.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="-mx-2 grid min-h-[59px] content-center gap-y-0.5 rounded-md px-2 py-1.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span className="truncate text-body font-medium text-ink">
-                    {row.title}
+                  <span className="flex items-baseline justify-between gap-4">
+                    <span className="min-w-0 truncate text-body font-medium text-ink">
+                      {row.title}
+                    </span>
+                    <span className="shrink-0 text-body font-medium tabular-nums text-ink">
+                      {formatMoney(row.total, locale)}
+                    </span>
                   </span>
-                  <span className="text-right text-body font-medium tabular-nums text-ink">
-                    {formatMoney(row.total, locale)}
-                  </span>
-                  <span className="truncate text-meta text-ink-3">
-                    {estimateCode(row.number, row.revision)}
-                    {" · "}
-                    {row.clientName ?? t("noClient")}
-                    {" · "}
-                    {formatDay(row.updatedAt, locale)}
-                  </span>
-                  <span className="flex justify-end">
-                    <EstimateStatusPill status={row.status} plain />
+                  <span className="flex items-center justify-between gap-4">
+                    <span className="min-w-0 truncate text-meta text-ink-3">
+                      {estimateCode(row.number, row.revision)}
+                      {" · "}
+                      {row.clientName ?? t("noClient")}
+                      {" · "}
+                      {formatDay(row.updatedAt, locale)}
+                    </span>
+                    <span className="shrink-0">
+                      <EstimateStatusPill status={row.status} plain />
+                    </span>
                   </span>
                 </Link>
               </li>

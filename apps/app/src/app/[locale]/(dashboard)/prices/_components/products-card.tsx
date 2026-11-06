@@ -46,6 +46,12 @@ export function ProductsCard() {
   const rows =
     products.status === "LoadingFirstPage" ? undefined : products.results;
 
+  // The column has nothing to say until a price has moved.
+  const anyMoved = rows?.some(
+    (row) =>
+      row.previous && priceMove(row.previous.price, row.listing.price) !== 0,
+  );
+
   return (
     <Card>
       <CardHeader className="grid justify-stretch gap-1">
@@ -66,9 +72,11 @@ export function ProductsCard() {
               <TableRow>
                 <TableHead>{t("product")}</TableHead>
                 <TableHead className="text-right">{t("price")}</TableHead>
-                <TableHead className="hidden text-right sm:table-cell">
-                  {t("change")}
-                </TableHead>
+                {anyMoved && (
+                  <TableHead className="hidden text-right sm:table-cell">
+                    {t("change")}
+                  </TableHead>
+                )}
                 <TableHead className="hidden text-right md:table-cell">
                   {t("checked")}
                 </TableHead>
@@ -147,29 +155,33 @@ export function ProductsCard() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="hidden text-right align-top sm:table-cell">
-                      {row.previous ? (
-                        <div className="grid justify-items-end gap-0.5">
-                          <span
-                            className={cn(
-                              "tabular-nums",
-                              move > 0
-                                ? "text-warning"
-                                : move < 0
-                                  ? "text-success"
-                                  : "text-ink",
-                            )}
-                          >
-                            {signedPercent(move, locale)}
-                          </span>
-                          <span className="whitespace-nowrap text-meta tabular-nums text-ink-3">
-                            {t("before", { price: money(row.previous.price) })}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-ink-3">–</span>
-                      )}
-                    </TableCell>
+                    {anyMoved && (
+                      <TableCell className="hidden text-right align-top sm:table-cell">
+                        {row.previous ? (
+                          <div className="grid justify-items-end gap-0.5">
+                            <span
+                              className={cn(
+                                "tabular-nums",
+                                move > 0
+                                  ? "text-warning"
+                                  : move < 0
+                                    ? "text-success"
+                                    : "text-ink",
+                              )}
+                            >
+                              {signedPercent(move, locale)}
+                            </span>
+                            <span className="whitespace-nowrap text-meta tabular-nums text-ink-3">
+                              {t("before", {
+                                price: money(row.previous.price),
+                              })}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-ink-3">–</span>
+                        )}
+                      </TableCell>
+                    )}
                     <TableCell className="hidden whitespace-nowrap text-right align-top text-ink-3 tabular-nums md:table-cell">
                       {formatDay(listing.checkedAt, locale)}
                     </TableCell>

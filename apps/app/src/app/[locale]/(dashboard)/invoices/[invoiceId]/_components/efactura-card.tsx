@@ -70,7 +70,7 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        {live && <EfacturaPill status={efactura.status} late={late} />}
+        {live && <EfacturaPill status={efactura.status} late={late} plain />}
       </CardHeader>
       <CardContent>
         {!settled && deadline}

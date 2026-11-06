@@ -117,8 +117,11 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
             onChange={(event) => setEmail(event.target.value)}
             placeholder={t("emailPlaceholder")}
             aria-invalid={error !== undefined}
-            aria-describedby={error ? "sign-in-error" : undefined}
+            aria-describedby={error ? "sign-in-error" : "sign-in-hint"}
           />
+          <p id="sign-in-hint" className="m-0 text-meta text-ink-3">
+            {t("emailHint")}
+          </p>
         </div>
         {error && (
           <p

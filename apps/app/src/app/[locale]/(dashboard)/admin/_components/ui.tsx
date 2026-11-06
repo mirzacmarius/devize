@@ -25,8 +25,14 @@ export function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className="flex w-full min-w-0 flex-col rounded-lg border border-card-border bg-card shadow-card">
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 pb-3.5 pt-4 sm:px-5">
+    <section
+      data-slot="card"
+      className="flex w-full min-w-0 flex-col rounded-lg border border-card-border bg-card shadow-card"
+    >
+      <div
+        data-slot="card-header"
+        className="flex flex-wrap items-center justify-between gap-3 px-4 pb-3.5 pt-4 sm:px-5"
+      >
         <div className="flex max-w-2xl flex-col gap-0.5">
           <h2 className="m-0 text-title-card text-ink">{title}</h2>
           {description && (
@@ -37,7 +43,12 @@ export function Panel({
           <div className="flex flex-wrap items-center gap-2">{actions}</div>
         )}
       </div>
-      <div className="flex flex-col gap-4 px-4 pb-5 sm:px-5">{children}</div>
+      <div
+        data-slot="card-content"
+        className="flex flex-col gap-4 px-4 pb-5 sm:px-5"
+      >
+        {children}
+      </div>
     </section>
   );
 }
@@ -78,7 +89,7 @@ export const manufacturerTone: Record<string, Tone> = {
   contacted: "active",
   replied: "success",
   norms_received: "success",
-  declined: "neutral",
+  declined: "danger",
   excluded: "neutral",
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
+import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -8,14 +9,29 @@ import { type ReactNode, useId, useState } from "react";
 
 // The whole row is the target: the section's name and one line of what it holds.
 const ROW =
-  "group flex min-h-11 w-full min-w-0 items-center gap-3 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "group flex min-h-11 w-full min-w-0 items-center gap-3 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:min-h-[38px]";
 
-function Lead({ lead, open }: { lead: ReactNode; open?: boolean }) {
+function Lead({
+  lead,
+  flag,
+  open,
+}: {
+  lead: ReactNode;
+  flag?: boolean;
+  open?: boolean;
+}) {
   return (
-    <span className="ml-auto flex min-w-0 items-center gap-1.5">
-      <span className="truncate text-meta text-ink-3 transition-colors group-hover:text-ink-2">
-        {lead}
-      </span>
+    // The chevron's glyph ends on the column's edge, where the figures end.
+    <span className="-mr-[5px] ml-auto flex min-w-0 items-center gap-2">
+      {flag ? (
+        <StatusPill tone="warning" plain className="min-w-0 truncate">
+          {lead}
+        </StatusPill>
+      ) : (
+        <span className="truncate text-meta text-ink-3 transition-colors group-hover:text-ink-2">
+          {lead}
+        </span>
+      )}
       <ChevronRight
         aria-hidden
         className={cn(
@@ -36,12 +52,14 @@ export function FoldCard({
   id,
   title,
   lead,
+  flag,
   attention = false,
   children,
 }: {
   id?: string;
   title: string;
-  lead: ReactNode;
+  lead?: ReactNode;
+  flag?: boolean;
   attention?: boolean;
   children: ReactNode;
 }) {
@@ -61,13 +79,13 @@ export function FoldCard({
           >
             <span
               className={cn(
-                "shrink-0 text-body",
-                open ? "font-medium text-ink" : "font-normal text-ink-2",
+                "shrink-0 text-body text-ink",
+                open ? "font-medium" : "font-normal",
               )}
             >
               {title}
             </span>
-            <Lead lead={lead} open={open} />
+            <Lead lead={lead} flag={flag} open={open} />
           </button>
         </CardTitle>
       </CardHeader>
@@ -98,7 +116,7 @@ export function LinkCard({
       <CardHeader className="min-h-0 py-0">
         <CardTitle className="w-full min-w-0">
           <Link href={href} className={ROW}>
-            <span className="shrink-0 text-body font-normal text-ink-2">
+            <span className="shrink-0 text-body font-normal text-ink">
               {title}
             </span>
             <Lead lead={lead} />

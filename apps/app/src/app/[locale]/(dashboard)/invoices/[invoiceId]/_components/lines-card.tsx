@@ -203,8 +203,12 @@ function Totals({
                 <Amount value={formatMoney(row.value, locale)} />
               ) : (
                 formatMoney(row.value, locale)
-              )}{" "}
-              <span className="text-meta font-normal text-ink-3">lei</span>
+              )}
+              {/* The column above says lei; a phone's sum stands alone. */}
+              <span className="text-meta font-normal text-ink-3 sm:hidden">
+                {" "}
+                lei
+              </span>
             </dd>
           </div>
         );

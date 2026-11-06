@@ -33,7 +33,7 @@ export function EstimateStepper({ estimate }: { estimate: Estimate }) {
                 : undefined,
           state:
             status === "accepted"
-              ? "done"
+              ? "success"
               : status === "sent"
                 ? "current"
                 : "todo",
@@ -41,10 +41,11 @@ export function EstimateStepper({ estimate }: { estimate: Estimate }) {
   return (
     <Stepper
       // The status pill says where it stands; a phone gets to the work sooner.
-      className="pb-1 max-sm:hidden lg:ml-auto lg:max-w-[560px]"
+      className="max-sm:hidden lg:justify-end"
       aria-label={t("steps.label")}
       stateLabels={{
         done: t("steps.states.done"),
+        success: t("steps.states.done"),
         failed: t("steps.states.failed"),
         current: t("steps.states.current"),
         todo: t("steps.states.todo"),

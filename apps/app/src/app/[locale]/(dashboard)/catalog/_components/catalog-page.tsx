@@ -10,6 +10,7 @@ import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
+import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
@@ -18,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Plus } from "lucide-react";
@@ -153,7 +155,7 @@ export function CatalogPage() {
         description={t("costNote")}
         actions={actions}
       />
-      <section className="grid min-w-0 gap-4">
+      <section className="grid min-w-0 gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <SegmentedControl
             label={t("views.label")}
@@ -279,7 +281,13 @@ export function CatalogPage() {
                             {norm.source !== "base" && ` · ${normSource(norm)}`}
                           </span>
                           {unconfirmed(norm) && (
-                            <span className="ml-2 inline-flex items-center gap-1.5 whitespace-nowrap text-warning">
+                            // Under its producer where that column shows.
+                            <span
+                              className={cn(
+                                "ml-2 inline-flex items-center gap-1.5 whitespace-nowrap text-warning",
+                                !isOwn && "lg:hidden",
+                              )}
+                            >
                               <span
                                 aria-hidden
                                 className="size-1.5 rounded-full bg-warning-dot"
@@ -291,9 +299,19 @@ export function CatalogPage() {
                       </Link>
                     </TableCell>
                     {!isOwn && (
-                      <TableCell className="hidden text-ink-2 lg:table-cell">
-                        {norm.source !== "base" &&
-                          (norm.manufacturerName ?? normSource(norm))}
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="grid justify-items-start gap-0.5">
+                          <span className="text-ink-2">
+                            {norm.source !== "base"
+                              ? (norm.manufacturerName ?? normSource(norm))
+                              : "–"}
+                          </span>
+                          {unconfirmed(norm) && (
+                            <StatusPill tone="warning" plain>
+                              {t("unconfirmed")}
+                            </StatusPill>
+                          )}
+                        </div>
                       </TableCell>
                     )}
                     {isOwn && (

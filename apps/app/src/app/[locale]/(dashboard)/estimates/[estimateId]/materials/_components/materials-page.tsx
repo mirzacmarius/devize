@@ -8,10 +8,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
+import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
+import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouteParam } from "@/components/use-route-param";
@@ -32,6 +34,7 @@ export function MaterialsPage() {
   const estimateId = useRouteParam("estimateId") as Id<"estimates">;
   const t = useScopedI18n("materials");
   const tEstimate = useScopedI18n("estimate");
+  const tBasket = useScopedI18n("prices.basket");
   const tc = useScopedI18n("common");
   const list = useQuery(api.materials.list.forEstimate, { estimateId });
   const [editing, setEditing] = useState<ListRow | null>(null);
@@ -61,6 +64,16 @@ export function MaterialsPage() {
         }
         title={t("title")}
         description={t("description", { code, title: estimate.title })}
+        actions={
+          list.rows.length > 0 && (
+            <Button variant="outline" asChild>
+              <Link href={`/estimates/${estimate._id}/basket`}>
+                <ShoppingCart aria-hidden />
+                {tBasket("open")}
+              </Link>
+            </Button>
+          )
+        }
       />
       {list.rows.length === 0 ? (
         <EmptyState

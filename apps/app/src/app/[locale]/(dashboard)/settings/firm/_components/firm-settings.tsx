@@ -44,7 +44,7 @@ const MAX_LOGO_BYTES = 5 * 1024 * 1024;
 
 // A settings card's footer: a hint on the left, the card's action on the right.
 const footer =
-  "sticky bottom-0 z-10 justify-between gap-4 rounded-b-[11px] border-t bg-sunken py-3";
+  "sticky bottom-0 z-10 justify-between gap-4 border-t bg-card py-3 sm:mt-5";
 
 /**
  * The Firmă's logo and the details its devize, offers and official forms
@@ -150,7 +150,7 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
 
   return (
     <Card>
-      <div className="flex flex-wrap items-center gap-4 p-[var(--card-pad)]">
+      <div className="flex flex-wrap items-center gap-4 p-[var(--card-pad)] sm:px-0 sm:pt-0">
         <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
           {firm.logoUrl ? (
             <img

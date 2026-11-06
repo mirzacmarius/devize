@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { cn } from "../utils";
 
-export type StepState = "done" | "failed" | "current" | "todo";
+export type StepState = "done" | "success" | "failed" | "current" | "todo";
 
 export interface Step {
   id: string;
@@ -22,16 +22,18 @@ export interface StepperProps extends React.OlHTMLAttributes<HTMLOListElement> {
 
 const defaultStateLabels: Record<StepState, string> = {
   done: "încheiat",
+  success: "încheiat",
   failed: "eșuat",
   current: "în curs",
   todo: "urmează",
 };
 
-const dotClass: Record<StepState, string> = {
-  done: "bg-ink-2 text-panel",
-  failed: "bg-danger-solid text-danger-solid-foreground",
-  current: "shadow-[inset_0_0_0_1.5px_hsl(var(--ink))]",
-  todo: "shadow-[inset_0_0_0_1.5px_hsl(var(--tick))]",
+const titleClass: Record<StepState, string> = {
+  done: "text-ink-2",
+  success: "font-medium text-success",
+  failed: "font-medium text-danger",
+  current: "font-medium text-ink",
+  todo: "text-ink-3",
 };
 
 // The lifecycle of a deviz, from draft to settlement, as one quiet line. It
@@ -42,60 +44,51 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
     return (
       <ol
         ref={ref}
-        className={cn("m-0 flex min-w-0 list-none gap-2 p-0", className)}
+        className={cn(
+          "m-0 flex min-w-0 list-none flex-wrap items-center gap-x-2.5 gap-y-1 p-0",
+          className,
+        )}
         {...props}
       >
         {steps.map((step, index) => (
           <li
             key={step.id}
             aria-current={step.state === "current" ? "step" : undefined}
-            className="flex min-w-0 flex-[1_1_auto] items-center gap-2 last:flex-none"
+            className="flex min-w-0 items-center gap-1.5"
           >
             <span
-              className={cn(
-                "grid size-[18px] shrink-0 place-items-center rounded-full",
-                dotClass[step.state],
-              )}
+              aria-hidden
+              className="grid size-3.5 shrink-0 place-items-center"
             >
               {step.state === "done" && (
-                <Check className="size-[11px] stroke-[2.5]" aria-hidden />
+                <Check className="size-3.5 text-ink-3" />
+              )}
+              {step.state === "success" && (
+                <Check className="size-3.5 text-success" />
               )}
               {step.state === "failed" && (
-                <X className="size-[11px] stroke-[2.5]" aria-hidden />
+                <X className="size-3.5 text-danger" />
               )}
               {step.state === "current" && (
                 <span className="size-1.5 rounded-full bg-ink" />
               )}
+              {step.state === "todo" && (
+                <span className="size-1.5 rounded-full shadow-[inset_0_0_0_1px_hsl(var(--neutral-dot))]" />
+              )}
             </span>
-            <span className="grid min-w-0 sm:flex sm:items-baseline sm:gap-1.5 sm:whitespace-nowrap">
-              <span
-                className={cn(
-                  "text-meta",
-                  step.state === "todo" ? "text-ink-3" : "font-medium text-ink",
-                )}
-              >
+            <span className="flex min-w-0 items-baseline gap-1.5 whitespace-nowrap">
+              <span className={cn("text-meta", titleClass[step.state])}>
                 {step.title}
                 <span className="sr-only">, {labels[step.state]}</span>
               </span>
               {step.meta && (
-                <span
-                  className={cn(
-                    "text-meta tabular-nums",
-                    step.state === "failed" ? "text-danger" : "text-ink-3",
-                  )}
-                >
+                <span className="text-meta tabular-nums text-ink-3">
                   {step.meta}
                 </span>
               )}
             </span>
             {index < steps.length - 1 && (
-              <span
-                aria-hidden
-                className={cn(
-                  "mx-1 h-px min-w-3 flex-1",
-                  step.state === "done" ? "bg-ink-3/70" : "bg-tick",
-                )}
-              />
+              <span aria-hidden className="ml-1 h-px w-3 bg-tick" />
             )}
           </li>
         ))}

@@ -26,7 +26,7 @@ export default function ReviewPage() {
       {waiting === undefined ? (
         <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (
-        <section className="w-full rounded-lg border border-card-border bg-card px-4 py-4 shadow-card sm:px-5">
+        <section className="w-full rounded-lg border border-card-border bg-card px-4 py-4 shadow-card sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
           {waiting.length === 0 ? (
             <p className="text-body text-ink-3">{t("empty")}</p>
           ) : (

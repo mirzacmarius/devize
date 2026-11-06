@@ -32,10 +32,15 @@ export function MobileNav({
   const openSearch = useOpenCommandMenu();
   return (
     // Out by the buttons' padding, so their icons sit on the page's edge.
-    <div className="-mx-2.5 flex items-center gap-1 md:hidden">
+    <div className="-mx-[11px] -mb-2 -mt-4 flex h-14 items-center gap-1 md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={t("openMenu")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-10"
+            aria-label={t("openMenu")}
+          >
             <Icons.Menu />
           </Button>
         </SheetTrigger>
@@ -63,7 +68,7 @@ export function MobileNav({
       <Button
         variant="ghost"
         size="icon"
-        className="ml-auto"
+        className="ml-auto size-10"
         aria-label={tc("title")}
         onClick={openSearch}
       >

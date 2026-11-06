@@ -28,7 +28,7 @@ import {
 } from "@devize/ui/select";
 import { toast } from "@devize/ui/sonner";
 import { useMutation, useQuery } from "convex/react";
-import { FileText } from "lucide-react";
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -133,7 +133,7 @@ export function InvoiceActions({ invoice }: { invoice: Invoice }) {
           withBusy(() => download.pdf(invoice, user?.name ?? undefined))
         }
       >
-        <FileText aria-hidden />
+        <Download aria-hidden />
         {t("pdf")}
       </Button>
       {draft && (

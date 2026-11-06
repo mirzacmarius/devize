@@ -198,7 +198,7 @@ export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
         open();
       }}
       aria-keyshortcuts="Control+K Meta+K"
-      className="flex h-8 w-full items-center gap-2 rounded-md bg-nav-active/60 px-2.5 text-left text-meta text-ink-3 transition-colors hover:bg-nav-active hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-8 w-full items-center gap-2.5 rounded-md bg-nav-active/60 px-2 text-left text-meta text-ink-3 transition-colors hover:bg-nav-active hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Search aria-hidden className="size-4 shrink-0" />
       <span className="min-w-0 flex-1 truncate">{t("button")}</span>
@@ -375,7 +375,12 @@ function CommandSearch({
 
     const money = (value: number) => `${formatMoney(value, locale)} lei`;
     const results = found?.results;
-    const estimates: Entry[] = (results?.estimates ?? []).map((estimate) => {
+    // Before anything is typed, enough to get back to, and the rest in sight.
+    const estimates: Entry[] = (
+      found?.query
+        ? (results?.estimates ?? [])
+        : (results?.estimates ?? []).slice(0, 3)
+    ).map((estimate) => {
       const href = `/estimates/${estimate._id}`;
       return {
         id: `estimate:${estimate._id}`,
@@ -588,7 +593,7 @@ function CommandSearch({
                   onClick={entry.run}
                   onMouseMove={() => !selected && setActiveId(entry.id)}
                   className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-md px-2 py-2",
+                    "flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5",
                     selected ? "bg-sunken text-ink" : "text-ink-2",
                   )}
                 >

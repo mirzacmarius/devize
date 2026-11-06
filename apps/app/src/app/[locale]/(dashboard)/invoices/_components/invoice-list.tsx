@@ -119,22 +119,13 @@ export function InvoiceList() {
             />
             <Figure
               label={t("receivable.late")}
-              value={
-                anaf && anaf.late > 0 ? (
-                  <span className="text-danger">
-                    {formatCount(anaf.late, locale)}
-                  </span>
-                ) : anaf ? (
-                  formatCount(anaf.late, locale)
-                ) : (
-                  "–"
-                )
-              }
-              unit={
+              value={anaf ? formatCount(anaf.late, locale) : "–"}
+              tone={anaf && anaf.late > 0 ? "danger" : undefined}
+              note={
                 anaf?.firstLate && (
                   <Link
                     href={`/invoices/${anaf.firstLate}`}
-                    className="rounded-xs text-ink-2 underline underline-offset-4 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="rounded-xs text-ink underline underline-offset-4 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {anaf.late === 1 ? t("lateOpen") : t("lateOpenFirst")}
                   </Link>

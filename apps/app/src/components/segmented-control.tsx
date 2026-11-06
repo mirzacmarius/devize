@@ -34,7 +34,7 @@ export function SegmentedControl<T extends string>({
           aria-pressed={option.value === value}
           onClick={() => onChange(option.value)}
           className={cn(
-            "inline-flex h-7 shrink-0 items-center gap-2 whitespace-nowrap rounded-sm px-2.5 text-meta text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-4",
+            "inline-flex h-7 shrink-0 items-center gap-2 whitespace-nowrap rounded-sm px-2.5 text-meta max-sm:h-8 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-4",
             option.value === value &&
               "bg-selected font-medium text-ink shadow-raised",
           )}

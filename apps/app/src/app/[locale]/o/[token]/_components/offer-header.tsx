@@ -51,7 +51,12 @@ export function ContactLinks({
   return (
     <div className="flex shrink-0 flex-wrap justify-center gap-2">
       {phone && (
-        <Button variant="outline" size="sm" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className={compact ? "max-sm:size-11 max-sm:p-0" : undefined}
+          asChild
+        >
           <a href={`tel:${phone}`}>
             <Phone aria-hidden />
             <span className={compact ? "sr-only sm:not-sr-only" : undefined}>
@@ -61,7 +66,12 @@ export function ContactLinks({
         </Button>
       )}
       {firm.email && (
-        <Button variant="outline" size="sm" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className={compact ? "max-sm:size-11 max-sm:p-0" : undefined}
+          asChild
+        >
           <a href={`mailto:${firm.email}`}>
             <Mail aria-hidden />
             <span className={compact ? "sr-only sm:not-sr-only" : undefined}>

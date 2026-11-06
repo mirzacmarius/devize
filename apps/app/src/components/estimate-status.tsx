@@ -18,13 +18,15 @@ const tones: Record<EstimateStatus, StatusPillProps["tone"]> = {
 export function EstimateStatusPill({
   status,
   plain,
+  className,
 }: {
   status: EstimateStatus;
   plain?: boolean;
+  className?: string;
 }) {
   const t = useScopedI18n("estimateStatus");
   return (
-    <StatusPill tone={tones[status]} plain={plain}>
+    <StatusPill tone={tones[status]} plain={plain} className={className}>
       {t(status)}
     </StatusPill>
   );

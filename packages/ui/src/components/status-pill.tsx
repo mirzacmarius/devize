@@ -3,20 +3,21 @@ import * as React from "react";
 
 import { cn } from "../utils";
 
-// The state of an object (deviz, price, invoice, sync): a dot and a word on a
-// soft fill. The word carries the meaning; the dot is decorative.
+// The state of an object (deviz, price, invoice, sync): a dot and a word, the
+// fill only for a state that means something (good, needs attention, blocks, AI).
+// The word carries the meaning; the dot is decorative.
 const statusPillVariants = cva(
   "inline-flex h-[22px] items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-pill before:size-1.5 before:shrink-0 before:rounded-full before:content-['']",
   {
     variants: {
       tone: {
-        // Not out in the world yet: Ciornă. No fill, an open dot.
+        // Not out in the world yet: Ciornă. An open dot.
         draft:
-          "text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border-control))] before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
+          "text-ink-2 before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
         // Out and moving, waiting on someone: Trimis clientului, Emisă
-        active: "bg-muted text-ink before:bg-ink-2",
+        active: "text-ink before:bg-ink-2",
         // Finished or set aside, nothing to do: Decontat, Expirat
-        neutral: "bg-muted text-ink-2 before:bg-neutral-dot",
+        neutral: "text-ink-2 before:bg-neutral-dot",
         // A good result just reached: Acceptat de client, Sincronizat
         success: "bg-success-soft text-success before:bg-success-dot",
         // Needs attention soon: Prețuri de actualizat
@@ -30,9 +31,9 @@ const statusPillVariants = cva(
         true: "",
         false: "pl-2.5 before:hidden",
       },
-      // No fill, for a list where a pill on every row would shout.
+      // No fill and no room around it: a second state beside a row's first.
       plain: {
-        true: "h-auto bg-transparent pl-0 pr-0 text-meta shadow-none",
+        true: "h-auto bg-transparent pl-0 pr-0 text-meta",
         false: "",
       },
     },

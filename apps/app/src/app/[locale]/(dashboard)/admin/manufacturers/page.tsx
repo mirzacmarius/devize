@@ -20,6 +20,7 @@ import {
   ErrorText,
   Field,
   manufacturerTone,
+  messageTone,
   NativeSelect,
   Panel,
   Pill,
@@ -112,6 +113,7 @@ export default function ManufacturersPage() {
             <Button
               size="sm"
               variant="ghost"
+              className="last:-mr-2.5"
               onClick={() =>
                 setSelected(
                   new Set(
@@ -209,16 +211,22 @@ export default function ManufacturersPage() {
                         ? tAdmin(`confidenceLevel.${row.confidence}`)
                         : "–"}
                     </TableCell>
-                    <TableCell
-                      className={
-                        row.message?.blocked && row.message.status === "draft"
-                          ? "text-danger"
-                          : "text-ink-2"
-                      }
-                    >
-                      {row.message
-                        ? tAdmin(`status.message.${row.message.status}`)
-                        : "–"}
+                    <TableCell className="text-ink-2">
+                      {row.message ? (
+                        <Pill
+                          plain
+                          tone={
+                            row.message.blocked &&
+                            row.message.status === "draft"
+                              ? "danger"
+                              : messageTone[row.message.status]
+                          }
+                        >
+                          {tAdmin(`status.message.${row.message.status}`)}
+                        </Pill>
+                      ) : (
+                        "–"
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

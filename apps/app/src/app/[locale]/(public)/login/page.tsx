@@ -33,7 +33,7 @@ export default async function Page() {
         </div>
       </aside>
       <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:m-2 xl:ml-0 xl:rounded-2xl xl:shadow-panel">
-        <div className="grid w-full max-w-[360px] gap-6">
+        <div className="grid w-full max-w-[400px] gap-6">
           <Wordmark className="text-xl xl:hidden" />
           <div className="grid gap-1.5">
             <h1 className="m-0 text-title-screen text-ink">{t("heading")}</h1>

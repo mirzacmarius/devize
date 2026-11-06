@@ -27,7 +27,7 @@ import {
 import { Textarea } from "@devize/ui/textarea";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Paperclip } from "lucide-react";
+import { Download, Paperclip } from "lucide-react";
 import { Fragment, type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
@@ -171,8 +171,10 @@ export function StatementCard({
               disabled={downloading !== undefined}
               onClick={() => download("pdf")}
             >
-              {downloading === "pdf" && (
+              {downloading === "pdf" ? (
                 <Icons.Loader className="animate-spin" aria-hidden />
+              ) : (
+                <Download aria-hidden />
               )}
               {t("downloadPdf")}
             </Button>
@@ -249,13 +251,16 @@ export function StatementCard({
             </DropdownMenu>
           </div>
         </div>
-        <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
-        {/* Nothing leaves from here: the firm sends it and notes what happened. */}
-        {statement.latest && statement.status !== "approved" && (
-          <p className="m-0 text-meta text-ink-2">
-            {statement.status === "draft" ? t("nextDraft") : t("nextSent")}
-          </p>
-        )}
+        <p className="m-0 text-meta text-ink-3">
+          {facts.join(" · ")}
+          {/* Nothing leaves from here: the firm sends it and notes what happened. */}
+          {statement.latest && statement.status !== "approved" && (
+            <span className="text-ink-2">
+              {" · "}
+              {statement.status === "draft" ? t("nextDraft") : t("nextSent")}
+            </span>
+          )}
+        </p>
       </CardHeader>
       <CardContent>
         <RowsTable
@@ -359,7 +364,7 @@ function RowsTable({
           <TableHead>{t("article")}</TableHead>
           <TableHead className="text-right">{t("contract")}</TableHead>
           <TableHead className="text-right">{t("previous")}</TableHead>
-          <TableHead className="bg-muted text-right font-medium text-ink">
+          <TableHead className="bg-muted pr-[21px] text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className="text-right">{t("cumulative")}</TableHead>
@@ -449,7 +454,7 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken text-right align-top">
+                <TableCell className="whitespace-nowrap bg-sunken pr-[21px] text-right align-top">
                   <InlineNumber
                     fixed
                     value={row.quantity}
@@ -471,7 +476,9 @@ function RowsTable({
                       "-my-1.5 h-8 w-20",
                       // What can be typed in looks like it.
                       fillable && "border-input bg-field",
-                      row.quantity === 0 ? "text-ink-3" : "font-medium",
+                      row.quantity === 0
+                        ? "text-ink-3"
+                        : "font-medium text-ink",
                     )}
                   />
                 </TableCell>

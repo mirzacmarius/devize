@@ -114,7 +114,12 @@ export function ChecksCard({
   );
   if (folded) {
     return (
-      <FoldCard id="checks" title={t("checks.title")} lead={lead}>
+      <FoldCard
+        id="checks"
+        title={t("checks.title")}
+        lead={lead}
+        flag={checks.some((check) => check.state !== "passed")}
+      >
         {body}
       </FoldCard>
     );
@@ -423,7 +428,10 @@ function OmissionsFix({
     <Button
       type="button"
       variant="link"
-      className={cn("mt-1", check.status === "none" && "text-ai")}
+      className={cn(
+        "mt-1",
+        check.status === "none" && "text-ai no-underline hover:underline",
+      )}
       disabled={starting}
       onClick={async () => {
         if (check.status !== "none" || (await start())) {

@@ -49,7 +49,7 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
   };
 
   return (
-    <FoldCard id="documents" title={t("title")} lead={t("lead")}>
+    <FoldCard id="documents" title={t("title")}>
       <ul className="m-0 grid list-none p-0">
         <DocumentRow
           icon={<Icons.Deviz aria-hidden />}
