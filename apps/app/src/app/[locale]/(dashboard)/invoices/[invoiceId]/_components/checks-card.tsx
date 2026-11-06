@@ -3,13 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Finding } from "@devize/backend/convex/invoices/rules";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardHeader,
-  CardTitle,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
@@ -32,38 +26,36 @@ export function ChecksCard({ invoice }: { invoice: Invoice }) {
   const errors = invoice.findings.filter((f) => f.severity === "error").length;
   const warnings = invoice.findings.length - errors;
   return (
-    <CardFrame>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <span className="text-meta text-ink-3 tabular-nums">
-            {[
-              errors > 0 && t("errors", { count: errors }),
-              warnings > 0 && t("warnings", { count: warnings }),
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </span>
-        </CardHeader>
-        <CardContent>
-          {invoice.findings.length === 0 ? (
-            <FindingRow severity="ok" text={t("ok")} />
-          ) : (
-            <ul className="m-0 grid list-none gap-3 p-0">
-              {invoice.findings.map((finding) => (
-                <li key={`${finding.id}-${finding.line ?? ""}`}>
-                  <FindingRow
-                    severity={finding.severity}
-                    text={findingText(finding)}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-          <ValidateXml invoice={invoice} />
-        </CardContent>
-      </Card>
-    </CardFrame>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <span className="text-meta text-ink-3 tabular-nums">
+          {[
+            errors > 0 && t("errors", { count: errors }),
+            warnings > 0 && t("warnings", { count: warnings }),
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        </span>
+      </CardHeader>
+      <CardContent>
+        {invoice.findings.length === 0 ? (
+          <FindingRow severity="ok" text={t("ok")} />
+        ) : (
+          <ul className="m-0 grid list-none gap-3 p-0">
+            {invoice.findings.map((finding) => (
+              <li key={`${finding.id}-${finding.line ?? ""}`}>
+                <FindingRow
+                  severity={finding.severity}
+                  text={findingText(finding)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+        <ValidateXml invoice={invoice} />
+      </CardContent>
+    </Card>
   );
 }
 

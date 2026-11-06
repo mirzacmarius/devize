@@ -9,6 +9,7 @@ const Card = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    data-slot="card"
     className={cn(
       "min-w-0 rounded-lg border border-card-border bg-card text-card-foreground shadow-card",
       className,
@@ -34,8 +35,10 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    data-slot="card-header"
     className={cn(
-      "flex min-w-0 items-center justify-between gap-3 px-4 pb-3.5 pt-4 sm:px-5",
+      // The height a small button needs, so titles line up with or without one.
+      "flex min-h-[3.875rem] min-w-0 items-center justify-between gap-3 px-4 pb-3.5 pt-4 sm:px-5",
       className,
     )}
     {...props}
@@ -69,6 +72,7 @@ const CardContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    data-slot="card-content"
     className={cn("grid gap-4 px-4 pb-5 sm:px-5", className)}
     {...props}
   />
@@ -81,6 +85,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    data-slot="card-footer"
     className={cn("flex items-center gap-3 px-4 pb-5 sm:px-5", className)}
     {...props}
   />
@@ -88,7 +93,7 @@ const CardFooter = React.forwardRef<
 CardFooter.displayName = "CardFooter";
 
 // The hairline between a card's header and its list or table body, in line
-// with the rows under it. Ticks are for measuring (TickBar), not for dividing.
+// with the rows under it.
 function TickRule({
   className,
   ...props

@@ -13,6 +13,7 @@ import type { FunctionReturnType } from "convex/server";
 import { ExternalLink, Mail, MessageCircle } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { Fact, FactList } from "@/components/fact-list";
 import { PaymentStages } from "@/components/payment-schedule";
 import { SignatureImage } from "@/components/signature/signature-image";
 import { useRun } from "@/components/use-run";
@@ -66,6 +67,7 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
         <Button
           type="button"
           variant="outline"
+          size="sm"
           disabled={empty}
           onClick={() => setCreating(true)}
           className="justify-self-start"
@@ -111,7 +113,8 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        {offer && (
+        {/* An accepted offer says so, with who and when, in its first line. */}
+        {offer && offer.status !== "accepted" && (
           <StatusPill tone={tones[offer.status]}>
             {t(`status.${offer.status}`)}
           </StatusPill>
@@ -302,27 +305,26 @@ function ChoiceBox({ label, offer }: { label?: string; offer: Offer }) {
   const { choice } = offer;
   const total = formatMoney(choice.totals.total, locale);
   return (
-    <div className="grid gap-0.5 rounded-md border border-border bg-sunken px-3 py-2.5">
-      {label && <span className="text-meta text-ink-3">{label}</span>}
-      <span className="text-body text-ink">
-        {choice.variantName
-          ? t("variant", { name: choice.variantName })
-          : offer.variants.length > 0 && offer.baseLabel
-            ? t("variant", { name: offer.baseLabel })
-            : t("defaultChoice")}
-      </span>
+    <div className="grid gap-1">
+      {label && <p className="m-0 text-meta text-ink-3">{label}</p>}
+      <FactList>
+        <Fact label={t("choice")}>
+          {choice.variantName ??
+            (offer.variants.length > 0 && offer.baseLabel
+              ? offer.baseLabel
+              : t("defaultChoice"))}
+        </Fact>
+        <Fact label={choice.totals.vat !== 0 ? t("total") : t("totalNoVat")}>
+          {total} lei
+        </Fact>
+      </FactList>
       {choice.excluded.length > 0 && (
-        <span className="text-meta text-ink-2">
+        <p className="m-0 text-meta text-ink-3">
           {t("without", {
             items: choice.excluded.map((item) => item.title).join(", "),
           })}
-        </span>
+        </p>
       )}
-      <span className="text-meta tabular-nums text-ink-2">
-        {choice.totals.vat !== 0
-          ? t("total", { total })
-          : t("totalNoVat", { total })}
-      </span>
     </div>
   );
 }
@@ -353,17 +355,6 @@ function AcceptedOffer({
       )}
       <ChoiceBox offer={offer} />
       <OfferPayment offer={offer} />
-      {signature &&
-        (signature.path ? (
-          <div className="rounded-md border border-border bg-card px-2">
-            <SignatureImage
-              path={signature.path}
-              label={t("signatureLabel", { name: signature.name })}
-            />
-          </div>
-        ) : (
-          <p className="m-0 text-meta text-ink-3">{t("typedSignature")}</p>
-        ))}
       <SigningEvidence estimate={estimate} offer={offer} />
       <OfferQuestions
         offerId={offer._id}
@@ -387,6 +378,7 @@ function SigningEvidence({
   offer: Offer;
 }) {
   const t = useScopedI18n("offer.evidence");
+  const tOffer = useScopedI18n("offer");
   const locale = useCurrentLocale();
   const { signature } = offer;
   if (!signature) {
@@ -409,10 +401,22 @@ function SigningEvidence({
       : !estimate.client?.email && t("noConfirmation"),
   ].filter((fact): fact is string => typeof fact === "string");
   return (
-    <details className="rounded-md border border-border bg-sunken px-3 py-2">
-      <summary className="cursor-pointer text-meta font-medium text-ink-2">
+    <details>
+      <summary className="text-meta text-ink-2 hover:text-ink">
         {t("title")}
       </summary>
+      {signature.path ? (
+        <div className="mt-2 rounded-md border border-border px-2">
+          <SignatureImage
+            path={signature.path}
+            label={tOffer("signatureLabel", { name: signature.name })}
+          />
+        </div>
+      ) : (
+        <p className="m-0 mt-2 text-meta text-ink-3">
+          {tOffer("typedSignature")}
+        </p>
+      )}
       <ul className="m-0 mt-2 grid list-none gap-1 p-0 text-meta text-ink-2">
         {signature.contentHash && (
           <li className="break-all font-mono text-code">
@@ -472,9 +476,8 @@ function EndedOffer({ offer, action }: { offer: Offer; action: ReactNode }) {
 function ClientViewLink({ token }: { token: string }) {
   const t = useScopedI18n("offer");
   return (
-    <Button variant="ghost" size="sm" className="justify-self-start" asChild>
+    <Button variant="link" className="justify-self-start text-meta" asChild>
       <a href={`/o/${token}`} target="_blank" rel="noreferrer">
-        <ExternalLink aria-hidden />
         {t("openAsClient")}
       </a>
     </Button>

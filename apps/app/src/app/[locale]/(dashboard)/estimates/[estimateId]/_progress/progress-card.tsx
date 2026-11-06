@@ -3,9 +3,10 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { Fact, FactList } from "@/components/fact-list";
 import { formatCalendarDate, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
@@ -55,52 +56,45 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
         {overview.statements.length === 0 ? (
           <p className="m-0 text-body text-ink-2">{t("noStatements")}</p>
         ) : (
-          <>
-            <div className="grid gap-2">
-              <span className="text-body font-medium tabular-nums text-ink">
-                {t("executed", { percent: formatPercent(percent, locale) })}
-              </span>
-              <TickBar
-                thin
-                value={percent}
-                tone={percent > 100 ? "warning" : "action"}
-                label={t("executed", {
-                  percent: formatPercent(percent, locale),
-                })}
-              />
-            </div>
-            <div className="grid gap-1 text-meta text-ink-2">
-              <span>
-                {t("statements", { count: overview.statements.length })}
-              </span>
-              {overview.approved && (
-                <span>
-                  {t("approved", {
-                    amount: formatMoney(overview.approved.subtotal, locale),
-                  })}
-                </span>
-              )}
-              {guarantee.guarantee && guarantee.outstanding > 0 && (
-                <span>
-                  {t("outstanding", {
-                    amount: formatMoney(guarantee.outstanding, locale),
-                  })}
-                </span>
-              )}
-            </div>
-          </>
-        )}
-        <div className="grid gap-1 text-meta text-ink-2">
-          {(["completion", "final"] as const).map((kind) => (
-            <span key={kind}>
-              {t("reception", {
-                name: tStages(kind),
-                state: receptionState(kind),
-              })}
+          <div className="grid gap-1.5">
+            <span className="text-body font-medium tabular-nums text-ink">
+              {t("executed", { percent: formatPercent(percent, locale) })}
             </span>
+            <MeterBar
+              value={percent}
+              tone={percent > 100 ? "warning" : "action"}
+              label={t("executed", {
+                percent: formatPercent(percent, locale),
+              })}
+            />
+          </div>
+        )}
+        <FactList>
+          {overview.statements.length > 0 && (
+            <Fact label={t("statements")}>{overview.statements.length}</Fact>
+          )}
+          {overview.approved && (
+            <Fact label={t("approved")}>
+              {formatMoney(overview.approved.subtotal, locale)} lei
+            </Fact>
+          )}
+          {guarantee.guarantee && guarantee.outstanding > 0 && (
+            <Fact label={t("outstanding")}>
+              {formatMoney(guarantee.outstanding, locale)} lei
+            </Fact>
+          )}
+          {(["completion", "final"] as const).map((kind) => (
+            <Fact key={kind} label={tStages(kind)}>
+              {receptionState(kind)}
+            </Fact>
           ))}
-        </div>
-        <Button variant="outline" className="justify-self-start" asChild>
+        </FactList>
+        <Button
+          variant="outline"
+          size="sm"
+          className="justify-self-start"
+          asChild
+        >
           <Link href={`/estimates/${estimate._id}/progress`}>{t("open")}</Link>
         </Button>
       </CardContent>

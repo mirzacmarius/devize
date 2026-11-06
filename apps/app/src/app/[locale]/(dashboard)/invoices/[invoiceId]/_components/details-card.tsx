@@ -17,6 +17,7 @@ import { useMutation } from "convex/react";
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
+import { FactRows } from "@/components/fact-list";
 import { Field } from "@/components/field";
 import { useRun } from "@/components/use-run";
 import {
@@ -106,27 +107,6 @@ function useReferenceRows(invoice: Invoice) {
   return rows;
 }
 
-function Rows({ rows }: { rows: { label: string; value: ReactNode }[] }) {
-  const tc = useScopedI18n("common");
-  return (
-    <dl className="m-0 grid gap-3">
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="flex min-w-0 items-baseline justify-between gap-4"
-        >
-          <dt className="shrink-0 text-body text-ink-3">{row.label}</dt>
-          <dd className="m-0 min-w-0 text-right text-body font-medium text-ink [overflow-wrap:anywhere]">
-            {row.value || (
-              <span className="font-normal text-ink-3">{tc("notSet")}</span>
-            )}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
 function Mentions({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.details");
   if (invoice.mentions.length === 0) {
@@ -182,7 +162,7 @@ function DetailsList({ invoice }: { invoice: Invoice }) {
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Rows rows={rows} />
+        <FactRows rows={rows} />
         {invoice.notes && (
           <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
             {invoice.notes}
@@ -262,7 +242,7 @@ function DetailsForm({ invoice }: { invoice: Invoice }) {
           <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Rows rows={references} />
+          <FactRows rows={references} />
           <div className="grid gap-4 border-t border-border pt-4 sm:grid-cols-2">
             <Field
               label={t("issueDate")}

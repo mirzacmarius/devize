@@ -41,14 +41,14 @@ export function RevisionsCard({ estimate }: { estimate: Estimate }) {
                   {current ? (
                     <span
                       aria-current="page"
-                      className="font-mono text-code font-medium text-ink"
+                      className="tabular-nums font-medium text-ink"
                     >
                       {code}
                     </span>
                   ) : (
                     <Link
                       href={`/estimates/${revision._id}`}
-                      className="rounded-xs font-mono text-code text-ink underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="rounded-xs tabular-nums text-ink underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {code}
                     </Link>

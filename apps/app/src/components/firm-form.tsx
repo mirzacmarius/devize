@@ -141,7 +141,7 @@ export function FirmForm({
           </Select>
         </Field>
       </div>
-      <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
+      <div className="flex items-start justify-between gap-4 border-t border-border pt-4">
         <div className="grid gap-0.5">
           <label htmlFor="firm-vat" className="text-body font-medium text-ink">
             {t("vatPayer")}

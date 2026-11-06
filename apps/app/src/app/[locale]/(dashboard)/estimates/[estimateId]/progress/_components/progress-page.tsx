@@ -20,7 +20,7 @@ import { useScopedI18n } from "@/locales/client";
 import { GuaranteeCard } from "./guarantee-card";
 import { ReceptionsCard } from "./receptions-card";
 import { StatementCard } from "./statement-card";
-import { StatementsCard } from "./statements-card";
+import { NewStatementButton, StatementPicker } from "./statement-picker";
 import { SummaryCard } from "./summary-card";
 
 /**
@@ -72,17 +72,30 @@ export function ProgressPage() {
     body = (
       <div className="grid min-w-0 gap-6">
         <SummaryCard overview={overview} />
-        <StatementsCard
-          overview={overview}
-          selected={selected}
-          onSelect={setPicked}
-        />
-        {selected && (
+        {selected ? (
           <StatementCard
             key={selected}
             statementId={selected}
             works={estimate}
+            picker={
+              <StatementPicker
+                statements={overview.statements}
+                selected={selected}
+                onSelect={setPicked}
+              />
+            }
             onDeleted={() => setPicked(null)}
+          />
+        ) : (
+          <EmptyState
+            icon={<Icons.Progress />}
+            title={t("list.emptyTitle")}
+            description={t("list.emptyDescription")}
+            action={
+              overview.canCreate && (
+                <NewStatementButton overview={overview} onCreated={setPicked} />
+              )
+            }
           />
         )}
         <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2">
@@ -111,6 +124,12 @@ export function ProgressPage() {
         }
         title={t("title")}
         description={t("description", { code, title: estimate.title })}
+        actions={
+          overview.canCreate &&
+          selected && (
+            <NewStatementButton overview={overview} onCreated={setPicked} />
+          )
+        }
       />
       {body}
     </>

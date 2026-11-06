@@ -3,7 +3,6 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { baseCategoryByKey } from "@devize/backend/convex/catalog/baseCategories";
 import { normalizeText } from "@devize/backend/convex/lib/text";
-import { Badge } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
@@ -106,7 +105,7 @@ export function CatalogPage() {
         : listed.status === "LoadingFirstPage"
           ? undefined
           : listed.results;
-  const columns = isOwn ? 4 : 2;
+  const columns = isOwn ? 3 : 1;
 
   const changeView = (next: CatalogView) => {
     setText("");
@@ -143,11 +142,7 @@ export function CatalogPage() {
 
   return (
     <>
-      <PageHeader
-        title={t("title")}
-        description={t("description")}
-        actions={actions}
-      />
+      <PageHeader title={t("title")} actions={actions} />
       <section className="grid min-w-0 gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <SegmentedControl
@@ -200,9 +195,6 @@ export function CatalogPage() {
                   <TableRow>
                     <TableHead>{t("columns.norm")}</TableHead>
                     {isOwn && <TableHead>{t("columns.status")}</TableHead>}
-                    <TableHead className="text-right">
-                      {t("columns.unit")}
-                    </TableHead>
                     {isOwn && (
                       <TableHead className="hidden text-right sm:table-cell">
                         {t("columns.updated")}
@@ -252,23 +244,21 @@ export function CatalogPage() {
                           href={`/catalog/${norm._id}`}
                           className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
-                          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <span className="text-body font-medium text-ink group-hover:underline">
-                              {norm.title}
-                            </span>
-                            {norm.source === "manufacturer" &&
-                              !norm.confirmed && (
-                                <Badge>{tNorms("unconfirmed")}</Badge>
-                              )}
+                          <span className="text-body font-medium text-ink group-hover:underline">
+                            {norm.title}
                           </span>
                           <span className="text-meta text-ink-3">
-                            <span className="font-mono">
+                            <span className="font-mono text-code">
                               {norm.version > 1
                                 ? `${norm.code} · v${norm.version}`
                                 : norm.code}
                             </span>
                             {norm.source !== "base" && ` · ${normSource(norm)}`}
                             {norm.category && ` · ${norm.category}`}
+                            {` · ${formatUnit(norm.unit, locale)}`}
+                            {norm.source === "manufacturer" &&
+                              !norm.confirmed &&
+                              ` · ${tNorms("unconfirmed")}`}
                           </span>
                         </Link>
                       </TableCell>
@@ -277,9 +267,6 @@ export function CatalogPage() {
                           <NormStatusPill status={norm.status} />
                         </TableCell>
                       )}
-                      <TableCell className="pt-[11px] text-right align-top text-ink-2">
-                        {formatUnit(norm.unit, locale)}
-                      </TableCell>
                       {isOwn && (
                         <TableCell className="hidden text-right text-ink-3 tabular-nums sm:table-cell">
                           {formatDay(norm.updatedAt, locale)}

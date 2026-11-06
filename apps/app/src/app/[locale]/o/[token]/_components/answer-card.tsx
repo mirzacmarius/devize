@@ -291,13 +291,20 @@ export function MobileAnswerBar({
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
   const { total, vat } = offer.choice.totals;
+  const deposit = offer.depositPercent;
+  const note = [
+    vat !== 0 && t("withVat"),
+    deposit !== undefined &&
+      t("depositShort", {
+        amount: formatMoney(roundLei((total * deposit) / 100), locale),
+      }),
+  ]
+    .filter(Boolean)
+    .join(" · ");
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur lg:hidden">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
         <div className="grid min-w-0">
-          <span className="text-meta text-ink-3">
-            {vat !== 0 ? t("total") : t("totalNoVat")}
-          </span>
           <span
             className={cn(
               "truncate text-title-card tabular-nums text-ink transition-opacity",
@@ -305,6 +312,9 @@ export function MobileAnswerBar({
             )}
           >
             {t("totals.lei", { total: formatMoney(total, locale) })}
+          </span>
+          <span className="truncate text-meta tabular-nums text-ink-3">
+            {note || t("totalNoVat")}
           </span>
         </div>
         <Button

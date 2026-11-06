@@ -53,7 +53,7 @@ export function EfacturaPill({
 }) {
   const t = useScopedI18n("invoices");
   if (status === "not_sent" && late) {
-    return <StatusPill tone="warning">{t("efacturaLate")}</StatusPill>;
+    return <StatusPill tone="danger">{t("efacturaLate")}</StatusPill>;
   }
   return (
     <StatusPill tone={efacturaTones[status]}>

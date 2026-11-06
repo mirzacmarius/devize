@@ -109,10 +109,9 @@ export function EstimatePage() {
             <BreadcrumbPage>{code}</BreadcrumbPage>
           </Breadcrumb>
         }
-        title={code}
+        title={estimate.title}
         status={<EstimateStatusPill status={estimate.status} />}
         description={[
-          estimate.title,
           estimate.client?.name ?? t("noClient"),
           t("pricesOf", {
             date: formatCalendarDate(estimate.priceDate, locale),
@@ -154,7 +153,7 @@ export function EstimatePage() {
           />
           <RecapCard estimate={estimate} editable={editable} open={setPanel} />
         </div>
-        <div className="grid min-w-0 gap-6">
+        <div className="rail-sections grid min-w-0 gap-6">
           <ChecksCard
             estimate={estimate}
             checks={checks}

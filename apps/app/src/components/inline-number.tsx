@@ -32,13 +32,11 @@ export function InlineNumber({
 
   if (disabled) {
     return (
-      <span
-        className={cn("inline-block px-2 text-right tabular-nums", className)}
-      >
-        {format(value)}
-      </span>
+      <span className={cn("tabular-nums", className)}>{format(value)}</span>
     );
   }
+
+  const shown = draft ?? format(value);
 
   const commit = () => {
     if (draft === null) {
@@ -56,7 +54,9 @@ export function InlineNumber({
       type="text"
       inputMode="decimal"
       aria-label={label}
-      value={draft ?? format(value)}
+      value={shown}
+      // As wide as the number, so its column is no wider than its numbers.
+      style={{ width: `calc(${Math.max(shown.length, 4)}ch + 18px)` }}
       onFocus={(event) => {
         setDraft(formatInputNumber(value, locale));
         // Select after React puts the raw number in.
@@ -76,7 +76,9 @@ export function InlineNumber({
         }
       }}
       className={cn(
-        "h-8 w-28 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors hover:border-input focus:border-ink/60 focus:bg-field focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10",
+        // The field's own edge and padding hang past the column, so the number
+        // lines up with the head and the plain numbers around it.
+        "-mr-[9px] h-8 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors hover:border-input focus:border-ink/60 focus:bg-field focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10",
         className,
       )}
     />

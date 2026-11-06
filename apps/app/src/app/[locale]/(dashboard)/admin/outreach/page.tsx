@@ -50,9 +50,8 @@ export default function OutreachPage() {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-title-screen text-ink">{t("title")}</h1>
-        <p className="text-body text-ink-2">{t("description")}</p>
+      <div className="flex flex-col gap-1">
+        <p className="m-0 text-body text-ink-2">{t("description")}</p>
         <p className="text-body text-ink-3">
           {t("pace", { count: sentToday ?? 0 })}
         </p>
@@ -285,7 +284,7 @@ function MessageRow({
           )}
         </div>
         <p className="truncate text-body text-ink-3">
-          {message.to ?? "—"} · {message.subject}
+          {message.to ?? "–"} · {message.subject}
         </p>
         <ErrorText error={error} />
       </div>

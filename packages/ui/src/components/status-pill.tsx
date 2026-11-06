@@ -10,11 +10,11 @@ const statusPillVariants = cva(
   {
     variants: {
       tone: {
-        // Not out in the world yet: Ciornă. An outline, an open dot.
+        // Not out in the world yet: Ciornă. An open dot.
         draft:
-          "text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border-control))] before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
+          "bg-muted text-ink-2 before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
         // Out and moving, waiting on someone: Trimis clientului, Emisă
-        active: "bg-muted text-ink before:bg-ink",
+        active: "bg-muted text-ink-2 before:bg-neutral-dot",
         // Finished or set aside, nothing to do: Decontat, Expirat
         neutral: "bg-muted text-ink-2 before:bg-neutral-dot",
         // A good result just reached: Acceptat de client, Sincronizat

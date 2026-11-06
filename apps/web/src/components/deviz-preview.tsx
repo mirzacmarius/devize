@@ -2,7 +2,7 @@ import { Badge, Count } from "@devize/ui/badge";
 import { buttonVariants } from "@devize/ui/button";
 import { TickRule } from "@devize/ui/card";
 import { Logo } from "@devize/ui/logo";
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
 import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { Check, Sparkles, TriangleAlert } from "lucide-react";
@@ -121,7 +121,7 @@ export function DevizPreview({ className }: { className?: string }) {
           <div className="flex min-w-0 flex-col gap-2">
             <dt className="text-label uppercase text-ink-3">Gata de trimis</dt>
             <dd className="m-0 flex items-center gap-3">
-              <TickBar value={84} label="84% gata" className="flex-1" />
+              <MeterBar value={84} label="84% gata" className="flex-1" />
               <span className="text-body font-medium text-ink tabular-nums">
                 84%
               </span>

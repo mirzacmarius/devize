@@ -3,11 +3,11 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
-import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Fact, FactList } from "@/components/fact-list";
 import { InvoiceStatusPill } from "@/components/invoice-status";
 import { useRun } from "@/components/use-run";
 import { formatMoney, formatPercent, todayInput } from "@/lib/format";
@@ -70,20 +70,14 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
         ) : (
           <>
             {facts.length > 0 && (
-              <div className="grid gap-2">
-                <dl className="m-0 grid gap-1.5">
+              <div className="grid gap-1">
+                <FactList>
                   {facts.map((fact) => (
-                    <div
-                      key={fact.label}
-                      className="flex items-baseline justify-between gap-4"
-                    >
-                      <dt className="text-body text-ink-3">{fact.label}</dt>
-                      <dd className="m-0 whitespace-nowrap text-body font-medium text-ink tabular-nums">
-                        {formatMoney(fact.value, locale)} lei
-                      </dd>
-                    </div>
+                    <Fact key={fact.label} label={fact.label}>
+                      {formatMoney(fact.value, locale)} lei
+                    </Fact>
                   ))}
-                </dl>
+                </FactList>
                 <p className="m-0 text-meta text-ink-3">
                   {t("card.amountsWithoutVat")}
                 </p>
@@ -106,12 +100,7 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
                         </span>
                       </span>
                       <span className="flex items-center justify-between gap-3">
-                        <span
-                          className={cn(
-                            "text-meta text-ink-3",
-                            invoice.code && "font-mono",
-                          )}
-                        >
+                        <span className="text-meta tabular-nums text-ink-3">
                           {invoice.code ?? t("draftCode")}
                         </span>
                         <InvoiceStatusPill

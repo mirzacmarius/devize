@@ -5,16 +5,14 @@ import type {
   PaymentTrigger,
 } from "@devize/backend/convex/offers/payments";
 import { stageAmount } from "@devize/backend/convex/offers/payments";
+import { Fact, FactList } from "@/components/fact-list";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 // How an Ofertă is paid, in words and as a list, the same on the firm's page
 // and on the client's link.
 
-/**
- * The stages one under the other: the stage and when it falls due on the left,
- * the money on the right.
- */
+/** The stages one under the other: the stage and its share, then the money. */
 export function PaymentStages({
   stages,
   total,
@@ -25,26 +23,21 @@ export function PaymentStages({
   const t = useScopedI18n("payment");
   const locale = useCurrentLocale();
   return (
-    <dl className="m-0 grid gap-2">
+    <FactList>
       {stages.map((stage) => (
-        <div
+        <Fact
           key={`${stage.stage}-${stage.trigger}`}
-          className="flex items-baseline justify-between gap-3"
+          label={
+            stage.percent === undefined
+              ? stage.stage
+              : `${stage.stage} · ${formatPercent(stage.percent, locale)}`
+          }
+          title={t(`triggers.${stage.trigger}`)}
         >
-          <dt className="grid min-w-0 text-meta text-ink">
-            {stage.stage}
-            <span className="text-ink-3">
-              {stage.percent === undefined
-                ? t(`triggers.${stage.trigger}`)
-                : `${formatPercent(stage.percent, locale)} ${t(`triggers.${stage.trigger}`)}`}
-            </span>
-          </dt>
-          <dd className="m-0 whitespace-nowrap text-meta tabular-nums text-ink">
-            {formatMoney(stageAmount(stage, total), locale)} lei
-          </dd>
-        </div>
+          {formatMoney(stageAmount(stage, total), locale)} lei
+        </Fact>
       ))}
-    </dl>
+    </FactList>
   );
 }
 

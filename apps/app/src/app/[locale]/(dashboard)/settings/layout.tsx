@@ -16,9 +16,9 @@ export default async function Layout({
   const t = await getScopedI18n("settings");
   return (
     <>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader title={t("title")} />
       <SettingsTabs />
-      <div className="grid max-w-3xl gap-4">{children}</div>
+      <div className="grid max-w-3xl gap-6">{children}</div>
     </>
   );
 }

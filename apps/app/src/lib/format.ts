@@ -22,6 +22,11 @@ export function formatQuantity(value: number, locale: Locale): string {
   return decimalFormat(locale, 2, 3).format(value);
 }
 
+/** A quantity in a column of them: always two decimals, so they line up. */
+export function formatQuantityRounded(value: number, locale: Locale): string {
+  return decimalFormat(locale, 2, 2).format(value);
+}
+
 /** What one unit of a norm consumes: 4,50 kg, or 0,035 kg. */
 export function formatConsumption(value: number, locale: Locale): string {
   return decimalFormat(locale, 2, 4).format(value);

@@ -61,10 +61,10 @@ export function RecapCompareCard({ comparison }: { comparison: Comparison }) {
                 >
                   {t("item")}
                 </th>
-                <th scope="col" className={cn(headClass, "font-mono")}>
+                <th scope="col" className={cn(headClass, "tabular-nums")}>
                   {estimateCode(number, before.revision)}
                 </th>
-                <th scope="col" className={cn(headClass, "font-mono")}>
+                <th scope="col" className={cn(headClass, "tabular-nums")}>
                   {estimateCode(number, after.revision)}
                 </th>
                 <th scope="col" className={headClass}>

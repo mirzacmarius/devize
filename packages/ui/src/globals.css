@@ -9,6 +9,7 @@
  */
 /* One warm neutral runs through both themes; only state and AI carry a hue. */
 :root {
+  --card-pad: 16px;
   /* Surfaces */
   --shell: 60 12% 95.1%; /* #f4f4f1 */
   --panel: 0 0% 100%; /* #ffffff */
@@ -31,7 +32,7 @@
   /* Text */
   --ink: 60 3.8% 10.2%; /* #1b1b19 */
   --ink-2: 60 2% 29.6%; /* #4d4d4a */
-  --ink-3: 60 1.5% 38.6%; /* #646461: 5.9:1 on white */
+  --ink-3: 60 1.6% 35.5%; /* #5c5c59: 6.7:1 on white */
 
   /* Action */
   --action: 60 3.3% 11.8%; /* #1f1f1d */
@@ -97,8 +98,8 @@
   --tick: 60 2.4% 24.1%; /* #3f3f3c */
 
   --ink: 60 9.5% 91.8%; /* #ecece8 */
-  --ink-2: 60 3.4% 71.6%; /* #b9b9b4 */
-  --ink-3: 60 2.3% 58.2%; /* #979792: 6:1 on the panel */
+  --ink-2: 60 3.6% 75.7%; /* #c4c4bf */
+  --ink-3: 60 2.6% 65%; /* #a8a8a3: 7.3:1 on the panel */
 
   --action: 60 9.5% 91.8%; /* #ecece8 */
   --on-action: 60 4% 9.8%; /* #1a1a18 */
@@ -190,6 +191,32 @@
       center / contain no-repeat;
   }
   /* The native date field, drawn with the app's own calendar icon, at its end. */
+  /* A disclosure opens with the app's chevron, not the browser's triangle. */
+  .app-main summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .app-main summary::-webkit-details-marker {
+    display: none;
+  }
+  .app-main summary::before {
+    content: "";
+    flex: none;
+    width: 14px;
+    height: 14px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    transition: transform 150ms ease-out;
+  }
+  .app-main details[open] > summary::before {
+    transform: rotate(90deg);
+  }
   input[type="date"] {
     position: relative;
   }
@@ -209,7 +236,106 @@
   }
 }
 
+@media (min-width: 640px) {
+  :root {
+    --card-pad: 20px;
+  }
+}
+
 @layer components {
+  /* On a phone the page is the screen: no panel frame and no card frames, one
+     hairline between sections and 16px at the edge. */
+  @media (max-width: 639.98px) {
+    .app-main [data-slot="card"] {
+      margin-inline: -16px;
+      border-width: 1px 0 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .app-main [data-slot="card"] [data-slot="card"] {
+      margin-inline: 0;
+      border-width: 1px;
+      border-radius: var(--radius);
+    }
+  }
+  /* Beside the main card, a column of sections rather than a stack of cards. */
+  @media (min-width: 1280px) {
+    .rail-sections {
+      gap: 0;
+    }
+    .rail-sections > [data-slot="card"] {
+      border-width: 1px 0 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      padding-bottom: 4px;
+    }
+    .rail-sections > [data-slot="card"]:first-child {
+      border-top-width: 0;
+    }
+    .rail-sections > [data-slot="card"] > :is(
+        [data-slot="card-header"],
+        [data-slot="card-content"],
+        [data-slot="card-footer"]
+      ) {
+      padding-inline: 0;
+    }
+  }
+  /* A group row of a table inside a card: the band runs to the card's edges
+     while its cells keep the columns of the rows under it. */
+  .band-start,
+  .band-end {
+    position: relative;
+  }
+  .band-start::before,
+  .band-end::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: var(--card-pad);
+    background: hsl(var(--sunken));
+  }
+  .band-start::before {
+    right: 100%;
+  }
+  .band-end::after {
+    left: 100%;
+  }
+  /* The Articole on a narrow card: each row is its text, end to end. */
+  @container (max-width: 37.99rem) {
+    .items-table,
+    .items-table > tbody {
+      display: block;
+    }
+    .items-table > thead {
+      display: none;
+    }
+    .items-table > tbody > tr {
+      display: block;
+      position: relative;
+    }
+    .items-table > tbody > tr > td:not(.hidden) {
+      display: block;
+      height: auto;
+      padding-inline: 0;
+    }
+    .items-table > tbody > tr.items-band {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .items-table > tbody > tr.items-band > td:not(.hidden) {
+      display: flex;
+      align-items: center;
+      min-height: 40px;
+    }
+    .items-table > tbody > tr.items-row > td.items-menu {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
   /* A native select with the app's chevrons, for the admin kit. */
   .select-native {
     appearance: none;
@@ -246,7 +372,7 @@
       grid-column: 1 / -1;
     }
   }
-  /* The tick motif: progress is made of ticks, not bars. */
+  /* The hairline of ticks on the marketing site. */
   .tick-rule {
     height: 6px;
     background: repeating-linear-gradient(

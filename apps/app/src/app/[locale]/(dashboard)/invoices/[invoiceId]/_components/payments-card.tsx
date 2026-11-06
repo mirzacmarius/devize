@@ -61,11 +61,11 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
         {invoice.payments.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("none")}</p>
         ) : (
-          <ul className="m-0 grid list-none gap-2 p-0">
+          <ul className="m-0 grid list-none p-0">
             {invoice.payments.map((payment, index) => (
               <li
                 key={keys[index]}
-                className="flex items-center justify-between gap-3 rounded-md border border-border bg-sunken px-3 py-2"
+                className="group/row flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
               >
                 <div className="grid min-w-0 gap-0.5">
                   <span className="text-body font-medium text-ink tabular-nums">
@@ -86,6 +86,7 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
                     type="button"
                     variant="ghost"
                     size="icon"
+                    className="size-8 text-ink-3 focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
                     aria-label={t("remove")}
                     onClick={() =>
                       run(

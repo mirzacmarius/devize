@@ -46,7 +46,6 @@ export function ClientList() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
         actions={
           <Button onClick={() => edit(null)}>
             <Plus aria-hidden />
@@ -102,7 +101,7 @@ export function ClientList() {
                 </TableRow>
               )}
               {clients?.map((row) => (
-                <TableRow key={row._id}>
+                <TableRow key={row._id} className="md:[&>td]:h-[63px]">
                   <TableCell data-stack="wide">
                     <div className="grid gap-0.5">
                       <button
@@ -131,7 +130,7 @@ export function ClientList() {
                       {row.email && (
                         <a
                           href={`mailto:${row.email}`}
-                          className="truncate text-ink-2 hover:underline"
+                          className="truncate text-meta text-ink-3 hover:underline"
                         >
                           {row.email}
                         </a>

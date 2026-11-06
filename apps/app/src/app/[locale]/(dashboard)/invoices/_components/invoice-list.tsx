@@ -57,7 +57,6 @@ export function InvoiceList() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
         actions={
           isEmpty ? undefined : (
             // The firm keeps its invoices 5 years (Legea 82/1991 art. 25).
@@ -106,7 +105,7 @@ export function InvoiceList() {
                 <TableHead className="hidden text-right md:table-cell">
                   {t("columns.due")}
                 </TableHead>
-                <TableHead className="hidden lg:table-cell">
+                <TableHead className="hidden pl-8 lg:table-cell">
                   {t("columns.efactura")}
                 </TableHead>
               </TableRow>
@@ -129,26 +128,15 @@ export function InvoiceList() {
               {rows?.map((row) => {
                 const live = row.status === "issued" || row.status === "paid";
                 return (
-                  <TableRow key={row._id}>
+                  <TableRow key={row._id} className="md:[&>td]:h-[63px]">
                     <TableCell data-stack="wide">
                       <Link
                         href={`/invoices/${row._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="truncate text-meta text-ink-3">
-                          {row.code ? (
-                            <span className="font-mono">{row.code}</span>
-                          ) : (
-                            t("draftCode")
-                          )}
-                          {row.estimate && (
-                            <>
-                              {" · "}
-                              <span className="font-mono">
-                                {row.estimate.code}
-                              </span>
-                            </>
-                          )}
+                        <span className="truncate text-meta tabular-nums text-ink-3">
+                          {row.code ?? t("draftCode")}
+                          {row.estimate && ` · ${row.estimate.code}`}
                           <span className="md:hidden">
                             {row.buyerName && ` · ${row.buyerName}`}
                           </span>
@@ -178,13 +166,13 @@ export function InvoiceList() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right tabular-nums max-md:text-body-lg">
+                    <TableCell className="text-right font-medium tabular-nums max-md:text-body-lg">
                       {formatMoney(row.total, locale)}
                     </TableCell>
                     <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
                       {formatCalendarDate(row.dueDate, locale)}
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell">
+                    <TableCell className="hidden pl-8 lg:table-cell">
                       {live ? (
                         <div className="grid justify-items-start gap-1">
                           <EfacturaPill
@@ -203,7 +191,7 @@ export function InvoiceList() {
                           )}
                         </div>
                       ) : (
-                        <span className="text-ink-3">—</span>
+                        <span className="text-ink-3">–</span>
                       )}
                     </TableCell>
                   </TableRow>

@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardHeader,
-  CardTitle,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Download, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -33,81 +27,79 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
     live && efactura.status === "not_sent" && efactura.deadline < todayInput();
 
   return (
-    <CardFrame>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          {live && <EfacturaPill status={efactura.status} late={late} />}
-        </CardHeader>
-        <CardContent>
-          {live && (
-            <div className="grid gap-0.5">
-              <span className="text-body text-ink">
-                {t("deadline", {
-                  date: formatCalendarDate(efactura.deadline, locale),
-                })}
-              </span>
-              <span className="text-meta text-ink-3">{t("deadlineHint")}</span>
-            </div>
-          )}
-          {late && (
-            <p role="alert" className="m-0 flex gap-2 text-body text-ink">
-              <TriangleAlert
-                aria-hidden
-                className="mt-0.5 size-4 shrink-0 text-warning"
-              />
-              {t("overdue")}
-            </p>
-          )}
-          {live && efactura.status === "not_sent" && (
-            <p className="m-0 text-body text-ink-2">{t("manual")}</p>
-          )}
-          {efactura.uploadIndex && (
-            <p className="m-0 font-mono text-code text-ink-2">
-              {t("uploadIndex", { index: efactura.uploadIndex })}
-            </p>
-          )}
-          {efactura.downloadId && (
-            <p className="m-0 font-mono text-code text-ink-2">
-              {t("downloadId", { id: efactura.downloadId })}
-            </p>
-          )}
-          {efactura.errors && efactura.errors.length > 0 && (
-            <div className="grid gap-1">
-              <span className="text-meta text-danger">{t("errors")}</span>
-              <ul className="m-0 grid list-disc gap-1 pl-4 text-meta text-ink-2">
-                {efactura.errors.map((error) => (
-                  <li key={error} className="[overflow-wrap:anywhere]">
-                    {error}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {live && (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <Button
-                type="button"
-                variant={efactura.status === "not_sent" ? "default" : "outline"}
-                size="sm"
-                disabled={busy}
-                onClick={async () => {
-                  setBusy(true);
-                  await download.xml(invoice._id);
-                  setBusy(false);
-                }}
-              >
-                <Download aria-hidden />
-                {t("download")}
-              </Button>
-              <Button variant="link" className="h-auto px-0 text-meta" asChild>
-                <Link href="/settings/billing">{t("settings")}</Link>
-              </Button>
-            </div>
-          )}
-          {live && <ValidateXml invoice={invoice} />}
-        </CardContent>
-      </Card>
-    </CardFrame>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        {live && <EfacturaPill status={efactura.status} late={late} />}
+      </CardHeader>
+      <CardContent>
+        {live && (
+          <div className="grid gap-0.5">
+            <span className="text-body text-ink">
+              {t("deadline", {
+                date: formatCalendarDate(efactura.deadline, locale),
+              })}
+            </span>
+            <span className="text-meta text-ink-3">{t("deadlineHint")}</span>
+          </div>
+        )}
+        {late && (
+          <p role="alert" className="m-0 flex gap-2 text-body text-ink">
+            <TriangleAlert
+              aria-hidden
+              className="mt-0.5 size-4 shrink-0 text-warning"
+            />
+            {t("overdue")}
+          </p>
+        )}
+        {live && efactura.status === "not_sent" && (
+          <p className="m-0 text-body text-ink-2">{t("manual")}</p>
+        )}
+        {efactura.uploadIndex && (
+          <p className="m-0 text-meta tabular-nums text-ink-2">
+            {t("uploadIndex", { index: efactura.uploadIndex })}
+          </p>
+        )}
+        {efactura.downloadId && (
+          <p className="m-0 text-meta tabular-nums text-ink-2">
+            {t("downloadId", { id: efactura.downloadId })}
+          </p>
+        )}
+        {efactura.errors && efactura.errors.length > 0 && (
+          <div className="grid gap-1">
+            <span className="text-meta text-danger">{t("errors")}</span>
+            <ul className="m-0 grid list-disc gap-1 pl-4 text-meta text-ink-2">
+              {efactura.errors.map((error) => (
+                <li key={error} className="[overflow-wrap:anywhere]">
+                  {error}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {live && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Button
+              type="button"
+              variant={efactura.status === "not_sent" ? "default" : "outline"}
+              size="sm"
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                await download.xml(invoice._id);
+                setBusy(false);
+              }}
+            >
+              <Download aria-hidden />
+              {t("download")}
+            </Button>
+            <Button variant="link" className="h-auto px-0 text-meta" asChild>
+              <Link href="/settings/billing">{t("settings")}</Link>
+            </Button>
+          </div>
+        )}
+        {live && <ValidateXml invoice={invoice} />}
+      </CardContent>
+    </Card>
   );
 }

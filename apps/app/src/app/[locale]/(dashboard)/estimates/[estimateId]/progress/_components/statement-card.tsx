@@ -3,7 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
+import { Card, CardContent, CardHeader } from "@devize/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,10 +15,20 @@ import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { StatusPill } from "@devize/ui/status-pill";
 import { Switch } from "@devize/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableGroupRow,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
 import { Textarea } from "@devize/ui/textarea";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Fragment, useState } from "react";
+import { Paperclip } from "lucide-react";
+import { Fragment, type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
@@ -40,9 +50,6 @@ import { statementTone } from "./statement-status";
 import type { Statement, StatementRow, Works } from "./types";
 import { useDownloadProgress } from "./use-download-progress";
 
-const headClass =
-  "whitespace-nowrap pb-2 pl-3 text-right text-caption text-ink-3";
-
 /**
  * One Situație de lucrări: every Articol of the contract with what was
  * executed before, in this period and in all, the period's Recapitulație,
@@ -51,10 +58,13 @@ const headClass =
 export function StatementCard({
   statementId,
   works,
+  picker,
   onDeleted,
 }: {
   statementId: Id<"workStatements">;
   works: Works;
+  /** The card's title, which also leads to the Deviz's other statements. */
+  picker: ReactNode;
   onDeleted: () => void;
 }) {
   const t = useScopedI18n("progress.statement");
@@ -139,14 +149,15 @@ export function StatementCard({
             date: formatDay(statement.approvedAt, locale),
           })
         : t("approvedOn", { date: formatDay(statement.approvedAt, locale) })),
+    !editable && !statement.latest && t("notLatest"),
   ].filter(Boolean);
 
   return (
     <Card>
-      <CardHeader className="grid justify-stretch gap-2">
+      <CardHeader className="grid justify-stretch gap-1">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <CardTitle>{t("title", { number })}</CardTitle>
+          <div className="flex flex-wrap items-center gap-2">
+            {picker}
             <StatusPill tone={statementTone[statement.status]}>
               {tStatus(statement.status)}
             </StatusPill>
@@ -182,6 +193,7 @@ export function StatementCard({
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className="size-8"
                   aria-label={tc("actions")}
                 >
                   <Icons.More aria-hidden />
@@ -220,12 +232,7 @@ export function StatementCard({
             </DropdownMenu>
           </div>
         </div>
-        <p className="m-0 text-meta text-ink-2">{facts.join(" · ")}</p>
-        {!editable && (
-          <p className="m-0 text-meta text-ink-3">
-            {statement.latest ? t("locked") : t("notLatest")}
-          </p>
-        )}
+        <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
       </CardHeader>
       <CardContent>
         <RowsTable
@@ -317,151 +324,161 @@ function RowsTable({
   let group: string | undefined;
   let periodValue = 0;
 
+  // What's not there stays out of the way, so the period's figures stand out.
+  const orDash = (value: number, shown: string) =>
+    value === 0 ? <span className="text-ink-3">–</span> : shown;
+
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[60rem] border-collapse text-body">
-        <thead>
-          <tr>
-            <th className="pb-2 text-left text-caption text-ink-3">
-              {t("article")}
-            </th>
-            <th className="pb-2 pl-3 text-center text-caption text-ink-3">
-              {t("unit")}
-            </th>
-            <th className={headClass}>{t("unitPrice")}</th>
-            <th className={headClass}>{t("contract")}</th>
-            <th className={headClass}>{t("previous")}</th>
-            <th className={headClass}>{t("quantity")}</th>
-            <th className={headClass}>{t("cumulative")}</th>
-            <th className={headClass}>{t("percent")}</th>
-            <th className={headClass}>{t("remaining")}</th>
-            <th className={headClass}>{t("value")}</th>
-            <th className="pb-2 pl-3" />
-          </tr>
-        </thead>
-        <tbody>
-          {statement.rows.map((row) => {
-            const heading = row.group !== group ? row.group : undefined;
-            group = row.group;
-            periodValue += row.value;
-            const lines = row.attachment.length;
-            const differs =
-              lines > 0 &&
-              Math.abs(row.attachmentTotal - row.quantity) > 0.0005;
-            return (
-              <Fragment key={row._id}>
-                {heading && (
-                  <tr className="border-t border-border">
-                    <td
-                      colSpan={11}
-                      className="pt-3 pb-1 text-caption text-ink-3"
-                    >
-                      {heading}
-                    </td>
-                  </tr>
-                )}
-                <tr className="border-t border-border">
-                  <td className="py-2 align-top">
-                    <div className="grid justify-items-start">
-                      <span className="text-ink">
-                        {row.position}. {row.title}
-                      </span>
-                      <span className="font-mono text-code text-ink-3">
-                        {row.code}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-2 pl-3 text-center align-top text-ink-2">
-                    {formatUnit(row.unit, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatMoney(row.unitPrice, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatQuantity(row.contractQuantity, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums text-ink-2">
-                    {formatQuantity(row.previousQuantity, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-1 pl-3 text-right align-top">
-                    <InlineNumber
-                      value={row.quantity}
-                      format={(value) => formatQuantity(value, locale)}
-                      label={t("quantityLabel", { title: row.title })}
-                      disabled={!editable || busy}
-                      onCommit={(quantity) =>
-                        void run(() =>
-                          setQuantity({ rowId: row._id, quantity }),
-                        )
-                      }
-                      className={cn(
-                        "w-24",
-                        row.quantity !== 0 && "font-medium",
-                      )}
-                    />
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatQuantity(row.cumulativeQuantity, locale)}
-                  </td>
-                  <td
-                    className={cn(
-                      "whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums",
-                      row.over ? "text-warning" : "text-ink-2",
-                    )}
-                    title={row.over ? t("over") : undefined}
+    <Table bleed className="min-w-[50rem]">
+      <TableHeader>
+        <TableRow>
+          <TableHead>{t("article")}</TableHead>
+          <TableHead className="text-right">{t("contract")}</TableHead>
+          <TableHead className="text-right">{t("previous")}</TableHead>
+          <TableHead className="text-right">{t("quantity")}</TableHead>
+          <TableHead className="text-right">{t("cumulative")}</TableHead>
+          <TableHead className="text-right">{t("remaining")}</TableHead>
+          <TableHead className="text-right">{t("value")}</TableHead>
+          <TableHead className="w-8">
+            <span className="sr-only">{t("attachment")}</span>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {statement.rows.map((row) => {
+          const heading = row.group !== group ? row.group : undefined;
+          group = row.group;
+          periodValue += row.value;
+          const lines = row.attachment.length;
+          const differs =
+            lines > 0 && Math.abs(row.attachmentTotal - row.quantity) > 0.0005;
+          const unit = formatUnit(row.unit, locale);
+          return (
+            <Fragment key={row._id}>
+              {heading && (
+                <TableGroupRow>
+                  <TableCell
+                    colSpan={8}
+                    className="band-start band-end font-medium"
                   >
-                    {formatPercent(row.percent, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums text-ink-2">
-                    {formatQuantity(Math.max(0, row.remainingQuantity), locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatMoney(row.value, locale)}
-                  </td>
-                  <td className="py-1 pl-3 text-right align-top">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "h-8 whitespace-nowrap",
-                        differs ? "text-warning" : "text-ink-3",
-                      )}
-                      aria-label={t("attachmentLabel", { title: row.title })}
-                      title={
-                        differs
-                          ? t("attachmentDiffers", {
-                              total: formatQuantity(
-                                row.attachmentTotal,
-                                locale,
-                              ),
-                              unit: formatUnit(row.unit, locale),
-                            })
-                          : undefined
-                      }
-                      onClick={() => onAttachment(row)}
-                    >
-                      {lines > 0
-                        ? t("attachmentLines", { count: lines })
-                        : t("attachment")}
-                    </Button>
-                  </td>
-                </tr>
-              </Fragment>
-            );
-          })}
-          <tr className="border-t border-border">
-            <td colSpan={9} className="pt-2 text-right font-medium text-ink">
-              {t("direct")}
-            </td>
-            <td className="whitespace-nowrap pt-2 pl-3 text-right font-medium tabular-nums text-ink">
-              {formatMoney(Math.round(periodValue * 100) / 100, locale)}
-            </td>
-            <td />
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                    {heading}
+                  </TableCell>
+                </TableGroupRow>
+              )}
+              <TableRow className="group/row">
+                <TableCell className="align-top">
+                  <div className="grid min-w-64 justify-items-start gap-0.5">
+                    <span>
+                      <span className="tabular-nums text-ink-3">
+                        {row.position}.{" "}
+                      </span>
+                      {row.title}
+                    </span>
+                    <span className="text-meta tabular-nums text-ink-3">
+                      <span className="font-mono text-code">{row.code}</span>
+                      {" · "}
+                      {t("pricePerUnit", {
+                        price: formatMoney(row.unitPrice, locale),
+                        unit,
+                      })}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                  {formatQuantity(row.contractQuantity, locale)}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                  {orDash(
+                    row.previousQuantity,
+                    formatQuantity(row.previousQuantity, locale),
+                  )}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-right align-top">
+                  <InlineNumber
+                    value={row.quantity}
+                    format={(value) => formatQuantity(value, locale)}
+                    label={t("quantityLabel", { title: row.title })}
+                    disabled={!editable || busy}
+                    onCommit={(quantity) =>
+                      void run(() => setQuantity({ rowId: row._id, quantity }))
+                    }
+                    className={cn(
+                      // Up by the field's padding, level with the row's first line.
+                      "-my-1.5 group-hover/row:border-input",
+                      row.quantity === 0 ? "text-ink-3" : "font-medium",
+                    )}
+                  />
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                  <div className="grid justify-items-end gap-0.5">
+                    {orDash(
+                      row.cumulativeQuantity,
+                      formatQuantity(row.cumulativeQuantity, locale),
+                    )}
+                    {row.cumulativeQuantity !== 0 && (
+                      <span
+                        className={cn(
+                          "text-meta",
+                          row.over ? "text-warning" : "text-ink-3",
+                        )}
+                        title={row.over ? t("over") : undefined}
+                      >
+                        {formatPercent(row.percent, locale)}
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                  {orDash(
+                    Math.max(0, row.remainingQuantity),
+                    formatQuantity(Math.max(0, row.remainingQuantity), locale),
+                  )}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-right align-top tabular-nums">
+                  {orDash(row.value, formatMoney(row.value, locale))}
+                </TableCell>
+                <TableCell className="w-8 align-top">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      "-my-1.5 -mr-2 h-8 gap-1 px-2",
+                      differs ? "text-warning" : "text-ink-2",
+                      // An empty one shows on the row it belongs to.
+                      lines === 0 &&
+                        "focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0",
+                    )}
+                    aria-label={t("attachmentLabel", { title: row.title })}
+                    title={
+                      differs
+                        ? t("attachmentDiffers", {
+                            total: formatQuantity(row.attachmentTotal, locale),
+                            unit,
+                          })
+                        : t("attachment")
+                    }
+                    onClick={() => onAttachment(row)}
+                  >
+                    <Paperclip aria-hidden />
+                    {lines > 0 && <span className="tabular-nums">{lines}</span>}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            </Fragment>
+          );
+        })}
+        <TableRow className="hover:bg-transparent">
+          <TableCell colSpan={6} className="text-right font-medium">
+            {t("direct")}
+          </TableCell>
+          <TableCell className="whitespace-nowrap text-right font-medium tabular-nums">
+            {formatMoney(Math.round(periodValue * 100) / 100, locale)}
+          </TableCell>
+          <TableCell />
+        </TableRow>
+      </TableBody>
+    </Table>
   );
 }
 

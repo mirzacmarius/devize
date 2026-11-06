@@ -26,9 +26,7 @@ export default async function Page() {
         <Card className="grid gap-6 p-6 sm:p-8">
           <div className="grid gap-1.5">
             <h1 className="m-0 text-title-screen text-ink">{t("heading")}</h1>
-            <p className="m-0 text-body text-ink-2 [text-wrap:balance]">
-              {t("description")}
-            </p>
+            <p className="m-0 text-body text-ink-2">{t("description")}</p>
           </div>
           <SignInOptions withGoogle={withGoogle} />
         </Card>

@@ -128,7 +128,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid min-w-0 gap-0.5">
-          <span className="font-mono text-code text-ink-3">
+          <span className="text-meta tabular-nums text-ink-3">
             {estimateCode(estimate.number, estimate.revision)}
           </span>
           <span className="text-body-lg font-medium text-ink">
@@ -149,9 +149,9 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
         </div>
       </div>
 
-      <dl className="m-0 grid rounded-md bg-sunken sm:grid-cols-3">
-        <div className="grid content-start gap-0.5 px-3 py-2.5">
-          <dt className="text-meta text-ink-2">{t("total")}</dt>
+      <dl className="m-0 grid border-y border-border sm:grid-cols-3">
+        <div className="grid content-start gap-0.5 py-2.5 sm:pr-4">
+          <dt className="text-meta text-ink-3">{t("total")}</dt>
           <dd className="m-0 text-body tabular-nums text-ink">
             {t("fromTo", {
               from: money(alert.sentTotal),
@@ -159,8 +159,8 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
             })}
           </dd>
         </div>
-        <div className="grid content-start gap-0.5 border-border px-3 py-2.5 max-sm:border-t sm:border-l">
-          <dt className="text-meta text-ink-2">{t("direct")}</dt>
+        <div className="grid content-start gap-0.5 border-border py-2.5 max-sm:border-t sm:border-l sm:px-4">
+          <dt className="text-meta text-ink-3">{t("direct")}</dt>
           <dd className="m-0 text-body tabular-nums text-ink">
             {t("fromTo", {
               from: money(alert.sentDirect),
@@ -168,17 +168,13 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
             })}
           </dd>
         </div>
-        <div className="grid content-start gap-0.5 border-border px-3 py-2.5 max-sm:border-t sm:border-l">
-          <dt className="text-meta text-ink-2">{t("profit")}</dt>
+        <div className="grid content-start gap-0.5 border-border py-2.5 max-sm:border-t sm:border-l sm:pl-4">
+          <dt className="text-meta text-ink-3">{t("profit")}</dt>
           <dd className="m-0 grid gap-0.5">
             <span
               className={cn(
                 "text-body font-medium tabular-nums",
-                alert.profitLeft < 0
-                  ? "text-danger"
-                  : alert.profitLeft < alert.sentProfit
-                    ? "text-warning"
-                    : "text-success",
+                alert.profitLeft < 0 ? "text-danger" : "text-ink",
               )}
             >
               {t("fromTo", {
@@ -210,12 +206,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
                     })}
                   </span>
                 </span>
-                <span
-                  className={cn(
-                    "font-medium tabular-nums",
-                    change.impact > 0 ? "text-warning" : "text-success",
-                  )}
-                >
+                <span className="font-medium tabular-nums text-ink">
                   {t("impact", { impact: signedMoney(change.impact, locale) })}
                 </span>
               </li>

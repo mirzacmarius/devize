@@ -30,10 +30,7 @@ export default function AdminCatalogPage() {
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-title-screen text-ink">{t("title")}</h1>
-        <p className="text-body text-ink-2">{t("description")}</p>
-      </div>
+      <p className="m-0 text-body text-ink-2">{t("description")}</p>
       {status === undefined ? (
         <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (

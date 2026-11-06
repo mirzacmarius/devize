@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
 import { PageHeader } from "@devize/ui/page-header";
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
@@ -54,14 +54,14 @@ export function HomePage() {
   const [creating, setCreating] = useState(false);
 
   const money = (value: number | undefined) =>
-    value === undefined ? "—" : formatMoney(value, locale);
+    value === undefined ? "–" : formatMoney(value, locale);
   const count = (value: number) => formatCount(value, locale);
   const decided = home?.acceptance.decided ?? 0;
   const rate =
     home && decided > 0
       ? Math.round((home.acceptance.accepted / decided) * 100)
       : undefined;
-  const percent = rate === undefined ? "—" : formatPercent(rate, locale);
+  const percent = rate === undefined ? "–" : formatPercent(rate, locale);
   // The first steps stay in the rail until the firm has taken all three.
   const showSetup =
     home !== undefined &&
@@ -71,7 +71,6 @@ export function HomePage() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description", { firm: firm.name })}
         actions={
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden />
@@ -116,11 +115,10 @@ export function HomePage() {
               : t("kpi.acceptanceNone"))
           }
         >
-          <TickBar
+          <MeterBar
             value={rate ?? 0}
-            thin
             label={t("kpi.acceptanceLabel", { percent })}
-            className="max-w-28 flex-1"
+            className="max-w-28 flex-1 self-center"
           />
         </Kpi>
       </Card>
@@ -131,10 +129,7 @@ export function HomePage() {
         )}
       >
         <div
-          className={cn(
-            "grid min-w-0 items-start gap-6",
-            !showSetup && "xl:grid-cols-2",
-          )}
+          className={cn("grid min-w-0 gap-6", !showSetup && "xl:grid-cols-2")}
         >
           <TodoCard todo={home?.todo} />
           <RecentCard
@@ -168,19 +163,21 @@ function Kpi({
   meta: ReactNode;
   children?: ReactNode;
 }) {
+  const t = useScopedI18n("home");
   return (
     <div className="grid min-w-0 content-start gap-1 border-border p-4 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:p-5 xl:[&:not(:first-child)]:border-l">
       <p className="m-0 text-meta text-ink-2">{label}</p>
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="text-[22px] font-light leading-8 tracking-[-0.02em] tabular-nums text-ink sm:text-kpi">
+      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
+        <span className="text-[22px] font-light leading-8 tracking-[-0.01em] tabular-nums text-ink sm:text-kpi">
           {value}
         </span>
+        {unit && <span className="text-meta text-ink-3">{unit}</span>}
         {children}
       </div>
       <p className="m-0 min-h-[18px] text-meta text-ink-3">
         {unit ? (
           <>
-            {unit}
+            {t("withVat")}
             <span className="max-sm:hidden"> · {meta}</span>
             <span className="block sm:hidden">{meta}</span>
           </>
@@ -305,7 +302,7 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
         </span>
         <span className="grid min-w-0">
           <span className="text-body text-ink">{text}</span>
-          <span className="truncate text-meta text-ink-3">
+          <span className="text-meta text-ink-3 max-sm:line-clamp-2 sm:truncate">
             {item.estimate.title}
             {item.estimate.clientName && ` · ${item.estimate.clientName}`}
           </span>
@@ -361,7 +358,7 @@ function RecentCard({
                   <span className="truncate text-body font-medium text-ink">
                     {row.title}
                   </span>
-                  <span className="text-right text-body tabular-nums text-ink">
+                  <span className="text-right text-body font-medium tabular-nums text-ink">
                     {formatMoney(row.total, locale)}
                   </span>
                   <span className="truncate text-meta text-ink-3">

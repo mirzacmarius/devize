@@ -142,7 +142,7 @@ export function MaterialsCard({
                             open={open}
                           />
                         ) : (
-                          <span className="text-ink-3">—</span>
+                          <span className="text-ink-3">–</span>
                         )}
                       </td>
                     ))}

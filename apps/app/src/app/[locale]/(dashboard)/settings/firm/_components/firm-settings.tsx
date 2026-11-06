@@ -150,31 +150,31 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
 
   return (
     <Card>
-      <CardHeader className="items-start">
-        <div className="grid gap-1">
-          <CardTitle>{t("logoTitle")}</CardTitle>
-          <CardDescription>{t("logoDescription")}</CardDescription>
-        </div>
-        <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
+      <div className="flex flex-wrap items-center gap-4 p-[var(--card-pad)]">
+        <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
           {firm.logoUrl ? (
             <img
               src={firm.logoUrl}
               alt={t("logoAlt", { firm: firm.name })}
-              className="size-full object-contain p-1.5"
+              className="size-full object-contain p-1"
             />
           ) : (
             <span
               aria-hidden
-              className="text-[22px] font-semibold tracking-[0.02em] text-ink-3"
+              className="text-body font-semibold tracking-[0.02em] text-ink-3"
             >
               {initials(firm.name)}
             </span>
           )}
         </div>
-      </CardHeader>
-      {canEdit && (
-        <CardFooter className={footer}>
-          <p className="m-0 text-meta text-ink-3">{t("logoHint")}</p>
+        <div className="grid min-w-48 flex-1 gap-0.5">
+          <CardTitle>{t("logoTitle")}</CardTitle>
+          <CardDescription>
+            {t("logoDescription")}
+            {canEdit && ` ${t("logoHint")}`}
+          </CardDescription>
+        </div>
+        {canEdit && (
           <div className="flex shrink-0 gap-2">
             {firm.logoUrl && (
               <Button
@@ -213,8 +213,8 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
               onChange={upload}
             />
           </div>
-        </CardFooter>
-      )}
+        )}
+      </div>
     </Card>
   );
 }
@@ -386,7 +386,7 @@ function DetailsForm({
                 />
               </Field>
             </div>
-            <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
+            <div className="flex items-start justify-between gap-4 border-t border-border pt-4">
               <div className="grid gap-0.5">
                 <label
                   htmlFor="firm-vat"

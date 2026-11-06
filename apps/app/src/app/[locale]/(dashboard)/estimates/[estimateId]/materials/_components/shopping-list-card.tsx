@@ -9,6 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@devize/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { Pencil } from "lucide-react";
 import {
@@ -16,14 +24,16 @@ import {
   formatInputNumber,
   formatMoney,
   formatPercent,
-  formatQuantity,
+  formatQuantityRounded,
   formatUnit,
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { ListRow, ShoppingList } from "./types";
 
-const headClass =
-  "whitespace-nowrap pb-2 pl-3 text-right text-caption text-ink-3";
+// Over the number, not over the unit in its own slot after it.
+const UNIT_SLOT = "ml-1.5 inline-block w-7 text-left text-ink-3";
+const HEAD_OVER_NUMBER = "pr-[46px] text-right";
+const numberClass = "whitespace-nowrap text-right align-top tabular-nums";
 
 /**
  * The Lista de cumpărături: each material of the whole Deviz, in the whole
@@ -46,26 +56,24 @@ export function ShoppingListCard({
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[44rem] border-collapse text-body">
-            <thead>
-              <tr>
-                <th className="pb-2 text-left text-caption text-ink-3">
-                  {t("material")}
-                </th>
-                <th className={headClass}>{t("need")}</th>
-                <th className={headClass}>{t("buy")}</th>
-                <th className={headClass}>{t("leftover")}</th>
-                <th className={headClass}>{t("cost")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.rows.map((row) => (
-                <MaterialRow key={row.key} row={row} onEdit={onEdit} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table bleed className="min-w-[44rem]">
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("material")}</TableHead>
+              <TableHead className={HEAD_OVER_NUMBER}>{t("need")}</TableHead>
+              <TableHead className="text-right">{t("buy")}</TableHead>
+              <TableHead className={HEAD_OVER_NUMBER}>
+                {t("leftover")}
+              </TableHead>
+              <TableHead className="text-right">{t("cost")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {list.rows.map((row) => (
+              <MaterialRow key={row.key} row={row} onEdit={onEdit} />
+            ))}
+          </TableBody>
+        </Table>
         {list.omitted > 0 && (
           <p className="m-0 text-meta text-ink-3">
             {t("omitted", { count: list.omitted })}
@@ -99,11 +107,11 @@ function MaterialRow({
   const leftover = row.purchase?.leftover ?? 0;
 
   return (
-    <tr className="border-t border-border">
-      <td className="py-2 align-top">
-        <div className="grid justify-items-start">
+    <TableRow className="group/row">
+      <TableCell className="align-top">
+        <div className="grid justify-items-start gap-0.5">
           <span className="text-ink">{row.name}</span>
-          <span className="flex items-center gap-1 text-meta">
+          <span className="flex min-h-[18px] items-center gap-1 text-meta">
             <span
               className={cn(
                 pkg?.source === "typical" ? "text-warning" : "text-ink-3",
@@ -117,7 +125,8 @@ function MaterialRow({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="size-6 text-ink-3 [&_svg]:size-3.5"
+                // With a pointer it shows on the row it belongs to.
+                className="-my-1.5 size-7 text-ink-3 focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0 [&_svg]:size-3.5"
                 aria-label={t("edit", { name: row.name })}
                 onClick={() => onEdit(row)}
               >
@@ -126,25 +135,25 @@ function MaterialRow({
             )}
           </span>
           {row.pooled.packages > 0 && (
-            <span className="text-meta text-success">
+            <span className="text-meta text-ink-3">
               {t("pooled", { count: row.pooled.packages })}
             </span>
           )}
         </div>
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-        {formatQuantity(row.need, locale)}{" "}
-        <span className="text-ink-3">{unit}</span>
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
+      </TableCell>
+      <TableCell className={numberClass}>
+        {formatQuantityRounded(row.need, locale)}
+        <span className={UNIT_SLOT}>{unit}</span>
+      </TableCell>
+      <TableCell className={numberClass}>
         <Packages row={row} />
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
+      </TableCell>
+      <TableCell className={numberClass}>
         {row.purchase && leftover > 0 ? (
-          <div className="grid justify-items-end">
+          <div className="grid justify-items-end gap-0.5">
             <span>
-              {formatQuantity(leftover, locale)}{" "}
-              <span className="text-ink-3">{unit}</span>
+              {formatQuantityRounded(leftover, locale)}
+              <span className={UNIT_SLOT}>{unit}</span>
             </span>
             {pkg?.source !== "counted" && (
               <span className="text-meta text-ink-3">
@@ -158,11 +167,11 @@ function MaterialRow({
             )}
           </div>
         ) : (
-          <span className="text-ink-3">—</span>
+          <span className="pr-[34px] text-ink-3">–</span>
         )}
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-        <div className="grid justify-items-end">
+      </TableCell>
+      <TableCell className={numberClass}>
+        <div className="grid justify-items-end gap-0.5">
           <span>{formatMoney(row.boughtCost, locale)}</span>
           {row.leftoverCost > 0 && (
             <span className="text-meta text-ink-3">
@@ -172,8 +181,8 @@ function MaterialRow({
             </span>
           )}
         </div>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }
 

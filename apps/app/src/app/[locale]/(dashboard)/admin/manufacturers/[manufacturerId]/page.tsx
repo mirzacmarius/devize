@@ -74,7 +74,7 @@ export default function ManufacturerPage() {
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-title-screen text-ink">{manufacturer.name}</h1>
+          <h2 className="m-0 text-figure text-ink">{manufacturer.name}</h2>
           <div className="flex flex-wrap items-center gap-2 text-body text-ink-3">
             <Pill tone={manufacturerTone[manufacturer.status]}>
               {tAdmin(`status.manufacturer.${manufacturer.status}`)}

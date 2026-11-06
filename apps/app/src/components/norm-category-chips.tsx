@@ -41,7 +41,8 @@ export function NormCategoryChips({
       className={cn(
         "-mx-1 flex min-w-0 gap-0.5 overflow-x-auto border-0 px-1 pb-1.5 pt-0.5 [mask-image:linear-gradient(to_left,transparent,#000_32px)] [scrollbar-width:thin]",
         rail &&
-          "md:m-0 md:grid md:content-start md:overflow-visible md:p-0 md:[mask-image:none]",
+          // Beside a long list it stays in view, with its own scroll.
+          "md:sticky md:top-4 md:m-0 md:grid md:max-h-[calc(100dvh-2rem)] md:content-start md:overflow-y-auto md:overscroll-contain md:p-0 md:[mask-image:linear-gradient(to_top,transparent,#000_32px)] md:[scrollbar-width:none]",
         className,
       )}
     >
@@ -55,8 +56,11 @@ export function NormCategoryChips({
             onClick={() => onChange(option.key)}
             className={cn(
               "inline-flex min-h-7 shrink-0 items-center whitespace-nowrap rounded-md px-2.5 py-1 text-left text-meta text-ink-2 transition-colors hover:bg-tile hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              rail && "md:whitespace-normal",
-              pressed && "bg-muted font-medium text-ink hover:bg-muted",
+              rail && "md:-ml-2.5 md:whitespace-normal",
+              pressed &&
+                (rail
+                  ? "bg-muted font-medium text-ink hover:bg-muted md:bg-transparent md:hover:bg-tile"
+                  : "bg-muted font-medium text-ink hover:bg-muted"),
             )}
           >
             {option.name}

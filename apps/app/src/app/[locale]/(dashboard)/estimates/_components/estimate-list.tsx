@@ -87,7 +87,6 @@ export function EstimateList() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
         actions={
           <>
             <Button variant="outline" onClick={() => setBrowsing(true)}>
@@ -173,10 +172,8 @@ export function EstimateList() {
                       href={`/estimates/${row._id}`}
                       className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className="truncate text-meta text-ink-3">
-                        <span className="font-mono">
-                          {estimateCode(row.number, row.revision)}
-                        </span>
+                      <span className="truncate text-meta tabular-nums text-ink-3">
+                        {estimateCode(row.number, row.revision)}
                         <span className="md:hidden">
                           {" · "}
                           {row.clientName ?? t("noClient")}
@@ -195,7 +192,7 @@ export function EstimateList() {
                   <TableCell>
                     <EstimateStatusPill status={row.status} />
                   </TableCell>
-                  <TableCell className="text-right tabular-nums max-md:text-body-lg">
+                  <TableCell className="text-right font-medium tabular-nums max-md:text-body-lg">
                     {formatMoney(row.total, locale)}
                   </TableCell>
                   <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">

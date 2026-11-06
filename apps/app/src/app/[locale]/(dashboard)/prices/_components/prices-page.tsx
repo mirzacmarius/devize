@@ -20,7 +20,7 @@ export function PricesPage() {
 
   return (
     <>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader title={t("title")} />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
         <div className="grid min-w-0 gap-6">
           <AlertsCard alerts={alerts} />
@@ -41,13 +41,13 @@ export function PricesPage() {
 function HowCard() {
   const t = useScopedI18n("prices.how");
   return (
-    <section className="grid gap-2 px-1">
-      <h3 className="m-0 text-caption text-ink-2">{t("title")}</h3>
-      <ul className="m-0 grid list-none gap-2 p-0 text-meta text-ink-3">
+    <details className="grid gap-2 text-meta">
+      <summary className="text-ink-2">{t("title")}</summary>
+      <ul className="m-0 mt-2 grid list-none gap-2 p-0 text-ink-3">
         <li>{t("read")}</li>
         <li>{t("check")}</li>
         <li>{t("never")}</li>
       </ul>
-    </section>
+    </details>
   );
 }

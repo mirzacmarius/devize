@@ -12,7 +12,6 @@ import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
-import { Lock } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -83,12 +82,6 @@ export function TakeoffPage() {
           estimate && measured && <AppendixButtons estimate={estimate} />
         }
       />
-      {locked && (
-        <p className="m-0 flex items-center gap-2 rounded-md bg-sunken px-3 py-2 text-meta text-ink-2">
-          <Lock className="size-4 shrink-0" aria-hidden />
-          {t("locked")}
-        </p>
-      )}
       <div className="grid min-w-0 gap-6">
         <SummaryCard data={data} />
         <RoomsCard

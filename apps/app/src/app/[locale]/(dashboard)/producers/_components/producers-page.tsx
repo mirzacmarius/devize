@@ -43,6 +43,8 @@ export function ProducersPage() {
     return words.every((word) => name.includes(word));
   });
 
+  const hasEdition = producers?.some((producer) => producer.edition);
+
   return (
     <>
       <PageHeader
@@ -56,7 +58,6 @@ export function ProducersPage() {
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description")}
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
@@ -76,9 +77,11 @@ export function ProducersPage() {
               <TableRow>
                 <TableHead>{t("columns.name")}</TableHead>
                 <TableHead>{t("columns.profile")}</TableHead>
-                <TableHead className="hidden sm:table-cell">
-                  {t("columns.edition")}
-                </TableHead>
+                {hasEdition && (
+                  <TableHead className="hidden sm:table-cell">
+                    {t("columns.edition")}
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -111,9 +114,11 @@ export function ProducersPage() {
                       {producer.claimed ? t("claimed") : t("unclaimed")}
                     </StatusPill>
                   </TableCell>
-                  <TableCell className="hidden text-ink-2 sm:table-cell">
-                    {producer.edition ?? "—"}
-                  </TableCell>
+                  {hasEdition && (
+                    <TableCell className="hidden text-ink-2 sm:table-cell">
+                      {producer.edition ?? "–"}
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

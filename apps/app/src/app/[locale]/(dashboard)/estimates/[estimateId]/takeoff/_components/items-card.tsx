@@ -32,6 +32,10 @@ import type { Item, Room, Section, Takeoff, Target } from "./types";
 
 type Grouped = Item & { totals: { total: number } };
 
+// A group's heading: the band a table's group row has, up to the card's edges.
+const bandClass =
+  "-mx-[var(--card-pad)] flex h-10 items-center bg-sunken px-[var(--card-pad)] text-body font-medium text-ink";
+
 /**
  * The Articole of a Deviz with their Antemăsurători: each measured from the
  * rooms or by rows typed by hand, and whether its quantity still says what
@@ -88,17 +92,20 @@ export function ItemsCard({
             description={t("emptyDescription")}
           />
         ) : (
-          <ul className="m-0 grid list-none gap-2 p-0">
+          <ul className="m-0 grid list-none p-0">
             {rows(groups.loose)}
             {groups.sections.map((group) => (
               <Fragment key={group.section._id}>
-                <li className="pt-2 text-caption text-ink-3">
-                  {sectionName(group.section)}
-                </li>
+                <li className={bandClass}>{sectionName(group.section)}</li>
                 {rows(group.items)}
                 {group.chapters.map((chapter) => (
                   <Fragment key={chapter.section._id}>
-                    <li className="pl-3 pt-1 text-caption text-ink-3">
+                    <li
+                      className={cn(
+                        bandClass,
+                        "pl-[calc(var(--card-pad)+12px)]",
+                      )}
+                    >
                       {sectionName(chapter.section)}
                     </li>
                     {rows(chapter.items)}
@@ -142,12 +149,7 @@ function ItemRow({
   const canMeasureRooms = item.measures.length > 0;
 
   return (
-    <li
-      className={cn(
-        "grid gap-2 rounded-md border border-border px-3 py-3",
-        !measured && "bg-sunken",
-      )}
-    >
+    <li className="grid gap-1.5 border-b border-border py-3 last:border-0">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div className="grid min-w-0 flex-1 basis-64 gap-0.5">
           <span className="text-body text-ink">
@@ -155,8 +157,8 @@ function ItemRow({
             {item.title}
           </span>
           <span className="flex flex-wrap items-center gap-2 text-meta text-ink-3">
-            <span>{item.code}</span>
-            <span>
+            <span className="font-mono text-code">{item.code}</span>
+            <span className="tabular-nums">
               {t("inEstimate", {
                 quantity: formatQuantity(item.quantity, locale),
                 unit,
@@ -218,7 +220,7 @@ function ItemRow({
         )}
       </div>
       {item.takeoffs.length > 0 && (
-        <ul className="m-0 grid list-none gap-1 p-0">
+        <ul className="m-0 grid list-none p-0">
           {item.takeoffs.map((takeoff) => (
             <TakeoffLine
               key={takeoff._id}
@@ -271,9 +273,9 @@ function TakeoffLine({
     .filter(Boolean)
     .join(", ");
   return (
-    <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-sm bg-sunken px-3 py-1.5 text-meta">
-      <span className="min-w-0 flex-1 basis-56 text-ink-2">
-        <span className="text-ink">
+    <li className="flex min-h-7 flex-wrap items-center justify-between gap-x-3 text-meta">
+      <span className="min-w-0 flex-1 basis-56 text-ink-3">
+        <span className="text-ink-2">
           <TakeoffName takeoff={takeoff} />
         </span>
         {" · "}
@@ -287,7 +289,7 @@ function TakeoffLine({
             : t("rows", { count: takeoff.rows.length })}
       </span>
       <span className="flex items-center gap-1">
-        <span className="tabular-nums text-ink">
+        <span className="tabular-nums text-ink-2">
           {formatQuantity(takeoff.total, locale)}{" "}
           {formatUnit(takeoff.unit, locale)}
         </span>

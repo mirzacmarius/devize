@@ -89,7 +89,7 @@ export default function NormImportPage() {
       </Link>
 
       <div className="flex flex-col gap-2">
-        <h1 className="text-title-screen text-ink">{normImport.fileName}</h1>
+        <h2 className="m-0 text-figure text-ink">{normImport.fileName}</h2>
         <div className="flex flex-wrap items-center gap-2 text-body text-ink-3">
           <Pill tone={importTone[normImport.status]}>
             {tAdmin(`status.import.${normImport.status}`)}

@@ -167,7 +167,7 @@ export function ProductsCard() {
                           </span>
                         </div>
                       ) : (
-                        <span className="text-ink-3">—</span>
+                        <span className="text-ink-3">–</span>
                       )}
                     </TableCell>
                     <TableCell className="hidden whitespace-nowrap text-right align-top text-ink-3 tabular-nums md:table-cell">

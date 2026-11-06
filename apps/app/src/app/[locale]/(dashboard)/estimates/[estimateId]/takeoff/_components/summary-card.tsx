@@ -1,5 +1,6 @@
 "use client";
 
+import { Lock } from "lucide-react";
 import { Figure, FigureStrip } from "@/components/figure-strip";
 import { formatCount, formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -8,6 +9,7 @@ import type { TakeoffPageData } from "./types";
 /** What the Antemăsurătoare comes to: the rooms' totals and the Articole measured. */
 export function SummaryCard({ data }: { data: TakeoffPageData }) {
   const t = useScopedI18n("takeoff.summary");
+  const tTakeoff = useScopedI18n("takeoff");
   const locale = useCurrentLocale();
   const sum = (pick: (room: TakeoffPageData["rooms"][number]) => number) =>
     Math.round(
@@ -16,7 +18,16 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
   const measured = data.items.filter((item) => item.takeoffs.length > 0);
   const differs = measured.filter((item) => item.differs).length;
   return (
-    <FigureStrip hint={t("hint")}>
+    <FigureStrip
+      hint={
+        data.estimate.locked && (
+          <span className="flex items-center gap-1.5">
+            <Lock className="size-3.5 shrink-0" aria-hidden />
+            {tTakeoff("locked")}
+          </span>
+        )
+      }
+    >
       <Figure
         label={t("rooms")}
         value={formatCount(data.rooms.length, locale)}

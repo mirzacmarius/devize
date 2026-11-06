@@ -20,12 +20,10 @@ import {
 const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
 export default function AdminSettingsPage() {
-  const t = useScopedI18n("admin.settings");
   const settings = useQuery(api.manufacturers.outreach.getSettings);
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <h1 className="text-title-screen text-ink">{t("title")}</h1>
       <ClaudeStatus />
       {settings === undefined ? (
         <Loader2 className="h-5 w-5 animate-spin text-ink-3" />

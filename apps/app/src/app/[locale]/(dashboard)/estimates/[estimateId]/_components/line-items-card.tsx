@@ -21,13 +21,14 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableGroupRow,
   TableHead,
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { ChevronRight, Lock, Plus } from "lucide-react";
+import { ChevronDown, ChevronRight, Lock, Plus } from "lucide-react";
 import { Fragment, useState } from "react";
 import { InlineNumber } from "@/components/inline-number";
 import { useNormSource } from "@/components/norm-source";
@@ -48,6 +49,7 @@ type Group = SectionGroup<Section, LineItem>;
 const FROM_MID = "hidden [@container(min-width:38rem)]:table-cell";
 const FROM_WIDE = "hidden [@container(min-width:50rem)]:table-cell";
 const NARROW_ONLY = "[@container(min-width:38rem)]:hidden";
+const MID_UP = "hidden [@container(min-width:38rem)]:block";
 const MID_ONLY =
   "hidden [@container(min-width:38rem)]:inline [@container(min-width:50rem)]:hidden";
 // With no number column, the item column starts at the card's edge.
@@ -176,27 +178,40 @@ export function LineItemsCard({
                 <Button
                   variant="outline"
                   size="sm"
+                  className="rounded-r-none"
                   onClick={() => open({ kind: "addNorm" })}
                 >
                   <Plus aria-hidden />
                   {t("items.addNorm")}
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => open({ kind: "custom" })}
-                >
-                  {t("items.addCustom")}
-                </Button>
               </>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  {t("items.addSection")}
-                </Button>
+                {isEmpty ? (
+                  <Button variant="outline" size="sm">
+                    {t("items.addSection")}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="-ml-[9px] w-8 rounded-l-none px-0"
+                    aria-label={t("items.addMore")}
+                  >
+                    <ChevronDown aria-hidden />
+                  </Button>
+                )}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                {!isEmpty && (
+                  <>
+                    <DropdownMenuItem onSelect={() => open({ kind: "custom" })}>
+                      {t("items.addCustom")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem
                   onSelect={() =>
                     open({ kind: "newSection", sectionKind: "chapter" })
@@ -215,14 +230,14 @@ export function LineItemsCard({
             </DropdownMenu>
           </div>
         )}
-      </CardHeader>
-      <CardContent className="[container-type:inline-size]">
         {!editable && (
-          <p className="m-0 flex items-center gap-2 rounded-md bg-sunken px-3 py-2 text-meta text-ink-2">
-            <Lock className="size-4 shrink-0" aria-hidden />
+          <p className="m-0 flex items-center gap-1.5 text-meta text-ink-3">
+            <Lock className="size-3.5 shrink-0" aria-hidden />
             {t("items.locked")}
           </p>
         )}
+      </CardHeader>
+      <CardContent className="[container-type:inline-size]">
         {isEmpty ? (
           <EmptyState
             icon={<Icons.Articles />}
@@ -257,21 +272,21 @@ export function LineItemsCard({
             }
           />
         ) : (
-          <Table>
+          <Table bleed className="items-table">
             <TableHeader>
               <TableRow>
                 <TableHead className={cn("w-7", FROM_MID)}>#</TableHead>
                 <TableHead className={ITEM_CELL}>
                   {t("items.columns.item")}
                 </TableHead>
-                <TableHead className={cn("text-right", FROM_MID)}>
+                {/* Over the numbers, not over the unit that follows them. */}
+                <TableHead className={cn("pr-[52px] text-right", FROM_MID)}>
                   {t("items.columns.quantity")}
                 </TableHead>
                 <TableHead className={cn("text-right", FROM_WIDE)}>
                   {t("items.columns.unitPrice")}
                 </TableHead>
-                {/* A narrow card lets the head wrap, as its numbers are shorter. */}
-                <TableHead className="whitespace-normal text-right [@container(min-width:38rem)]:whitespace-nowrap">
+                <TableHead className="text-right">
                   {t("items.columns.value")}
                 </TableHead>
                 {editable && (
@@ -327,21 +342,17 @@ function SectionRow({
   return (
     // The same cells as an item row, since which columns show depends on the
     // card's width and a span can't follow it.
-    <TableRow className="border-0 bg-sunken hover:bg-sunken [&>td:first-child]:rounded-l-md [&>td:last-child]:rounded-r-md [&>td:last-child]:pr-3 [&>td]:h-10 [&>td]:py-1">
-      <TableCell className={FROM_MID} />
+    <TableGroupRow className="items-band">
+      <TableCell className={cn("band-start", FROM_MID)} />
       <TableCell
-        className={cn(
-          // The band's own padding, with its first cell hidden on a narrow card.
-          "pl-3 [@container(max-width:37.99rem)]:rounded-l-md",
-          nested && NESTED_ITEM_CELL,
-        )}
+        className={cn("band-start", nested ? NESTED_ITEM_CELL : ITEM_CELL)}
       >
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-          <span className="text-caption text-ink-3">
-            {section.kind === "object"
-              ? t("sections.object")
-              : t("sections.chapter")}
-          </span>
+          {section.kind === "object" && (
+            <span className="text-caption text-ink-3">
+              {t("sections.object")}
+            </span>
+          )}
           {section.code && (
             <span className="font-mono text-code text-ink-3">
               {section.code}
@@ -352,17 +363,22 @@ function SectionRow({
       </TableCell>
       <TableCell className={FROM_MID} />
       <TableCell className={FROM_WIDE} />
-      <TableCell className="text-right font-medium tabular-nums">
+      <TableCell
+        className={cn(
+          "text-right font-medium tabular-nums",
+          !editable && "band-end",
+        )}
+      >
         {formatMoney(group.total, locale)}
       </TableCell>
       {editable && (
-        <TableCell>
+        <TableCell className="band-end">
           <DropdownMenu onOpenChange={(next) => !next && setConfirming(false)}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8"
+                className="-my-1 size-8"
                 aria-label={t("sections.menu", { name: section.name })}
               >
                 <Icons.More aria-hidden />
@@ -445,7 +461,7 @@ function SectionRow({
           </DropdownMenu>
         </TableCell>
       )}
-    </TableRow>
+    </TableGroupRow>
   );
 }
 
@@ -513,12 +529,12 @@ function ItemRows({
   const unit = formatUnit(item.unit, locale);
   const price = formatMoney(unitPrice(item), locale);
   // Own items without a code are stored with a dash, for the printed forms.
-  const code = item.code === "—" ? undefined : item.code;
+  const code = item.code === "–" ? undefined : item.code;
   const source = useItemSource()(item);
 
   return (
     <>
-      <TableRow className="[&>td]:py-2.5">
+      <TableRow className="items-row group/row [&>td]:py-2.5">
         <TableCell
           className={cn("align-top tabular-nums text-ink-3", FROM_MID)}
         >
@@ -532,57 +548,65 @@ function ItemRows({
             onClick={onToggle}
             aria-expanded={expanded}
             aria-controls={detailsId}
-            className="group grid w-full min-w-0 grid-cols-[1rem_minmax(0,1fr)] gap-x-2 gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+              "group grid w-full min-w-0 gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[1rem_minmax(0,1fr)] [@container(min-width:38rem)]:gap-x-2",
+              // Room for the row's menu, which floats on a narrow card.
+              editable && "[@container(max-width:37.99rem)]:pr-8",
+            )}
           >
             <ChevronRight
               aria-hidden
               className={cn(
                 "mt-0.5 size-4 text-ink-3 transition-transform",
+                MID_UP,
                 expanded && "rotate-90",
               )}
             />
-            {/* Tags after the title, or on their own line under a long one. */}
-            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-body text-ink">
-              <span>
-                <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
-                  {index}.{" "}
-                </span>
-                <span className="group-hover:underline">{item.title}</span>
+            <span className="text-body text-ink">
+              <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
+                {index}.{" "}
               </span>
-              {tags.length > 0 && (
-                <span className="inline-flex gap-1">{tags}</span>
-              )}
+              <span className="group-hover:underline">{item.title}</span>
             </span>
             <span
               className={cn(
-                "col-start-2 text-meta tabular-nums text-ink-2",
+                "flex items-baseline justify-between gap-3 text-meta tabular-nums text-ink-3",
                 NARROW_ONLY,
               )}
             >
-              {t("items.quantityTimesPrice", {
-                quantity: formatQuantity(item.quantity, locale),
-                unit,
-                price,
-              })}
+              <span>
+                {t("items.quantityTimesPrice", {
+                  quantity: formatQuantity(item.quantity, locale),
+                  unit,
+                  price,
+                })}
+              </span>
+              <span className="whitespace-nowrap text-body text-ink">
+                {formatMoney(item.totals.total, locale)} lei
+              </span>
             </span>
-            <span className="col-start-2 text-meta text-ink-3">
-              {item.tenderRef && (
-                <>
-                  {t("tenderRef.position", {
-                    position: item.tenderRef.position,
-                  })}
-                  {" · "}
-                </>
-              )}
-              {code && <span className="font-mono text-code">{code}</span>}
-              {code && source && " · "}
-              {source}
-              <span className={MID_ONLY}>
-                {(code || source) && " · "}
-                <span className="whitespace-nowrap">
-                  {t("items.pricePerUnit", { price, unit })}
+            {/* Tags on the code's line, so a tag never moves the title. */}
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3 [@container(min-width:38rem)]:col-start-2">
+              <span>
+                {item.tenderRef && (
+                  <>
+                    {t("tenderRef.position", {
+                      position: item.tenderRef.position,
+                    })}
+                    {" · "}
+                  </>
+                )}
+                {code && <span className="font-mono text-code">{code}</span>}
+                {code && source && " · "}
+                {source}
+                <span className={MID_ONLY}>
+                  {(code || source) && " · "}
+                  <span className="whitespace-nowrap tabular-nums">
+                    {t("items.pricePerUnit", { price, unit })}
+                  </span>
                 </span>
               </span>
+              {tags}
             </span>
           </button>
         </TableCell>
@@ -595,12 +619,12 @@ function ItemRows({
             label={t("quantityOf", { title: item.title })}
             disabled={!editable}
             // Up by the field's padding, level with the item's first line.
-            className="-my-1.5 w-24"
+            className="-my-1.5 group-hover/row:border-input"
             onCommit={(quantity) =>
               run(() => update({ lineItemId: item._id, quantity }))
             }
           />
-          <span className="ml-1 inline-block min-w-8 text-left text-ink-3">
+          <span className="ml-2 inline-block min-w-8 text-left text-ink-3">
             {unit}
           </span>
         </TableCell>
@@ -612,11 +636,13 @@ function ItemRows({
         >
           {price}
         </TableCell>
-        <TableCell className="align-top text-right tabular-nums text-ink">
+        <TableCell
+          className={cn("align-top text-right tabular-nums text-ink", FROM_MID)}
+        >
           {formatMoney(item.totals.total, locale)}
         </TableCell>
         {editable && (
-          <TableCell className="align-top">
+          <TableCell className="items-menu align-top">
             <ItemMenu
               item={item}
               siblings={siblings}
@@ -757,7 +783,9 @@ function ItemMenu({
         <Button
           variant="ghost"
           size="icon"
-          className="size-8"
+          // Up by half its height, level with the item's first line; with a
+          // pointer it shows on the row it belongs to.
+          className="-my-1.5 size-8 focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
           aria-label={t("items.menu", { title: item.title })}
         >
           <Icons.More aria-hidden />

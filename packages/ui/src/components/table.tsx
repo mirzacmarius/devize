@@ -7,13 +7,21 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   // each cell takes a slot of a two-column grid, `data-stack="wide"` cells take
   // the whole row. Hide what a phone doesn't need with `max-md:hidden`.
   stack?: boolean;
+  // Inside a card: it scrolls up to the card's edges, and a group row's band
+  // (`band-start`, `band-end`) can run that far.
+  bleed?: boolean;
 }
 
 // Numbers: put `text-right tabular-nums` on numeric heads and cells, two
 // decimals, dot for thousands (39.916,16). Currency goes in the head, "(lei)".
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, stack, ...props }, ref) => (
-    <div className="relative w-full min-w-0 overflow-x-auto">
+  ({ className, stack, bleed, ...props }, ref) => (
+    <div
+      className={cn(
+        "relative min-w-0 overflow-x-auto",
+        bleed ? "-mx-4 px-4 sm:-mx-5 sm:px-5" : "w-full",
+      )}
+    >
       <table
         ref={ref}
         className={cn(
@@ -75,6 +83,21 @@ const TableRow = React.forwardRef<
 ));
 TableRow.displayName = "TableRow";
 
+// A group's heading row, in the sunken band. In a `bleed` table its first and
+// last cells take `band-start` and `band-end`, and the band runs to the card's
+// edges.
+const TableGroupRow = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => (
+  <tr
+    ref={ref}
+    className={cn("bg-sunken [&>td]:h-10 [&>td]:py-1", className)}
+    {...props}
+  />
+));
+TableGroupRow.displayName = "TableGroupRow";
+
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
@@ -123,6 +146,7 @@ export {
   TableCaption,
   TableCell,
   TableFooter,
+  TableGroupRow,
   TableHead,
   TableHeader,
   TableRow,

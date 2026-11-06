@@ -4,6 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import { laborFloor } from "@devize/backend/convex/lib/labor";
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
+import { Icons } from "@devize/ui/icons";
 import { Segments } from "@devize/ui/meter";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
@@ -62,7 +63,7 @@ export function ChecksCard({
   );
   return (
     <Card>
-      <CardHeader className="pb-3">
+      <CardHeader>
         <CardTitle>{t("checks.title")}</CardTitle>
         <span className="text-meta tabular-nums text-ink-3">
           {t("checks.score", { passed: passed.length, total: checks.length })}
@@ -407,7 +408,7 @@ function OmissionsFix({
   return (
     <Button
       type="button"
-      variant="outline"
+      variant={check.status === "none" ? "ai" : "outline"}
       size="sm"
       className="mt-2"
       disabled={starting}
@@ -417,6 +418,7 @@ function OmissionsFix({
         }
       }}
     >
+      {check.status === "none" && <Icons.AI aria-hidden />}
       {label}
     </Button>
   );

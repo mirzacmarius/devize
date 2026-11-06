@@ -239,7 +239,8 @@ function AddNorm({
           ) : (
             <ul
               aria-label={t("addNorm.results")}
-              className="m-0 grid list-none gap-0.5 p-0"
+              // The rows' text starts under the search; only their fill hangs out.
+              className="-mx-3 m-0 grid list-none gap-0.5 p-0"
             >
               {results.map((norm) => (
                 <li key={norm._id}>
@@ -255,7 +256,7 @@ function AddNorm({
                       </span>
                     </span>
                     <span className="text-meta text-ink-3">
-                      <span className="font-mono">{norm.code}</span>
+                      <span className="font-mono text-code">{norm.code}</span>
                       {norm.source !== "base" && ` · ${normSource(norm)}`}
                     </span>
                   </button>

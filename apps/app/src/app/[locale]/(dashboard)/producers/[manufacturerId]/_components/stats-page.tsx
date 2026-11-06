@@ -14,7 +14,7 @@ import {
 } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
 import {
   Table,
   TableBody,
@@ -339,7 +339,7 @@ function NormsCard({ stats }: { stats: Stats }) {
                   <TableCell className="hidden whitespace-nowrap text-right tabular-nums text-ink-2 md:table-cell">
                     {norm.acceptedQuantity > 0
                       ? `${formatAmount(norm.acceptedQuantity, locale)} ${formatUnit(norm.unit, locale)}`
-                      : "—"}
+                      : "–"}
                   </TableCell>
                 </TableRow>
               ))}
@@ -402,8 +402,7 @@ function CountiesCard({ stats }: { stats: Stats }) {
                   {formatCount(row.added, locale)}
                 </span>
               </div>
-              <TickBar
-                thin
+              <MeterBar
                 value={(row.added / max) * 100}
                 label={`${row.name}: ${tMeasures("added")} ${formatCount(row.added, locale)}`}
               />

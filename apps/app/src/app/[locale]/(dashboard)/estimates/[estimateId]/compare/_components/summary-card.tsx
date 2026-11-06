@@ -43,7 +43,7 @@ export function SummaryCard({ comparison }: { comparison: Comparison }) {
               className="flex items-center justify-between gap-3"
             >
               <dt className="flex min-w-0 items-center gap-2">
-                <span className="font-mono text-code text-ink">
+                <span className="tabular-nums text-ink">
                   {estimateCode(comparison.number, revision.revision)}
                 </span>
                 <EstimateStatusPill status={revision.status} />

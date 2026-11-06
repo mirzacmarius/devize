@@ -3,7 +3,6 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import { PageHeader } from "@devize/ui/page-header";
 import {
   Table,
   TableBody,
@@ -79,17 +78,6 @@ export default function ManufacturersPage() {
 
   return (
     <>
-      <PageHeader
-        title={t("title")}
-        description={t("description")}
-        actions={
-          <Button variant="outline" onClick={() => setAdding(!adding)}>
-            <Plus aria-hidden />
-            {tAdd("title")}
-          </Button>
-        }
-      />
-
       {adding && <AddManufacturers />}
 
       <section className="grid min-w-0 gap-3">
@@ -113,6 +101,14 @@ export default function ManufacturersPage() {
             ))}
           </NativeSelect>
           <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setAdding(!adding)}
+            >
+              <Plus aria-hidden />
+              {tAdd("title")}
+            </Button>
             <Button
               size="sm"
               variant="outline"

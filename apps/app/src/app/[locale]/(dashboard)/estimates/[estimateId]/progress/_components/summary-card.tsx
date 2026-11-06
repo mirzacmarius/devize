@@ -1,6 +1,6 @@
 "use client";
 
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
 import { Figure, FigureStrip } from "@/components/figure-strip";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -15,7 +15,7 @@ export function SummaryCard({ overview }: { overview: Overview }) {
   return (
     <FigureStrip hint={t("hint")}>
       <Figure label={t("title")} value={executed}>
-        <TickBar
+        <MeterBar
           className="mt-1.5"
           value={percent}
           tone={percent > 100 ? "warning" : "action"}
@@ -37,7 +37,7 @@ export function SummaryCard({ overview }: { overview: Overview }) {
         value={
           overview.approved
             ? formatMoney(overview.approved.subtotal, locale)
-            : "—"
+            : "–"
         }
         unit={overview.approved && "lei"}
         note={

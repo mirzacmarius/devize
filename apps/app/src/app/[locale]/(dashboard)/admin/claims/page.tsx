@@ -32,10 +32,7 @@ export default function ClaimsPage() {
   const queue = useQuery(api.producers.admin.queue);
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-title-screen text-ink">{t("title")}</h1>
-        <p className="max-w-3xl text-body text-ink-2">{t("description")}</p>
-      </div>
+      <p className="m-0 max-w-3xl text-body text-ink-2">{t("description")}</p>
       {queue === undefined ? (
         <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (

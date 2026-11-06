@@ -98,7 +98,7 @@ export function InvoicePage() {
           <LinesCard invoice={invoice} />
           {!draft && <PaymentsCard invoice={invoice} />}
         </div>
-        <div className="grid min-w-0 gap-6">
+        <div className="rail-sections grid min-w-0 gap-6">
           {draft && <ChecksCard invoice={invoice} />}
           {live && <EfacturaCard invoice={invoice} />}
           <BuyerCard invoice={invoice} />

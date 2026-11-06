@@ -54,7 +54,7 @@ const config = {
         ],
         kpi: [
           "32px",
-          { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "300" },
+          { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "300" },
         ],
         figure: [
           "20px",
@@ -66,7 +66,7 @@ const config = {
         ],
         "body-lg": ["15px", { lineHeight: "22px" }],
         body: ["14px", { lineHeight: "20px" }],
-        meta: ["13px", { lineHeight: "18px" }],
+        meta: ["13px", { lineHeight: "18px", fontWeight: "430" }],
         pill: ["13px", { lineHeight: "20px", fontWeight: "500" }],
         // The uppercase eyebrow of the marketing site.
         label: [

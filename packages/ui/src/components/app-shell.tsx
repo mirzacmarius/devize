@@ -39,7 +39,8 @@ const AppSidebar = React.forwardRef<
 AppSidebar.displayName = "AppSidebar";
 
 // The page itself. Its children stack 24px apart: PageHeader, then sections.
-// On a very wide window the content stops growing and stays centred.
+// On a very wide window the content stops growing and stays centred. Under
+// 768px there is no sidebar to set it apart from, so it fills the screen.
 const AppMain = React.forwardRef<
   HTMLElement,
   React.HTMLAttributes<HTMLElement>
@@ -47,7 +48,7 @@ const AppMain = React.forwardRef<
   <main
     ref={ref}
     className={cn(
-      "m-2 grid min-w-0 grid-cols-[minmax(0,1472px)] content-start justify-center gap-6 rounded-2xl bg-panel px-4 pb-10 pt-4 shadow-panel md:ml-0 md:px-8 md:pt-7",
+      "app-main grid min-w-0 grid-cols-[minmax(0,1472px)] content-start justify-center gap-6 bg-panel px-4 pb-10 pt-4 md:m-2 md:ml-0 md:rounded-2xl md:px-8 md:pt-7 md:shadow-panel",
       className,
     )}
     {...props}

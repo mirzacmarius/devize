@@ -119,9 +119,9 @@ export default {
   },
   home: {
     title: "Home",
-    description: "What {firm} has in hand and what wants doing today.",
     newEstimate: "New estimate",
-    lei: "lei with VAT",
+    lei: "lei",
+    withVat: "with VAT",
     kpi: {
       drafts: "In progress",
       draftsMeta: "Drafts: {count}",
@@ -347,7 +347,6 @@ export default {
   },
   estimates: {
     title: "Estimates",
-    description: "The company's estimates, from draft to accepted offer.",
     new: "New estimate",
     emptyTitle: "No estimates yet",
     emptyDescription:
@@ -487,6 +486,7 @@ export default {
       addNorm: "Add from catalog",
       addCustom: "Own line item",
       addSection: "Chapter or object",
+      addMore: "Other ways to add",
       locked:
         "The estimate was sent, so it can't change any more. To change it, create a revision.",
       emptyTitle: "No line items yet",
@@ -544,7 +544,6 @@ export default {
     },
     sections: {
       object: "Object",
-      chapter: "Chapter",
       none: "No chapter",
       empty: "No line items here yet.",
       menu: "Actions for {name}",
@@ -1463,10 +1462,10 @@ export default {
     views: "Visits: {count}, last on {date} at {time}",
     looking: "The client is looking at",
     defaultChoice: "The estimate as you sent it",
-    variant: "The {name} variant",
+    choice: "Variant",
     without: "Without: {items}",
-    total: "Total incl. VAT: {total} lei",
-    totalNoVat: "Total: {total} lei",
+    total: "Total incl. VAT",
+    totalNoVat: "Total",
     accepted: "Accepted by {name} on {date} at {time}",
     signatureLabel: "{name}'s signature",
     typedSignature: "Signed with the typed name, without a drawn signature.",
@@ -1741,6 +1740,8 @@ export default {
     total: "Total incl. VAT",
     totalNoVat: "Total",
     deposit: "Deposit on acceptance: {percent}, that is {amount} lei",
+    withVat: "with VAT",
+    depositShort: "deposit {amount} lei",
     payment: {
       title: "How it is paid",
       share: "{percent} {trigger}",
@@ -1917,8 +1918,6 @@ export default {
   },
   catalog: {
     title: "Catalog",
-    description:
-      "Base norms, manufacturers' norms and your company's own, with what each one consumes.",
     newNorm: "New norm",
     views: {
       label: "Norms shown",
@@ -1929,7 +1928,6 @@ export default {
     columns: {
       norm: "Norm",
       source: "Source",
-      unit: "Unit",
       status: "Status",
       updated: "Changed",
     },
@@ -2165,8 +2163,6 @@ export default {
   },
   clients: {
     title: "Clients",
-    description:
-      "Your clients, with the details shown on estimates and offers.",
     new: "New client",
     searchPlaceholder: "Search clients by name",
     emptyTitle: "No clients yet",
@@ -2208,8 +2204,6 @@ export default {
   },
   rates: {
     title: "Rates",
-    description:
-      "What the company pays for labour, equipment and transport, and the markups its estimates add.",
     new: "New rate",
     ratesTitle: "Labour, equipment and transport",
     ratesDescription:
@@ -2271,7 +2265,6 @@ export default {
   },
   settings: {
     title: "Settings",
-    description: "Your account, your company and the colleagues you work with.",
     sections: "Settings sections",
     tabs: {
       account: "Account",
@@ -2627,14 +2620,12 @@ export default {
     },
     manufacturers: {
       title: "Manufacturers",
-      description:
-        "Research manufacturers with Claude, approve the emails and import the norms they send.",
       add: {
         title: "Add manufacturers",
         description:
           "Paste the list, one company per line. Text after a colon becomes a hint for the research.",
         placeholder: "1. Example Ltd: public norms on its site, 2019 edition",
-        wave: "Wave",
+        wave: "Stage",
         submit: "Add",
         result: "Added {created}.",
         skipped: "Already in the list: {names}.",
@@ -2646,7 +2637,7 @@ export default {
       empty: "No manufacturers yet.",
       columns: {
         name: "Manufacturer",
-        wave: "Wave",
+        wave: "Stage",
         status: "Status",
         norms: "Norms",
         confidence: "Confidence",
@@ -2775,13 +2766,13 @@ export default {
       research: "Research",
       researchAgain: "Research again",
       researching: "Research in progress…",
-      wave: "Wave {wave}",
+      wave: "Stage {wave}",
       delete: "Delete",
       deleteConfirm: "Are you sure? Click again",
       details: {
         title: "Manufacturer details",
         name: "Name",
-        wave: "Wave",
+        wave: "Stage",
         status: "Status",
         website: "Website",
         hints: "What we already know",
@@ -3153,8 +3144,6 @@ export default {
   },
   producers: {
     title: "Manufacturers",
-    description:
-      "The manufacturers whose norms are in the catalog, each with its norms and products.",
     empty:
       "No manufacturers in the catalog yet. Profiles appear as we publish their norms.",
     columns: {
@@ -4123,8 +4112,6 @@ export default {
   },
   invoices: {
     title: "Invoices",
-    description:
-      "The firm's invoices: advances, work statements, final invoices and reversals, each with its e-Factura deadline.",
     emptyTitle: "No invoices yet",
     emptyDescription:
       "The first invoice starts from an estimate: once the client accepts the offer, you issue the advance invoice, then the final one with the advance deducted.",
@@ -4407,8 +4394,7 @@ export default {
       deadlineHint: "5 working days from issue (OUG 89/2025).",
       overdue:
         "The deadline has passed. Send the invoice as soon as you can: late filing is fined.",
-      manual:
-        "Download the XML and upload it in SPV (the Virtual Private Space) under e-Factura. Once Devize is connected to SPV, sending will happen from here.",
+      manual: "Download the XML and upload it in SPV, under e-Factura.",
       uploadIndex: "Upload index: {index}",
       downloadId: "Download id: {id}",
       errors: "Errors reported by ANAF",
@@ -4425,8 +4411,6 @@ export default {
   },
   prices: {
     title: "Prices",
-    description:
-      "The store products your firm buys, at today's prices, and the sent estimates those prices change.",
     alerts: {
       title: "Price alerts",
       description:
@@ -4680,8 +4664,7 @@ export default {
     open: "Packaging and waste",
     title: "Packaging and waste",
     breadcrumb: "Packaging",
-    description:
-      "{code} · {title}: what you buy in whole bags, boxes and rolls, what is left after the job, and the waste of each laying method.",
+    description: "{code} · {title}",
     emptyTitle: "The estimate has no materials yet",
     emptyDescription:
       "Add line items with materials and see them here in whole packages, with what is left over.",
@@ -4691,12 +4674,11 @@ export default {
       bought: "The shopping",
       leftover: "Of which left over",
       inEstimate: "Materials in the estimate",
-      hint: "At the estimate's prices, without VAT. What is left over is what remains of a material's packages after the job.",
     },
     table: {
       title: "Shopping list",
       description:
-        "Each material, added up over the whole estimate and rounded to whole packages, in the cheapest mix of sizes.",
+        "Each material is rounded to whole packages, in the cheapest mix of sizes. Prices are the estimate's, without VAT.",
       material: "Material",
       need: "Needed",
       buy: "You buy",
@@ -4789,8 +4771,7 @@ export default {
   takeoff: {
     title: "Quantity take-off",
     breadcrumb: "Take-off",
-    description:
-      "{code} · {title}: the rooms with their dimensions and openings, and the rows behind each line item's quantity.",
+    description: "{code} · {title}",
     locked: "The estimate was sent, so its take-off stays as it was.",
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
@@ -4814,12 +4795,10 @@ export default {
       measured: "Measured line items",
       ofItems: "{measured} of {items}",
       differs: "With another quantity in the estimate",
-      hint: "A line item's quantity follows the sum of its take-offs. A quantity typed on the estimate stays until you take the measured one again from here.",
     },
     rooms: {
       title: "Rooms",
-      description:
-        "Dimensions in metres. They give each room's floor, ceiling, walls net of openings, perimeter and skirting.",
+      description: "Dimensions in metres.",
       add: "Add a room",
       emptyTitle: "No rooms yet",
       emptyDescription:
@@ -4830,9 +4809,9 @@ export default {
         width: "Width",
         height: "Height",
         openings: "Openings",
-        floor: "Floor",
-        walls: "Walls",
-        perimeter: "Perimeter",
+        floor: "Floor (sqm)",
+        walls: "Walls (sqm)",
+        perimeter: "Perimeter (m)",
       },
       openings: {
         door: "{count} door",
@@ -4903,7 +4882,7 @@ export default {
     items: {
       title: "Line items",
       description:
-        "Each line item with its take-offs. The estimate's quantity follows their sum.",
+        "The estimate's quantity follows the sum of the take-offs. One typed by hand stays until you take the measured one again from here.",
       emptyTitle: "The estimate has no line items yet",
       emptyDescription:
         "Add line items to the estimate, then measure them here.",
@@ -5216,8 +5195,7 @@ export default {
     open: "Progress statements",
     title: "Progress statements",
     breadcrumb: "Progress statements",
-    description:
-      "{code} · {title}: what was executed in each period, the reception reports and the performance guarantee.",
+    description: "{code} · {title}",
     notAcceptedTitle: "The estimate is not accepted yet",
     notAcceptedDescription:
       "Progress statements start once the client accepts the estimate. Mark it accepted on its page and come back here.",
@@ -5238,45 +5216,36 @@ export default {
       noApproved: "No statement confirmed yet",
       remaining: "Left to execute",
       withheld: "Guarantee withheld from statements",
-      hint: "Lei without VAT, at the estimate's prices. Executed includes the open statement. The contract is the estimate as the client accepted it, with the chosen variant and items.",
+      hint: "Lei without VAT, at the estimate's prices. Executed includes the open statement.",
     },
     list: {
-      title: "Progress statements",
-      description:
-        "One per period. The next one starts once the beneficiary confirms the last, from the quantities it reached.",
       new: "New statement",
-      empty:
-        "No statement yet. The first starts from the estimate's items, all at zero.",
+      emptyTitle: "No statement yet",
+      emptyDescription:
+        "One per period. The first starts from the estimate's items, all at zero.",
       number: "Statement no. {number}",
       period: "{start} – {end}",
-      subtotal: "{amount} lei without VAT",
-      cannotCreate: "Confirm the open statement before starting another.",
-      select: "Open statement no. {number}",
+      pick: "Choose the statement",
     },
     statement: {
-      title: "Progress statement no. {number}",
       period: "Period {start} – {end}",
       date: "Date {date}",
       sentOn: "Sent on {date}",
       approvedOn: "Confirmed on {date}",
       approvedBy: "Confirmed by {name} on {date}",
-      locked: "The statement is confirmed and no longer changes.",
       notLatest: "Only the last statement can change.",
       article: "Item",
-      unit: "Unit",
-      unitPrice: "Unit price",
+      pricePerUnit: "{price} lei/{unit}",
       contract: "Contract",
       previous: "Before",
       quantity: "This period",
       cumulative: "To date",
-      percent: "%",
       remaining: "Left",
       value: "Value",
       quantityLabel: "Quantity executed this period, {title}",
       over: "Over the contract quantity",
       attachment: "Measurements",
       attachmentLabel: "Measurements for {title}",
-      attachmentLines: "{count} lines",
       attachmentDiffers: "The measurements add up to {total} {unit}",
       direct: "Items total, at direct cost",
       completeAll: "Complete everything left",
@@ -5533,11 +5502,10 @@ export default {
       description:
         "The progress statements, the reception and the performance guarantee of the accepted estimate.",
       executed: "{percent} executed",
-      statements: "Progress statements: {count}",
-      approved: "Confirmed by the beneficiary: {amount} lei without VAT",
+      statements: "Progress statements",
+      approved: "Confirmed, without VAT",
       noStatements: "No progress statement yet.",
-      reception: "{name}: {state}",
-      outstanding: "Guarantee to recover: {amount} lei",
+      outstanding: "Guarantee to recover",
       open: "Open the progress statements",
     },
   },

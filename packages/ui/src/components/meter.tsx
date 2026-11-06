@@ -2,47 +2,46 @@ import * as React from "react";
 
 import { cn } from "../utils";
 
-// Progress and scores are made of ticks and capsules, never smooth bars or
-// pies. Always show the number next to the meter, and name it in `label`.
+// A share of a whole is a solid bar, a count of steps is segments. Always show
+// the number next to the meter, and name it in `label`.
 
-const tickTones = {
+const barTones = {
   action: "--action",
   warning: "--warning-dot",
   danger: "--danger-solid",
 };
 
-export interface TickBarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface MeterBarProps extends React.HTMLAttributes<HTMLDivElement> {
   // 0 to 100
   value: number;
-  tone?: keyof typeof tickTones;
-  thin?: boolean;
+  tone?: keyof typeof barTones;
   // The value in words, for screen readers: "84% gata"
   label: string;
 }
 
-// Progress from 3px ticks at a 5px pitch: done in `action`, the rest in `tick`.
-const TickBar = React.forwardRef<HTMLDivElement, TickBarProps>(
-  (
-    { value, tone = "action", thin, label, className, style, ...props },
-    ref,
-  ) => {
+const MeterBar = React.forwardRef<HTMLDivElement, MeterBarProps>(
+  ({ value, tone = "action", label, className, ...props }, ref) => {
     const percent = Math.max(0, Math.min(100, value));
     return (
       <div
         ref={ref}
         role="img"
         aria-label={label}
-        className={cn(thin ? "h-1.5" : "h-2", className)}
-        style={{
-          background: `repeating-linear-gradient(90deg, hsl(var(${tickTones[tone]})) 0 3px, transparent 3px 5px) left / ${percent}% 100% no-repeat, repeating-linear-gradient(90deg, hsl(var(--tick)) 0 3px, transparent 3px 5px)`,
-          ...style,
-        }}
+        className={cn("h-1 overflow-hidden rounded-full bg-tick", className)}
         {...props}
-      />
+      >
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${percent}%`,
+            background: `hsl(var(${barTones[tone]}))`,
+          }}
+        />
+      </div>
     );
   },
 );
-TickBar.displayName = "TickBar";
+MeterBar.displayName = "MeterBar";
 
 const segmentTones = {
   action: "bg-primary",
@@ -112,4 +111,4 @@ const Segments = React.forwardRef<HTMLDivElement, SegmentsProps>(
 );
 Segments.displayName = "Segments";
 
-export { Segments, TickBar };
+export { MeterBar, Segments };

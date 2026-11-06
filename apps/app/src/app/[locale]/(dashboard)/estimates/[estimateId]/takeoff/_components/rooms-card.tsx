@@ -20,6 +20,16 @@ import {
 } from "@devize/ui/dropdown-menu";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableGroupRow,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { Plus } from "lucide-react";
 import { Fragment, useState } from "react";
@@ -29,9 +39,7 @@ import { formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Room } from "./types";
 
-const headClass = "pb-2 pl-3 text-right text-caption text-ink-3";
-const cellClass =
-  "whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums";
+const numberClass = "whitespace-nowrap text-right tabular-nums";
 
 /** The rooms as the levels group them, in the order they were added. */
 function byLevel(rooms: readonly Room[]) {
@@ -102,82 +110,81 @@ export function RoomsCard({
             }
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[40rem] border-collapse text-body">
-              <thead>
-                <tr>
-                  <th className="pb-2 text-left text-caption text-ink-3">
-                    {t("columns.room")}
-                  </th>
-                  <th className={headClass}>{t("columns.length")}</th>
-                  <th className={headClass}>{t("columns.width")}</th>
-                  <th className={headClass}>{t("columns.height")}</th>
-                  <th className="pb-2 pl-3 text-left text-caption text-ink-3">
-                    {t("columns.openings")}
-                  </th>
-                  <th className={headClass}>{t("columns.floor")}</th>
-                  <th className={headClass}>{t("columns.walls")}</th>
-                  <th className={headClass}>{t("columns.perimeter")}</th>
-                  {!locked && <th className="w-10 pb-2" />}
-                </tr>
-              </thead>
-              <tbody>
-                {groups.map((group, index) => (
-                  <Fragment key={group.level ?? `level-${index}`}>
-                    {grouped && (
-                      <tr className="border-t border-border">
-                        <td
-                          colSpan={locked ? 8 : 9}
-                          className="pt-3 pb-1 text-caption text-ink-3"
-                        >
-                          {group.level ?? "–"}
-                        </td>
-                      </tr>
-                    )}
-                    {group.rooms.map((room) => (
-                      <RoomRow
-                        key={room._id}
-                        estimateId={estimateId}
-                        room={room}
-                        rooms={rooms}
-                        locked={locked}
-                        onEdit={onEdit}
-                      />
-                    ))}
-                  </Fragment>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-t border-border font-medium">
-                  <td colSpan={5} className="py-2">
-                    {t("total")}
-                  </td>
-                  <td className={cellClass}>
-                    {formatQuantity(
-                      sum((room) => room.measures.floor),
-                      locale,
-                    )}{" "}
-                    <span className="text-ink-3">mp</span>
-                  </td>
-                  <td className={cellClass}>
-                    {formatQuantity(
-                      sum((room) => room.measures.walls),
-                      locale,
-                    )}{" "}
-                    <span className="text-ink-3">mp</span>
-                  </td>
-                  <td className={cellClass}>
-                    {formatQuantity(
-                      sum((room) => room.measures.perimeter),
-                      locale,
-                    )}{" "}
-                    <span className="text-ink-3">m</span>
-                  </td>
-                  {!locked && <td />}
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+          <Table bleed className="min-w-[44rem]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("columns.room")}</TableHead>
+                <TableHead>{t("columns.openings")}</TableHead>
+                <TableHead className="text-right">
+                  {t("columns.length")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.width")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.height")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.floor")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.walls")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("columns.perimeter")}
+                </TableHead>
+                {!locked && <TableHead className="w-8" />}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {groups.map((group, index) => (
+                <Fragment key={group.level ?? `level-${index}`}>
+                  {grouped && (
+                    <TableGroupRow>
+                      <TableCell
+                        colSpan={locked ? 8 : 9}
+                        className="band-start band-end font-medium"
+                      >
+                        {group.level ?? "–"}
+                      </TableCell>
+                    </TableGroupRow>
+                  )}
+                  {group.rooms.map((room) => (
+                    <RoomRow
+                      key={room._id}
+                      estimateId={estimateId}
+                      room={room}
+                      rooms={rooms}
+                      locked={locked}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </Fragment>
+              ))}
+              <TableRow className="font-medium hover:bg-transparent">
+                <TableCell colSpan={5}>{t("total")}</TableCell>
+                <TableCell className={numberClass}>
+                  {formatQuantity(
+                    sum((room) => room.measures.floor),
+                    locale,
+                  )}
+                </TableCell>
+                <TableCell className={numberClass}>
+                  {formatQuantity(
+                    sum((room) => room.measures.walls),
+                    locale,
+                  )}
+                </TableCell>
+                <TableCell className={numberClass}>
+                  {formatQuantity(
+                    sum((room) => room.measures.perimeter),
+                    locale,
+                  )}
+                </TableCell>
+                {!locked && <TableCell />}
+              </TableRow>
+            </TableBody>
+          </Table>
         )}
       </CardContent>
     </Card>
@@ -265,8 +272,8 @@ function RoomRow({
   };
 
   return (
-    <tr className="border-t border-border">
-      <td className="py-2 align-top">
+    <TableRow className="group/row">
+      <TableCell>
         <div className="grid justify-items-start">
           <span className="text-ink">{room.name}</span>
           {irregular && (
@@ -276,30 +283,36 @@ function RoomRow({
             <span className="text-meta text-ink-3">{room.notes}</span>
           )}
         </div>
-      </td>
-      <td className={cellClass}>{metres(room.length)}</td>
-      <td className={cellClass}>{metres(room.width)}</td>
-      <td className={cellClass}>{metres(room.height)}</td>
-      <td className="py-2 pl-3 align-top text-ink-2">
+      </TableCell>
+      <TableCell className="whitespace-nowrap text-ink-2">
         {openingsText(room, t)}
-      </td>
-      <td className={cellClass}>
+      </TableCell>
+      <TableCell className={cn(numberClass, "text-ink-2")}>
+        {metres(room.length)}
+      </TableCell>
+      <TableCell className={cn(numberClass, "text-ink-2")}>
+        {metres(room.width)}
+      </TableCell>
+      <TableCell className={cn(numberClass, "text-ink-2")}>
+        {metres(room.height)}
+      </TableCell>
+      <TableCell className={numberClass}>
         {formatQuantity(room.measures.floor, locale)}
-      </td>
-      <td className={cellClass}>
+      </TableCell>
+      <TableCell className={numberClass}>
         {formatQuantity(room.measures.walls, locale)}
-      </td>
-      <td className={cellClass}>
+      </TableCell>
+      <TableCell className={numberClass}>
         {formatQuantity(room.measures.perimeter, locale)}
-      </td>
+      </TableCell>
       {!locked && (
-        <td className="py-1 pl-2 text-right align-top">
+        <TableCell className="w-8">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-ink-3"
+                className="-my-1.5 size-8 text-ink-3 focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
                 aria-label={t("actions", { name: room.name })}
               >
                 <Icons.More aria-hidden />
@@ -348,8 +361,8 @@ function RoomRow({
             busy={busy}
             onConfirm={() => void confirmRemove()}
           />
-        </td>
+        </TableCell>
       )}
-    </tr>
+    </TableRow>
   );
 }

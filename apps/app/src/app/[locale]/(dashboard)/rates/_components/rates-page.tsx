@@ -52,7 +52,6 @@ export function RatesPage() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
         actions={
           canEdit && (
             <Button onClick={() => setDialog({ open: true, rate: null })}>

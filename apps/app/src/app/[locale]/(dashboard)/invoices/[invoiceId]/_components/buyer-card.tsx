@@ -23,6 +23,7 @@ import { toast } from "@devize/ui/sonner";
 import { Switch } from "@devize/ui/switch";
 import { useAction, useMutation } from "convex/react";
 import { type FormEvent, type ReactNode, useState } from "react";
+import { FactRows } from "@/components/fact-list";
 import { Field } from "@/components/field";
 import { useRun } from "@/components/use-run";
 import { counties } from "@/lib/counties";
@@ -85,21 +86,7 @@ function BuyerDetails({ buyer }: { buyer: Buyer }) {
             <span className="font-normal text-ink-3">{tc("notSet")}</span>
           )}
         </p>
-        <dl className="m-0 grid gap-3">
-          {rows.map((row) => (
-            <div
-              key={row.label}
-              className="flex min-w-0 items-baseline justify-between gap-4"
-            >
-              <dt className="shrink-0 text-body text-ink-3">{row.label}</dt>
-              <dd className="m-0 min-w-0 text-right text-body text-ink [overflow-wrap:anywhere]">
-                {row.value || (
-                  <span className="text-ink-3">{tc("notSet")}</span>
-                )}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <FactRows rows={rows} />
       </CardContent>
     </Card>
   );
