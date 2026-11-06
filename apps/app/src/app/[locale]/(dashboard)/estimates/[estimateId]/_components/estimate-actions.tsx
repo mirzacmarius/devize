@@ -206,8 +206,14 @@ export function EstimateActions({
         </Button>
       )}
       {status === "draft" && !empty && openChecks > 0 && (
-        <Button variant="link" className="mr-2 max-md:hidden" asChild>
-          <a href="#checks">{t("actions.openChecks", { count: openChecks })}</a>
+        <Button variant="ghost" className="max-md:hidden" asChild>
+          <a href="#checks">
+            <span
+              aria-hidden
+              className="size-1.5 shrink-0 rounded-full bg-warning-dot"
+            />
+            {t("actions.openChecks", { count: openChecks })}
+          </a>
         </Button>
       )}
       {primary}
@@ -216,7 +222,8 @@ export function EstimateActions({
           <Button
             variant="ghost"
             size="icon"
-            className="max-sm:ml-auto"
+            // The dots end on the page's edge, not the button's.
+            className="max-sm:ml-auto sm:-mr-2.5"
             aria-label={tc("actions")}
           >
             <Icons.More aria-hidden />

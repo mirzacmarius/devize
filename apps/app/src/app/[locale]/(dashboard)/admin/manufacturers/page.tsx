@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import {
+  Confidence,
   ErrorText,
   Field,
   manufacturerTone,
@@ -88,7 +89,7 @@ export default function ManufacturersPage() {
           </label>
           <NativeSelect
             id="status_filter"
-            className="h-8 w-full sm:w-48"
+            className="w-full sm:w-48"
             value={status}
             onChange={(event) =>
               setStatus(event.target.value as Status | "all")
@@ -102,18 +103,12 @@ export default function ManufacturersPage() {
             ))}
           </NativeSelect>
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setAdding(!adding)}
-            >
+            <Button variant="outline" onClick={() => setAdding(!adding)}>
               <Plus aria-hidden />
               {tAdd("title")}
             </Button>
             <Button
-              size="sm"
-              variant="ghost"
-              className="last:-mr-2.5"
+              variant="outline"
               onClick={() =>
                 setSelected(
                   new Set(
@@ -127,7 +122,7 @@ export default function ManufacturersPage() {
               {t("selectNew")}
             </Button>
             {selected.size > 0 && (
-              <Button size="sm" disabled={pending} onClick={research}>
+              <Button disabled={pending} onClick={research}>
                 {t("research", { count: selected.size })}
               </Button>
             )}
@@ -193,8 +188,8 @@ export default function ManufacturersPage() {
                     )}
                     <TableCell>
                       {row.activeJob ? (
-                        <Pill tone="active">
-                          <Loader2 className="size-3 animate-spin" />
+                        <Pill tone="active" dot={false}>
+                          <Loader2 className="size-3 animate-spin self-center" />
                           {t("working")}
                         </Pill>
                       ) : (
@@ -207,14 +202,17 @@ export default function ManufacturersPage() {
                       {tAdmin(`status.norms.${row.normsStatus}`)}
                     </TableCell>
                     <TableCell className="text-ink-2">
-                      {row.confidence
-                        ? tAdmin(`confidenceLevel.${row.confidence}`)
-                        : "–"}
+                      {row.confidence ? (
+                        <Confidence level={row.confidence}>
+                          {tAdmin(`confidenceLevel.${row.confidence}`)}
+                        </Confidence>
+                      ) : (
+                        "–"
+                      )}
                     </TableCell>
                     <TableCell className="text-ink-2">
                       {row.message ? (
                         <Pill
-                          plain
                           tone={
                             row.message.blocked &&
                             row.message.status === "draft"

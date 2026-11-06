@@ -76,7 +76,7 @@ export default function ManufacturerPage() {
         <div className="flex flex-col gap-2">
           <h2 className="m-0 text-figure text-ink">{manufacturer.name}</h2>
           <div className="flex flex-wrap items-center gap-2 text-body text-ink-3">
-            <Pill tone={manufacturerTone[manufacturer.status]}>
+            <Pill tone={manufacturerTone[manufacturer.status]} filled>
               {tAdmin(`status.manufacturer.${manufacturer.status}`)}
             </Pill>
             <span>{t("wave", { wave: manufacturer.wave })}</span>

@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { Fact, FactList } from "@/components/fact-list";
+import { FoldRow } from "@/components/fold-card";
 import { InvoiceStatusPill } from "@/components/invoice-status";
-import { RailFigure } from "@/components/rail-figure";
 import { formatMoney, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
@@ -42,13 +43,14 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
       <CardHeader>
         <CardTitle>{t("card.title")}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="gap-0">
         {accepted && (
-          <div className="grid gap-2">
-            <RailFigure
-              value={formatMoney(billing.remainingNet ?? 0, locale)}
-              unit={t("card.remaining")}
-            />
+          <>
+            <FactList>
+              <Fact label={t("card.remaining")}>
+                {formatMoney(billing.remainingNet ?? 0, locale)} lei
+              </Fact>
+            </FactList>
             <MeterBar
               value={
                 accepted.net > 0
@@ -57,54 +59,59 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
               }
               tone="action"
               label={invoiced}
+              className="mb-1.5 mt-1"
             />
-            <p className="m-0 text-meta tabular-nums text-ink-3">{invoiced}</p>
-          </div>
+            <FactList>
+              <Fact label={t("card.invoiced")}>
+                {t("card.invoicedValue", {
+                  invoiced: formatMoney(billing.invoicedNet, locale),
+                  accepted: formatMoney(accepted.net, locale),
+                })}
+              </Fact>
+            </FactList>
+          </>
         )}
         {billing.invoices.length > 0 && (
-          <details open={accepted === null}>
-            <summary className="text-meta text-ink-2 transition-colors hover:text-ink">
-              {t("card.list", { count: billing.invoices.length })}
-            </summary>
-            <div className="grid gap-3 pt-3">
-              <ul className="m-0 grid list-none gap-3 p-0">
-                {billing.invoices.map((invoice) => (
-                  <li key={invoice._id}>
-                    <Link
-                      href={`/invoices/${invoice._id}`}
-                      className="group grid gap-1 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <span className="flex items-baseline justify-between gap-3">
-                        <span className="min-w-0 text-body text-ink group-hover:underline">
-                          {t(`kind.${invoice.kind}`)}
-                        </span>
-                        <span className="shrink-0 text-body tabular-nums text-ink">
-                          {formatMoney(invoice.total, locale)}
-                        </span>
+          <FoldRow
+            title={t("card.list")}
+            lead={billing.invoices.length}
+            attention={accepted === null}
+          >
+            <ul className="m-0 grid list-none gap-3 p-0">
+              {billing.invoices.map((invoice) => (
+                <li key={invoice._id}>
+                  <Link
+                    href={`/invoices/${invoice._id}`}
+                    className="group grid gap-1 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className="min-w-0 text-body text-ink group-hover:underline">
+                        {t(`kind.${invoice.kind}`)}
                       </span>
-                      <span className="flex items-center justify-between gap-3">
-                        <span className="text-meta tabular-nums text-ink-3">
-                          {invoice.code ?? t("draftCode")}
-                        </span>
-                        <InvoiceStatusPill
-                          status={invoice.status}
-                          overdue={invoice.dueDate < today}
-                        />
+                      <span className="shrink-0 text-body tabular-nums text-ink">
+                        {formatMoney(invoice.total, locale)}
                       </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              {billing.canFinal && billing.openAdvances > 0 && (
-                <p className="m-0 text-meta text-ink-3">
-                  {t("card.finalHint")}
-                </p>
-              )}
-              <Button variant="link" className="justify-self-start" asChild>
-                <Link href="/invoices">{t("card.all")}</Link>
-              </Button>
-            </div>
-          </details>
+                    </span>
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="text-meta tabular-nums text-ink-3">
+                        {invoice.code ?? t("draftCode")}
+                      </span>
+                      <InvoiceStatusPill
+                        status={invoice.status}
+                        overdue={invoice.dueDate < today}
+                      />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {billing.canFinal && billing.openAdvances > 0 && (
+              <p className="m-0 text-meta text-ink-3">{t("card.finalHint")}</p>
+            )}
+            <Button variant="link" className="justify-self-start" asChild>
+              <Link href="/invoices">{t("card.all")}</Link>
+            </Button>
+          </FoldRow>
         )}
       </CardContent>
     </Card>

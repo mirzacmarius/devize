@@ -5,7 +5,6 @@ import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { EmptyState } from "@devize/ui/empty-state";
@@ -118,12 +117,10 @@ export function ProgressPage() {
             <BreadcrumbLink asChild>
               <Link href={`/estimates/${estimate._id}`}>{code}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("breadcrumb")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description", { code, title: estimate.title })}
+        description={estimate.title}
         actions={
           overview.canCreate &&
           selected && (

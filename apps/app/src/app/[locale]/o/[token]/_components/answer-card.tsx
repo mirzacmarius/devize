@@ -128,10 +128,10 @@ export function AnswerCard({
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
-  const download = (
+  const download = (variant: "outline" | "ghost" = "outline") => (
     <Button
       type="button"
-      variant="outline"
+      variant={variant}
       disabled={downloading}
       onClick={onDownload}
     >
@@ -147,7 +147,7 @@ export function AnswerCard({
   if (offer.state === "accepted") {
     const { accepted } = offer;
     return (
-      <Card>
+      <Card data-framed>
         <CardContent className="gap-4 pt-5">
           <div className="grid gap-2">
             <StatusPill tone="success" className="justify-self-start">
@@ -209,7 +209,7 @@ export function AnswerCard({
               )}
             </div>
           )}
-          {download}
+          {download()}
         </CardContent>
       </Card>
     );
@@ -218,7 +218,7 @@ export function AnswerCard({
   if (offer.state === "declined") {
     const { declined } = offer;
     return (
-      <Card>
+      <Card data-framed>
         <CardContent className="gap-4 pt-5">
           <div className="grid gap-2">
             <StatusPill tone="danger" className="justify-self-start">
@@ -239,17 +239,17 @@ export function AnswerCard({
               </p>
             )}
           </div>
-          {download}
+          {download()}
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card data-framed>
       <CardContent className="gap-5 pt-5">
         <TotalBlock offer={offer} updating={updating} />
-        <div className="grid gap-2">
+        <div className="grid gap-1">
           <Button
             type="button"
             size="lg"
@@ -259,16 +259,17 @@ export function AnswerCard({
             <Icons.Check aria-hidden />
             {t("decide.accept")}
           </Button>
-          <div className="grid grid-cols-2 gap-2">
+          {/* A step back from the answer the page is asking for. */}
+          <div className="grid grid-cols-2 gap-1 [&>button]:px-2 [&>button]:text-ink-2">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               disabled={offer.preview}
               onClick={onDecline}
             >
               {t("decide.decline")}
             </Button>
-            {download}
+            {download("ghost")}
           </div>
         </div>
         {offer.expiresAt !== undefined && (
@@ -289,13 +290,19 @@ export function MobileAnswerBar({
   offer,
   updating,
   showTotal,
+  downloading,
   onAccept,
+  onDecline,
+  onDownload,
 }: {
   offer: OpenOfferView;
   updating: boolean;
   // Once the total at the top has scrolled away.
   showTotal: boolean;
+  downloading: boolean;
   onAccept: () => void;
+  onDecline: () => void;
+  onDownload: () => void;
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
@@ -311,7 +318,7 @@ export function MobileAnswerBar({
     .filter(Boolean)
     .join(" · ");
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card lg:hidden">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
         {showTotal && (
           <div className="grid min-w-0">
@@ -337,6 +344,35 @@ export function MobileAnswerBar({
         >
           {t("decide.accept")}
         </Button>
+        {/* While there's room, the other answers stay in reach too. */}
+        {!showTotal && (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-11 px-3 text-ink-2"
+              disabled={offer.preview}
+              onClick={onDecline}
+            >
+              {t("decide.decline")}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="-mx-1 size-11 shrink-0 text-ink-2"
+              aria-label={t("decide.download")}
+              disabled={downloading}
+              onClick={onDownload}
+            >
+              {downloading ? (
+                <Icons.Loader className="animate-spin" aria-hidden />
+              ) : (
+                <Download aria-hidden />
+              )}
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

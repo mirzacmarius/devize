@@ -11,16 +11,19 @@ import {
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
+import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import {
   CalendarClock,
+  FileClock,
   Hourglass,
   type LucideIcon,
   MessageCircle,
   PhoneCall,
   Plus,
+  TrendingDown,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
@@ -40,7 +43,6 @@ import {
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { NewEstimateDialog } from "../estimates/_components/new-estimate-dialog";
-import { signedMoney } from "../prices/_components/prices-view";
 
 type Overview = FunctionReturnType<typeof api.home.overview>;
 type Todo = Overview["todo"][number];
@@ -94,23 +96,28 @@ export function HomePage() {
         }
       />
       {/* On a phone the next section's hairline closes the figures. */}
-      <Card className="grid grid-cols-2 max-sm:-mb-6 xl:grid-cols-4">
+      <Card className="grid grid-cols-3 max-sm:-mb-6 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.35fr)_repeat(3,minmax(0,1fr))]">
         <Kpi
-          label={t("kpi.drafts")}
-          value={money(home?.drafts.total)}
+          lead
+          label={t("kpi.receivable")}
+          value={money(receivable?.total)}
           unit={t("lei")}
           meta={
-            home && t("kpi.draftsMeta", { count: count(home.drafts.count) })
+            receivable &&
+            (receivable.overdue > 0 ? (
+              <StatusPill tone="danger">
+                {t("kpi.overdue", {
+                  amount: formatMoney(receivable.overdue, locale),
+                })}
+              </StatusPill>
+            ) : (
+              t("kpi.noneOverdue")
+            ))
           }
         />
         <Kpi
-          label={t("kpi.sent")}
-          value={money(home?.sent.total)}
-          unit={t("lei")}
-          meta={home && t("kpi.sentMeta", { count: count(home.sent.unread) })}
-        />
-        <Kpi
           label={t("kpi.accepted")}
+          short={t("kpi.acceptedShort")}
           value={money(home?.accepted.total)}
           unit={t("lei")}
           meta={
@@ -123,16 +130,18 @@ export function HomePage() {
           }
         />
         <Kpi
-          label={t("kpi.receivable")}
-          value={money(receivable?.total)}
+          label={t("kpi.sent")}
+          short={t("kpi.sentShort")}
+          value={money(home?.sent.total)}
+          unit={t("lei")}
+          meta={home && t("kpi.sentMeta", { count: count(home.sent.unread) })}
+        />
+        <Kpi
+          label={t("kpi.drafts")}
+          value={money(home?.drafts.total)}
           unit={t("lei")}
           meta={
-            receivable &&
-            (receivable.overdue > 0
-              ? t("kpi.overdue", {
-                  amount: formatMoney(receivable.overdue, locale),
-                })
-              : t("kpi.noneOverdue"))
+            home && t("kpi.draftsMeta", { count: count(home.drafts.count) })
           }
         />
       </Card>
@@ -167,35 +176,79 @@ export function HomePage() {
   );
 }
 
-/** One headline figure: what it is, the number, its unit and what it counts. */
+/**
+ * One headline figure: what it is, the number, its unit and what it counts. The
+ * rows are the strip's, so the sums share a baseline whatever their size; the
+ * `lead` is the one the page is about, and on a phone the rest sit under it.
+ */
 function Kpi({
+  lead = false,
   label,
+  short,
   value,
   unit,
   meta,
 }: {
+  lead?: boolean;
   label: string;
+  // Where three stand side by side on a phone.
+  short?: string;
   value: string;
   unit?: string;
   meta: ReactNode;
 }) {
   return (
-    <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-2.5 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:gap-1 sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l">
-      <p className="m-0 truncate text-meta text-ink-2">{label}</p>
-      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
-        <span className="text-[22px] leading-8 tracking-[-0.01em] tabular-nums text-ink [font-weight:var(--weight-figure)] sm:text-kpi">
+    <div
+      className={cn(
+        "row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0.5 border-border sm:gap-y-1 sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(even)]:border-l sm:max-xl:[&:nth-child(n+3)]:border-t sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l",
+        lead
+          ? "max-sm:col-span-3 max-sm:px-4 max-sm:pb-3.5 max-sm:pt-3"
+          : "max-sm:border-t max-sm:px-3 max-sm:py-2.5 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
+      )}
+    >
+      <p className="m-0 truncate text-meta text-ink-2">
+        {short ? (
+          <>
+            <span className="sm:hidden">{short}</span>
+            <span className="max-sm:hidden">{label}</span>
+          </>
+        ) : (
+          label
+        )}
+      </p>
+      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
+        <span
+          className={cn(
+            "tabular-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
+            lead
+              ? "text-[28px] leading-9 sm:text-kpi"
+              : "text-base leading-6 sm:text-[24px] sm:leading-9",
+          )}
+        >
           <Amount value={value} />
         </span>
-        {unit && <span className="text-meta text-ink-3">{unit}</span>}
+        {unit && (
+          <span
+            className={cn("text-meta text-ink-3", !lead && "max-sm:hidden")}
+          >
+            {unit}
+          </span>
+        )}
       </div>
-      <p className="m-0 min-h-[18px] truncate text-meta text-ink-3">{meta}</p>
+      <p
+        className={cn(
+          "m-0 min-h-[18px] truncate text-meta text-ink-3",
+          !lead && "max-sm:hidden",
+        )}
+      >
+        {meta}
+      </p>
     </div>
   );
 }
 
-const todoIcons: Record<Todo["kind"], LucideIcon> = {
+const todoIcons: Record<Exclude<Todo["kind"], "alert">, LucideIcon> = {
   question: MessageCircle,
-  alert: TrendingUp,
   deadline: CalendarClock,
   expiring: Hourglass,
   unread: PhoneCall,
@@ -214,15 +267,32 @@ const PHONE_TODO = 4;
 function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
   const t = useScopedI18n("home.todo");
   const tc = useScopedI18n("common");
+  const { firm } = useFirm();
+  // A deadline with ANAF passed comes before anything a client is waiting for.
+  const anaf = useQuery(api.invoices.invoices.efacturaDue, {
+    organizationId: firm._id,
+    today: todayInput(),
+  });
+  const late = anaf !== undefined && anaf.late > 0 ? anaf : undefined;
   const [showAll, setShowAll] = useState(false);
   const now = todo?.filter(isNow) ?? [];
   const next = todo?.filter((item) => !isNow(item)) ?? [];
-  const hidden = showAll ? [] : [...now, ...next].slice(PHONE_TODO);
-  const group = (title: string, items: Todo[]) =>
-    items.length > 0 && (
-      <section className="grid">
+  const hidden = showAll
+    ? []
+    : [...now, ...next].slice(late ? PHONE_TODO - 1 : PHONE_TODO);
+  const group = (title: string, items: Todo[], first?: ReactNode) =>
+    (items.length > 0 || first) && (
+      <section
+        className={cn(
+          "grid",
+          !first &&
+            items.every((item) => hidden.includes(item)) &&
+            "max-sm:hidden",
+        )}
+      >
         <h4 className="m-0 pb-1 text-caption text-ink-3">{title}</h4>
         <ul className="m-0 grid list-none p-0">
+          {first}
           {items.map((item) => (
             <TodoRow
               key={`${item.kind}-${item.estimate._id}`}
@@ -242,7 +312,7 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
       <CardContent className="gap-5 pb-2">
         {todo === undefined ? (
           <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
-        ) : todo.length === 0 ? (
+        ) : todo.length === 0 && !late ? (
           <p className="m-0 flex items-start gap-2 text-body text-ink-2">
             <Icons.Check
               aria-hidden
@@ -252,7 +322,23 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
           </p>
         ) : (
           <>
-            {group(t("now"), now)}
+            {group(
+              t("now"),
+              now,
+              late && (
+                <TodoLine
+                  href={
+                    late.firstLate ? `/invoices/${late.firstLate}` : "/invoices"
+                  }
+                  icon={FileClock}
+                  tone="danger"
+                  text={t("anaf")}
+                  sub={t("anafSub")}
+                  figure={t("anafCount", { count: late.late })}
+                  figureClass="font-medium text-danger"
+                />
+              ),
+            )}
             {group(t("next"), next)}
             {hidden.length > 0 && (
               <Button
@@ -261,7 +347,7 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
                 className="justify-self-start pb-3 sm:hidden"
                 onClick={() => setShowAll(true)}
               >
-                {t("showAll", { count: todo.length })}
+                {t("showAll", { count: todo.length + (late ? 1 : 0) })}
               </Button>
             )}
           </>
@@ -275,7 +361,12 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   const t = useScopedI18n("home.todo");
   const locale = useCurrentLocale();
   const code = estimateCode(item.estimate.number, item.estimate.revision);
-  const Icon = todoIcons[item.kind];
+  const icon =
+    item.kind === "alert"
+      ? item.profitChange < 0
+        ? TrendingDown
+        : TrendingUp
+      : todoIcons[item.kind];
   const href =
     item.kind === "alert" ? "/prices" : `/estimates/${item.estimate._id}`;
   const now = isNow(item);
@@ -304,12 +395,13 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
         text = t("alert", { code });
       } else {
         const down = item.profitChange < 0;
+        // The words say which way it went.
         text = t(down ? "alertDown" : "alertUp", { code });
         figure = t("alertAmount", {
-          amount: signedMoney(item.profitChange, locale),
+          amount: formatMoney(Math.abs(item.profitChange), locale),
         });
         figureClass = cn("font-medium", down ? "text-warning" : "text-success");
-        sub.unshift(
+        sub.push(
           t("alertLeft", { left: formatMoney(item.profitLeft, locale) }),
         );
       }
@@ -317,7 +409,7 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
     case "deadline":
       text = t("deadline", { code });
       figure = inDays(item.days);
-      sub.unshift(formatCalendarDay(item.date, locale));
+      sub.push(formatCalendarDay(item.date, locale));
       break;
     case "expiring":
       text = t("expiring", { code });
@@ -333,27 +425,69 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   }
 
   return (
+    <TodoLine
+      href={href}
+      icon={icon}
+      tone={now ? "warning" : "quiet"}
+      text={text}
+      sub={sub.join(" · ")}
+      figure={figure}
+      figureClass={figureClass}
+      phoneHidden={phoneHidden}
+    />
+  );
+}
+
+const todoTones = {
+  danger: "bg-danger-soft text-danger",
+  warning: "bg-warning-soft text-warning",
+  quiet: "bg-muted text-ink-2",
+};
+
+/**
+ * One line of the list: what to do and, in the column at its end, how much or
+ * how soon; under them the Deviz it's about, whole, even on a phone.
+ */
+function TodoLine({
+  href,
+  icon: Icon,
+  tone,
+  text,
+  sub,
+  figure,
+  figureClass,
+  phoneHidden = false,
+}: {
+  href: string;
+  icon: LucideIcon;
+  tone: keyof typeof todoTones;
+  text: string;
+  sub: string;
+  figure?: string;
+  figureClass: string;
+  phoneHidden?: boolean;
+}) {
+  return (
     <li
       className={cn("border-t border-border", phoneHidden && "max-sm:hidden")}
     >
       <Link
         href={href}
-        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)_auto] content-center items-baseline gap-x-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden
           className={cn(
-            "grid size-7 place-items-center rounded-md [&_svg]:size-4",
-            now ? "bg-warning-soft text-warning" : "bg-muted text-ink-2",
+            "row-span-2 grid size-7 place-items-center self-center rounded-md [&_svg]:size-4",
+            todoTones[tone],
           )}
         >
           <Icon />
         </span>
-        <span className="grid min-w-0">
-          <span className="text-body text-ink">{text}</span>
-          <span className="truncate text-meta text-ink-3">
-            {sub.join(" · ")}
-          </span>
+        <span
+          className={cn("min-w-0 text-body text-ink", !figure && "col-span-2")}
+        >
+          {text}
         </span>
         {figure && (
           <span
@@ -365,6 +499,9 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
             {figure}
           </span>
         )}
+        <span className="col-span-2 col-start-2 line-clamp-2 text-meta text-ink-3">
+          {sub}
+        </span>
       </Link>
     </li>
   );
@@ -400,7 +537,7 @@ function RecentCard({
             </Button>
           </div>
         ) : (
-          <ul className="m-0 grid list-none p-0">
+          <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] p-0">
             {recent === undefined && (
               <li className="py-2 text-body text-ink-3">{tc("loading")}</li>
             )}
@@ -411,17 +548,17 @@ function RecentCard({
               >
                 <Link
                   href={`/estimates/${row._id}`}
-                  className="-mx-2 grid min-h-[59px] content-center gap-y-0.5 rounded-md px-2 py-1.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="-mx-2 grid min-h-[59px] grid-cols-[minmax(0,1fr)] content-center gap-y-0.5 rounded-md px-2 py-1.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span className="flex items-baseline justify-between gap-4">
-                    <span className="min-w-0 truncate text-body font-medium text-ink">
+                    <span className="min-w-0 text-body font-medium text-ink sm:truncate">
                       {row.title}
                     </span>
                     <span className="shrink-0 text-body font-medium tabular-nums text-ink">
                       {formatMoney(row.total, locale)}
                     </span>
                   </span>
-                  <span className="flex items-center justify-between gap-4">
+                  <span className="flex items-baseline justify-between gap-4">
                     <span className="min-w-0 truncate text-meta text-ink-3">
                       {estimateCode(row.number, row.revision)}
                       {" · "}
@@ -429,9 +566,7 @@ function RecentCard({
                       {" · "}
                       {formatDay(row.updatedAt, locale)}
                     </span>
-                    <span className="shrink-0">
-                      <EstimateStatusPill status={row.status} plain />
-                    </span>
+                    <EstimateStatusPill status={row.status} />
                   </span>
                 </Link>
               </li>

@@ -131,7 +131,7 @@ export function OfferCard({
         : undefined;
   if (lead) {
     return (
-      <FoldCard id="offer" title={t("title")} lead={lead}>
+      <FoldCard id="offer" title={t("row")} lead={lead}>
         {body}
       </FoldCard>
     );

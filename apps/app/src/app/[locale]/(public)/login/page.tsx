@@ -25,10 +25,11 @@ export default async function Page() {
     <div className="grid min-h-screen w-full bg-shell xl:grid-cols-[minmax(0,1fr)_minmax(0,620px)]">
       <aside className="hidden min-w-0 flex-col gap-10 px-12 py-10 xl:flex">
         <Wordmark className="self-start text-xl" />
-        <div className="my-auto grid max-w-[600px] gap-10">
+        <div className="my-auto grid max-w-[480px] gap-8">
           <p className="m-0 text-display text-ink [text-wrap:balance]">
             {t("brand.headline")}
           </p>
+          <hr aria-hidden className="tick-rule m-0 border-0" />
           <SampleEstimate />
         </div>
       </aside>
@@ -59,7 +60,7 @@ async function SampleEstimate() {
     { label: t("equipment"), value: 2304 },
   ];
   return (
-    <Card aria-hidden className="grid max-w-[480px] gap-5 p-6">
+    <Card aria-hidden className="grid gap-5 p-6">
       <div className="grid gap-0.5">
         <span className="text-title-card text-ink">{t("title")}</span>
         <span className="text-meta text-ink-3">{t("meta")}</span>

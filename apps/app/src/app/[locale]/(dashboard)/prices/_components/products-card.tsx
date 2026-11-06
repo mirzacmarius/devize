@@ -104,12 +104,12 @@ export function ProductsCard() {
                             href={listing.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="group rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             {listing.title}
                             <ExternalLink
                               aria-hidden
-                              className="ml-1.5 inline size-3.5 align-[-2px] text-ink-3"
+                              className="ml-1.5 inline size-3.5 align-[-2px] text-ink-3 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
                             />
                           </a>
                         ) : (

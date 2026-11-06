@@ -4,10 +4,8 @@ import { api } from "@devize/backend/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { Fact, FactList } from "@/components/fact-list";
-import { RailFigure } from "@/components/rail-figure";
+import { LinkRow } from "@/components/fold-card";
 import { formatCalendarDate, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
@@ -32,6 +30,7 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
     return null;
   }
   const percent = Math.round(overview.executed.percent * 10) / 10;
+  const progress = `/estimates/${estimate._id}/progress`;
   const receptionState = (kind: "completion" | "final") => {
     const reception = guarantee.receptions[kind];
     if (!reception) {
@@ -52,22 +51,16 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
     <Card id="progress" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        <Link
-          href={`/estimates/${estimate._id}/progress`}
-          aria-label={t("open")}
-          className="-mr-[5px] rounded-xs text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <ChevronRight aria-hidden className="size-4" />
-        </Link>
       </CardHeader>
-      <CardContent className="gap-2">
+      <CardContent className="gap-0">
         {overview.statements.length === 0 ? (
-          <p className="m-0 text-body text-ink-2">{t("noStatements")}</p>
+          <LinkRow title={t("noStatements")} href={progress} />
         ) : (
-          <div className="grid gap-2">
-            <RailFigure
-              value={formatPercent(percent, locale)}
-              unit={t("executedUnit")}
+          <>
+            <LinkRow
+              title={t("executedLabel")}
+              lead={formatPercent(percent, locale)}
+              href={progress}
             />
             <MeterBar
               value={percent}
@@ -75,8 +68,9 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
               label={t("executed", {
                 percent: formatPercent(percent, locale),
               })}
+              className="mb-1.5 mt-1"
             />
-          </div>
+          </>
         )}
         <FactList>
           {overview.approved && (

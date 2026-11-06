@@ -63,7 +63,7 @@ function PageHeader({
             {status}
           </div>
           {description && (
-            <p className="m-0 text-body text-ink-2 tabular-nums">
+            <p className="m-0 max-w-[72ch] text-body tabular-nums text-ink-2 [text-wrap:pretty]">
               {description}
             </p>
           )}

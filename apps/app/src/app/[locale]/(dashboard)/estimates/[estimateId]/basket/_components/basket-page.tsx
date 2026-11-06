@@ -12,7 +12,6 @@ import { storeKeys } from "@devize/backend/convex/prices/stores";
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { EmptyState } from "@devize/ui/empty-state";
@@ -91,12 +90,10 @@ export function BasketPage() {
             <BreadcrumbLink asChild>
               <Link href={`/estimates/${estimate._id}`}>{code}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("breadcrumb")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description", { code, title: estimate.title })}
+        description={t("description", { title: estimate.title })}
       />
       {basket.materials.length === 0 ? (
         <EmptyState

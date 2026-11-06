@@ -24,10 +24,11 @@ export function Fact({
 }) {
   return (
     <div
+      data-slot="fact"
       title={title}
-      className="flex min-w-0 items-baseline justify-between gap-4 py-1"
+      className="flex min-h-8 min-w-0 items-baseline justify-between gap-4 py-1.5"
     >
-      <dt className="min-w-0 text-meta text-ink-3">{label}</dt>
+      <dt className="min-w-0 text-body text-ink-2">{label}</dt>
       <dd className="m-0 min-w-0 text-right text-body tabular-nums text-ink [overflow-wrap:anywhere]">
         {children}
       </dd>

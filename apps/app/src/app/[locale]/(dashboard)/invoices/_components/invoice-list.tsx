@@ -5,6 +5,7 @@ import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
+import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
@@ -116,19 +117,19 @@ export function InvoiceList() {
             <Figure
               label={t("receivable.toSend")}
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
-            />
-            <Figure
-              label={t("receivable.late")}
-              value={anaf ? formatCount(anaf.late, locale) : "–"}
-              tone={anaf && anaf.late > 0 ? "danger" : undefined}
               note={
                 anaf?.firstLate && (
-                  <Link
-                    href={`/invoices/${anaf.firstLate}`}
-                    className="rounded-xs text-ink underline underline-offset-4 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    {anaf.late === 1 ? t("lateOpen") : t("lateOpenFirst")}
-                  </Link>
+                  <span className="flex flex-wrap items-baseline gap-x-3">
+                    <StatusPill tone="danger">
+                      {t("receivable.lateCount", { count: anaf.late })}
+                    </StatusPill>
+                    <Link
+                      href={`/invoices/${anaf.firstLate}`}
+                      className="rounded-xs text-ink underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {anaf.late === 1 ? t("lateOpen") : t("lateOpenFirst")}
+                    </Link>
+                  </span>
                 )
               }
             />
@@ -224,7 +225,7 @@ export function InvoiceList() {
                         overdue={row.dueDate < today}
                       />
                     </TableCell>
-                    <TableCell className="text-right text-body-lg font-medium tabular-nums">
+                    <TableCell className="text-right tabular-nums max-md:text-body-lg max-md:font-medium">
                       {formatMoney(row.total, locale)}
                       <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
                         lei
@@ -236,11 +237,14 @@ export function InvoiceList() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="hidden text-right tabular-nums text-ink-2 xl:table-cell">
+                    {/* What's still to come in is what this list is read for. */}
+                    <TableCell className="hidden text-right tabular-nums xl:table-cell">
                       {owed === undefined ? (
                         <span className="text-ink-3">–</span>
                       ) : (
-                        formatMoney(owed, locale)
+                        <span className="font-medium">
+                          {formatMoney(owed, locale)}
+                        </span>
                       )}
                     </TableCell>
                     <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
@@ -252,7 +256,6 @@ export function InvoiceList() {
                           <EfacturaPill
                             status={row.efactura.status}
                             late={row.efactura.deadline < today}
-                            plain
                           />
                           {row.efactura.status === "not_sent" && (
                             <span className="text-meta text-ink-3">

@@ -27,6 +27,7 @@ const MeterBar = React.forwardRef<HTMLDivElement, MeterBarProps>(
         ref={ref}
         role="img"
         aria-label={label}
+        data-slot="meter"
         className={cn("h-1 overflow-hidden rounded-full bg-tick", className)}
         {...props}
       >

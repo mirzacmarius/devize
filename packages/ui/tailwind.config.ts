@@ -124,6 +124,7 @@ const config = {
         selected: "hsl(var(--selected))",
         "nav-active": "hsl(var(--nav-active))",
         scrim: "hsl(var(--scrim))",
+        "scrim-soft": "hsl(var(--scrim-soft))",
         tile: "hsl(var(--tile))",
         backdrop: "hsl(var(--backdrop))",
         tick: "hsl(var(--tick))",

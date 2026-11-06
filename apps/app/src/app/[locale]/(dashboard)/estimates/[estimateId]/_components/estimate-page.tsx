@@ -112,7 +112,7 @@ export function EstimatePage() {
     total: formatMoney(estimate.totals.subtotal, locale),
   });
   const { status } = estimate;
-  const statusPill = <EstimateStatusPill status={status} />;
+  const statusPill = <EstimateStatusPill status={status} filled />;
 
   // The rail leads with what comes next for where this Deviz is at.
   const rail = {
@@ -170,7 +170,9 @@ export function EstimatePage() {
           description={
             <>
               {status !== "archived" && (
-                <span className="my-1.5 block sm:hidden">{statusPill}</span>
+                <span className="block sm:hidden">
+                  <EstimateStatusPill status={status} />
+                </span>
               )}
               {[
                 estimate.client?.name ?? t("noClient"),
@@ -319,9 +321,9 @@ export function EstimatePage() {
 /** The heading of a group of the rail's rows, once they sit beside the Articole. */
 function RailGroup({ children }: { children: ReactNode }) {
   return (
-    <p className="m-0 hidden border-t border-card-border pb-1 pt-4 text-caption text-ink-3 xl:mt-2 xl:block">
+    <h3 className="m-0 mb-1 mt-7 hidden text-title-card text-ink xl:block">
       {children}
-    </p>
+    </h3>
   );
 }
 
@@ -427,7 +429,7 @@ function SectionLinks({
           <a
             key={section}
             href={`#${section}`}
-            className="flex min-h-14 min-w-0 items-center justify-between gap-2 rounded-md bg-sunken px-3 py-2 transition-colors hover:bg-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-h-12 min-w-0 items-center justify-between gap-2 rounded-md bg-sunken px-3 py-1.5 transition-colors hover:bg-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="grid min-w-0">
               <span

@@ -5,7 +5,6 @@ import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { Button } from "@devize/ui/button";
@@ -58,12 +57,10 @@ export function MaterialsPage() {
             <BreadcrumbLink asChild>
               <Link href={`/estimates/${estimate._id}`}>{code}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description", { code, title: estimate.title })}
+        description={estimate.title}
         actions={
           list.rows.length > 0 && (
             <Button variant="outline" asChild>

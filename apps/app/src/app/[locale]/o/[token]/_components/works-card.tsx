@@ -74,7 +74,7 @@ export function WorksCard({
         "flex items-baseline justify-between gap-3 py-2",
         nested
           ? "border-b border-border"
-          : "-mx-4 bg-sunken px-4 sm:-mx-5 sm:px-5",
+          : "-mx-[var(--card-pad)] bg-sunken px-[var(--card-pad)] sm:rounded-md",
       )}
     >
       <h3

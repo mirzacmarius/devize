@@ -72,10 +72,13 @@ export function Confidence({
   children: ReactNode;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-meta text-ink-2">
+    <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap text-meta text-ink-2">
       <span
         aria-hidden
-        className={cn("size-1.5 rounded-full", confidenceDot[level])}
+        className={cn(
+          "size-1.5 self-center rounded-full",
+          confidenceDot[level],
+        )}
       />
       {children}
     </span>

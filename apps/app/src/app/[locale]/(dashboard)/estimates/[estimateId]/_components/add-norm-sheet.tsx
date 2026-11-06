@@ -248,7 +248,7 @@ function AddNorm({
               aria-label={t("addNorm.results")}
               className="m-0 grid list-none p-0"
             >
-              {results.map((norm) => (
+              {ranked(results, words).map((norm) => (
                 <li
                   key={norm._id}
                   className="border-t border-border first:border-t-0"
@@ -286,10 +286,13 @@ function AddNorm({
                         </span>
                       </span>
                     </span>
-                    <Plus
+                    {/* Plain to see before the pointer gets there: this adds. */}
+                    <span
                       aria-hidden
-                      className="size-4 text-ink-3 transition-colors group-hover:text-ink"
-                    />
+                      className="grid size-7 place-items-center rounded-md border border-input text-ink-2 transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground"
+                    >
+                      <Plus className="size-4" />
+                    </span>
                   </button>
                 </li>
               ))}
@@ -363,6 +366,20 @@ function MatchedWords({
       </Fragment>
     );
   });
+}
+
+/**
+ * What the search found, with the works that start with the first word typed
+ * ahead of those that only mention it. The firm's own norms stay on top.
+ */
+function ranked<T extends { source: string; title: string }>(
+  norms: readonly T[],
+  words: readonly string[],
+) {
+  const rank = (norm: T) =>
+    (norm.source === "organization" ? 0 : 2) +
+    (words[0] && normalizeText(norm.title).startsWith(words[0]) ? 0 : 1);
+  return [...norms].sort((a, b) => rank(a) - rank(b));
 }
 
 // Why a request failed, from the code its job stored, as the sheet explains it.

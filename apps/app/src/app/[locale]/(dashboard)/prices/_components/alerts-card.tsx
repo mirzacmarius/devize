@@ -14,6 +14,7 @@ import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
+import { Amount } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
@@ -129,9 +130,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid min-w-0 flex-1 basis-80 gap-0.5">
-          <h4 className="m-0 text-[17px] font-medium leading-6 text-ink">
-            {estimate.title}
-          </h4>
+          <h4 className="m-0 text-title-card text-ink">{estimate.title}</h4>
           <p className="m-0 flex flex-wrap items-center gap-x-1.5 text-meta tabular-nums text-ink-3">
             {[
               code,
@@ -141,7 +140,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               .filter(Boolean)
               .join(" · ")}
             <span aria-hidden>·</span>
-            <EstimateStatusPill status={estimate.status} plain />
+            <EstimateStatusPill status={estimate.status} />
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -173,7 +172,8 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   profitChange < 0 ? "text-warning" : "text-success",
                 )}
               >
-                {signedMoney(profitChange, locale)}
+                {/* The label over it says which way it went. */}
+                <Amount value={money(Math.abs(profitChange))} />
               </span>
               <span className="text-meta text-ink-3">lei</span>
             </p>
@@ -189,7 +189,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               })}
             </p>
           </div>
-          <dl className="m-0 grid text-meta">
+          <dl className="m-0 grid text-meta leading-5">
             <div className="flex flex-wrap justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-ink-3">
                 {t("total")}

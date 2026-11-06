@@ -251,16 +251,13 @@ export function StatementCard({
             </DropdownMenu>
           </div>
         </div>
-        <p className="m-0 text-meta text-ink-3">
-          {facts.join(" · ")}
-          {/* Nothing leaves from here: the firm sends it and notes what happened. */}
-          {statement.latest && statement.status !== "approved" && (
-            <span className="text-ink-2">
-              {" · "}
-              {statement.status === "draft" ? t("nextDraft") : t("nextSent")}
-            </span>
-          )}
-        </p>
+        <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
+        {/* Nothing leaves from here: the firm sends it and notes what happened. */}
+        {statement.latest && statement.status !== "approved" && (
+          <p className="m-0 text-meta text-ink-2">
+            {statement.status === "draft" ? t("nextDraft") : t("nextSent")}
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         <RowsTable
@@ -465,7 +462,7 @@ function RowsTable({
                           ? ""
                           : "–"
                     }
-                    placeholder={formatQuantity(0, locale)}
+                    placeholder="–"
                     label={t("quantityLabel", { title: row.title })}
                     disabled={!fillable}
                     onCommit={(quantity) =>

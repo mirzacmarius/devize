@@ -17,6 +17,7 @@ import {
 } from "@devize/ui/dropdown-menu";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
+import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
@@ -57,38 +58,29 @@ const NARROW_ONLY = "[@container(min-width:38rem)]:hidden";
 const MID_UP = "hidden [@container(min-width:38rem)]:block";
 const MID_ONLY =
   "hidden [@container(min-width:38rem)]:inline [@container(min-width:44rem)]:hidden";
-// With no number column, the item column starts at the card's edge.
-const ITEM_CELL = "pl-0 [@container(min-width:38rem)]:pl-1";
+// The item column starts right after the number, or at the card's edge without it.
+const ITEM_CELL = "pl-0";
 const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-4";
 // Past the chevron, so heads and section names start where the titles do.
-const TITLE_CELL = "pl-0 [@container(min-width:38rem)]:pl-7";
+const TITLE_CELL = "pl-0 [@container(min-width:38rem)]:pl-6";
 const NESTED_TITLE_CELL = "pl-3 [@container(min-width:38rem)]:pl-10";
 
-const tagDot = {
-  danger: "bg-danger-solid",
-  warning: "bg-warning-dot",
-  ai: "bg-ai",
-};
-
 /**
- * A property of a row, on its quietest line: a dot and a word. With many rows
- * in a Deviz, a filled tag on each would outweigh the numbers.
+ * A property of a row, on its quietest line: a dot and a word in the row's own
+ * colour. With many rows in a Deviz, a coloured word on each would outweigh the
+ * numbers.
  */
 function RowTag({
   tone,
   children,
 }: {
-  tone: keyof typeof tagDot;
+  tone: "danger" | "warning" | "ai" | "neutral";
   children: ReactNode;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-ink-2">
-      <span
-        aria-hidden
-        className={cn("size-1.5 shrink-0 rounded-full", tagDot[tone])}
-      />
+    <StatusPill tone={tone} className="text-ink-2">
       {children}
-    </span>
+    </StatusPill>
   );
 }
 
@@ -194,6 +186,9 @@ export function LineItemsCard({
         <div className="flex items-center gap-2">
           <CardTitle>{t("items.title")}</CardTitle>
           <Count tone="plain">{count}</Count>
+          <span className="ml-1 text-meta text-ink-3 max-sm:hidden">
+            {t("items.inLei")}
+          </span>
         </div>
         {editable && (
           <div className="flex flex-wrap items-center gap-2">
@@ -309,17 +304,15 @@ export function LineItemsCard({
           <Table bleed className="items-table">
             <TableHeader>
               <TableRow>
-                <TableHead className={cn("w-7", FROM_MID)}>#</TableHead>
+                <TableHead className={cn("w-5", FROM_MID)}>#</TableHead>
                 <TableHead className={TITLE_CELL}>
                   {t("items.columns.item")}
                 </TableHead>
                 {/* Over the numbers, not over the unit that follows them. */}
-                <TableHead
-                  className={cn("w-[140px] pr-[52px] text-right", FROM_MID)}
-                >
+                <TableHead className={cn("w-32 pr-12 text-right", FROM_MID)}>
                   {t("items.columns.quantity")}
                 </TableHead>
-                <TableHead className={cn("w-[104px] text-right", FROM_WIDE)}>
+                <TableHead className={cn("w-[92px] text-right", FROM_WIDE)}>
                   {t("items.columns.unitPrice")}
                 </TableHead>
                 <TableHead className="w-[104px] text-right">
@@ -560,13 +553,14 @@ function ItemRows({
         {t("tags.ai")}
       </RowTag>
     ),
+    // Worth acting on only while it can still change.
     newPrice && (
-      <RowTag key="price" tone="warning">
+      <RowTag key="price" tone={editable ? "warning" : "neutral"}>
         {t("tags.oldPrice")}
       </RowTag>
     ),
     newNorm && (
-      <RowTag key="norm" tone="warning">
+      <RowTag key="norm" tone={editable ? "warning" : "neutral"}>
         {t("tags.newNorm")}
       </RowTag>
     ),
@@ -579,6 +573,9 @@ function ItemRows({
   // Own items without a code are stored with a dash, for the printed forms.
   const code = item.code === "–" ? undefined : item.code;
   const source = useItemSource()(item);
+  const tenderPosition =
+    item.tenderRef &&
+    t("tenderRef.position", { position: item.tenderRef.position });
 
   return (
     <>
@@ -601,8 +598,9 @@ function ItemRows({
             aria-controls={detailsId}
             className={cn(
               "group grid w-full min-w-0 gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[1rem_minmax(0,1fr)] [@container(min-width:38rem)]:gap-x-2",
-              // Room for the row's menu, which floats at the cell's end.
-              editable && "pr-9",
+              // Room for the row's menu where it's always shown; with a pointer
+              // it floats over the row's end, only while it's asked for.
+              editable && "[@media(hover:none)]:pr-9",
             )}
           >
             <ChevronRight
@@ -613,12 +611,31 @@ function ItemRows({
                 expanded && "rotate-90",
               )}
             />
-            <span className="text-body text-ink">
+            <span className="text-body text-ink [text-wrap:balance]">
               <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
                 {index}.{" "}
               </span>
-              <span className="[text-wrap:pretty] group-hover:underline">
+              <span className="group-hover:underline">
                 {keepUnits(item.title)}
+              </span>
+              {/* After the title's last word, so most rows keep to two lines. */}
+              <span className="hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:inline">
+                {[tenderPosition, code, source].filter(Boolean).map((part) => (
+                  <Fragment key={part}>
+                    {" · "}
+                    <span className="whitespace-nowrap">{part}</span>
+                  </Fragment>
+                ))}
+                <span className={MID_ONLY}>
+                  {" · "}
+                  <span className="whitespace-nowrap">
+                    {t("items.pricePerUnit", { price, unit })}
+                  </span>
+                </span>
+                {tags.length > 0 && "\u2002"}
+                {tags.length > 0 && (
+                  <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
+                )}
               </span>
             </span>
             <span
@@ -638,38 +655,22 @@ function ItemRows({
                 {formatMoney(item.totals.total, locale)}
               </span>
             </span>
-            {/* Tags on the code's line, so a tag never moves the title. */}
-            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3 [@container(min-width:38rem)]:col-start-2">
-              <span>
-                {item.tenderRef && (
-                  <>
-                    {t("tenderRef.position", {
-                      position: item.tenderRef.position,
-                    })}
-                    {" · "}
-                  </>
+            {/* A phone has what it needs in the title and the amounts. */}
+            {(tenderPosition || source || tags.length > 0) && (
+              <span
+                className={cn(
+                  "flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3",
+                  NARROW_ONLY,
                 )}
-                {/* A phone has what it needs in the title and the amounts. */}
-                {code && (
-                  <span className="[@container(max-width:37.99rem)]:hidden">
-                    {code}
+              >
+                {(tenderPosition || source) && (
+                  <span>
+                    {[tenderPosition, source].filter(Boolean).join(" · ")}
                   </span>
                 )}
-                {code && source && (
-                  <span className="[@container(max-width:37.99rem)]:hidden">
-                    {" · "}
-                  </span>
-                )}
-                {source}
-                <span className={MID_ONLY}>
-                  {(code || source) && " · "}
-                  <span className="whitespace-nowrap tabular-nums">
-                    {t("items.pricePerUnit", { price, unit })}
-                  </span>
-                </span>
+                {tags}
               </span>
-              {tags}
-            </span>
+            )}
           </button>
           {editable && (
             <div className="absolute right-1 top-1">
@@ -685,23 +686,23 @@ function ItemRows({
             </div>
           )}
         </TableCell>
-        <TableCell
-          className={cn("whitespace-nowrap text-right align-top", FROM_MID)}
-        >
-          <InlineNumber
-            value={item.quantity}
-            format={(value) => formatQuantity(value, locale)}
-            label={t("quantityOf", { title: item.title })}
-            disabled={!editable}
-            // Up by the field's padding, level with the item's first line.
-            className="-my-1.5 group-hover/row:border-input"
-            onCommit={(quantity) =>
-              run(() => update({ lineItemId: item._id, quantity }))
-            }
-          />
-          <span className="ml-2 inline-block min-w-8 text-left text-ink-3">
-            {unit}
-          </span>
+        <TableCell className={cn("whitespace-nowrap align-top", FROM_MID)}>
+          {/* Held to the cell's end, so a long number grows to the left and
+              stays in line with the others. */}
+          <div className="flex items-baseline justify-end">
+            <InlineNumber
+              value={item.quantity}
+              format={(value) => formatQuantity(value, locale)}
+              label={t("quantityOf", { title: item.title })}
+              disabled={!editable}
+              // Up by the field's padding, level with the item's first line.
+              className="-my-1.5 group-hover/row:border-input"
+              onCommit={(quantity) =>
+                run(() => update({ lineItemId: item._id, quantity }))
+              }
+            />
+            <span className="ml-2 min-w-7 text-left text-ink-3">{unit}</span>
+          </div>
         </TableCell>
         <TableCell
           className={cn(
@@ -846,7 +847,7 @@ function ItemMenu({
           variant="ghost"
           size="icon"
           // With a pointer it shows on the row it belongs to.
-          className="size-8 focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
+          className="size-8 bg-card focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
           aria-label={t("items.menu", { title: item.title })}
         >
           <Icons.More aria-hidden />

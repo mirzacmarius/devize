@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
-import { cn } from "@devize/ui/utils";
 import { Pencil } from "lucide-react";
 import {
   formatCount,
@@ -112,13 +111,8 @@ function MaterialRow({
         <div className="grid justify-items-start gap-0.5">
           <span className="text-ink">{row.name}</span>
           <span className="flex min-h-[18px] items-center gap-1 text-meta">
-            <span
-              className={cn(
-                pkg?.source === "typical" ? "text-warning" : "text-ink-3",
-              )}
-              title={pkg?.label}
-            >
-              {source}
+            <span className="text-ink-3" title={pkg?.label}>
+              {source ?? tSources("none")}
             </span>
             {pkg?.source !== "counted" && (
               <Button

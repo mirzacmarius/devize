@@ -163,7 +163,8 @@ export function OpenOffer({
       <div className="flex-1 bg-panel sm:mx-2 sm:mb-2 sm:rounded-2xl sm:shadow-panel">
         <main className="offer-main mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 max-sm:gap-6 max-sm:pt-5 sm:px-6 lg:pb-16">
           <OfferHero offer={offer} updating={updating} totalRef={heroTotal} />
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+          <hr aria-hidden className="tick-rule m-0 border-0 max-sm:hidden" />
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] lg:gap-x-10">
             <div className="grid min-w-0 gap-6">
               {offer.message && (
                 <MessageCard firm={offer.firm.name} message={offer.message} />
@@ -215,7 +216,10 @@ export function OpenOffer({
             offer={offer}
             updating={updating}
             showTotal={pastTotal}
+            downloading={downloading}
             onAccept={() => setDialog("accept")}
+            onDecline={() => setDialog("decline")}
+            onDownload={download}
           />
           <AcceptDialog
             token={token}
@@ -314,8 +318,8 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
   const t = useScopedI18n("offerPage");
   return (
     <Card>
-      <CardContent className="gap-2 py-4 max-sm:pb-0 sm:py-5">
-        <span className="text-meta font-medium text-ink-3">
+      <CardContent className="gap-2 max-sm:py-4">
+        <span className="text-meta text-ink-3">
           {t("messageFrom", { firm })}
         </span>
         <p className="m-0 whitespace-pre-line text-body text-ink sm:text-body-lg">

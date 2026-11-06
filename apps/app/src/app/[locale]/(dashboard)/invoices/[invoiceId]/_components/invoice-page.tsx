@@ -74,7 +74,9 @@ export function InvoicePage() {
           </Breadcrumb>
         }
         title={title}
-        status={<InvoiceStatusPill status={invoice.status} overdue={overdue} />}
+        status={
+          <InvoiceStatusPill status={invoice.status} overdue={overdue} filled />
+        }
         description={[
           t(`kind.${invoice.kind}`),
           invoice.buyer.name || tc("notSet"),
@@ -93,7 +95,7 @@ export function InvoicePage() {
           })}
         />
       </div>
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-10">
         <div className="grid min-w-0 gap-6">
           <LinesCard invoice={invoice} />
           {!draft && <PaymentsCard invoice={invoice} />}

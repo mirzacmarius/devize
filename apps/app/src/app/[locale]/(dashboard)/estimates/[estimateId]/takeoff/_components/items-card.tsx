@@ -165,7 +165,7 @@ function ItemRow({
               })}
             </span>
             {measured ? (
-              <StatusPill tone={item.differs ? "warning" : "success"} plain>
+              <StatusPill tone={item.differs ? "warning" : "success"}>
                 {item.differs
                   ? t("differs")
                   : t("measured", {
@@ -174,15 +174,9 @@ function ItemRow({
                     })}
               </StatusPill>
             ) : (
-              <StatusPill tone="draft" plain>
-                {t("unmeasured")}
-              </StatusPill>
+              <StatusPill tone="draft">{t("unmeasured")}</StatusPill>
             )}
-            {unchecked && (
-              <StatusPill tone="ai" plain>
-                {t("unchecked")}
-              </StatusPill>
-            )}
+            {unchecked && <StatusPill tone="ai">{t("unchecked")}</StatusPill>}
           </span>
         </div>
         {!locked && (

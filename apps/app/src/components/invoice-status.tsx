@@ -21,22 +21,22 @@ const statusTones: Record<InvoiceStatus, StatusPillProps["tone"]> = {
 export function InvoiceStatusPill({
   status,
   overdue = false,
-  plain,
+  filled,
 }: {
   status: InvoiceStatus;
   overdue?: boolean;
-  plain?: boolean;
+  filled?: boolean;
 }) {
   const t = useScopedI18n("invoices");
   if (status === "issued" && overdue) {
     return (
-      <StatusPill tone="warning" plain={plain}>
+      <StatusPill tone="warning" filled={filled}>
         {t("overdue")}
       </StatusPill>
     );
   }
   return (
-    <StatusPill tone={statusTones[status]} plain={plain}>
+    <StatusPill tone={statusTones[status]} filled={filled}>
       {t(`status.${status}`)}
     </StatusPill>
   );
@@ -55,22 +55,16 @@ const efacturaTones: Record<EfacturaStatus, StatusPillProps["tone"]> = {
 export function EfacturaPill({
   status,
   late = false,
-  plain,
 }: {
   status: EfacturaStatus;
   late?: boolean;
-  plain?: boolean;
 }) {
   const t = useScopedI18n("invoices");
   if (status === "not_sent" && late) {
-    return (
-      <StatusPill tone="danger" plain={plain}>
-        {t("efacturaLate")}
-      </StatusPill>
-    );
+    return <StatusPill tone="danger">{t("efacturaLate")}</StatusPill>;
   }
   return (
-    <StatusPill tone={efacturaTones[status]} plain={plain}>
+    <StatusPill tone={efacturaTones[status]}>
       {t(`efacturaStatus.${status}`)}
     </StatusPill>
   );

@@ -133,13 +133,15 @@ export default {
     title: "Home",
     newEstimate: "New estimate",
     lei: "lei",
-    subtitle: "{date} · amounts with VAT",
+    subtitle: "{date} · amounts in lei, with VAT",
     kpi: {
       drafts: "In progress",
       draftsMeta: "Drafts: {count}",
       sent: "Sent to clients",
+      sentShort: "Sent",
       sentMeta: "Unread by the client: {count}",
       accepted: "Accepted in 30 days",
+      acceptedShort: "Accepted",
       acceptedMeta: "Accepted in total: {count}",
       acceptanceRate: "Acceptance rate: {percent}",
       receivable: "To collect",
@@ -158,6 +160,9 @@ export default {
       alertUp: "Profit rises · {code}",
       alertAmount: "{amount} lei",
       alertLeft: "{left} lei left",
+      anaf: "Send to ANAF",
+      anafSub: "e-Factura deadline passed",
+      anafCount: "Invoices: {count}",
       now: "Now",
       next: "Coming up",
       showAll: "See all ({count})",
@@ -519,6 +524,7 @@ export default {
     },
     items: {
       title: "Line items",
+      inLei: "amounts in lei",
       addNorm: "Add from catalog",
       addCustom: "Own line item",
       addSection: "Chapter or object",
@@ -532,8 +538,8 @@ export default {
       columns: {
         item: "Line item",
         quantity: "Quantity",
-        unitPrice: "Unit price (lei)",
-        value: "Value (lei)",
+        unitPrice: "Unit price",
+        value: "Value",
       },
       quantityTimesPrice: "{quantity}\u00a0{unit} × {price}\u00a0lei",
       pricePerUnit: "{price}\u00a0lei/{unit}",
@@ -773,7 +779,7 @@ export default {
     addNorm: {
       title: "Add from catalog",
       description:
-        "Search by code or by job. The cost listed is a reference; in the estimate, resources take today's prices, with the company's rates.",
+        "Search by code or job. The cost listed is a reference; an estimate uses your prices.",
       searchPlaceholder: "Code or job, e.g. stone wool",
       hint: "Type the norm's code or a few words about the job, or pick a category. The company's own norms come first.",
       searching: "Searching…",
@@ -1467,6 +1473,7 @@ export default {
   },
   offer: {
     title: "Offer for the client",
+    row: "Offer",
     hint: "The client opens the link without an account, reads the estimate in plain words and accepts online.",
     notCreated: "Not made yet",
     acceptedLead: "Signed {date}",
@@ -1957,9 +1964,9 @@ export default {
   },
   catalog: {
     title: "Catalog",
-    costNote:
-      "Direct cost at reference prices; an estimate uses your prices. Unconfirmed: the manufacturer hasn't checked it yet.",
+    costNote: "Direct cost at reference prices; an estimate uses your prices.",
     unconfirmed: "Unconfirmed",
+    unconfirmedHint: "The manufacturer hasn't checked it yet.",
     noCost: "No price",
     newNorm: "New norm",
     views: {
@@ -4202,7 +4209,7 @@ export default {
       total: "To collect",
       overdue: "Overdue payments",
       toSend: "To send to ANAF",
-      late: "e-Factura deadline passed",
+      lateCount: "Deadline passed: {count}",
       overdueCount: "{unit} · invoices: {count}",
     },
     status: {
@@ -4230,8 +4237,10 @@ export default {
     card: {
       title: "Invoices",
       invoicedOf: "Invoiced {invoiced} of {accepted} lei",
-      remaining: "lei to invoice, without VAT",
-      list: "Invoices: {count}",
+      invoiced: "Invoiced",
+      invoicedValue: "{invoiced} of {accepted} lei",
+      remaining: "To invoice, without VAT",
+      list: "Invoice list",
       advance: "Advance invoice {percent}",
       final: "Final invoice",
       finalHint: "Issued advances are deducted from the final invoice.",
@@ -4308,7 +4317,7 @@ export default {
       toPay: "Amount to pay",
     },
     details: {
-      title: "Details",
+      title: "Invoice data",
       lead: "Due {date}",
       kind: "Kind",
       deviz: "Estimate",
@@ -4449,7 +4458,7 @@ export default {
     },
     efactura: {
       title: "e-Factura",
-      details: "e-Factura details",
+      details: "Details",
       deadline: "Deadline to send to ANAF: {date}",
       deadlineHint: "5 working days from issue (OUG 89/2025).",
       overdue:
@@ -4538,8 +4547,7 @@ export default {
     basket: {
       title: "Shopping basket",
       open: "Shopping basket",
-      breadcrumb: "Basket",
-      description: "{code} · {title} · store prices with VAT",
+      description: "{title} · store prices with VAT",
       emptyTitle: "This estimate has no materials",
       emptyDescription:
         "Add line items with materials to see where to buy them for less.",
@@ -4662,7 +4670,6 @@ export default {
   },
   compare: {
     title: "Compare revisions",
-    breadcrumb: "Compare",
     description: "{after} against {before} · {title}",
     with: "Compare with",
     option: "{code} · {total} lei",
@@ -4722,7 +4729,6 @@ export default {
   materials: {
     open: "Packaging and waste",
     title: "Packaging and waste",
-    description: "{code} · {title}",
     emptyTitle: "The estimate has no materials yet",
     emptyDescription:
       "Add line items with materials and see them here in whole packages, with what is left over.",
@@ -4736,7 +4742,7 @@ export default {
     table: {
       title: "Shopping list",
       description:
-        "Each material is rounded to whole packages, in the cheapest mix of sizes. Prices are the estimate's, without VAT.",
+        "Rounded to whole packages, in the cheapest mix. Prices from the estimate, without VAT.",
       material: "Material",
       need: "Needed",
       buy: "You buy",
@@ -4759,6 +4765,7 @@ export default {
       product: "The manufacturer's packaging",
       typical: "Usual packaging, to check",
       counted: "By the piece",
+      none: "No packaging",
     },
     kinds: {
       bag: "bag",
@@ -4824,8 +4831,6 @@ export default {
   },
   takeoff: {
     title: "Quantity take-off",
-    breadcrumb: "Take-off",
-    description: "{code} · {title}",
     locked: "The estimate was sent, so its take-off stays as it was.",
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
@@ -5247,8 +5252,6 @@ export default {
   progress: {
     open: "Progress statements",
     title: "Progress statements",
-    breadcrumb: "Progress statements",
-    description: "{code} · {title}",
     notAcceptedTitle: "The estimate is not accepted yet",
     notAcceptedDescription:
       "Progress statements start once the client accepts the estimate. Mark it accepted on its page and come back here.",
@@ -5307,7 +5310,7 @@ export default {
       send: "Mark as sent",
       downloadPdf: "Download PDF",
       nextDraft:
-        "Fill in the “This period” column, download the statement and send it to the beneficiary, then mark it here.",
+        "Fill in “This period”, download the statement and send it to the beneficiary, then mark it here.",
       nextSent: "When the beneficiary confirms it, note here who and when.",
       sentToast: "The statement is marked sent to the beneficiary.",
       approve: "Mark as confirmed",
@@ -5557,11 +5560,10 @@ export default {
     card: {
       title: "Execution",
       executed: "{percent} executed",
-      executedUnit: "executed",
+      executedLabel: "Executed",
       approved: "Confirmed, without VAT",
       noStatements: "No progress statement yet.",
       outstanding: "Guarantee to recover",
-      open: "Open the progress statements",
     },
   },
 } as const satisfies Dictionary;

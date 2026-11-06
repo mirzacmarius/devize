@@ -132,13 +132,15 @@ export default {
     title: "Acasă",
     newEstimate: "Deviz nou",
     lei: "lei",
-    subtitle: "{date} · sume cu TVA",
+    subtitle: "{date} · sume în lei, cu TVA",
     kpi: {
       drafts: "În lucru",
       draftsMeta: "Ciorne: {count}",
       sent: "Trimise clienților",
+      sentShort: "Trimise",
       sentMeta: "Necitite de client: {count}",
       accepted: "Acceptate în 30 de zile",
+      acceptedShort: "Acceptate",
       acceptedMeta: "Acceptate în total: {count}",
       acceptanceRate: "Rată de acceptare: {percent}",
       receivable: "De încasat",
@@ -157,6 +159,9 @@ export default {
       alertUp: "Profitul crește · {code}",
       alertAmount: "{amount} lei",
       alertLeft: "Rămân {left} lei",
+      anaf: "Transmite la ANAF",
+      anafSub: "Termen e-Factura depășit",
+      anafCount: "Facturi: {count}",
       now: "Acum",
       next: "Urmează",
       showAll: "Vezi toate ({count})",
@@ -517,6 +522,7 @@ export default {
     },
     items: {
       title: "Articole",
+      inLei: "sume în lei",
       addNorm: "Adaugă din catalog",
       addCustom: "Articol propriu",
       addSection: "Capitol sau obiect",
@@ -530,8 +536,8 @@ export default {
       columns: {
         item: "Articol",
         quantity: "Cantitate",
-        unitPrice: "Preț unitar (lei)",
-        value: "Valoare (lei)",
+        unitPrice: "Preț unitar",
+        value: "Valoare",
       },
       quantityTimesPrice: "{quantity}\u00a0{unit} × {price}\u00a0lei",
       pricePerUnit: "{price}\u00a0lei/{unit}",
@@ -770,7 +776,7 @@ export default {
     addNorm: {
       title: "Adaugă din catalog",
       description:
-        "Caută după cod sau după lucrare. Costul din listă e de referință; în deviz, resursele iau prețurile de azi, cu tarifele firmei.",
+        "Caută după cod sau lucrare. Costul din listă e de referință; în deviz se folosesc prețurile tale.",
       searchPlaceholder: "Cod sau lucrare, ex. vată bazaltică",
       hint: "Scrie codul normei sau câteva cuvinte despre lucrare, sau alege o categorie. Normele firmei apar primele.",
       searching: "Se caută…",
@@ -1466,6 +1472,7 @@ export default {
   },
   offer: {
     title: "Oferta pentru client",
+    row: "Ofertă",
     hint: "Clientul deschide linkul fără cont, vede devizul pe înțeles și acceptă online.",
     notCreated: "Încă nu e creată",
     acceptedLead: "Semnată {date}",
@@ -1955,8 +1962,9 @@ export default {
   catalog: {
     title: "Catalog",
     costNote:
-      "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale. Neconfirmată: producătorul n-a verificat-o încă.",
+      "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "Neconfirmată",
+    unconfirmedHint: "Producătorul n-a verificat-o încă.",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
     views: {
@@ -4198,7 +4206,7 @@ export default {
       total: "De încasat",
       overdue: "Plăți restante",
       toSend: "De transmis la ANAF",
-      late: "Termen e-Factura depășit",
+      lateCount: "Termen depășit: {count}",
       overdueCount: "{unit} · facturi: {count}",
     },
     status: {
@@ -4226,8 +4234,10 @@ export default {
     card: {
       title: "Facturi",
       invoicedOf: "Facturat {invoiced} din {accepted} lei",
-      remaining: "lei de facturat, fără TVA",
-      list: "Facturi: {count}",
+      invoiced: "Facturat",
+      invoicedValue: "{invoiced} din {accepted} lei",
+      remaining: "De facturat, fără TVA",
+      list: "Lista facturilor",
       advance: "Factură de avans {percent}",
       final: "Factură finală",
       finalHint: "Avansurile emise se scad automat din factura finală.",
@@ -4303,7 +4313,7 @@ export default {
       toPay: "Rest de plată",
     },
     details: {
-      title: "Detalii",
+      title: "Date factură",
       lead: "Scadență {date}",
       kind: "Tip",
       deviz: "Deviz",
@@ -4445,7 +4455,7 @@ export default {
     },
     efactura: {
       title: "e-Factura",
-      details: "Detalii e-Factura",
+      details: "Detalii",
       deadline: "Termen de trimitere la ANAF: {date}",
       deadlineHint: "5 zile lucrătoare de la emitere (OUG 89/2025).",
       overdue:
@@ -4534,8 +4544,7 @@ export default {
     basket: {
       title: "Coș de cumpărături",
       open: "Coș de cumpărături",
-      breadcrumb: "Coș",
-      description: "{code} · {title} · prețuri cu TVA, la magazine",
+      description: "{title} · prețuri cu TVA, la magazine",
       emptyTitle: "Devizul nu are materiale",
       emptyDescription:
         "Adaugă articole cu materiale și vezi aici de unde le cumperi cel mai ieftin.",
@@ -4658,7 +4667,6 @@ export default {
   },
   compare: {
     title: "Comparare revizii",
-    breadcrumb: "Comparare",
     description: "{after} față de {before} · {title}",
     with: "Compară cu",
     option: "{code} · {total} lei",
@@ -4717,7 +4725,6 @@ export default {
   materials: {
     open: "Ambalaje și pierderi",
     title: "Ambalaje și pierderi",
-    description: "{code} · {title}",
     emptyTitle: "Devizul nu are încă materiale",
     emptyDescription:
       "Adaugă articole cu materiale și aici le vezi în ambalaje întregi, cu ce rămâne.",
@@ -4731,7 +4738,7 @@ export default {
     table: {
       title: "Lista de cumpărături",
       description:
-        "Fiecare material e rotunjit la ambalaje întregi, cu cea mai ieftină combinație de mărimi. Prețurile sunt cele din deviz, fără TVA.",
+        "Rotunjit la ambalaje întregi, în cea mai ieftină combinație. Prețuri din deviz, fără TVA.",
       material: "Material",
       need: "Necesar",
       buy: "Cumperi",
@@ -4754,6 +4761,7 @@ export default {
       product: "Ambalajul producătorului",
       typical: "Ambalaj obișnuit, de verificat",
       counted: "La bucată",
+      none: "Fără ambalaj",
     },
     kinds: {
       bag: "sac",
@@ -4819,8 +4827,6 @@ export default {
   },
   takeoff: {
     title: "Antemăsurătoare",
-    breadcrumb: "Antemăsurătoare",
-    description: "{code} · {title}",
     locked: "Devizul e trimis, așa că antemăsurătoarea rămâne cea de atunci.",
     download: { pdf: "Anexa în PDF", xlsx: "Anexa în Excel" },
     card: {
@@ -5238,8 +5244,6 @@ export default {
   progress: {
     open: "Situații de lucrări",
     title: "Situații de lucrări",
-    breadcrumb: "Situații de lucrări",
-    description: "{code} · {title}",
     notAcceptedTitle: "Devizul nu e încă acceptat",
     notAcceptedDescription:
       "Situațiile de lucrări încep după ce clientul acceptă devizul. Marchează devizul acceptat din pagina lui și revino aici.",
@@ -5298,7 +5302,7 @@ export default {
       send: "Marchează trimisă",
       downloadPdf: "Descarcă PDF",
       nextDraft:
-        "Completează coloana „În perioadă”, descarcă situația și trimite-o beneficiarului, apoi marcheaz-o aici.",
+        "Completează „În perioadă”, descarcă situația și trimite-o beneficiarului, apoi marcheaz-o aici.",
       nextSent: "Când beneficiarul o confirmă, notează aici cine și când.",
       sentToast: "Situația e marcată trimisă beneficiarului.",
       approve: "Marchează confirmată",
@@ -5549,11 +5553,10 @@ export default {
     card: {
       title: "Execuție",
       executed: "{percent} executat",
-      executedUnit: "executat",
+      executedLabel: "Executat",
       approved: "Confirmat, fără TVA",
       noStatements: "Nicio situație de lucrări încă.",
       outstanding: "Garanție de recuperat",
-      open: "Deschide situațiile de lucrări",
     },
   },
 } as const;

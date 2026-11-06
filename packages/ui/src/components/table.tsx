@@ -29,7 +29,8 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
         className={cn(
           "w-full caption-bottom border-collapse text-body",
           stack && "table-stack",
-          twoLine && "md:[&>tbody>tr>td]:h-[60px]",
+          twoLine &&
+            "md:[&>tbody>tr>td]:h-[60px] md:[&>tbody>tr>td]:py-[11px] md:[&>tbody>tr>td]:align-baseline",
           className,
         )}
         {...props}

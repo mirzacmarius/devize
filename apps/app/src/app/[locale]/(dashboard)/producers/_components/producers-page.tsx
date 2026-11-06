@@ -2,17 +2,13 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { normalizeText } from "@devize/backend/convex/lib/text";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
 import { useQuery } from "convex/react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { SearchInput } from "@/components/search-input";
@@ -44,8 +40,6 @@ export function ProducersPage() {
             <BreadcrumbLink asChild>
               <Link href="/catalog">{tCatalog("title")}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
@@ -75,44 +69,42 @@ export function ProducersPage() {
               {t("noResults", { text: search })}
             </p>
           )}
-          <ul className="m-0 grid list-none gap-x-3 p-0 sm:grid-cols-2 sm:gap-y-3 xl:grid-cols-3">
+          <ul className="m-0 grid list-none p-0 sm:grid-cols-2 sm:gap-x-12">
             {rows?.map((producer) => (
-              <li key={producer._id}>
+              <li key={producer._id} className="border-t border-border">
                 <Link
                   href={`/producers/${producer._id}`}
-                  className="grid grid-cols-[32px_minmax(0,1fr)] items-center gap-x-3 border-t border-border py-3 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-full sm:rounded-lg sm:border sm:border-card-border sm:p-4"
+                  className="group -mx-2 grid min-h-16 grid-cols-[40px_minmax(0,1fr)_auto_16px] items-center gap-x-3 rounded-md px-2 py-3 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span
                     aria-hidden
-                    className="grid size-8 place-items-center rounded-sm bg-tile text-[11px] font-semibold tracking-[0.02em] text-ink-2"
+                    className="grid size-10 place-items-center rounded-md bg-muted text-[13px] font-medium tracking-[0.02em] text-ink-2"
                   >
                     {initials(producer.name)}
                   </span>
                   <span className="grid min-w-0 gap-0.5">
-                    <span className="flex items-baseline justify-between gap-3">
-                      <span className="min-w-0 truncate text-body font-medium text-ink">
-                        {producer.name}
-                      </span>
-                      {producer.claimed && (
-                        <StatusPill
-                          tone="success"
-                          plain
-                          className="shrink-0 self-center"
-                        >
-                          {t("claimed")}
-                        </StatusPill>
-                      )}
+                    <span className="truncate text-body font-medium text-ink">
+                      {producer.name}
                     </span>
-                    <span className="truncate text-meta tabular-nums text-ink-3">
+                    {producer.edition && (
+                      <span className="truncate text-meta tabular-nums text-ink-3">
+                        {t("edition", { edition: producer.edition })}
+                      </span>
+                    )}
+                  </span>
+                  <span className="grid justify-items-end gap-0.5">
+                    <span className="text-body tabular-nums text-ink">
                       {t("normCount", {
                         count: producer.moreNorms
                           ? t("moreNorms", { count: producer.normCount })
                           : producer.normCount,
                       })}
-                      {producer.edition &&
-                        ` · ${t("edition", { edition: producer.edition })}`}
                     </span>
+                    <StatusPill tone={producer.claimed ? "success" : "draft"}>
+                      {producer.claimed ? t("claimed") : t("unclaimed")}
+                    </StatusPill>
                   </span>
+                  <ChevronRight aria-hidden className="size-4 text-ink-3" />
                 </Link>
               </li>
             ))}

@@ -3,8 +3,8 @@
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Download, TriangleAlert } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
+import { FoldRow, LinkRow } from "@/components/fold-card";
 import { EfacturaPill } from "@/components/invoice-status";
 import { formatCalendarDate, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -70,7 +70,7 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        {live && <EfacturaPill status={efactura.status} late={late} plain />}
+        {live && <EfacturaPill status={efactura.status} late={late} />}
       </CardHeader>
       <CardContent>
         {!settled && deadline}
@@ -99,29 +99,17 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
             </ul>
           </div>
         )}
-        {settled ? (
-          <details>
-            <summary className="text-meta text-ink-2 transition-colors hover:text-ink">
-              {t("details")}
-            </summary>
-            <div className="grid gap-4 pt-3">
+        {!settled && xml}
+        <div className="grid">
+          {settled && (
+            <FoldRow title={t("details")}>
               {deadline}
               {identifiers}
               {xml}
-            </div>
-          </details>
-        ) : (
-          xml
-        )}
-        {live && (
-          <Button
-            variant="link"
-            className="h-auto justify-self-start px-0 text-meta"
-            asChild
-          >
-            <Link href="/settings/billing">{t("settings")}</Link>
-          </Button>
-        )}
+            </FoldRow>
+          )}
+          {live && <LinkRow title={t("settings")} href="/settings/billing" />}
+        </div>
       </CardContent>
     </Card>
   );

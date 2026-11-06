@@ -92,9 +92,14 @@ export function EstimateList() {
         className="md:[&_p]:hidden"
         actions={
           <>
-            <Button variant="outline" onClick={() => setBrowsing(true)}>
+            {/* A phone has room for its icon beside the main action. */}
+            <Button
+              variant="outline"
+              className="max-sm:px-0"
+              onClick={() => setBrowsing(true)}
+            >
               <LayoutTemplate aria-hidden />
-              {tt("open")}
+              <span className="max-sm:sr-only">{tt("open")}</span>
             </Button>
             <Button onClick={startBlank}>
               <Plus aria-hidden />
@@ -194,10 +199,7 @@ export function EstimateList() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <EstimateStatusPill
-                      status={row.status}
-                      className="max-md:h-auto max-md:bg-transparent max-md:pl-0 max-md:pr-0 max-md:text-meta"
-                    />
+                    <EstimateStatusPill status={row.status} />
                   </TableCell>
                   <TableCell className="text-right text-body-lg font-medium tabular-nums">
                     {formatMoney(row.total, locale)}

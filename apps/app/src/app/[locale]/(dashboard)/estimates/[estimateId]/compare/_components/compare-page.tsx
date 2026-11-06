@@ -5,7 +5,6 @@ import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { Button } from "@devize/ui/button";
@@ -108,8 +107,6 @@ function Comparison() {
           <BreadcrumbLink asChild>
             <Link href={`/estimates/${estimateId}`}>{code}</Link>
           </BreadcrumbLink>
-          <BreadcrumbSeparator />
-          <BreadcrumbPage>{t("breadcrumb")}</BreadcrumbPage>
         </Breadcrumb>
       }
       title={t("title")}

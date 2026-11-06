@@ -284,15 +284,11 @@ export function CatalogPage() {
                             // Under its producer where that column shows.
                             <span
                               className={cn(
-                                "ml-2 inline-flex items-center gap-1.5 whitespace-nowrap text-warning",
+                                "whitespace-nowrap",
                                 !isOwn && "lg:hidden",
                               )}
                             >
-                              <span
-                                aria-hidden
-                                className="size-1.5 rounded-full bg-warning-dot"
-                              />
-                              {t("unconfirmed")}
+                              {` · ${t("unconfirmed")}`}
                             </span>
                           )}
                         </span>
@@ -307,7 +303,10 @@ export function CatalogPage() {
                               : "–"}
                           </span>
                           {unconfirmed(norm) && (
-                            <StatusPill tone="warning" plain>
+                            <StatusPill
+                              tone="draft"
+                              title={t("unconfirmedHint")}
+                            >
                               {t("unconfirmed")}
                             </StatusPill>
                           )}
@@ -329,9 +328,7 @@ export function CatalogPage() {
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-right tabular-nums">
                       {norm.referenceCost === undefined ? (
-                        <span className="text-meta text-ink-3">
-                          {t("noCost")}
-                        </span>
+                        <StatusPill tone="warning">{t("noCost")}</StatusPill>
                       ) : (
                         formatMoney(norm.referenceCost, locale)
                       )}
