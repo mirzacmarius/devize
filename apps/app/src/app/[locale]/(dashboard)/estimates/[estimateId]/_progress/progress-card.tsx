@@ -7,6 +7,7 @@ import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { Fact, FactList } from "@/components/fact-list";
+import { RailFigure } from "@/components/rail-figure";
 import { formatCalendarDate, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
@@ -51,23 +52,24 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
     <Card id="progress" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        {overview.statements.length > 0 && (
-          <span className="text-body font-medium tabular-nums text-ink">
-            {t("executed", { percent: formatPercent(percent, locale) })}
-          </span>
-        )}
       </CardHeader>
       <CardContent>
         {overview.statements.length === 0 ? (
           <p className="m-0 text-body text-ink-2">{t("noStatements")}</p>
         ) : (
-          <MeterBar
-            value={percent}
-            tone={percent > 100 ? "warning" : "action"}
-            label={t("executed", {
-              percent: formatPercent(percent, locale),
-            })}
-          />
+          <div className="grid gap-2">
+            <RailFigure
+              value={formatPercent(percent, locale)}
+              unit={t("executedUnit")}
+            />
+            <MeterBar
+              value={percent}
+              tone={percent > 100 ? "warning" : "action"}
+              label={t("executed", {
+                percent: formatPercent(percent, locale),
+              })}
+            />
+          </div>
         )}
         <FactList>
           {overview.approved && (

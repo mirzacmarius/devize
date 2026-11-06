@@ -208,6 +208,17 @@ export function parseMoney(input: string): number | undefined {
   return parseDecimal(text);
 }
 
+// A number stays on one line with its unit, so a title never ends a line on "50"
+// and starts the next on "mm".
+const UNIT_AFTER_NUMBER =
+  /(\d) (mm²|cm²|m²|m³|mm|cm|mp|mc|kg|km|buc|m|l|t)(?![\p{L}\p{N}])/gu;
+
+export function keepUnits(text: string): string {
+  return text
+    .replace(/(\d) × (?=\d)/g, "$1\u00a0×\u00a0")
+    .replace(UNIT_AFTER_NUMBER, "$1\u00a0$2");
+}
+
 /** A Deviz's number as the design writes codes: DVZ-0142, and DVZ-0142-R2 for its second revision. */
 export function estimateCode(number: number, revision = 1): string {
   const code = `DVZ-${String(number).padStart(4, "0")}`;

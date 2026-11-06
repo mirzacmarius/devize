@@ -166,7 +166,7 @@ function Kpi({
   meta: ReactNode;
 }) {
   return (
-    <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-3 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:gap-1 sm:p-5 xl:[&:not(:first-child)]:border-l">
+    <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-2.5 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:gap-1 sm:p-5 xl:[&:not(:first-child)]:border-l">
       <p className="m-0 truncate text-meta text-ink-2">{label}</p>
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
         <span className="text-[22px] leading-8 tracking-[-0.01em] tabular-nums text-ink [font-weight:var(--weight-figure)] sm:text-kpi">
@@ -217,11 +217,12 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
       </section>
     );
   return (
-    <Card>
+    // On a phone the next section's hairline closes the list.
+    <Card className="max-sm:-mb-3">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <CardContent className="gap-3 pb-2">
+      <CardContent className="gap-5 pb-2">
         {todo === undefined ? (
           <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
         ) : todo.length === 0 ? (
@@ -276,10 +277,13 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
           : t("question", { code, count: formatCount(item.count, locale) });
       break;
     case "alert":
-      text = t("alert", {
-        code,
-        amount: `${item.profitChange > 0 ? "+" : "−"}${formatMoney(Math.abs(item.profitChange), locale)}`,
-      });
+      text =
+        item.profitChange === 0
+          ? t("alert", { code })
+          : t(item.profitChange < 0 ? "alertDown" : "alertUp", {
+              code,
+              amount: formatMoney(Math.abs(item.profitChange), locale),
+            });
       break;
     case "deadline":
       text =
@@ -323,9 +327,12 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
         </span>
         <span className="grid min-w-0">
           <span className="text-body text-ink">{text}</span>
-          <span className="truncate text-meta text-ink-3">
+          <span className="text-meta text-ink-3 max-sm:line-clamp-2 sm:truncate">
+            {item.kind === "alert" &&
+              `${t("alertLeft", {
+                left: formatMoney(item.profitLeft, locale),
+              })} · `}
             {item.estimate.title}
-            {item.estimate.clientName && ` · ${item.estimate.clientName}`}
           </span>
         </span>
       </Link>
@@ -389,8 +396,8 @@ function RecentCard({
                     {" · "}
                     {formatDay(row.updatedAt, locale)}
                   </span>
-                  <span className="justify-self-end">
-                    <EstimateStatusPill status={row.status} />
+                  <span className="flex justify-end">
+                    <EstimateStatusPill status={row.status} plain />
                   </span>
                 </Link>
               </li>

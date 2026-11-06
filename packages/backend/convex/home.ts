@@ -33,7 +33,7 @@ type EstimateSummary = {
 // money moving, a tender's deadline, an Ofertă about to expire, one unread.
 type Todo = { estimate: EstimateSummary } & (
   | { kind: "question"; count: number }
-  | { kind: "alert"; profitChange: number }
+  | { kind: "alert"; profitChange: number; profitLeft: number }
   | { kind: "deadline"; date: string; days: number }
   | { kind: "expiring"; days: number }
   | { kind: "unread"; days: number }
@@ -187,6 +187,7 @@ export const overview = query({
           clientName: alert.estimate.clientName,
         },
         profitChange: alert.profitLeft - alert.sentProfit,
+        profitLeft: alert.profitLeft,
       });
     }
 

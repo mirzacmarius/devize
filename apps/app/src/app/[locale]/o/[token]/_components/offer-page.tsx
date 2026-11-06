@@ -296,7 +296,7 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
   const t = useScopedI18n("offerPage");
   return (
     <Card>
-      <CardContent className="gap-2 py-5">
+      <CardContent className="gap-2 py-4 sm:py-5">
         <span className="text-meta font-medium text-ink-3">
           {t("messageFrom", { firm })}
         </span>

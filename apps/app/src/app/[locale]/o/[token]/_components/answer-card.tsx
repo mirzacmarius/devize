@@ -90,7 +90,7 @@ function TotalBlock({
         )}
       >
         <Amount value={formatMoney(total, locale)} />{" "}
-        <span className="text-body-lg text-ink-3">lei</span>
+        <span className="text-meta text-ink-3">lei</span>
       </span>
       {deposit !== undefined && (
         <span className="text-meta text-ink-2">
@@ -312,9 +312,8 @@ export function MobileAnswerBar({
               updating && "opacity-60",
             )}
           >
-            {t("totals.lei", {
-              total: <Amount value={formatMoney(total, locale)} />,
-            })}
+            {formatMoney(total, locale)}{" "}
+            <span className="text-meta text-ink-3">lei</span>
           </span>
           <span className="truncate text-meta tabular-nums text-ink-3">
             {note || t("totalNoVat")}

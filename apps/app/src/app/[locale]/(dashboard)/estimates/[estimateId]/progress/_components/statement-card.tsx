@@ -163,6 +163,19 @@ export function StatementCard({
             </StatusPill>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label={t("downloadLabel.pdf")}
+              disabled={downloading !== undefined}
+              onClick={() => download("pdf")}
+            >
+              {downloading === "pdf" && (
+                <Icons.Loader className="animate-spin" aria-hidden />
+              )}
+              {t("downloadPdf")}
+            </Button>
             {statement.status === "draft" && statement.latest && (
               <Button
                 type="button"
@@ -173,11 +186,10 @@ export function StatementCard({
                 {t("send")}
               </Button>
             )}
-            {statement.status !== "approved" && statement.latest && (
+            {statement.status === "sent" && statement.latest && (
               <Button
                 type="button"
                 size="sm"
-                variant={statement.status === "sent" ? "default" : "outline"}
                 disabled={busy}
                 onClick={() => setDialog("approve")}
               >
@@ -200,6 +212,11 @@ export function StatementCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-56">
+                {statement.status === "draft" && statement.latest && (
+                  <DropdownMenuItem onSelect={() => setDialog("approve")}>
+                    {t("approve")}
+                  </DropdownMenuItem>
+                )}
                 {editable && (
                   <>
                     <DropdownMenuItem onSelect={() => setDialog("edit")}>
@@ -327,6 +344,7 @@ function RowsTable({
   const run = useRun();
   const setQuantity = useMutation(api.progress.statements.setQuantity);
   const { editable } = statement;
+  const fillable = editable && !busy;
   let group: string | undefined;
   let periodValue = 0;
 
@@ -370,7 +388,7 @@ function RowsTable({
                   </TableCell>
                 </TableGroupRow>
               )}
-              <TableRow className="group/row [&>td]:py-2.5">
+              <TableRow className="group/row [&>td]:py-3">
                 <TableCell className="relative align-top">
                   <div className="grid min-w-64 justify-items-start gap-0.5 pr-14">
                     <span>
@@ -431,22 +449,28 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-muted text-right align-top">
+                <TableCell className="whitespace-nowrap bg-sunken text-right align-top">
                   <InlineNumber
+                    fixed
                     value={row.quantity}
                     format={(value) =>
-                      value === 0 ? "–" : formatQuantity(value, locale)
+                      value !== 0
+                        ? formatQuantity(value, locale)
+                        : fillable
+                          ? ""
+                          : "–"
                     }
+                    placeholder={formatQuantity(0, locale)}
                     label={t("quantityLabel", { title: row.title })}
-                    disabled={!editable || busy}
+                    disabled={!fillable}
                     onCommit={(quantity) =>
                       void run(() => setQuantity({ rowId: row._id, quantity }))
                     }
                     className={cn(
                       // Up by the field's padding, level with the row's first line.
-                      "-my-1 h-7",
+                      "-my-1.5 h-8 w-20",
                       // What can be typed in looks like it.
-                      editable && !busy && "border-input bg-field",
+                      fillable && "border-input bg-field",
                       row.quantity === 0 ? "text-ink-3" : "font-medium",
                     )}
                   />

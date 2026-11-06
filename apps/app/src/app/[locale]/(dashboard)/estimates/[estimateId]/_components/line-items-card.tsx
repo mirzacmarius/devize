@@ -33,7 +33,12 @@ import { Fragment, type ReactNode, useState } from "react";
 import { InlineNumber } from "@/components/inline-number";
 import { useNormSource } from "@/components/norm-source";
 import { useRun } from "@/components/use-run";
-import { formatMoney, formatQuantity, formatUnit } from "@/lib/format";
+import {
+  formatMoney,
+  formatQuantity,
+  formatUnit,
+  keepUnits,
+} from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { groupLines, type NumberedItem, type SectionGroup } from "./groups";
 import { ResourceTable } from "./resource-table";
@@ -196,8 +201,9 @@ export function LineItemsCard({
             {!isEmpty && (
               <>
                 <Button
-                  variant="ai"
+                  variant="ghost"
                   size="sm"
+                  className="text-ai hover:text-ai"
                   onClick={() => open({ kind: "proposal" })}
                 >
                   <Icons.AI aria-hidden />
@@ -308,13 +314,15 @@ export function LineItemsCard({
                   {t("items.columns.item")}
                 </TableHead>
                 {/* Over the numbers, not over the unit that follows them. */}
-                <TableHead className={cn("pr-[52px] text-right", FROM_MID)}>
+                <TableHead
+                  className={cn("w-[140px] pr-[52px] text-right", FROM_MID)}
+                >
                   {t("items.columns.quantity")}
                 </TableHead>
-                <TableHead className={cn("text-right", FROM_WIDE)}>
+                <TableHead className={cn("w-[104px] text-right", FROM_WIDE)}>
                   {t("items.columns.unitPrice")}
                 </TableHead>
-                <TableHead className="text-right">
+                <TableHead className="w-[104px] text-right">
                   {t("items.columns.value")}
                 </TableHead>
               </TableRow>
@@ -609,7 +617,9 @@ function ItemRows({
               <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
                 {index}.{" "}
               </span>
-              <span className="group-hover:underline">{item.title}</span>
+              <span className="[text-wrap:pretty] group-hover:underline">
+                {keepUnits(item.title)}
+              </span>
             </span>
             <span
               className={cn(

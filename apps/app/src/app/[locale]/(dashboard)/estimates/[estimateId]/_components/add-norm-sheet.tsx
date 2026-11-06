@@ -22,7 +22,7 @@ import {
 import { toast } from "@devize/ui/sonner";
 import { Textarea } from "@devize/ui/textarea";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import {
   type FormEvent,
@@ -44,6 +44,7 @@ import {
   formatMoney,
   formatPercent,
   formatUnit,
+  keepUnits,
   parseDecimal,
 } from "@/lib/format";
 import { resourceKinds } from "@/lib/resource-values";
@@ -255,29 +256,33 @@ function AddNorm({
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_auto_1rem] items-center gap-x-3 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="-mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] gap-0.5 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="grid min-w-0 gap-0.5">
-                      <span className="text-body text-ink-2">
-                        <MatchedWords text={norm.title} words={words} />
-                      </span>
-                      <span className="text-meta text-ink-3">
+                    <span className="text-body text-ink [text-wrap:pretty]">
+                      <MatchedWords
+                        text={keepUnits(norm.title)}
+                        words={words}
+                      />
+                    </span>
+                    <span className="flex items-baseline justify-between gap-3 text-meta text-ink-3">
+                      <span className="min-w-0 truncate">
                         <span className="tabular-nums">{norm.code}</span>
+                        {norm.category && ` · ${norm.category}`}
                         {norm.source !== "base" && ` · ${normSource(norm)}`}
                       </span>
+                      <span className="shrink-0 whitespace-nowrap tabular-nums">
+                        {norm.referenceCost === undefined
+                          ? formatUnit(norm.unit, locale)
+                          : t("items.pricePerUnit", {
+                              price: (
+                                <span className="text-body font-medium text-ink">
+                                  {formatMoney(norm.referenceCost, locale)}
+                                </span>
+                              ),
+                              unit: formatUnit(norm.unit, locale),
+                            })}
+                      </span>
                     </span>
-                    <span className="whitespace-nowrap text-right text-meta tabular-nums text-ink-3">
-                      {norm.referenceCost === undefined
-                        ? formatUnit(norm.unit, locale)
-                        : t("items.pricePerUnit", {
-                            price: formatMoney(norm.referenceCost, locale),
-                            unit: formatUnit(norm.unit, locale),
-                          })}
-                    </span>
-                    <ChevronRight
-                      aria-hidden
-                      className="size-4 text-ink-3 transition-transform group-hover:translate-x-0.5"
-                    />
                   </button>
                 </li>
               ))}
@@ -330,7 +335,7 @@ function MatchedWords({
   words: readonly string[];
 }) {
   if (words.length === 0) {
-    return <span className="font-medium text-ink">{text}</span>;
+    return text;
   }
   let offset = 0;
   return text.split(/(\s+)/).map((part) => {
@@ -338,7 +343,7 @@ function MatchedWords({
     offset += part.length;
     const plain = normalizeText(part);
     return plain && words.some((word) => plain.includes(word)) ? (
-      <span key={key} className="font-medium text-ink">
+      <span key={key} className="font-semibold">
         {part}
       </span>
     ) : (

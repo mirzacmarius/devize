@@ -78,7 +78,7 @@ export default {
   login: {
     title: "Intră în Devize",
     heading: "Intră în cont",
-    description: "Creează devize cu norme de la producători și prețuri la zi.",
+    description: "Devize cu norme de la producători și prețuri la zi.",
     brand: {
       headline: "Devizul corect, cu prețurile de azi.",
     },
@@ -150,7 +150,10 @@ export default {
         "Nimic urgent: ofertele sunt citite, întrebările au răspuns și prețurile sunt la zi.",
       questionOne: "Răspunde la o întrebare · {code}",
       question: "Răspunde la {count} întrebări · {code}",
-      alert: "Verifică prețurile: profit {amount} lei · {code}",
+      alert: "Verifică prețurile · {code}",
+      alertDown: "Profitul scade cu {amount} lei · {code}",
+      alertUp: "Profitul crește cu {amount} lei · {code}",
+      alertLeft: "Profit rămas: {left} lei",
       now: "Acum",
       next: "Urmează",
       showAll: "Vezi toate ({count})",
@@ -421,6 +424,7 @@ export default {
       offer: "Ofertă",
       progress: "Execuție",
       invoices: "Facturi",
+      invoiced: "Facturat, fără TVA",
       documents: "Documente",
     },
     breadcrumb: "Unde ești",
@@ -465,6 +469,7 @@ export default {
     },
     actions: {
       createOffer: "Creează oferta",
+      openChecks: "Verificări rămase: {count}",
       details: "Date deviz",
       markSent: "Marchează ca trimis",
       markAccepted: "Acceptat de client",
@@ -1797,7 +1802,6 @@ export default {
       title: "Lucrările",
       count: "Lucrări: {count}",
       line: "{quantity} {unit} × {price} lei",
-      lei: "{total} lei",
       materials: "Materiale",
       showMaterials: "Ce materiale",
       hideMaterials: "Ascunde materialele",
@@ -1817,7 +1821,6 @@ export default {
       vat: "TVA {rate}",
       total: "Total cu TVA",
       totalNoVat: "Total",
-      lei: "{total} lei",
       noVat: "Oferta nu include TVA.",
       showDetails: "Vezi calculul complet",
       hideDetails: "Ascunde calculul",
@@ -1943,7 +1946,8 @@ export default {
     title: "Catalog",
     costNote:
       "Costul e direct, la prețuri de referință, pe unitatea normei. În deviz se calculează cu prețurile și tarifele firmei.",
-    unconfirmed: "neconfirmată",
+    unconfirmed: "Neconfirmată",
+    noCost: "Fără preț",
     newNorm: "Normă nouă",
     views: {
       label: "Normele afișate",
@@ -3185,11 +3189,13 @@ export default {
       "Încă nu e niciun producător în catalog. Profilurile apar pe măsură ce publicăm normele lor.",
     columns: {
       name: "Producător",
+      norms: "Norme",
       profile: "Profil",
       edition: "Ediția normelor",
     },
     claimed: "Revendicat",
     unclaimed: "Nerevendicat",
+    moreNorms: "{count}+",
     searchPlaceholder: "Caută un producător",
     noResults: "Niciun producător nu se potrivește cu „{text}”.",
     breadcrumb: "Unde ești",
@@ -4181,13 +4187,13 @@ export default {
     draftCode: "Ciornă",
     overdue: "Restantă",
     owedPart: "de încasat {owed}",
-    lateOne: "{code}: termenul pentru e-Factura a trecut pe {date}",
-    lateMany: "Facturi cu termenul pentru e-Factura depășit: {count}.",
     lateOpen: "Deschide factura",
     lateOpenFirst: "Deschide-o pe prima",
     receivable: {
       total: "De încasat",
       overdue: "Plăți restante",
+      toSend: "De transmis la ANAF",
+      late: "Termen e-Factura depășit",
       overdueCount: "{unit} · facturi: {count}",
     },
     status: {
@@ -4214,8 +4220,9 @@ export default {
     efacturaDue: "până la {date}",
     card: {
       title: "Facturi",
-      invoicedOf: "Facturat {invoiced} din {accepted} lei, fără TVA",
-      remainingLead: "{amount} lei de facturat",
+      invoicedOf: "Facturat {invoiced} din {accepted} lei",
+      remaining: "lei de facturat, fără TVA",
+      list: "Facturi: {count}",
       advance: "Factură de avans {percent}",
       final: "Factură finală",
       finalHint: "Avansurile emise se scad automat din factura finală.",
@@ -4433,6 +4440,7 @@ export default {
     },
     efactura: {
       title: "e-Factura",
+      details: "Detalii e-Factura",
       deadline: "Termen de trimitere la ANAF: {date}",
       deadlineHint: "5 zile lucrătoare de la emitere (OUG 89/2025).",
       overdue:
@@ -4710,7 +4718,7 @@ export default {
     summary: {
       title: "De cumpărat",
       packages: "Ambalaje întregi",
-      bought: "Cumpărăturile",
+      bought: "Cumpărăturile, fără TVA",
       leftover: "Din care resturi",
       inEstimate: "Materialele din deviz",
     },
@@ -5283,6 +5291,7 @@ export default {
       completed: "Articole aduse la cantitatea din contract: {count}.",
       completedNone: "Toate articolele erau deja la cantitatea din contract.",
       send: "Marchează trimisă",
+      downloadPdf: "Descarcă PDF",
       nextDraft:
         "Completează coloana „În perioadă”, descarcă situația și trimite-o beneficiarului, apoi marcheaz-o aici.",
       nextSent: "Când beneficiarul o confirmă, notează aici cine și când.",
@@ -5535,6 +5544,7 @@ export default {
     card: {
       title: "Execuție",
       executed: "{percent} executat",
+      executedUnit: "executat",
       approved: "Confirmat, fără TVA",
       noStatements: "Nicio situație de lucrări încă.",
       outstanding: "Garanție de recuperat",

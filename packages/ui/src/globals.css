@@ -15,7 +15,7 @@
   --shell: 60 12% 95.1%; /* #f4f4f1 */
   --panel: 0 0% 100%; /* #ffffff */
   --card: 0 0% 100%; /* #ffffff */
-  --card-border: var(--border);
+  --card-border: 60 6.7% 88.2%; /* #e3e3df: a card's edge, the rule under a table's heads */
   --sunken: 60 12.5% 96.9%; /* #f8f8f6: a band inside a card, a quiet box */
   --muted: 60 9.1% 93.5%; /* #f0f0ed */
   --field: 0 0% 100%; /* #ffffff: editable looks open; disabled looks `muted` */
@@ -23,17 +23,18 @@
   --nav-active: 60 8.3% 90.6%; /* #e9e9e5: the current page in the sidebar */
   --tile: 60 14.3% 95.9%; /* #f6f6f3: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 60 4% 10% / 0.4;
+  --scrim: 60 4% 10% / 0.26;
 
   /* Lines */
-  --border: 60 7% 91.6%; /* #ebebe8 */
+  --border: 60 8.1% 92.7%; /* #eeeeeb */
   --border-control: 60 5% 84.3%; /* #d9d9d5: inputs and outlined buttons */
   --tick: 60 5% 84.3%; /* #d9d9d5 */
+  --meter: 60 2.3% 42.2%; /* #6e6e69: how far along, quieter than a button */
 
   /* Text */
   --ink: 60 3.8% 10.2%; /* #1b1b19 */
-  --ink-2: 60 2% 29.6%; /* #4d4d4a */
-  --ink-3: 60 1.6% 35.5%; /* #5c5c59: 6.7:1 on white */
+  --ink-2: 60 2.2% 26.5%; /* #454542 */
+  --ink-3: 60 2.1% 36.9%; /* #60605c: 6.3:1 on white */
 
   /* Action */
   --action: 60 3.3% 11.8%; /* #1f1f1d */
@@ -48,7 +49,7 @@
   --success: 151.2 48.3% 29.6%; /* #27704d */
   --success-soft: 138.5 35.1% 92.7%; /* #e6f3ea */
   --success-dot: 149.7 47.9% 42.9%; /* #39a26d */
-  --warning: 38.1 74.8% 28%; /* #7d5612: 6.5:1 on white */
+  --warning: 38.2 80.5% 24.1%; /* #6f4b0c: 7.8:1 on white */
   --warning-soft: 37.5 88.9% 92.9%; /* #fdf1dd */
   --warning-dot: 35.5 79.6% 55.9%; /* #e89f35 */
   --danger: 2.7 64.4% 40.8%; /* #ab2b25 */
@@ -84,28 +85,31 @@
   --shell: 60 3.7% 5.3%; /* #0e0e0d */
   --panel: 60 4.2% 9.4%; /* #191917 */
   --weight-figure: 350;
-  --card: 60 2.9% 13.7%; /* #242422 */
-  --card-border: 60 1.8% 21.6%; /* #383836 */
-  --sunken: 60 2.4% 16.5%; /* #2b2b29 */
+  --card: 60 1.5% 12.7%; /* #212120 */
+  --card-border: 60 1.7% 22.7%; /* #3b3b39 */
+  --sunken: 60 2.3% 17.3%; /* #2d2d2b */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
-  --selected: 60 1.5% 26.7%; /* #454543: a segment raised on its rail */
+  --selected: 60 3% 33.1%; /* #575752: a segment raised on its rail */
   --nav-active: 60 2.3% 17.3%; /* #2d2d2b */
   --tile: 60 2.4% 16.5%; /* #2b2b29 */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
-  --scrim: 0 0% 0% / 0.5;
+  --scrim: 0 0% 0% / 0.42;
 
-  --border: 60 2% 19.2%; /* #323230 */
-  --border-control: 60 2.3% 26.1%; /* #444441 */
+  --border: 60 1.9% 20.8%; /* #363634 */
+  --border-control: 60 2.5% 31.4%; /* #52524e */
   --tick: 60 2.1% 28.4%; /* #4a4a47 */
+  --meter: 60 3.2% 62.7%; /* #a3a39d */
 
   --ink: 60 9.5% 91.8%; /* #ecece8 */
   --ink-2: 60 5% 80.2%; /* #cfcfca */
   --ink-3: 60 3.7% 68.6%; /* #b2b2ac: 8.3:1 on the panel */
 
-  --action: 60 9.5% 91.8%; /* #ecece8 */
+  --action: 60 6.3% 84.5%; /* #dadad5: off-white, so a button doesn't glare */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
+
+  --brand: 67.8 100% 43.9%; /* #c3e000: a step quieter on a dark page */
 
   --success: 142 43.6% 69.4%; /* #8fd3a8 */
   --success-soft: 145.7 25.9% 15.9%; /* #1e3327 */
@@ -305,6 +309,10 @@
       border-radius: var(--radius);
     }
   }
+  /* A title with a line under it starts where a title alone sits. */
+  [data-slot="card-header"]:has(p) {
+    padding-top: 21px;
+  }
   /* Beside the main card, a column of sections rather than a stack of cards. */
   @media (min-width: 1280px) {
     .rail-sections > [data-slot="card"] {
@@ -348,13 +356,17 @@
     div:has(> .items-table) {
       overflow: visible;
     }
+    /* The heads' room above them, for when they stick, isn't a gap at rest. */
+    .items-table {
+      margin-top: -6px;
+    }
     .items-table > thead th {
       position: sticky;
       top: 44px;
       z-index: 10;
       padding-top: 6px;
       background: hsl(var(--card));
-      box-shadow: inset 0 -1px 0 hsl(var(--border));
+      box-shadow: inset 0 -1px 0 hsl(var(--card-border));
     }
     .items-table > thead th:first-child::before,
     .items-table > thead th:last-child::after {
@@ -363,7 +375,7 @@
       inset-block: 0;
       width: var(--card-pad);
       background: hsl(var(--card));
-      box-shadow: inset 0 -1px 0 hsl(var(--border));
+      box-shadow: inset 0 -1px 0 hsl(var(--card-border));
     }
     .items-table > thead th:first-child::before {
       right: 100%;
@@ -391,6 +403,12 @@
   }
   .band-end::after {
     left: 100%;
+  }
+  /* The Articole on a wider card: columns that don't move with their contents. */
+  @container (min-width: 38rem) {
+    .items-table {
+      table-layout: fixed;
+    }
   }
   /* The Articole on a narrow card: each row is its text, end to end. */
   @container (max-width: 37.99rem) {

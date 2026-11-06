@@ -61,7 +61,7 @@ export function ProductsCard() {
             <p className="m-0 text-meta text-ink-3">{t("emptyDescription")}</p>
           </div>
         ) : (
-          <Table>
+          <Table twoLine>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("product")}</TableHead>

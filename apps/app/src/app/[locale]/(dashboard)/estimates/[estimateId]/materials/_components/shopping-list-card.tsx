@@ -56,7 +56,7 @@ export function ShoppingListCard({
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Table bleed className="min-w-[44rem]">
+        <Table bleed twoLine className="min-w-[44rem]">
           <TableHeader>
             <TableRow>
               <TableHead>{t("material")}</TableHead>

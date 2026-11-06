@@ -92,8 +92,7 @@ export default {
       equipment: "Equipment and transport",
       subtotal: "Total without VAT",
     },
-    description:
-      "Build estimates with manufacturers' norms and up-to-date prices.",
+    description: "Estimates with manufacturers' norms and up-to-date prices.",
     google: "Continue with Google",
     or: "or",
     email: "Email",
@@ -152,7 +151,10 @@ export default {
         "Nothing urgent: the offers are read, the questions answered and the prices up to date.",
       questionOne: "Answer a question · {code}",
       question: "Answer {count} questions · {code}",
-      alert: "Check prices: profit {amount} lei · {code}",
+      alert: "Check prices · {code}",
+      alertDown: "Profit drops by {amount} lei · {code}",
+      alertUp: "Profit rises by {amount} lei · {code}",
+      alertLeft: "Profit left: {left} lei",
       now: "Now",
       next: "Coming up",
       showAll: "See all ({count})",
@@ -423,6 +425,7 @@ export default {
       offer: "Offer",
       progress: "Execution",
       invoices: "Invoices",
+      invoiced: "Invoiced, without VAT",
       documents: "Documents",
     },
     breadcrumb: "You are here",
@@ -468,6 +471,7 @@ export default {
     },
     actions: {
       createOffer: "Create the offer",
+      openChecks: "Checks left: {count}",
       details: "Estimate details",
       markSent: "Mark as sent",
       markAccepted: "Accepted by client",
@@ -1800,7 +1804,6 @@ export default {
       title: "The works",
       count: "Works: {count}",
       line: "{quantity} {unit} × {price} lei",
-      lei: "{total} lei",
       materials: "Materials",
       showMaterials: "Which materials",
       hideMaterials: "Hide materials",
@@ -1820,7 +1823,6 @@ export default {
       vat: "VAT {rate}",
       total: "Total incl. VAT",
       totalNoVat: "Total",
-      lei: "{total} lei",
       noVat: "The offer includes no VAT.",
       showDetails: "See the full calculation",
       hideDetails: "Hide the calculation",
@@ -1947,7 +1949,8 @@ export default {
     title: "Catalog",
     costNote:
       "The cost is direct, at reference prices, per unit of the norm. In an estimate it uses the company's prices and rates.",
-    unconfirmed: "unconfirmed",
+    unconfirmed: "Unconfirmed",
+    noCost: "No price",
     newNorm: "New norm",
     views: {
       label: "Norms shown",
@@ -3189,11 +3192,13 @@ export default {
       "No manufacturers in the catalog yet. Profiles appear as we publish their norms.",
     columns: {
       name: "Manufacturer",
+      norms: "Norms",
       profile: "Profile",
       edition: "Norms edition",
     },
     claimed: "Claimed",
     unclaimed: "Unclaimed",
+    moreNorms: "{count}+",
     searchPlaceholder: "Search manufacturers",
     noResults: "No manufacturer matches “{text}”.",
     breadcrumb: "You are here",
@@ -4186,13 +4191,13 @@ export default {
     draftCode: "Draft",
     overdue: "Overdue",
     owedPart: "to collect {owed}",
-    lateOne: "{code}: the e-Factura deadline passed on {date}",
-    lateMany: "Invoices past the e-Factura deadline: {count}.",
     lateOpen: "Open the invoice",
     lateOpenFirst: "Open the first",
     receivable: {
       total: "To collect",
       overdue: "Overdue payments",
+      toSend: "To send to ANAF",
+      late: "e-Factura deadline passed",
       overdueCount: "{unit} · invoices: {count}",
     },
     status: {
@@ -4219,8 +4224,9 @@ export default {
     efacturaDue: "by {date}",
     card: {
       title: "Invoices",
-      invoicedOf: "Invoiced {invoiced} of {accepted} lei, before VAT",
-      remainingLead: "{amount} lei to invoice",
+      invoicedOf: "Invoiced {invoiced} of {accepted} lei",
+      remaining: "lei to invoice, without VAT",
+      list: "Invoices: {count}",
       advance: "Advance invoice {percent}",
       final: "Final invoice",
       finalHint: "Issued advances are deducted from the final invoice.",
@@ -4438,6 +4444,7 @@ export default {
     },
     efactura: {
       title: "e-Factura",
+      details: "e-Factura details",
       deadline: "Deadline to send to ANAF: {date}",
       deadlineHint: "5 working days from issue (OUG 89/2025).",
       overdue:
@@ -4716,7 +4723,7 @@ export default {
     summary: {
       title: "To buy",
       packages: "Whole packages",
-      bought: "The shopping",
+      bought: "Purchases, without VAT",
       leftover: "Of which left over",
       inEstimate: "Materials in the estimate",
     },
@@ -5293,6 +5300,7 @@ export default {
       completed: "Items brought to their contract quantity: {count}.",
       completedNone: "Every item was already at its contract quantity.",
       send: "Mark as sent",
+      downloadPdf: "Download PDF",
       nextDraft:
         "Fill in the “This period” column, download the statement and send it to the beneficiary, then mark it here.",
       nextSent: "When the beneficiary confirms it, note here who and when.",
@@ -5544,6 +5552,7 @@ export default {
     card: {
       title: "Execution",
       executed: "{percent} executed",
+      executedUnit: "executed",
       approved: "Confirmed, without VAT",
       noStatements: "No progress statement yet.",
       outstanding: "Guarantee to recover",

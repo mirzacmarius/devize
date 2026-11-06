@@ -16,6 +16,8 @@ export function InlineNumber({
   label,
   disabled,
   min = 0,
+  fixed = false,
+  placeholder,
   className,
 }: {
   value: number;
@@ -25,6 +27,9 @@ export function InlineNumber({
   label: string;
   disabled?: boolean;
   min?: number;
+  // Its width comes from `className`, so a column of them lines up.
+  fixed?: boolean;
+  placeholder?: string;
   className?: string;
 }) {
   const locale = useCurrentLocale();
@@ -55,8 +60,13 @@ export function InlineNumber({
       inputMode="decimal"
       aria-label={label}
       value={shown}
+      placeholder={placeholder}
       // As wide as the number, so its column is no wider than its numbers.
-      style={{ width: `calc(${Math.max(shown.length, 4)}ch + 18px)` }}
+      style={
+        fixed
+          ? undefined
+          : { width: `calc(${Math.max(shown.length, 4)}ch + 18px)` }
+      }
       onFocus={(event) => {
         setDraft(formatInputNumber(value, locale));
         // Select after React puts the raw number in.
@@ -78,7 +88,7 @@ export function InlineNumber({
       className={cn(
         // The field's own edge and padding hang past the column, so the number
         // lines up with the head and the plain numbers around it.
-        "-mr-[9px] h-8 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors hover:border-input focus:border-ink/60 focus:bg-field focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10",
+        "-mr-[9px] h-8 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors placeholder:text-ink-3 hover:border-input focus:border-ink/60 focus:bg-field focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10",
         className,
       )}
     />

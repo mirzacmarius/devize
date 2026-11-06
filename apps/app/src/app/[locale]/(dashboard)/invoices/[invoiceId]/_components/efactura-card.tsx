@@ -25,6 +25,46 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
   const live = invoice.status === "issued" || invoice.status === "paid";
   const late =
     live && efactura.status === "not_sent" && efactura.deadline < todayInput();
+  const settled = efactura.status === "accepted";
+
+  const deadline = live && (
+    <div className="grid gap-0.5">
+      <span className="text-body text-ink">
+        {t("deadline", {
+          date: formatCalendarDate(efactura.deadline, locale),
+        })}
+      </span>
+      <span className="text-meta text-ink-3">{t("deadlineHint")}</span>
+    </div>
+  );
+  const identifiers = (efactura.uploadIndex || efactura.downloadId) && (
+    <p className="m-0 grid gap-0.5 text-meta tabular-nums text-ink-3">
+      {efactura.uploadIndex && (
+        <span>{t("uploadIndex", { index: efactura.uploadIndex })}</span>
+      )}
+      {efactura.downloadId && (
+        <span>{t("downloadId", { id: efactura.downloadId })}</span>
+      )}
+    </p>
+  );
+  const xml = live && (
+    <ValidateXml invoice={invoice}>
+      <Button
+        type="button"
+        variant={efactura.status === "not_sent" ? "default" : "outline"}
+        size="sm"
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true);
+          await download.xml(invoice._id);
+          setBusy(false);
+        }}
+      >
+        <Download aria-hidden />
+        {t("download")}
+      </Button>
+    </ValidateXml>
+  );
 
   return (
     <Card>
@@ -33,16 +73,7 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
         {live && <EfacturaPill status={efactura.status} late={late} />}
       </CardHeader>
       <CardContent>
-        {live && (
-          <div className="grid gap-0.5">
-            <span className="text-body text-ink">
-              {t("deadline", {
-                date: formatCalendarDate(efactura.deadline, locale),
-              })}
-            </span>
-            <span className="text-meta text-ink-3">{t("deadlineHint")}</span>
-          </div>
-        )}
+        {!settled && deadline}
         {late && (
           <p role="alert" className="m-0 flex gap-2 text-body text-ink">
             <TriangleAlert
@@ -55,16 +86,7 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
         {live && efactura.status === "not_sent" && (
           <p className="m-0 text-body text-ink-2">{t("manual")}</p>
         )}
-        {(efactura.uploadIndex || efactura.downloadId) && (
-          <p className="m-0 grid gap-0.5 text-meta tabular-nums text-ink-3">
-            {efactura.uploadIndex && (
-              <span>{t("uploadIndex", { index: efactura.uploadIndex })}</span>
-            )}
-            {efactura.downloadId && (
-              <span>{t("downloadId", { id: efactura.downloadId })}</span>
-            )}
-          </p>
-        )}
+        {!settled && identifiers}
         {efactura.errors && efactura.errors.length > 0 && (
           <div className="grid gap-1">
             <span className="text-meta text-danger">{t("errors")}</span>
@@ -77,23 +99,19 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
             </ul>
           </div>
         )}
-        {live && (
-          <ValidateXml invoice={invoice}>
-            <Button
-              type="button"
-              variant={efactura.status === "not_sent" ? "default" : "outline"}
-              size="sm"
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true);
-                await download.xml(invoice._id);
-                setBusy(false);
-              }}
-            >
-              <Download aria-hidden />
-              {t("download")}
-            </Button>
-          </ValidateXml>
+        {settled ? (
+          <details>
+            <summary className="text-meta text-ink-2 transition-colors hover:text-ink">
+              {t("details")}
+            </summary>
+            <div className="grid gap-4 pt-3">
+              {deadline}
+              {identifiers}
+              {xml}
+            </div>
+          </details>
+        ) : (
+          xml
         )}
         {live && (
           <Button

@@ -170,6 +170,9 @@ export const list = query({
 
 // More open invoices than a firm keeps, so the sum below stays bounded.
 const MAX_OPEN_INVOICES = 1000;
+// e-Factura is due days after issuing, so what's unsent among paid invoices is
+// among the latest.
+const MAX_RECENT_PAID = 200;
 
 /**
  * What the firm's issued invoices still have to bring in, and how much of it
@@ -204,6 +207,41 @@ export const receivable = query({
       total: roundLei(total),
       overdue: roundLei(overdue),
       overdueCount,
+    };
+  },
+});
+
+/**
+ * What ANAF is still owed: the firm's invoices not sent to e-Factura yet, how
+ * many of them are past their deadline on `today`, the viewer's date, and the
+ * one that has been waiting longest.
+ */
+export const efacturaDue = query({
+  args: { organizationId: v.id("organizations"), today: v.string() },
+  handler: async (ctx, args) => {
+    await requireMember(ctx, args.organizationId);
+    const latest = (status: "issued" | "paid", count: number) =>
+      ctx.db
+        .query("invoices")
+        .withIndex("by_organizationId_and_status_and_updatedAt", (q) =>
+          q.eq("organizationId", args.organizationId).eq("status", status),
+        )
+        .order("desc")
+        .take(count);
+    const [issued, paid] = await Promise.all([
+      latest("issued", MAX_OPEN_INVOICES),
+      latest("paid", MAX_RECENT_PAID),
+    ]);
+    const toSend = [...issued, ...paid].filter(
+      (invoice) => invoice.efactura.status === "not_sent",
+    );
+    const late = toSend
+      .filter((invoice) => invoice.efactura.deadline < args.today)
+      .sort((a, b) => a.efactura.deadline.localeCompare(b.efactura.deadline));
+    return {
+      toSend: toSend.length,
+      late: late.length,
+      firstLate: late.at(0)?._id ?? null,
     };
   },
 });

@@ -472,6 +472,48 @@ describe("invoices", () => {
     ).rejects.toThrow();
   });
 
+  test("what ANAF is still owed: unsent invoices, late past their deadline", async () => {
+    setSystemTime(today);
+    const t = setup();
+    const { firm, organizationId, advanceId } = await issuedAdvance(t);
+    const advance = await firm.as.query(api.invoices.invoices.get, {
+      invoiceId: advanceId,
+    });
+    const due = (on: string) =>
+      firm.as.query(api.invoices.invoices.efacturaDue, {
+        organizationId,
+        today: on,
+      });
+
+    expect(await due(advance.efactura.deadline)).toEqual({
+      toSend: 1,
+      late: 0,
+      firstLate: null,
+    });
+    expect(await due("2099-01-01")).toEqual({
+      toSend: 1,
+      late: 1,
+      firstLate: advanceId,
+    });
+
+    // Paid in full, it still has to reach ANAF.
+    await firm.as.mutation(api.invoices.invoices.addPayment, {
+      invoiceId: advanceId,
+      date: "2026-10-26",
+      amount: advance.totals.total,
+      method: "cash",
+    });
+    expect((await due("2099-01-01")).late).toBe(1);
+
+    const other = await firmOwner(t, "Altă firmă");
+    await expect(
+      other.as.query(api.invoices.invoices.efacturaDue, {
+        organizationId,
+        today: "2099-01-01",
+      }),
+    ).rejects.toThrow();
+  });
+
   test("cancelling an unsent, unpaid invoice keeps its number taken", async () => {
     setSystemTime(today);
     const t = setup();

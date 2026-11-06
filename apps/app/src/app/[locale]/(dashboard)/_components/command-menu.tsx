@@ -389,7 +389,7 @@ function CommandSearch({
         ]
           .filter(Boolean)
           .join(" · "),
-        pill: <EstimateStatusPill status={estimate.status} />,
+        pill: <EstimateStatusPill status={estimate.status} plain />,
         href,
         run: go(href),
       };
@@ -412,7 +412,7 @@ function CommandSearch({
         icon: Icons.Invoice,
         label: t("invoice", { code: invoice.code }),
         meta: [invoice.buyerName, money(invoice.total)].join(" · "),
-        pill: <InvoiceStatusPill status={invoice.status} />,
+        pill: <InvoiceStatusPill status={invoice.status} plain />,
         href,
         run: go(href),
       };

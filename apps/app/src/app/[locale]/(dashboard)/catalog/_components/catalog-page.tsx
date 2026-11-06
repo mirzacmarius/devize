@@ -278,17 +278,22 @@ export function CatalogPage() {
                           <span className={isOwn ? undefined : "lg:hidden"}>
                             {norm.source !== "base" && ` · ${normSource(norm)}`}
                           </span>
-                          {unconfirmed(norm) && ` · ${t("unconfirmed")}`}
+                          {unconfirmed(norm) && (
+                            <span className="ml-2 inline-flex items-center gap-1.5 whitespace-nowrap text-warning">
+                              <span
+                                aria-hidden
+                                className="size-1.5 rounded-full bg-warning-dot"
+                              />
+                              {t("unconfirmed")}
+                            </span>
+                          )}
                         </span>
                       </Link>
                     </TableCell>
                     {!isOwn && (
                       <TableCell className="hidden text-ink-2 lg:table-cell">
-                        {norm.source === "base" ? (
-                          <span className="text-ink-3">–</span>
-                        ) : (
-                          (norm.manufacturerName ?? normSource(norm))
-                        )}
+                        {norm.source !== "base" &&
+                          (norm.manufacturerName ?? normSource(norm))}
                       </TableCell>
                     )}
                     {isOwn && (
@@ -306,7 +311,9 @@ export function CatalogPage() {
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-right tabular-nums">
                       {norm.referenceCost === undefined ? (
-                        <span className="text-ink-3">–</span>
+                        <span className="text-meta text-ink-3">
+                          {t("noCost")}
+                        </span>
                       ) : (
                         formatMoney(norm.referenceCost, locale)
                       )}

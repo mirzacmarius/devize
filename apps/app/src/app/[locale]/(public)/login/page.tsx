@@ -37,9 +37,7 @@ export default async function Page() {
           <Wordmark className="text-xl xl:hidden" />
           <div className="grid gap-1.5">
             <h1 className="m-0 text-title-screen text-ink">{t("heading")}</h1>
-            <p className="m-0 text-body text-ink-2 [text-wrap:balance]">
-              {t("description")}
-            </p>
+            <p className="m-0 text-body text-ink-2">{t("description")}</p>
           </div>
           <SignInOptions withGoogle={withGoogle} />
           <p className="m-0 text-meta text-ink-3">
@@ -72,7 +70,7 @@ async function SampleEstimate() {
           <span className="text-kpi tabular-nums text-ink">
             <Amount value={formatMoney(39916.16, locale)} />
           </span>
-          <span className="text-body text-ink-2">lei</span>
+          <span className="text-meta text-ink-3">lei</span>
         </span>
       </div>
       <dl className="m-0 grid text-body">
@@ -89,9 +87,7 @@ async function SampleEstimate() {
         ))}
         <div className="flex justify-between gap-4 border-t-[3px] border-double border-tick pt-2 font-medium text-ink">
           <dt>{t("subtotal")}</dt>
-          <dd className="m-0 tabular-nums">
-            <Amount value={formatMoney(32988.56, locale)} />
-          </dd>
+          <dd className="m-0 tabular-nums">{formatMoney(32988.56, locale)}</dd>
         </div>
       </dl>
     </Card>

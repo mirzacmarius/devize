@@ -15,10 +15,6 @@ export function SummaryCard({ list }: { list: ShoppingList }) {
   return (
     <FigureStrip>
       <Figure
-        label={t("packages")}
-        value={formatCount(totals.packages, locale)}
-      />
-      <Figure
         label={t("bought")}
         value={formatMoney(totals.boughtCost, locale)}
         unit="lei"
@@ -32,6 +28,10 @@ export function SummaryCard({ list }: { list: ShoppingList }) {
         label={t("inEstimate")}
         value={formatMoney(totals.cost, locale)}
         unit="lei"
+      />
+      <Figure
+        label={t("packages")}
+        value={formatCount(totals.packages, locale)}
       />
     </FigureStrip>
   );

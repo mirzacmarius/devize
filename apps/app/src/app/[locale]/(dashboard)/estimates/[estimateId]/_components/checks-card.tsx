@@ -123,7 +123,9 @@ export function ChecksCard({
     <Card id="checks" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("checks.title")}</CardTitle>
-        <span className="text-meta tabular-nums text-ink-3">{lead}</span>
+        <span className="text-meta tabular-nums text-ink-3">
+          {t("checks.score", { passed: passed.length, total: checks.length })}
+        </span>
       </CardHeader>
       <CardContent className="gap-3">{body}</CardContent>
     </Card>

@@ -161,7 +161,7 @@ export function RoomsCard({
                   ))}
                 </Fragment>
               ))}
-              <TableRow className="font-medium hover:bg-transparent">
+              <TableRow className="font-medium hover:bg-transparent [&>td]:border-t-[3px] [&>td]:border-double [&>td]:border-t-tick">
                 <TableCell colSpan={5}>{t("total")}</TableCell>
                 <TableCell className={numberClass}>
                   {formatQuantity(

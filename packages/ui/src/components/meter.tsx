@@ -6,7 +6,7 @@ import { cn } from "../utils";
 // the number next to the meter, and name it in `label`.
 
 const barTones = {
-  action: "--action",
+  action: "--meter",
   warning: "--warning-dot",
   danger: "--danger-solid",
 };
@@ -44,7 +44,7 @@ const MeterBar = React.forwardRef<HTMLDivElement, MeterBarProps>(
 MeterBar.displayName = "MeterBar";
 
 const segmentTones = {
-  action: "bg-primary",
+  action: "bg-meter",
   success: "bg-success-dot",
   warning: "bg-warning-dot",
   danger: "bg-danger-solid",

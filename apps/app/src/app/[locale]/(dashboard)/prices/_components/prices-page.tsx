@@ -7,7 +7,6 @@ import { useFirm } from "@/components/firm-provider";
 import { useScopedI18n } from "@/locales/client";
 import { AlertsCard } from "./alerts-card";
 import { ProductsCard } from "./products-card";
-import { ThresholdControl } from "./threshold-control";
 
 /**
  * Prețuri: the sent devize today's prices change, the store products the firm
@@ -20,15 +19,7 @@ export function PricesPage() {
 
   return (
     <>
-      <PageHeader
-        title={t("title")}
-        actions={
-          <ThresholdControl
-            alertPercent={alerts?.alertPercent}
-            canEdit={firm.role !== "member"}
-          />
-        }
-      />
+      <PageHeader title={t("title")} />
       <AlertsCard alerts={alerts} />
       <ProductsCard />
       <HowCard />

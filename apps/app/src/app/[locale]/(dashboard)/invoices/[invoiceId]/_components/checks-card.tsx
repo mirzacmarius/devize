@@ -8,7 +8,7 @@ import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useAction } from "convex/react";
-import { Check, CircleAlert, TriangleAlert } from "lucide-react";
+import { Check, CircleAlert, ShieldCheck, TriangleAlert } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useRun } from "@/components/use-run";
 import { formatDay, formatTime } from "@/lib/format";
@@ -155,7 +155,11 @@ export function ValidateXml({
           disabled={busy}
           onClick={check}
         >
-          {busy && <Icons.Loader className="animate-spin" aria-hidden />}
+          {busy ? (
+            <Icons.Loader className="animate-spin" aria-hidden />
+          ) : (
+            <ShieldCheck aria-hidden />
+          )}
           {t("validate")}
         </Button>
       </div>

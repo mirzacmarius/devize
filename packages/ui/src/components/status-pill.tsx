@@ -30,10 +30,16 @@ const statusPillVariants = cva(
         true: "",
         false: "pl-2.5 before:hidden",
       },
+      // No fill, for a list where a pill on every row would shout.
+      plain: {
+        true: "h-auto bg-transparent pl-0 pr-0 text-meta shadow-none",
+        false: "",
+      },
     },
     defaultVariants: {
       tone: "neutral",
       dot: true,
+      plain: false,
     },
   },
 );
@@ -43,10 +49,10 @@ export interface StatusPillProps
     VariantProps<typeof statusPillVariants> {}
 
 const StatusPill = React.forwardRef<HTMLSpanElement, StatusPillProps>(
-  ({ className, tone, dot, ...props }, ref) => (
+  ({ className, tone, dot, plain, ...props }, ref) => (
     <span
       ref={ref}
-      className={cn(statusPillVariants({ tone, dot }), className)}
+      className={cn(statusPillVariants({ tone, dot, plain }), className)}
       {...props}
     />
   ),

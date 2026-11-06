@@ -27,6 +27,7 @@ import { useState } from "react";
 import { useRun } from "@/components/use-run";
 import { estimateCode } from "@/lib/format";
 import { useScopedI18n } from "@/locales/client";
+import { useInvoiceActions } from "../_invoices/use-invoice-actions";
 import { SaveTemplateDialog } from "./save-template";
 import type { Estimate, OpenPanel } from "./types";
 
@@ -35,16 +36,22 @@ type Status = Doc<"estimates">["status"];
 /**
  * The header's actions, which follow the Deviz's life: make the client's
  * Ofertă from a draft, record the client's answer, start a revision to change
- * a sent one. Marking a draft sent is for one that left some other way.
+ * a sent one, bill an accepted one. Marking a draft sent is for one that left
+ * some other way.
  */
 export function EstimateActions({
   estimate,
   failedChecks,
+  openChecks,
   open,
+  fill = false,
 }: {
   estimate: Estimate;
   failedChecks: number;
+  openChecks: number;
   open: OpenPanel;
+  // On a phone the main action takes the bar, while nothing else is beside it.
+  fill?: boolean;
 }) {
   const t = useScopedI18n("estimate");
   const tc = useScopedI18n("common");
@@ -69,6 +76,9 @@ export function EstimateActions({
   const { status } = estimate;
   const estimateId = estimate._id;
   const code = estimateCode(estimate.number, estimate.revision);
+  const invoicing = useInvoiceActions(estimateId, status === "accepted");
+  const [nextInvoice, ...laterInvoices] = invoicing.actions;
+  const primaryClass = fill ? "max-sm:flex-1" : undefined;
 
   const changeStatus = async (next: Status, success: string) => {
     setBusy(true);
@@ -121,25 +131,43 @@ export function EstimateActions({
     status === "draft" ? (
       // An empty draft's next step is in its Articole.
       empty ? null : linkInUse ? (
-        <Button onClick={() => setConfirm("send")} disabled={busy}>
+        <Button
+          className={primaryClass}
+          onClick={() => setConfirm("send")}
+          disabled={busy}
+        >
           {t("actions.markSent")}
         </Button>
       ) : (
-        <Button onClick={() => open({ kind: "offer" })} disabled={busy}>
+        <Button
+          className={primaryClass}
+          onClick={() => open({ kind: "offer" })}
+          disabled={busy}
+        >
           {t("actions.createOffer")}
         </Button>
       )
     ) : status === "sent" ? (
       <Button
+        className={primaryClass}
         onClick={() => changeStatus("accepted", t("actions.acceptedDone"))}
         disabled={busy}
       >
         {t("actions.markAccepted")}
       </Button>
+    ) : nextInvoice ? (
+      // Once accepted, what comes next is billing it.
+      <Button
+        className={primaryClass}
+        onClick={nextInvoice.run}
+        disabled={busy || invoicing.busy}
+      >
+        {nextInvoice.label}
+      </Button>
     ) : (
-      // Once accepted, the next step is in the Execuție and the Facturi.
       <Button
         variant={status === "accepted" ? "outline" : "default"}
+        className={primaryClass}
         onClick={() => copy(true)}
         disabled={busy}
       >
@@ -159,10 +187,20 @@ export function EstimateActions({
           {t("actions.markRejected")}
         </Button>
       )}
+      {status === "draft" && !empty && openChecks > 0 && (
+        <Button variant="link" className="mr-2 max-md:hidden" asChild>
+          <a href="#checks">{t("actions.openChecks", { count: openChecks })}</a>
+        </Button>
+      )}
       {primary}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={tc("actions")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="max-sm:ml-auto"
+            aria-label={tc("actions")}
+          >
             <Icons.More aria-hidden />
           </Button>
         </DropdownMenuTrigger>
@@ -196,6 +234,20 @@ export function EstimateActions({
             </>
           ) : (
             <>
+              {laterInvoices.map((action) => (
+                <DropdownMenuItem
+                  key={action.key}
+                  disabled={invoicing.busy}
+                  onSelect={action.run}
+                >
+                  {action.label}
+                </DropdownMenuItem>
+              ))}
+              {nextInvoice && (
+                <DropdownMenuItem onSelect={() => copy(true)}>
+                  {t("actions.newRevision")}
+                </DropdownMenuItem>
+              )}
               {status === "sent" && (
                 <>
                   <DropdownMenuItem

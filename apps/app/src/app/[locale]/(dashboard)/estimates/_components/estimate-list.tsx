@@ -87,6 +87,7 @@ export function EstimateList() {
     <>
       <PageHeader
         title={t("title")}
+        description={t("allWithVat")}
         actions={
           <>
             <Button
@@ -139,10 +140,6 @@ export function EstimateList() {
               className="w-full sm:max-w-xs"
             />
           </div>
-          {/* A phone hides the column heads, which say this on a wider screen. */}
-          <p className="m-0 text-right text-meta text-ink-3 md:hidden">
-            {t("allWithVat")}
-          </p>
           <Table stack twoLine>
             <TableHeader>
               <TableRow>

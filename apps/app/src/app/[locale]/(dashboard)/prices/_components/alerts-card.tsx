@@ -28,6 +28,7 @@ import {
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { signedMoney } from "./prices-view";
+import { ThresholdControl } from "./threshold-control";
 import type { AlertList, PriceAlert } from "./types";
 
 /**
@@ -69,16 +70,23 @@ export function AlertsCard({ alerts }: { alerts: AlertList | undefined }) {
             </CardDescription>
           )}
         </div>
-        {on && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={check}
-            disabled={checking}
-          >
-            {t("checkNow")}
-          </Button>
-        )}
+        {/* Up by what they stand taller than the title, level with its line. */}
+        <div className="flex flex-wrap items-center gap-3 sm:-mt-[7px]">
+          <ThresholdControl
+            alertPercent={alerts?.alertPercent}
+            canEdit={firm.role !== "member"}
+          />
+          {on && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={check}
+              disabled={checking}
+            >
+              {t("checkNow")}
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="gap-0">
         {alerts === undefined ? (
@@ -132,6 +140,8 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
         <div className="grid min-w-0 gap-0.5">
           <span className="text-meta tabular-nums text-ink-3">
             {estimateCode(estimate.number, estimate.revision)}
+            {" · "}
+            {t("checked", { date: formatDay(alert.checkedAt, locale) })}
           </span>
           <span className="text-body-lg font-medium text-ink">
             {estimate.title}
@@ -152,14 +162,14 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
       </div>
 
       {/* What it does to the profit first: it's what the firm stands to lose. */}
-      <div className="grid gap-x-10 gap-y-5 border-y border-border py-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="grid gap-x-10 gap-y-5 border-t border-border pt-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div className="grid content-start gap-3">
           <div className="grid gap-0.5">
             <p className="m-0 text-meta text-ink-2">{t("profit")}</p>
             <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
               <span
                 className={cn(
-                  "text-kpi tabular-nums",
+                  "text-[26px] leading-8 tabular-nums tracking-[-0.01em] [font-weight:var(--weight-figure)]",
                   alert.profitLeft < 0 ? "text-danger" : "text-ink",
                 )}
               >
@@ -169,7 +179,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
                   <Amount value={money(alert.profitLeft)} />
                 )}
               </span>
-              <span className="text-body text-ink-2">lei</span>
+              <span className="text-meta text-ink-3">lei</span>
             </p>
             <p className="m-0 text-meta tabular-nums text-ink-3">
               <span
@@ -183,8 +193,8 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
               {t("profitWas", { amount: money(alert.sentProfit) })}
             </p>
           </div>
-          <dl className="m-0 grid gap-1 text-meta">
-            <div className="flex flex-wrap justify-between gap-x-4">
+          <dl className="m-0 grid text-meta">
+            <div className="flex flex-wrap justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-ink-3">{t("total")}</dt>
               <dd className="m-0 tabular-nums text-ink-2">
                 {t("fromTo", {
@@ -193,7 +203,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
                 })}
               </dd>
             </div>
-            <div className="flex flex-wrap justify-between gap-x-4">
+            <div className="flex flex-wrap justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-ink-3">{t("direct")}</dt>
               <dd className="m-0 tabular-nums text-ink-2">
                 {t("fromTo", {
@@ -225,7 +235,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
                     >
                       <th
                         scope="row"
-                        className="py-1.5 pr-4 text-left font-normal text-ink"
+                        className="py-1.5 pl-0 pr-4 text-left font-normal text-ink"
                       >
                         {change.name}
                         <span className="block text-meta tabular-nums text-ink-3 sm:hidden">
@@ -235,7 +245,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
                       <td className="hidden whitespace-nowrap py-1.5 pr-4 text-right text-meta tabular-nums text-ink-3 sm:table-cell">
                         {moved}
                       </td>
-                      <td className="whitespace-nowrap py-1.5 text-right font-medium tabular-nums text-ink">
+                      <td className="whitespace-nowrap py-1.5 pr-0 text-right font-medium tabular-nums text-ink">
                         {t("impact", {
                           impact: signedMoney(change.impact, locale),
                         })}
@@ -267,9 +277,6 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
         >
           {t("dismiss")}
         </Button>
-        <span className="ml-auto text-meta text-ink-3">
-          {t("checked", { date: formatDay(alert.checkedAt, locale) })}
-        </span>
       </div>
     </section>
   );

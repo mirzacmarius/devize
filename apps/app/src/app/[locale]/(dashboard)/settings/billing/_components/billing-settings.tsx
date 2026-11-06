@@ -237,7 +237,7 @@ function DetailsForm({ settings }: { settings: Settings }) {
           {settings.canEdit ? (
             <>
               <span />
-              <Button type="submit" size="sm" disabled={saving}>
+              <Button type="submit" disabled={saving}>
                 {saving && (
                   <Icons.Loader className="animate-spin" aria-hidden />
                 )}

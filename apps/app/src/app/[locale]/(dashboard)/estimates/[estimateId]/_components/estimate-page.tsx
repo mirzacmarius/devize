@@ -11,9 +11,9 @@ import {
 import { PageHeader } from "@devize/ui/page-header";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { type RefObject, useEffect, useRef, useState } from "react";
-import { Amount } from "@/components/amount";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
@@ -37,7 +37,7 @@ import { ProposalSheet } from "../_proposal/proposal-sheet";
 import { CompatibilityCard } from "../_systems/compatibility-card";
 import { TakeoffCard } from "../_takeoff/takeoff-card";
 import { AddNormSheet } from "./add-norm-sheet";
-import { runChecks } from "./checks";
+import { type Check, runChecks } from "./checks";
 import { ChecksCard } from "./checks-card";
 import { CustomItemDialog } from "./custom-item-dialog";
 import { DetailsCard } from "./details-card";
@@ -76,6 +76,7 @@ export function EstimatePage() {
   const [panel, setPanel] = useState<Panel | null>(null);
   const synced = useRef<string | null>(null);
   const hero = useRef<HTMLDivElement>(null);
+  const pastHero = useScrolledPast(hero, estimate !== undefined);
 
   // A link to a Deviz of another of the user's firms switches to that firm,
   // once, so the clients and rates offered here are the Deviz's own.
@@ -145,7 +146,7 @@ export function EstimatePage() {
   return (
     <>
       <ScrolledBar
-        target={hero}
+        shown={pastHero}
         code={code}
         title={estimate.title}
         total={total}
@@ -167,7 +168,7 @@ export function EstimatePage() {
           description={
             <>
               {status !== "archived" && (
-                <span className="mb-1.5 block sm:hidden">{statusPill}</span>
+                <span className="my-1.5 block sm:hidden">{statusPill}</span>
               )}
               {[
                 estimate.client?.name ?? t("noClient"),
@@ -178,29 +179,35 @@ export function EstimatePage() {
             </>
           }
         />
-        {/* Beside the title; on a phone, in a bar at the screen's foot with the
-            total, like the client's own Ofertă. */}
-        <div className="flex flex-wrap items-center gap-2 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:border-t max-sm:border-border max-sm:bg-card/95 max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 max-sm:backdrop-blur sm:order-last md:order-none md:self-start md:pt-7">
-          <div className="min-w-0 flex-1 sm:hidden">
-            <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
-              <Amount value={total} />{" "}
-              <span className="text-meta font-normal text-ink-3">lei</span>
-            </p>
-            <p className="m-0 truncate text-meta tabular-nums text-ink-3">
-              {withoutVat}
-            </p>
-          </div>
+        {/* Beside the title; on a phone, in a bar at the screen's foot, with the
+            total once the one above has scrolled away. */}
+        <div className="flex flex-wrap items-center gap-2 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:border-t max-sm:border-border max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
+          {pastHero && (
+            <div className="min-w-0 flex-1 sm:hidden">
+              <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
+                {total}{" "}
+                <span className="text-meta font-normal text-ink-3">lei</span>
+              </p>
+              <p className="m-0 truncate text-meta tabular-nums text-ink-3">
+                {withoutVat}
+              </p>
+            </div>
+          )}
           <EstimateActions
             estimate={estimate}
             failedChecks={
               checks.filter((check) => check.state === "failed").length
             }
+            openChecks={
+              checks.filter((check) => check.state !== "passed").length
+            }
             open={setPanel}
+            fill={!pastHero}
           />
         </div>
         <div
           ref={hero}
-          className="grid gap-x-10 gap-y-3 max-sm:hidden md:col-span-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end"
+          className="grid gap-x-10 gap-y-3 md:col-span-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end"
         >
           <TotalHero
             label={t("summary.total")}
@@ -209,7 +216,7 @@ export function EstimatePage() {
           />
           <EstimateStepper estimate={estimate} />
         </div>
-        <SectionLinks estimate={estimate} />
+        <SectionLinks estimate={estimate} checks={checks} />
       </div>
       <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
         <div className="grid min-w-0 gap-6">
@@ -227,7 +234,8 @@ export function EstimatePage() {
           />
           <RecapCard estimate={estimate} editable={editable} open={setPanel} />
         </div>
-        <div className="rail-sections grid min-w-0 gap-6 xl:gap-0">
+        {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
+        <div className="rail-sections grid min-w-0 gap-6 xl:sticky xl:top-14 xl:-mx-1 xl:max-h-[calc(100vh-4.5rem)] xl:gap-0 xl:overflow-y-auto xl:px-1 xl:[scrollbar-width:thin]">
           {railOrder}
           <CompatibilityCard estimate={estimate} editable={editable} />
           <TakeoffCard estimate={estimate} />
@@ -302,39 +310,47 @@ export function EstimatePage() {
   );
 }
 
+/** Whether an element has scrolled away above the screen. */
+function useScrolledPast(
+  target: RefObject<HTMLElement | null>,
+  ready: boolean,
+) {
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    const element = target.current;
+    if (!ready || !element) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => setPast(entry ? !entry.isIntersecting : false),
+      { rootMargin: "-44px 0px 0px 0px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [target, ready]);
+  return past;
+}
+
 /**
  * Once the total has scrolled away, the line that keeps it in sight: a long
  * Deviz is read a long way below its header. A phone has its bar at the foot.
  */
 function ScrolledBar({
-  target,
+  shown,
   code,
   title,
   total,
 }: {
-  target: RefObject<HTMLElement | null>;
+  shown: boolean;
   code: string;
   title: string;
   total: string;
 }) {
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    const element = target.current;
-    if (!element) {
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => setShown(entry ? !entry.isIntersecting : false),
-      { rootMargin: "-44px 0px 0px 0px" },
-    );
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [target]);
   return (
     <div
       aria-hidden
       className={cn(
-        "fixed inset-x-0 top-0 z-30 border-b border-border bg-panel/95 backdrop-blur transition-opacity duration-150 ease-out max-sm:hidden md:left-sidebar md:right-2",
+        "fixed inset-x-0 top-0 z-30 border-b border-border bg-panel transition-opacity duration-150 ease-out max-sm:hidden md:left-sidebar md:right-2",
         shown ? "opacity-100" : "pointer-events-none opacity-0",
       )}
     >
@@ -344,8 +360,7 @@ function ScrolledBar({
           <span className="ml-2 font-medium text-ink">{title}</span>
         </p>
         <p className="m-0 shrink-0 text-body-lg tabular-nums text-ink">
-          <Amount value={total} />{" "}
-          <span className="text-meta text-ink-3">lei</span>
+          {total} <span className="text-meta text-ink-3">lei</span>
         </p>
       </div>
     </div>
@@ -357,8 +372,14 @@ function ScrolledBar({
  * what's down there, by what the Deviz is at, and, once it's in execution, how
  * far along each part is.
  */
-function SectionLinks({ estimate }: { estimate: Estimate }) {
-  const t = useScopedI18n("estimate.jump");
+function SectionLinks({
+  estimate,
+  checks,
+}: {
+  estimate: Estimate;
+  checks: Check[];
+}) {
+  const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
   const accepted = estimate.status === "accepted";
   const work = useQuery(
@@ -374,35 +395,65 @@ function SectionLinks({ estimate }: { estimate: Estimate }) {
     : estimate.status === "draft"
       ? (["checks", "recap", "offer", "documents"] as const)
       : (["offer", "recap", "checks", "documents"] as const);
-  const figures: Partial<Record<(typeof sections)[number], string>> = {
-    progress:
-      work && work.statements.length > 0
-        ? formatPercent(Math.round(work.executed.percent * 10) / 10, locale)
-        : undefined,
-    invoices:
-      billing && billing.invoicedNet > 0
-        ? `${formatMoney(billing.invoicedNet, locale)} lei`
-        : undefined,
+  const passed = checks.filter((check) => check.state === "passed").length;
+  const invoiced = billing && billing.invoicedNet > 0;
+  const tiles: Partial<
+    Record<(typeof sections)[number], { label?: string; value?: string }>
+  > = {
+    progress: {
+      value:
+        work && work.statements.length > 0
+          ? formatPercent(Math.round(work.executed.percent * 10) / 10, locale)
+          : undefined,
+    },
+    invoices: invoiced
+      ? {
+          label: t("jump.invoiced"),
+          value: `${formatMoney(billing.invoicedNet, locale)} lei`,
+        }
+      : {},
+    checks: {
+      value:
+        passed < checks.length
+          ? t("checks.left", {
+              left: checks.length - passed,
+              total: checks.length,
+            })
+          : t("checks.score", { passed, total: checks.length }),
+    },
   };
   return (
     <nav
-      aria-label={t("label")}
-      className="order-last -mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:col-span-2 md:mx-0 md:px-0 xl:hidden"
+      aria-label={t("jump.label")}
+      className="order-last grid grid-cols-2 gap-2 md:col-span-2 md:grid-cols-4 xl:hidden"
     >
-      {sections.map((section) => (
-        <a
-          key={section}
-          href={`#${section}`}
-          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-tile px-3 text-meta font-medium text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          {t(section)}
-          {figures[section] && (
-            <span className="font-normal tabular-nums text-ink-3">
-              {figures[section]}
+      {sections.map((section) => {
+        const tile = tiles[section];
+        return (
+          <a
+            key={section}
+            href={`#${section}`}
+            className="flex min-h-[52px] min-w-0 items-center justify-between gap-2 rounded-md border border-card-border px-3 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="grid min-w-0">
+              <span
+                className={cn(
+                  "truncate",
+                  tile?.value ? "text-meta text-ink-3" : "text-body text-ink",
+                )}
+              >
+                {tile?.label ?? t(`jump.${section}`)}
+              </span>
+              {tile?.value && (
+                <span className="truncate text-body tabular-nums text-ink">
+                  {tile.value}
+                </span>
+              )}
             </span>
-          )}
-        </a>
-      ))}
+            <ChevronRight aria-hidden className="size-4 shrink-0 text-ink-3" />
+          </a>
+        );
+      })}
     </nav>
   );
 }

@@ -11,9 +11,33 @@ import {
   formatMonth,
   formatPercent,
   formatQuantity,
+  keepUnits,
   parseDecimal,
   parseMoney,
 } from "./format";
+
+describe("keepUnits", () => {
+  test("keeps a number on one line with its unit", () => {
+    expect(keepUnits("Termoizolație 50 mm, 12 mp")).toBe(
+      "Termoizolație 50\u00a0mm, 12\u00a0mp",
+    );
+    expect(keepUnits("Beton 2 m³")).toBe("Beton 2\u00a0m³");
+  });
+
+  test("keeps a size together around its ×", () => {
+    expect(keepUnits("Gresie 60 × 120 cm")).toBe(
+      "Gresie 60\u00a0×\u00a0120\u00a0cm",
+    );
+    expect(keepUnits("Grindă 10 × 20 × 30 cm")).toBe(
+      "Grindă 10\u00a0×\u00a020\u00a0×\u00a030\u00a0cm",
+    );
+  });
+
+  test("leaves words that only start like a unit", () => {
+    expect(keepUnits("2 tone de 3 metri")).toBe("2 tone de 3 metri");
+    expect(keepUnits("Ușă 60×120")).toBe("Ușă 60×120");
+  });
+});
 
 describe("formatting", () => {
   test("writes lei with a dot for thousands and two decimals", () => {

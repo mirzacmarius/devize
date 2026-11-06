@@ -14,7 +14,6 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { usePaginatedQuery, useQuery } from "convex/react";
-import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Figure, FigureStrip } from "@/components/figure-strip";
@@ -26,7 +25,12 @@ import {
   InvoiceStatusPill,
 } from "@/components/invoice-status";
 import { SegmentedControl } from "@/components/segmented-control";
-import { formatCalendarDay, formatMoney, todayInput } from "@/lib/format";
+import {
+  formatCalendarDay,
+  formatCount,
+  formatMoney,
+  todayInput,
+} from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 type Filter = "all" | InvoiceStatus;
@@ -58,14 +62,10 @@ export function InvoiceList() {
     organizationId: firm._id,
     today,
   });
-  // What ANAF is owed already: said once, above the list, with the way there.
-  const late = (rows ?? []).filter(
-    (row) =>
-      (row.status === "issued" || row.status === "paid") &&
-      row.efactura.status === "not_sent" &&
-      row.efactura.deadline < today,
-  );
-  const firstLate = late[0];
+  const anaf = useQuery(api.invoices.invoices.efacturaDue, {
+    organizationId: firm._id,
+    today,
+  });
 
   return (
     <>
@@ -94,7 +94,7 @@ export function InvoiceList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <FigureStrip className="mb-3 sm:max-w-[556px]">
+          <FigureStrip className="mb-3">
             <Figure
               label={t("receivable.total")}
               value={receivable ? formatMoney(receivable.total, locale) : "–"}
@@ -113,32 +113,35 @@ export function InvoiceList() {
                   : "lei")
               }
             />
+            <Figure
+              label={t("receivable.toSend")}
+              value={anaf ? formatCount(anaf.toSend, locale) : "–"}
+            />
+            <Figure
+              label={t("receivable.late")}
+              value={
+                anaf && anaf.late > 0 ? (
+                  <span className="text-danger">
+                    {formatCount(anaf.late, locale)}
+                  </span>
+                ) : anaf ? (
+                  formatCount(anaf.late, locale)
+                ) : (
+                  "–"
+                )
+              }
+              unit={
+                anaf?.firstLate && (
+                  <Link
+                    href={`/invoices/${anaf.firstLate}`}
+                    className="rounded-xs text-ink-2 underline underline-offset-4 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {anaf.late === 1 ? t("lateOpen") : t("lateOpenFirst")}
+                  </Link>
+                )
+              }
+            />
           </FigureStrip>
-          {firstLate && (
-            <p
-              role="status"
-              className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-danger-soft px-3.5 py-2.5 text-body text-danger"
-            >
-              <TriangleAlert aria-hidden className="size-4 shrink-0" />
-              <span className="min-w-0 flex-1 basis-56 font-medium">
-                {late.length === 1 && firstLate.code
-                  ? t("lateOne", {
-                      code: firstLate.code,
-                      date: formatCalendarDay(
-                        firstLate.efactura.deadline,
-                        locale,
-                      ),
-                    })
-                  : t("lateMany", { count: late.length })}
-              </span>
-              <Link
-                href={`/invoices/${firstLate._id}`}
-                className="rounded-xs font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {late.length === 1 ? t("lateOpen") : t("lateOpenFirst")}
-              </Link>
-            </p>
-          )}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <SegmentedControl
               label={t("filterLabel")}
@@ -254,10 +257,11 @@ export function InvoiceList() {
                     </TableCell>
                     <TableCell className="hidden pl-8 lg:table-cell">
                       {live ? (
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <div className="grid justify-items-start gap-0.5">
                           <EfacturaPill
                             status={row.efactura.status}
                             late={row.efactura.deadline < today}
+                            plain
                           />
                           {row.efactura.status === "not_sent" && (
                             <span className="text-meta text-ink-3">

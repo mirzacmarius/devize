@@ -11,7 +11,12 @@ import {
   groupLines,
   type NumberedItem,
 } from "@/app/[locale]/(dashboard)/estimates/[estimateId]/_components/groups";
-import { formatMoney, formatQuantity, formatUnit } from "@/lib/format";
+import {
+  formatMoney,
+  formatQuantity,
+  formatUnit,
+  keepUnits,
+} from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { OfferItem, OpenOfferView } from "./types";
 
@@ -81,7 +86,8 @@ export function WorksCard({
         {sectionName(section)}
       </h3>
       <span className="shrink-0 text-body font-medium tabular-nums text-ink">
-        {t("lei", { total: formatMoney(total, locale) })}
+        {formatMoney(total, locale)}{" "}
+        <span className="text-meta font-normal text-ink-3">lei</span>
       </span>
     </div>
   );
@@ -156,7 +162,7 @@ function ItemRow({
               dimmed,
             )}
           >
-            {item.title}
+            {keepUnits(item.title)}
           </span>
           <span
             className={cn(

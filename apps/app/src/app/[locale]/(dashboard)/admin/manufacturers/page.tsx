@@ -103,7 +103,7 @@ export default function ManufacturersPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
-              variant="ghost"
+              variant="outline"
               onClick={() => setAdding(!adding)}
             >
               <Plus aria-hidden />
@@ -111,7 +111,7 @@ export default function ManufacturersPage() {
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={() =>
                 setSelected(
                   new Set(

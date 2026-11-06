@@ -44,7 +44,7 @@ export function StatementPicker({
       <SelectTrigger
         aria-label={t("pick")}
         // A title that opens, so it starts where the card's other titles do.
-        className="-ml-2 h-8 w-auto gap-1.5 border-transparent bg-transparent px-2 text-title-card hover:border-transparent hover:bg-tile"
+        className="-ml-[9px] h-8 w-auto gap-1.5 border-transparent bg-transparent px-2 text-title-card hover:border-transparent hover:bg-tile"
       >
         <SelectValue>{title}</SelectValue>
       </SelectTrigger>

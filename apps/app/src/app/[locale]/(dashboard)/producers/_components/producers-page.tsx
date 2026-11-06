@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { useQuery } from "convex/react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { SearchInput } from "@/components/search-input";
@@ -63,7 +64,7 @@ export function ProducersPage() {
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
-        <section className="grid min-w-0 max-w-[800px] gap-3">
+        <section className="grid min-w-0 gap-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="m-0 text-meta tabular-nums text-ink-3">
               {rows !== undefined && t("count", { count: rows.length })}
@@ -80,51 +81,70 @@ export function ProducersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.name")}</TableHead>
-                <TableHead>{t("columns.profile")}</TableHead>
+                <TableHead className="w-24 text-right">
+                  {t("columns.norms")}
+                </TableHead>
                 {hasEdition && (
-                  <TableHead className="hidden sm:table-cell">
+                  <TableHead className="hidden w-44 pl-10 md:table-cell">
                     {t("columns.edition")}
                   </TableHead>
                 )}
+                <TableHead className="hidden w-44 md:table-cell">
+                  {t("columns.profile")}
+                </TableHead>
+                <TableHead className="w-6" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={5} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={5} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.map((producer) => (
-                <TableRow key={producer._id}>
+                // The whole row opens the profile.
+                <TableRow key={producer._id} className="relative">
                   <TableCell>
                     <Link
                       href={`/producers/${producer._id}`}
-                      className="rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="rounded-xs text-body font-medium text-ink after:absolute after:inset-0 after:content-[''] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {producer.name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    {producer.claimed ? (
-                      <StatusPill tone="success">{t("claimed")}</StatusPill>
-                    ) : (
-                      <span className="text-ink-3">{t("unclaimed")}</span>
-                    )}
+                  <TableCell className="text-right tabular-nums text-ink">
+                    {producer.moreNorms
+                      ? t("moreNorms", { count: producer.normCount })
+                      : producer.normCount}
                   </TableCell>
                   {hasEdition && (
-                    <TableCell className="hidden text-ink-2 sm:table-cell">
+                    <TableCell className="hidden pl-10 text-ink-2 md:table-cell">
                       {producer.edition ?? "–"}
                     </TableCell>
                   )}
+                  <TableCell className="hidden md:table-cell">
+                    <StatusPill
+                      tone={producer.claimed ? "success" : "draft"}
+                      plain
+                    >
+                      {producer.claimed ? t("claimed") : t("unclaimed")}
+                    </StatusPill>
+                  </TableCell>
+                  <TableCell>
+                    <ChevronRight
+                      aria-hidden
+                      className="ml-auto size-4 text-ink-3"
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

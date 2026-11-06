@@ -132,10 +132,9 @@ export function PriceCard({
             <dt className="text-body-lg font-medium text-ink">
               {hasVat ? t("total") : t("totalNoVat")}
             </dt>
-            <dd className="m-0 text-title-card tabular-nums text-ink">
-              {t("lei", {
-                total: <Amount value={formatMoney(totals.total, locale)} />,
-              })}
+            <dd className="m-0 text-figure tabular-nums text-ink">
+              <Amount value={formatMoney(totals.total, locale)} />{" "}
+              <span className="text-meta text-ink-3">lei</span>
             </dd>
           </div>
         </dl>

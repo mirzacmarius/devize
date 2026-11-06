@@ -12,7 +12,7 @@ export function FirmMark({ firm }: { firm: OfferFirm }) {
       <img
         src={firm.logoUrl}
         alt=""
-        className="size-10 shrink-0 rounded-lg border border-border bg-card object-contain p-1 sm:size-12"
+        className="size-10 shrink-0 rounded-lg border border-border bg-card object-contain p-1 sm:size-14"
       />
     );
   }
@@ -25,7 +25,7 @@ export function FirmMark({ firm }: { firm: OfferFirm }) {
   return (
     <span
       aria-hidden
-      className="grid size-10 shrink-0 place-items-center rounded-lg bg-card text-body font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:size-12 sm:text-body-lg"
+      className="grid size-10 shrink-0 place-items-center rounded-lg bg-card text-body font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:size-14 sm:text-body-lg"
     >
       {initials}
     </span>
@@ -93,7 +93,7 @@ export function OfferHeader({
         <div className="flex min-w-0 items-center gap-3">
           <FirmMark firm={firm} />
           <div className="grid min-w-0">
-            <span className="truncate text-title-card text-ink">
+            <span className="truncate text-[17px] leading-6 tracking-[-0.005em] text-ink [font-weight:550]">
               {firm.name}
             </span>
             {details.length > 0 && (

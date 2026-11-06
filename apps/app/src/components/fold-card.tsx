@@ -59,7 +59,14 @@ export function FoldCard({
             onClick={() => setChoice(!open)}
             className={ROW}
           >
-            <span className="shrink-0 text-body font-medium">{title}</span>
+            <span
+              className={cn(
+                "shrink-0 text-body",
+                open ? "font-medium text-ink" : "font-normal text-ink-2",
+              )}
+            >
+              {title}
+            </span>
             <Lead lead={lead} open={open} />
           </button>
         </CardTitle>
@@ -91,7 +98,9 @@ export function LinkCard({
       <CardHeader className="min-h-0 py-0">
         <CardTitle className="w-full min-w-0">
           <Link href={href} className={ROW}>
-            <span className="shrink-0 text-body font-medium">{title}</span>
+            <span className="shrink-0 text-body font-normal text-ink-2">
+              {title}
+            </span>
             <Lead lead={lead} />
           </Link>
         </CardTitle>

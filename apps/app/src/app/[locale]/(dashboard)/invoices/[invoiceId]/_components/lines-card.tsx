@@ -169,41 +169,46 @@ function Totals({
   }
   return (
     <dl className="m-0 grid justify-end gap-1.5 border-t border-border pt-3">
-      {rows.map((row, index) => (
-        <div
-          key={row.label}
-          className={cn(
-            "flex items-baseline justify-between gap-6 sm:justify-end",
-            // What's finally owed closes the sum, as in the Deviz's recap.
-            index === rows.length - 1 &&
-              "mt-0.5 border-t-[3px] border-double border-tick pt-2",
-          )}
-        >
-          <dt
-            className={
-              row.strong
-                ? "text-body font-medium text-ink"
-                : "text-body text-ink-3"
-            }
+      {rows.map((row, index) => {
+        // What's finally owed closes the sum, as in the Deviz's recap.
+        const closes = index === rows.length - 1;
+        return (
+          <div
+            key={row.label}
+            className={cn(
+              "flex items-baseline justify-between gap-6 sm:justify-end",
+              closes && "mt-0.5 border-t-[3px] border-double border-tick pt-2",
+            )}
           >
-            {row.label}
-          </dt>
-          <dd
-            className={`m-0 min-w-32 text-right tabular-nums ${
-              row.strong
-                ? "text-body-lg font-semibold text-ink"
-                : "text-body text-ink"
-            }`}
-          >
-            {row.strong ? (
-              <Amount value={formatMoney(row.value, locale)} />
-            ) : (
-              formatMoney(row.value, locale)
-            )}{" "}
-            lei
-          </dd>
-        </div>
-      ))}
+            <dt
+              className={
+                row.strong
+                  ? "text-body font-medium text-ink"
+                  : "text-body text-ink-3"
+              }
+            >
+              {row.label}
+            </dt>
+            <dd
+              className={cn(
+                "m-0 min-w-32 text-right tabular-nums text-ink",
+                closes
+                  ? "text-figure"
+                  : row.strong
+                    ? "text-body font-medium"
+                    : "text-body",
+              )}
+            >
+              {closes ? (
+                <Amount value={formatMoney(row.value, locale)} />
+              ) : (
+                formatMoney(row.value, locale)
+              )}{" "}
+              <span className="text-meta font-normal text-ink-3">lei</span>
+            </dd>
+          </div>
+        );
+      })}
     </dl>
   );
 }
