@@ -2,7 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import { Badge, Count } from "@devize/ui/badge";
+import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
@@ -29,7 +29,7 @@ import {
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { ChevronDown, ChevronRight, Lock, Plus } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Fragment, type ReactNode, useState } from "react";
 import { InlineNumber } from "@/components/inline-number";
 import { useNormSource } from "@/components/norm-source";
 import { useRun } from "@/components/use-run";
@@ -55,6 +55,37 @@ const MID_ONLY =
 // With no number column, the item column starts at the card's edge.
 const ITEM_CELL = "pl-0 [@container(min-width:38rem)]:pl-3";
 const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-6";
+// Past the chevron, so heads and section names start where the titles do.
+const TITLE_CELL = "pl-0 [@container(min-width:38rem)]:pl-9";
+const NESTED_TITLE_CELL = "pl-3 [@container(min-width:38rem)]:pl-12";
+
+const tagDot = {
+  danger: "bg-danger-solid",
+  warning: "bg-warning-dot",
+  ai: "bg-ai",
+};
+
+/**
+ * A property of a row, on its quietest line: a dot and a word. With many rows
+ * in a Deviz, a filled tag on each would outweigh the numbers.
+ */
+function RowTag({
+  tone,
+  children,
+}: {
+  tone: keyof typeof tagDot;
+  children: ReactNode;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-ink-2">
+      <span
+        aria-hidden
+        className={cn("size-1.5 shrink-0 rounded-full", tagDot[tone])}
+      />
+      {children}
+    </span>
+  );
+}
 
 /** Lei for one unit of a line item, all kinds of resources together. */
 function unitPrice(item: LineItem) {
@@ -90,9 +121,6 @@ export function LineItemsCard({
   for (const item of estimate.lineItems) {
     lastItems.set(item.sectionId ?? "", item._id);
   }
-
-  // The menu column shows only on a draft.
-  const columns = editable ? 6 : 5;
 
   const toggle = (itemId: string) =>
     setExpanded((current) => {
@@ -139,7 +167,7 @@ export function LineItemsCard({
         <TableRow className="hover:bg-transparent">
           <TableCell className={FROM_MID} />
           <TableCell
-            colSpan={columns - 1}
+            colSpan={4}
             className={cn(
               "text-meta text-ink-3",
               nested ? NESTED_ITEM_CELL : ITEM_CELL,
@@ -231,7 +259,7 @@ export function LineItemsCard({
           </div>
         )}
         {!editable && (
-          <p className="m-0 flex items-center gap-1.5 text-meta text-ink-3">
+          <p className="m-0 flex items-center gap-1.5 text-meta text-ink-3 max-sm:hidden">
             <Lock className="size-3.5 shrink-0" aria-hidden />
             {t("items.locked")}
           </p>
@@ -276,7 +304,7 @@ export function LineItemsCard({
             <TableHeader>
               <TableRow>
                 <TableHead className={cn("w-7", FROM_MID)}>#</TableHead>
-                <TableHead className={ITEM_CELL}>
+                <TableHead className={TITLE_CELL}>
                   {t("items.columns.item")}
                 </TableHead>
                 {/* Over the numbers, not over the unit that follows them. */}
@@ -289,13 +317,6 @@ export function LineItemsCard({
                 <TableHead className="text-right">
                   {t("items.columns.value")}
                 </TableHead>
-                {editable && (
-                  <TableHead className="w-10">
-                    <span className="sr-only">
-                      {t("items.columns.actions")}
-                    </span>
-                  </TableHead>
-                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -326,6 +347,64 @@ function SectionRow({
 }) {
   const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
+  const { section } = group;
+
+  return (
+    // The same cells as an item row, since which columns show depends on the
+    // card's width and a span can't follow it.
+    <TableGroupRow className="items-band">
+      <TableCell className={cn("band-start", FROM_MID)} />
+      <TableCell
+        className={cn(
+          "band-start",
+          nested ? NESTED_TITLE_CELL : TITLE_CELL,
+          editable && "relative",
+        )}
+      >
+        <div
+          className={cn(
+            "flex min-w-0 flex-wrap items-baseline gap-x-2",
+            editable && "pr-9",
+          )}
+        >
+          {section.kind === "object" && (
+            <span className="text-caption text-ink-3">
+              {t("sections.object")}
+            </span>
+          )}
+          {section.code && (
+            <span className="text-meta tabular-nums text-ink-3">
+              {section.code}
+            </span>
+          )}
+          <span className="text-body font-medium text-ink">{section.name}</span>
+        </div>
+        {editable && (
+          <div className="absolute right-1 top-1/2 -translate-y-1/2">
+            <SectionMenu group={group} siblings={siblings} open={open} />
+          </div>
+        )}
+      </TableCell>
+      <TableCell className={FROM_MID} />
+      <TableCell className={FROM_WIDE} />
+      <TableCell className="band-end text-right font-medium tabular-nums">
+        {formatMoney(group.total, locale)}
+      </TableCell>
+    </TableGroupRow>
+  );
+}
+
+/** What can be done to an Obiect or a Capitol. */
+function SectionMenu({
+  group,
+  siblings,
+  open,
+}: {
+  group: Group;
+  siblings: Section[];
+  open: OpenPanel;
+}) {
+  const t = useScopedI18n("estimate");
   const move = useMutation(api.estimates.sections.move);
   const remove = useMutation(api.estimates.sections.remove);
   const run = useRun();
@@ -340,128 +419,82 @@ function SectionRow({
     run(() => move({ sectionId: section._id, afterId }));
 
   return (
-    // The same cells as an item row, since which columns show depends on the
-    // card's width and a span can't follow it.
-    <TableGroupRow className="items-band">
-      <TableCell className={cn("band-start", FROM_MID)} />
-      <TableCell
-        className={cn("band-start", nested ? NESTED_ITEM_CELL : ITEM_CELL)}
-      >
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-          {section.kind === "object" && (
-            <span className="text-caption text-ink-3">
-              {t("sections.object")}
-            </span>
-          )}
-          {section.code && (
-            <span className="font-mono text-code text-ink-3">
-              {section.code}
-            </span>
-          )}
-          <span className="text-body font-medium text-ink">{section.name}</span>
-        </div>
-      </TableCell>
-      <TableCell className={FROM_MID} />
-      <TableCell className={FROM_WIDE} />
-      <TableCell
-        className={cn(
-          "text-right font-medium tabular-nums",
-          !editable && "band-end",
+    <DropdownMenu onOpenChange={(next) => !next && setConfirming(false)}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8"
+          aria-label={t("sections.menu", { name: section.name })}
+        >
+          <Icons.More aria-hidden />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-52">
+        <DropdownMenuItem
+          onSelect={() => open({ kind: "addNorm", sectionId: section._id })}
+        >
+          {t("sections.addNormHere")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => open({ kind: "custom", sectionId: section._id })}
+        >
+          {t("sections.addCustomHere")}
+        </DropdownMenuItem>
+        {section.kind === "object" && (
+          <DropdownMenuItem
+            onSelect={() =>
+              open({
+                kind: "newSection",
+                sectionKind: "chapter",
+                parentId: section._id,
+              })
+            }
+          >
+            {t("sections.addChapterHere")}
+          </DropdownMenuItem>
         )}
-      >
-        {formatMoney(group.total, locale)}
-      </TableCell>
-      {editable && (
-        <TableCell className="band-end">
-          <DropdownMenu onOpenChange={(next) => !next && setConfirming(false)}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="-my-1 size-8"
-                aria-label={t("sections.menu", { name: section.name })}
-              >
-                <Icons.More aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-52">
-              <DropdownMenuItem
-                onSelect={() =>
-                  open({ kind: "addNorm", sectionId: section._id })
-                }
-              >
-                {t("sections.addNormHere")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() =>
-                  open({ kind: "custom", sectionId: section._id })
-                }
-              >
-                {t("sections.addCustomHere")}
-              </DropdownMenuItem>
-              {section.kind === "object" && (
-                <DropdownMenuItem
-                  onSelect={() =>
-                    open({
-                      kind: "newSection",
-                      sectionKind: "chapter",
-                      parentId: section._id,
-                    })
-                  }
-                >
-                  {t("sections.addChapterHere")}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() => open({ kind: "section", section })}
-              >
-                {t("sections.rename")}
-              </DropdownMenuItem>
-              {place > 0 && (
-                <DropdownMenuItem
-                  onSelect={() => moveTo(siblings[place - 2]?._id)}
-                >
-                  {t("moveUp")}
-                </DropdownMenuItem>
-              )}
-              {place < siblings.length - 1 && (
-                <DropdownMenuItem
-                  onSelect={() => moveTo(siblings[place + 1]?._id)}
-                >
-                  {t("moveDown")}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-danger focus:text-danger"
-                onSelect={(event) => {
-                  if (!confirming) {
-                    event.preventDefault();
-                    setConfirming(true);
-                    return;
-                  }
-                  void run(
-                    () =>
-                      remove({
-                        sectionId: section._id,
-                        withContents: !isEmpty,
-                      }),
-                    t("sections.deleted", { name: section.name }),
-                  );
-                }}
-              >
-                {confirming
-                  ? isEmpty
-                    ? t("confirmDelete")
-                    : t("sections.confirmDeleteAll")
-                  : t("sections.delete")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TableCell>
-      )}
-    </TableGroupRow>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => open({ kind: "section", section })}>
+          {t("sections.rename")}
+        </DropdownMenuItem>
+        {place > 0 && (
+          <DropdownMenuItem onSelect={() => moveTo(siblings[place - 2]?._id)}>
+            {t("moveUp")}
+          </DropdownMenuItem>
+        )}
+        {place < siblings.length - 1 && (
+          <DropdownMenuItem onSelect={() => moveTo(siblings[place + 1]?._id)}>
+            {t("moveDown")}
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="text-danger focus:text-danger"
+          onSelect={(event) => {
+            if (!confirming) {
+              event.preventDefault();
+              setConfirming(true);
+              return;
+            }
+            void run(
+              () =>
+                remove({
+                  sectionId: section._id,
+                  withContents: !isEmpty,
+                }),
+              t("sections.deleted", { name: section.name }),
+            );
+          }}
+        >
+          {confirming
+            ? isEmpty
+              ? t("confirmDelete")
+              : t("sections.confirmDeleteAll")
+            : t("sections.delete")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -503,24 +536,24 @@ function ItemRows({
   );
   const tags = [
     missingPrice && (
-      <Badge key="missing" tone="danger">
+      <RowTag key="missing" tone="danger">
         {t("tags.missingPrice")}
-      </Badge>
+      </RowTag>
     ),
     item.confidence !== undefined && (
-      <Badge key="ai" tone="ai">
+      <RowTag key="ai" tone="ai">
         {t("tags.ai")}
-      </Badge>
+      </RowTag>
     ),
     newPrice && (
-      <Badge key="price" tone="warning">
+      <RowTag key="price" tone="warning">
         {t("tags.oldPrice")}
-      </Badge>
+      </RowTag>
     ),
     newNorm && (
-      <Badge key="norm" tone="warning">
+      <RowTag key="norm" tone="warning">
         {t("tags.newNorm")}
-      </Badge>
+      </RowTag>
     ),
   ]
     .filter(Boolean)
@@ -541,7 +574,10 @@ function ItemRows({
           {index}
         </TableCell>
         <TableCell
-          className={cn("align-top", nested ? NESTED_ITEM_CELL : ITEM_CELL)}
+          className={cn(
+            "relative align-top",
+            nested ? NESTED_ITEM_CELL : ITEM_CELL,
+          )}
         >
           <button
             type="button"
@@ -550,8 +586,8 @@ function ItemRows({
             aria-controls={detailsId}
             className={cn(
               "group grid w-full min-w-0 gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[1rem_minmax(0,1fr)] [@container(min-width:38rem)]:gap-x-2",
-              // Room for the row's menu, which floats on a narrow card.
-              editable && "[@container(max-width:37.99rem)]:pr-8",
+              // Room for the row's menu, which floats at the cell's end.
+              editable && "pr-9",
             )}
           >
             <ChevronRight
@@ -596,8 +632,17 @@ function ItemRows({
                     {" · "}
                   </>
                 )}
-                {code && <span className="font-mono text-code">{code}</span>}
-                {code && source && " · "}
+                {/* A phone has what it needs in the title and the amounts. */}
+                {code && (
+                  <span className="[@container(max-width:37.99rem)]:hidden">
+                    {code}
+                  </span>
+                )}
+                {code && source && (
+                  <span className="[@container(max-width:37.99rem)]:hidden">
+                    {" · "}
+                  </span>
+                )}
                 {source}
                 <span className={MID_ONLY}>
                   {(code || source) && " · "}
@@ -609,6 +654,19 @@ function ItemRows({
               {tags}
             </span>
           </button>
+          {editable && (
+            <div className="absolute right-1 top-1">
+              <ItemMenu
+                item={item}
+                siblings={siblings}
+                position={position}
+                sections={sections}
+                lastItems={lastItems}
+                newNorm={newNorm}
+                open={open}
+              />
+            </div>
+          )}
         </TableCell>
         <TableCell
           className={cn("whitespace-nowrap text-right align-top", FROM_MID)}
@@ -641,25 +699,12 @@ function ItemRows({
         >
           {formatMoney(item.totals.total, locale)}
         </TableCell>
-        {editable && (
-          <TableCell className="items-menu align-top">
-            <ItemMenu
-              item={item}
-              siblings={siblings}
-              position={position}
-              sections={sections}
-              lastItems={lastItems}
-              newNorm={newNorm}
-              open={open}
-            />
-          </TableCell>
-        )}
       </TableRow>
       {expanded && (
         <TableRow id={detailsId} className="hover:bg-transparent">
           <TableCell className={FROM_MID} />
           <TableCell
-            colSpan={editable ? 5 : 4}
+            colSpan={4}
             className={cn("pt-0", nested ? NESTED_ITEM_CELL : ITEM_CELL)}
           >
             {/* No width of its own, so the wide resource table scrolls
@@ -783,9 +828,8 @@ function ItemMenu({
         <Button
           variant="ghost"
           size="icon"
-          // Up by half its height, level with the item's first line; with a
-          // pointer it shows on the row it belongs to.
-          className="-my-1.5 size-8 focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
+          // With a pointer it shows on the row it belongs to.
+          className="size-8 focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
           aria-label={t("items.menu", { title: item.title })}
         >
           <Icons.More aria-hidden />

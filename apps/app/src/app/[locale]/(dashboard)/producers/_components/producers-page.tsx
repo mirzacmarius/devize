@@ -63,7 +63,7 @@ export function ProducersPage() {
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-3">
             <SearchInput
               value={text}
               onChange={(event) => setText(event.target.value)}

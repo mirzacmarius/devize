@@ -120,6 +120,7 @@ export default {
     newEstimate: "Deviz nou",
     lei: "lei",
     withVat: "cu TVA",
+    allWithVat: "Sume cu TVA",
     kpi: {
       drafts: "În lucru",
       draftsMeta: "Ciorne: {count}",
@@ -134,7 +135,6 @@ export default {
     },
     todo: {
       title: "De făcut azi",
-      description: "Ce așteaptă un răspuns sau o verificare.",
       empty:
         "Nimic urgent: ofertele sunt citite, întrebările au răspuns și prețurile sunt la zi.",
       questionOne: "O întrebare de la client așteaptă răspunsul tău la {code}.",
@@ -492,7 +492,6 @@ export default {
         quantity: "Cantitate",
         unitPrice: "Preț unitar (lei)",
         value: "Valoare (lei)",
-        actions: "Acțiuni",
       },
       quantityTimesPrice: "{quantity}\u00a0{unit} × {price}\u00a0lei",
       pricePerUnit: "{price}\u00a0lei/{unit}",
@@ -737,7 +736,7 @@ export default {
       noResults: "Nicio normă nu se potrivește cu „{text}”.",
       results: "Norme găsite",
       categories: "Categorii",
-      allCategories: "Toate",
+      allCategories: "Toate categoriile",
       categoryEmpty: "Nicio normă publicată în „{category}” deocamdată.",
       noResultsInCategory:
         "Nicio normă din „{category}” nu se potrivește cu „{text}”.",
@@ -1425,7 +1424,7 @@ export default {
   },
   offer: {
     title: "Oferta pentru client",
-    hint: "Un link pe care clientul îl deschide fără cont: vede devizul pe înțeles, alege lucrările opționale și acceptă online, cu semnătură.",
+    hint: "Clientul deschide linkul fără cont, vede devizul pe înțeles și acceptă online.",
     create: "Creează linkul",
     empty: "Adaugă articole ca să poți trimite oferta.",
     closed: "Devizul e închis. Fă o revizie ca să trimiți o ofertă nouă.",
@@ -1920,7 +1919,8 @@ export default {
     searchPlaceholder: "Caută după cod sau lucrare",
     columns: {
       norm: "Normă",
-      source: "Sursă",
+      source: "Producător",
+      unit: "U.M.",
       status: "Stare",
       updated: "Modificată",
     },
@@ -2168,7 +2168,8 @@ export default {
     noResults: "Niciun client nu se potrivește cu „{text}”.",
     columns: {
       name: "Nume",
-      contact: "Contact",
+      phone: "Telefon",
+      email: "Email",
       address: "Adresă",
     },
     kinds: {
@@ -4130,12 +4131,18 @@ export default {
       client: "Client",
       status: "Stare",
       total: "Total cu TVA (lei)",
+      owed: "De încasat (lei)",
       due: "Scadență",
       efactura: "e-Factura",
     },
     draftCode: "Ciornă",
     overdue: "Restantă",
-    paidPart: "încasat {paid}",
+    owedPart: "de încasat {owed}",
+    receivable: {
+      total: "De încasat",
+      overdue: "Din care restant",
+      overdueCount: "{unit} · facturi: {count}",
+    },
     status: {
       draft: "Ciornă",
       issued: "Emisă",
@@ -4421,8 +4428,8 @@ export default {
       down: "Mai ieftin cu {percent}",
       total: "Total cu TVA",
       direct: "Costuri directe",
-      profit: "Profit",
-      profitHint: "Dacă clientul plătește prețul trimis.",
+      profit: "Profit dacă clientul plătește prețul trimis",
+      profitWas: "față de {amount} lei la trimitere",
       fromTo: "{from} → {to}\u00a0lei",
       changes: "Cele mai mari schimbări",
       change: "{from} → {to}\u00a0lei/{unit}",
@@ -4435,8 +4442,6 @@ export default {
     },
     threshold: {
       title: "Prag de alertă",
-      description:
-        "Te anunțăm când totalul unui deviz trimis s-ar schimba cel puțin cu atât la prețurile de azi.",
       label: "Pragul de alertă",
       off: "Oprite",
       adminOnly: "Doar administratorii firmei pot schimba pragul.",
@@ -4678,7 +4683,7 @@ export default {
       packageOf: "{count} × {kind} de {size} {unit}",
       pieces: "{count} {unit}",
       bulk: "Cât trebuie",
-      share: "{percent} dintr-un ambalaj",
+      share: "{percent} din ambalaj",
       leftoverCost: "rest {cost} lei",
       pooled:
         "Luat pe tot devizul, nu pe articole. Ambalaje economisite: {count}",

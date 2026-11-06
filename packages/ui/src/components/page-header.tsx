@@ -55,7 +55,7 @@ function PageHeader({
             {thumb}
           </span>
         )}
-        <div className="grid min-w-0 flex-1 basis-64 gap-0.5">
+        <div className="grid min-w-0 flex-1 basis-auto gap-0.5 sm:basis-64">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <h1 className="m-0 text-title-screen text-ink">{title}</h1>
             {status}

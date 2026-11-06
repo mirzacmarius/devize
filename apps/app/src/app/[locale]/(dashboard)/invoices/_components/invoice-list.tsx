@@ -13,9 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
-import { usePaginatedQuery } from "convex/react";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
+import { Figure, FigureStrip } from "@/components/figure-strip";
 import { useFirm } from "@/components/firm-provider";
 import { InvoiceArchiveButton } from "@/components/invoice-archive";
 import {
@@ -52,6 +53,10 @@ export function InvoiceList() {
     listed.status === "LoadingFirstPage" ? undefined : listed.results;
   const isEmpty = filter === "all" && rows !== undefined && rows.length === 0;
   const today = todayInput();
+  const receivable = useQuery(api.invoices.invoices.receivable, {
+    organizationId: firm._id,
+    today,
+  });
 
   return (
     <>
@@ -80,6 +85,26 @@ export function InvoiceList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
+          <FigureStrip className="mb-3">
+            <Figure
+              label={t("receivable.total")}
+              value={receivable ? formatMoney(receivable.total, locale) : "–"}
+              unit="lei"
+            />
+            <Figure
+              label={t("receivable.overdue")}
+              value={receivable ? formatMoney(receivable.overdue, locale) : "–"}
+              unit={
+                receivable &&
+                (receivable.overdueCount > 0
+                  ? t("receivable.overdueCount", {
+                      unit: "lei",
+                      count: receivable.overdueCount,
+                    })
+                  : "lei")
+              }
+            />
+          </FigureStrip>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <SegmentedControl
               label={t("filterLabel")}
@@ -91,7 +116,7 @@ export function InvoiceList() {
               }))}
             />
           </div>
-          <Table stack>
+          <Table stack twoLine>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.invoice")}</TableHead>
@@ -101,6 +126,9 @@ export function InvoiceList() {
                 <TableHead>{t("columns.status")}</TableHead>
                 <TableHead className="text-right">
                   {t("columns.total")}
+                </TableHead>
+                <TableHead className="hidden text-right xl:table-cell">
+                  {t("columns.owed")}
                 </TableHead>
                 <TableHead className="hidden text-right md:table-cell">
                   {t("columns.due")}
@@ -113,22 +141,29 @@ export function InvoiceList() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-ink-3">
+                  <TableCell colSpan={7} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-ink-3">
+                  <TableCell colSpan={7} className="text-ink-3">
                     {t("noneHere")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.map((row) => {
                 const live = row.status === "issued" || row.status === "paid";
+                // A storno invoice and the one it reverses bring nothing in.
+                const owed =
+                  row.status === "issued" &&
+                  row.kind !== "storno" &&
+                  !row.reversed
+                    ? row.total - row.paidAmount
+                    : undefined;
                 return (
-                  <TableRow key={row._id} className="md:[&>td]:h-[63px]">
+                  <TableRow key={row._id}>
                     <TableCell data-stack="wide">
                       <Link
                         href={`/invoices/${row._id}`}
@@ -152,29 +187,36 @@ export function InvoiceList() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="grid justify-items-start gap-1">
-                        <InvoiceStatusPill
-                          status={row.status}
-                          overdue={row.dueDate < today}
-                        />
-                        {row.status === "issued" && row.paidAmount > 0 && (
-                          <span className="text-meta text-ink-3 tabular-nums">
-                            {t("paidPart", {
-                              paid: formatMoney(row.paidAmount, locale),
-                            })}
-                          </span>
-                        )}
-                      </div>
+                      <InvoiceStatusPill
+                        status={row.status}
+                        overdue={row.dueDate < today}
+                      />
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums max-md:text-body-lg">
                       {formatMoney(row.total, locale)}
+                      <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
+                        lei
+                      </span>
+                      {/* Below this the column's gone, so a part-paid one says it here. */}
+                      {owed !== undefined && row.paidAmount > 0 && (
+                        <span className="block text-meta font-normal text-ink-3 xl:hidden">
+                          {t("owedPart", { owed: formatMoney(owed, locale) })}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden text-right tabular-nums text-ink-2 xl:table-cell">
+                      {owed === undefined ? (
+                        <span className="text-ink-3">–</span>
+                      ) : (
+                        formatMoney(owed, locale)
+                      )}
                     </TableCell>
                     <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
                       {formatCalendarDate(row.dueDate, locale)}
                     </TableCell>
                     <TableCell className="hidden pl-8 lg:table-cell">
                       {live ? (
-                        <div className="grid justify-items-start gap-1">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                           <EfacturaPill
                             status={row.efactura.status}
                             late={row.efactura.deadline < today}

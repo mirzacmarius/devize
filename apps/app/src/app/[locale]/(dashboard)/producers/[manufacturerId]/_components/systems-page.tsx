@@ -274,7 +274,7 @@ function SystemCard({
                 <li key={norm.lineageId} className="flex min-w-0 gap-2">
                   <Link
                     href={`/catalog/${norm.normId}`}
-                    className="shrink-0 font-mono text-code text-ink hover:underline"
+                    className="shrink-0 tabular-nums text-ink hover:underline"
                   >
                     {norm.code}
                   </Link>

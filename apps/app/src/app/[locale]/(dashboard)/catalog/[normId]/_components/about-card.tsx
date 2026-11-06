@@ -77,7 +77,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
             value: (
               <Link
                 href={`/catalog/${norm.copiedFrom._id}`}
-                className="rounded-xs font-mono text-code underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-xs tabular-nums underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {norm.copiedFrom.code}
               </Link>

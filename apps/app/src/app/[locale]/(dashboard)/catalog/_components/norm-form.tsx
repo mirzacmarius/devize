@@ -365,7 +365,6 @@ export function NormForm({
                   value={code}
                   onChange={(event) => setCode(event.target.value)}
                   placeholder={t("form.codePlaceholder")}
-                  className="font-mono"
                   maxLength={40}
                   aria-invalid={errors.code !== undefined}
                   autoFocus={!norm}

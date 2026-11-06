@@ -408,9 +408,8 @@ function OmissionsFix({
   return (
     <Button
       type="button"
-      variant={check.status === "none" ? "ai" : "outline"}
-      size="sm"
-      className="mt-2"
+      variant="link"
+      className={cn("mt-1", check.status === "none" && "text-ai")}
       disabled={starting}
       onClick={async () => {
         if (check.status !== "none" || (await start())) {
@@ -513,7 +512,7 @@ function CheckFix({
   }
   if ("href" in fix) {
     return (
-      <Button asChild variant="outline" size="sm" className="mt-2">
+      <Button asChild variant="link" className="mt-1">
         <Link href={fix.href}>{fix.label}</Link>
       </Button>
     );
@@ -521,9 +520,8 @@ function CheckFix({
   return (
     <Button
       type="button"
-      variant="outline"
-      size="sm"
-      className="mt-2"
+      variant="link"
+      className="mt-1"
       disabled={busy}
       onClick={fix.onClick}
     >

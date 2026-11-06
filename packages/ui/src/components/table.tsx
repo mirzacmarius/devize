@@ -7,6 +7,8 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   // each cell takes a slot of a two-column grid, `data-stack="wide"` cells take
   // the whole row. Hide what a phone doesn't need with `max-md:hidden`.
   stack?: boolean;
+  // Every row has a second line: one height for such lists across the app.
+  twoLine?: boolean;
   // Inside a card: it scrolls up to the card's edges, and a group row's band
   // (`band-start`, `band-end`) can run that far.
   bleed?: boolean;
@@ -15,7 +17,7 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
 // Numbers: put `text-right tabular-nums` on numeric heads and cells, two
 // decimals, dot for thousands (39.916,16). Currency goes in the head, "(lei)".
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, stack, bleed, ...props }, ref) => (
+  ({ className, stack, bleed, twoLine, ...props }, ref) => (
     <div
       className={cn(
         "relative min-w-0 overflow-x-auto",
@@ -27,6 +29,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
         className={cn(
           "w-full caption-bottom border-collapse text-body",
           stack && "table-stack",
+          twoLine && "md:[&>tbody>tr>td]:h-[60px]",
           className,
         )}
         {...props}

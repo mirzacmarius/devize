@@ -37,6 +37,11 @@ type NormRow = FunctionReturnType<
   typeof api.catalog.norms.listForOrganization
 >[number];
 
+/** A producer's norm its producer hasn't vouched for yet. */
+function unconfirmed(norm: NormRow) {
+  return norm.source === "manufacturer" && !norm.confirmed;
+}
+
 /** Whether a norm's code and name hold every word typed, diacritics aside. */
 function matches(norm: NormRow, words: readonly string[]) {
   const text = normalizeText(
@@ -105,7 +110,7 @@ export function CatalogPage() {
         : listed.status === "LoadingFirstPage"
           ? undefined
           : listed.results;
-  const columns = isOwn ? 3 : 1;
+  const columns = isOwn ? 4 : 3;
 
   const changeView = (next: CatalogView) => {
     setText("");
@@ -174,7 +179,6 @@ export function CatalogPage() {
               allLabel={t("categories.all")}
               value={category?.key ?? null}
               onChange={changeCategory}
-              rail
             />
           )}
           <div className="grid min-w-0 gap-4">
@@ -190,10 +194,18 @@ export function CatalogPage() {
                 }
               />
             ) : (
-              <Table>
+              <Table twoLine>
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("columns.norm")}</TableHead>
+                    {!isOwn && (
+                      <TableHead className="hidden lg:table-cell">
+                        {t("columns.source")}
+                      </TableHead>
+                    )}
+                    <TableHead className="hidden text-right sm:table-cell">
+                      {t("columns.unit")}
+                    </TableHead>
                     {isOwn && <TableHead>{t("columns.status")}</TableHead>}
                     {isOwn && (
                       <TableHead className="hidden text-right sm:table-cell">
@@ -248,19 +260,43 @@ export function CatalogPage() {
                             {norm.title}
                           </span>
                           <span className="text-meta text-ink-3">
-                            <span className="font-mono text-code">
+                            <span className="tabular-nums">
                               {norm.version > 1
                                 ? `${norm.code} · v${norm.version}`
                                 : norm.code}
                             </span>
-                            {norm.source !== "base" && ` · ${normSource(norm)}`}
                             {norm.category && ` · ${norm.category}`}
-                            {` · ${formatUnit(norm.unit, locale)}`}
-                            {norm.source === "manufacturer" &&
-                              !norm.confirmed &&
-                              ` · ${tNorms("unconfirmed")}`}
+                            {/* What its columns say on a wider screen. */}
+                            <span className="sm:hidden">
+                              {` · ${formatUnit(norm.unit, locale)}`}
+                            </span>
+                            <span className={isOwn ? undefined : "lg:hidden"}>
+                              {norm.source !== "base" &&
+                                ` · ${normSource(norm)}`}
+                              {unconfirmed(norm) &&
+                                ` · ${tNorms("unconfirmed")}`}
+                            </span>
                           </span>
                         </Link>
+                      </TableCell>
+                      {!isOwn && (
+                        <TableCell className="hidden lg:table-cell">
+                          {norm.source !== "base" && (
+                            <span className="grid gap-0.5">
+                              <span className="text-ink-2">
+                                {norm.manufacturerName ?? normSource(norm)}
+                              </span>
+                              {unconfirmed(norm) && (
+                                <span className="text-meta text-ink-3">
+                                  {tNorms("unconfirmed")}
+                                </span>
+                              )}
+                            </span>
+                          )}
+                        </TableCell>
+                      )}
+                      <TableCell className="hidden text-right tabular-nums text-ink-2 sm:table-cell">
+                        {formatUnit(norm.unit, locale)}
                       </TableCell>
                       {isOwn && (
                         <TableCell>

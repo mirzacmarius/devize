@@ -31,7 +31,8 @@ export function MobileNav({
   const [open, setOpen] = useState(false);
   const openSearch = useOpenCommandMenu();
   return (
-    <div className="-ml-2 flex items-center gap-1 md:hidden">
+    // Out by the buttons' padding, so their icons sit on the page's edge.
+    <div className="-mx-2.5 flex items-center gap-1 md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" aria-label={t("openMenu")}>
@@ -41,6 +42,7 @@ export function MobileNav({
         <SheetContent
           side="left"
           closeLabel={t("closeMenu")}
+          closeClassName="right-4 top-4"
           aria-describedby={undefined}
           className="gap-2 bg-shell px-3 py-3"
         >
@@ -54,7 +56,7 @@ export function MobileNav({
       </Sheet>
       <Link
         href="/"
-        className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Wordmark />
       </Link>

@@ -157,7 +157,7 @@ export function OpenOffer({
   return (
     <div className="min-h-screen bg-background">
       <OfferHeader firm={offer.firm} preview={offer.preview} />
-      <main className="mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 sm:px-6 lg:pb-16">
+      <main className="offer-main mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 max-sm:gap-6 max-sm:pt-5 sm:px-6 lg:pb-16">
         <OfferHero offer={offer} />
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
           <div className="grid min-w-0 gap-6">
@@ -233,22 +233,42 @@ export function OpenOffer({
 function OfferHero({ offer }: { offer: OpenOfferView }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
-  const site = [offer.siteAddress, offer.county].filter(Boolean).join(", ");
-  const meta = [
+  // An address often ends in its county already.
+  const site =
+    offer.county && !offer.siteAddress?.includes(offer.county)
+      ? [offer.siteAddress, offer.county].filter(Boolean).join(", ")
+      : offer.siteAddress;
+  const facts = [
     offer.client && t("forClient", { name: offer.client.name }),
     site,
-    t("pricesOf", { date: formatCalendarDate(offer.priceDate, locale) }),
-    offer.state === "open" &&
-      offer.expiresAt !== undefined &&
-      t("validUntil", { date: formatDay(offer.expiresAt, locale) }),
   ].filter(Boolean);
   return (
     <div className="grid gap-2">
       <span className="text-caption text-ink-3">
         {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
       </span>
-      <h1 className="m-0 text-title-page text-ink">{offer.title}</h1>
-      <p className="m-0 text-body text-ink-2">{meta.join(" · ")}</p>
+      <h1 className="m-0 text-title-screen text-ink sm:text-title-page">
+        {offer.title}
+      </h1>
+      {/* A line each on a phone, a sentence where there's room. */}
+      <p className="m-0 text-body text-ink-2">
+        {facts.map((fact) => (
+          <span key={String(fact)} className="max-sm:block">
+            {fact}
+            <span className="max-sm:hidden"> · </span>
+          </span>
+        ))}
+        <span className="max-sm:block">
+          {t("pricesOf", { date: formatCalendarDate(offer.priceDate, locale) })}
+          {/* From the desktop width up, the answer card beside it says this. */}
+          {offer.state === "open" && offer.expiresAt !== undefined && (
+            <span className="lg:hidden">
+              {" · "}
+              {t("validUntil", { date: formatDay(offer.expiresAt, locale) })}
+            </span>
+          )}
+        </span>
+      </p>
       {/* On a phone the answer is at the bottom, so its outcome shows here too. */}
       {offer.state !== "open" && (
         <StatusPill
@@ -278,7 +298,7 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
         <span className="text-meta font-medium text-ink-3">
           {t("messageFrom", { firm })}
         </span>
-        <p className="m-0 whitespace-pre-line text-body-lg text-ink">
+        <p className="m-0 whitespace-pre-line text-body text-ink sm:text-body-lg">
           {message}
         </p>
       </CardContent>

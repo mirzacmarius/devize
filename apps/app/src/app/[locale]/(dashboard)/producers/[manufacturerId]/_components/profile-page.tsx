@@ -432,9 +432,7 @@ function DraftsCard({
                         </Badge>
                       )}
                     </span>
-                    <span className="font-mono text-code text-ink-3">
-                      {norm.code}
-                    </span>
+                    <span className="tabular-nums text-ink-3">{norm.code}</span>
                     {norm.reviewNote && (
                       <WarningNote>
                         {tNorm("notices.reviewNote", { note: norm.reviewNote })}
@@ -597,7 +595,7 @@ function NormsCard({ profile }: { profile: Profile }) {
                       )}
                     </span>
                     <span className="text-meta text-ink-3">
-                      <span className="font-mono text-code">{norm.code}</span>
+                      <span className="tabular-nums">{norm.code}</span>
                       {norm.category && ` · ${norm.category}`}
                     </span>
                   </Link>

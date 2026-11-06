@@ -439,7 +439,7 @@ function Article({
             className="flex flex-col gap-2 border-t border-border pt-4"
           >
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-body font-medium text-ink">
+              <span className="text-body font-medium tabular-nums text-ink">
                 {norm.code}
               </span>
               <Pill tone={normTone[norm.status]}>
@@ -479,7 +479,7 @@ function Article({
                         {tAdmin(`resourceKind.${resource.kind}`)}
                       </td>
                       <td className="px-2 py-1 text-ink-2">{resource.name}</td>
-                      <td className="px-2 py-1 text-right font-mono">
+                      <td className="px-2 py-1 text-right tabular-nums">
                         {format.number(resource.quantity)}
                       </td>
                       <td
@@ -491,7 +491,7 @@ function Article({
                       >
                         {resource.unit}
                       </td>
-                      <td className="px-2 py-1 text-right font-mono text-ink-3">
+                      <td className="px-2 py-1 text-right tabular-nums text-ink-3">
                         {resource.unitPrice === undefined
                           ? ""
                           : format.number(resource.unitPrice)}

@@ -264,7 +264,6 @@ function BuyerForm({ invoice }: { invoice: Invoice }) {
                   value={form.cui}
                   onChange={(event) => set("cui", event.target.value)}
                   inputMode="numeric"
-                  className="font-mono"
                   maxLength={20}
                   aria-invalid={errors.cui !== undefined}
                 />
@@ -282,7 +281,6 @@ function BuyerForm({ invoice }: { invoice: Invoice }) {
                     onChange={(event) =>
                       set("tradeRegister", event.target.value)
                     }
-                    className="font-mono"
                     maxLength={50}
                   />
                 </Field>

@@ -122,6 +122,7 @@ export default {
     newEstimate: "New estimate",
     lei: "lei",
     withVat: "with VAT",
+    allWithVat: "Amounts with VAT",
     kpi: {
       drafts: "In progress",
       draftsMeta: "Drafts: {count}",
@@ -136,7 +137,6 @@ export default {
     },
     todo: {
       title: "To do today",
-      description: "What is waiting for an answer or a check.",
       empty:
         "Nothing urgent: the offers are read, the questions answered and the prices up to date.",
       questionOne: "A client's question is waiting for your answer on {code}.",
@@ -498,7 +498,6 @@ export default {
         quantity: "Quantity",
         unitPrice: "Unit price (lei)",
         value: "Value (lei)",
-        actions: "Actions",
       },
       quantityTimesPrice: "{quantity}\u00a0{unit} × {price}\u00a0lei",
       pricePerUnit: "{price}\u00a0lei/{unit}",
@@ -744,7 +743,7 @@ export default {
       noResults: "No norm matches “{text}”.",
       results: "Norms found",
       categories: "Categories",
-      allCategories: "All",
+      allCategories: "All categories",
       categoryEmpty: "No norm published in “{category}” yet.",
       noResultsInCategory: "No norm in “{category}” matches “{text}”.",
       searchAllCategories: "Search all categories",
@@ -1430,7 +1429,7 @@ export default {
   },
   offer: {
     title: "Offer for the client",
-    hint: "A link the client opens without an account: they read the estimate in plain words, choose the optional works and accept online, with a signature.",
+    hint: "The client opens the link without an account, reads the estimate in plain words and accepts online.",
     create: "Create the link",
     empty: "Add line items to send the offer.",
     closed: "The estimate is closed. Make a revision to send a new offer.",
@@ -1927,7 +1926,8 @@ export default {
     searchPlaceholder: "Search by code or work",
     columns: {
       norm: "Norm",
-      source: "Source",
+      source: "Producer",
+      unit: "Unit",
       status: "Status",
       updated: "Changed",
     },
@@ -2172,7 +2172,8 @@ export default {
     noResults: "No client matches “{text}”.",
     columns: {
       name: "Name",
-      contact: "Contact",
+      phone: "Phone",
+      email: "Email",
       address: "Address",
     },
     kinds: {
@@ -4138,12 +4139,18 @@ export default {
       client: "Client",
       status: "Status",
       total: "Total with VAT (lei)",
+      owed: "To collect (lei)",
       due: "Due",
       efactura: "e-Factura",
     },
     draftCode: "Draft",
     overdue: "Overdue",
-    paidPart: "paid {paid}",
+    owedPart: "to collect {owed}",
+    receivable: {
+      total: "To collect",
+      overdue: "Of which overdue",
+      overdueCount: "{unit} · invoices: {count}",
+    },
     status: {
       draft: "Draft",
       issued: "Issued",
@@ -4429,8 +4436,8 @@ export default {
       down: "Cheaper by {percent}",
       total: "Total with VAT",
       direct: "Direct costs",
-      profit: "Profit",
-      profitHint: "If the client pays the price you sent.",
+      profit: "Profit if the client pays the price you sent",
+      profitWas: "from {amount} lei when sent",
       fromTo: "{from} → {to}\u00a0lei",
       changes: "Biggest changes",
       change: "{from} → {to}\u00a0lei/{unit}",
@@ -4443,8 +4450,6 @@ export default {
     },
     threshold: {
       title: "Alert threshold",
-      description:
-        "We tell you when a sent estimate's total would change by at least this much at today's prices.",
       label: "Alert threshold",
       off: "Off",
       adminOnly: "Only the firm's admins can change the threshold.",

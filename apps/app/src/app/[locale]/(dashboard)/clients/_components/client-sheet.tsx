@@ -170,7 +170,6 @@ function ClientForm({
             value={cui}
             onChange={(event) => setCui(event.target.value)}
             inputMode="numeric"
-            className="font-mono"
             aria-invalid={errors.cui !== undefined}
           />
         </Field>

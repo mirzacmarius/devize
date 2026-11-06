@@ -10,6 +10,7 @@
 /* One warm neutral runs through both themes; only state and AI carry a hue. */
 :root {
   --card-pad: 16px;
+  --weight-figure: 300;
   /* Surfaces */
   --shell: 60 12% 95.1%; /* #f4f4f1 */
   --panel: 0 0% 100%; /* #ffffff */
@@ -22,7 +23,7 @@
   --nav-active: 60 8.3% 90.6%; /* #e9e9e5: the current page in the sidebar */
   --tile: 60 14.3% 95.9%; /* #f6f6f3: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 60 4% 10% / 0.32;
+  --scrim: 60 4% 10% / 0.4;
 
   /* Lines */
   --border: 60 7% 91.6%; /* #ebebe8 */
@@ -82,18 +83,19 @@
 .dark {
   --shell: 60 2.9% 6.9%; /* #121211 */
   --panel: 60 4% 9.8%; /* #1a1a18 */
-  --card: 60 3.3% 11.8%; /* #1f1f1d */
-  --card-border: 60 2.3% 16.9%; /* #2c2c2a */
-  --sunken: 60 2.7% 14.5%; /* #262624 */
-  --muted: 60 2.4% 16.5%; /* #2b2b29 */
+  --weight-figure: 350;
+  --card: 60 2.9% 13.3%; /* #232321 */
+  --card-border: 60 2.3% 20%; /* #343432 */
+  --sunken: 60 2.5% 15.7%; /* #292927 */
+  --muted: 60 2.5% 18%; /* #2f2f2d */
   --field: 60 2.3% 8.4%; /* #161615 */
   --selected: 60 2.6% 22.5%; /* #3b3b38: a segment raised on its rail */
   --nav-active: 60 2.8% 14.1%; /* #252523 */
-  --tile: 60 2.9% 13.3%; /* #232321 */
+  --tile: 60 2.5% 15.7%; /* #292927 */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.5;
 
-  --border: 60 2.4% 16.1%; /* #2a2a28 */
+  --border: 60 2.4% 18%; /* #2f2f2d */
   --border-control: 60 2.6% 22.5%; /* #3b3b38 */
   --tick: 60 2.4% 24.1%; /* #3f3f3c */
 
@@ -220,6 +222,44 @@
   input[type="date"] {
     position: relative;
   }
+  /* Checkboxes in the app's colours: the browser's are cold and loud. */
+  input[type="checkbox"] {
+    appearance: none;
+    display: inline-grid;
+    flex-shrink: 0;
+    place-content: center;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid hsl(var(--border-control));
+    border-radius: 4px;
+    background: hsl(var(--field));
+    transition:
+      background-color 150ms ease-out,
+      border-color 150ms ease-out;
+  }
+  input[type="checkbox"]:hover:not(:disabled) {
+    border-color: hsl(var(--ink) / 0.4);
+  }
+  input[type="checkbox"]:checked {
+    border-color: hsl(var(--action));
+    background: hsl(var(--action));
+  }
+  input[type="checkbox"]:checked::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: hsl(var(--on-action));
+    clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 22%, 85% 8%, 37% 70%);
+  }
+  input[type="checkbox"]:focus-visible {
+    outline: none;
+    border-color: hsl(var(--ink) / 0.6);
+    box-shadow: 0 0 0 3px hsl(var(--ink) / 0.1);
+  }
+  input[type="checkbox"]:disabled {
+    opacity: 0.5;
+  }
   input[type="date"]::-webkit-calendar-picker-indicator {
     position: absolute;
     top: 50%;
@@ -246,13 +286,15 @@
   /* On a phone the page is the screen: no panel frame and no card frames, one
      hairline between sections and 16px at the edge. */
   @media (max-width: 639.98px) {
-    .app-main [data-slot="card"] {
+    .app-main [data-slot="card"],
+    .offer-main [data-slot="card"] {
       margin-inline: -16px;
       border-width: 1px 0 0;
       border-radius: 0;
       box-shadow: none;
     }
-    .app-main [data-slot="card"] [data-slot="card"] {
+    .app-main [data-slot="card"] [data-slot="card"],
+    .offer-main [data-slot="card"] [data-slot="card"] {
       margin-inline: 0;
       border-width: 1px;
       border-radius: var(--radius);
@@ -329,11 +371,6 @@
       display: flex;
       align-items: center;
       min-height: 40px;
-    }
-    .items-table > tbody > tr.items-row > td.items-menu {
-      position: absolute;
-      top: 0;
-      right: 0;
     }
   }
   /* A native select with the app's chevrons, for the admin kit. */

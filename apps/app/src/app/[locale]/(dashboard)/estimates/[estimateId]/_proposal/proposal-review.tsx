@@ -474,7 +474,7 @@ function ReviewItem({ item }: { item: ProposalItem }) {
               {tender.code && (
                 <>
                   {" · "}
-                  <span className="font-mono text-code">{tender.code}</span>
+                  <span className="tabular-nums">{tender.code}</span>
                 </>
               )}
             </span>
@@ -485,7 +485,7 @@ function ReviewItem({ item }: { item: ProposalItem }) {
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3">
             {item.norm ? (
               <>
-                <span className="font-mono text-code">{item.norm.code}</span>
+                <span className="tabular-nums">{item.norm.code}</span>
                 {tender && (
                   <span className="min-w-0 text-ink-2">{item.norm.title}</span>
                 )}

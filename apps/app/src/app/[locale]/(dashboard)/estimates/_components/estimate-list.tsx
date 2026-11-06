@@ -134,7 +134,7 @@ export function EstimateList() {
               className="w-full sm:max-w-xs"
             />
           </div>
-          <Table stack>
+          <Table stack twoLine>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.estimate")}</TableHead>
@@ -194,6 +194,9 @@ export function EstimateList() {
                   </TableCell>
                   <TableCell className="text-right font-medium tabular-nums max-md:text-body-lg">
                     {formatMoney(row.total, locale)}
+                    <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
+                      lei
+                    </span>
                   </TableCell>
                   <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
                     {formatDay(row.updatedAt, locale)}

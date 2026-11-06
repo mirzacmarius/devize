@@ -417,6 +417,61 @@ describe("invoices", () => {
     ).rejects.toThrow(/invoices/);
   });
 
+  test("what's left to collect: less payments, late past the due date, nothing once reversed", async () => {
+    setSystemTime(today);
+    const t = setup();
+    const { firm, organizationId, advanceId } = await issuedAdvance(t);
+    const advance = await firm.as.query(api.invoices.invoices.get, {
+      invoiceId: advanceId,
+    });
+    const receivable = (on: string) =>
+      firm.as.query(api.invoices.invoices.receivable, {
+        organizationId,
+        today: on,
+      });
+    const later = "2099-01-01";
+
+    expect(await receivable(advance.dueDate)).toEqual({
+      total: advance.totals.total,
+      overdue: 0,
+      overdueCount: 0,
+    });
+
+    await firm.as.mutation(api.invoices.invoices.addPayment, {
+      invoiceId: advanceId,
+      date: "2026-10-26",
+      amount: 100,
+      method: "cash",
+    });
+    const owed = roundLei(advance.totals.total - 100);
+    expect(await receivable(later)).toEqual({
+      total: owed,
+      overdue: owed,
+      overdueCount: 1,
+    });
+
+    const stornoId = await firm.as.mutation(
+      api.invoices.invoices.createStorno,
+      { invoiceId: advanceId, reason: "sumă greșită" },
+    );
+    await firm.as.mutation(api.invoices.invoices.issue, {
+      invoiceId: stornoId,
+    });
+    expect(await receivable(later)).toEqual({
+      total: 0,
+      overdue: 0,
+      overdueCount: 0,
+    });
+
+    const other = await firmOwner(t, "Altă firmă");
+    await expect(
+      other.as.query(api.invoices.invoices.receivable, {
+        organizationId,
+        today: later,
+      }),
+    ).rejects.toThrow();
+  });
+
   test("cancelling an unsent, unpaid invoice keeps its number taken", async () => {
     setSystemTime(today);
     const t = setup();

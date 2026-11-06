@@ -39,15 +39,14 @@ export function SummaryCard({ overview }: { overview: Overview }) {
             ? formatMoney(overview.approved.subtotal, locale)
             : "–"
         }
-        unit={overview.approved && "lei"}
-        note={
-          overview.approved
-            ? formatPercent(
-                Math.round(overview.approved.percent * 10) / 10,
-                locale,
-              )
-            : t("noApproved")
+        unit={
+          overview.approved &&
+          `lei · ${formatPercent(
+            Math.round(overview.approved.percent * 10) / 10,
+            locale,
+          )}`
         }
+        note={overview.approved ? undefined : t("noApproved")}
       />
       <Figure
         label={t("remaining")}

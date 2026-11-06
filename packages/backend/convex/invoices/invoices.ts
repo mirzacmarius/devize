@@ -116,6 +116,7 @@ function summary(invoice: Doc<"invoices">) {
     total: invoice.totals.total,
     net: invoice.totals.net,
     paidAmount: invoice.paidAmount,
+    reversed: invoice.stornoedBy !== undefined,
     efactura: {
       status: invoice.efactura.status,
       deadline: invoice.efactura.deadline,
@@ -164,6 +165,46 @@ export const list = query({
       });
     }
     return { ...page, page: rows };
+  },
+});
+
+// More open invoices than a firm keeps, so the sum below stays bounded.
+const MAX_OPEN_INVOICES = 1000;
+
+/**
+ * What the firm's issued invoices still have to bring in, and how much of it
+ * is past due on `today`, the viewer's date. A storno invoice and the invoice
+ * it reverses owe nothing.
+ */
+export const receivable = query({
+  args: { organizationId: v.id("organizations"), today: v.string() },
+  handler: async (ctx, args) => {
+    await requireMember(ctx, args.organizationId);
+    const open = await ctx.db
+      .query("invoices")
+      .withIndex("by_organizationId_and_status_and_updatedAt", (q) =>
+        q.eq("organizationId", args.organizationId).eq("status", "issued"),
+      )
+      .take(MAX_OPEN_INVOICES);
+    let total = 0;
+    let overdue = 0;
+    let overdueCount = 0;
+    for (const invoice of open) {
+      if (invoice.kind === "storno" || invoice.stornoedBy !== undefined) {
+        continue;
+      }
+      const owed = invoice.totals.total - invoice.paidAmount;
+      total += owed;
+      if (invoice.dueDate < args.today) {
+        overdue += owed;
+        overdueCount += 1;
+      }
+    }
+    return {
+      total: roundLei(total),
+      overdue: roundLei(overdue),
+      overdueCount,
+    };
   },
 });
 

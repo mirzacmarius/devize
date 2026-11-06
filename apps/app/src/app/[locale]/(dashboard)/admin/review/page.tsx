@@ -53,7 +53,7 @@ export default function ReviewPage() {
                         href={`/catalog/${norm._id}`}
                         className="group flex flex-col"
                       >
-                        <span className="font-mono text-meta text-ink-3">
+                        <span className="text-meta tabular-nums text-ink-3">
                           {norm.version > 1
                             ? `${norm.code} · v${norm.version}`
                             : norm.code}

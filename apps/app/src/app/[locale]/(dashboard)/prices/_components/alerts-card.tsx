@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Badge } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -11,6 +10,7 @@ import {
   CardTitle,
 } from "@devize/ui/card";
 import { toast } from "@devize/ui/sonner";
+import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import Link from "next/link";
@@ -117,12 +117,13 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
   const dearer = alert.percent > 0;
   const percent = formatPercent(Math.abs(alert.percent), locale);
   const more = alert.changeCount - alert.changes.length;
+  const profitChange = alert.profitLeft - alert.sentProfit;
 
   return (
     <section
       aria-label={`${estimateCode(estimate.number, estimate.revision)} ${estimate.title}`}
       className={cn(
-        "grid gap-4 py-4",
+        "grid gap-4 py-4 last:pb-0",
         first ? "pt-0" : "border-t border-border",
       )}
     >
@@ -143,14 +144,42 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <EstimateStatusPill status={estimate.status} />
-          <Badge tone={dearer ? "warning" : "success"}>
+          <StatusPill tone={dearer ? "warning" : "success"}>
             {dearer ? t("up", { percent }) : t("down", { percent })}
-          </Badge>
+          </StatusPill>
         </div>
       </div>
 
-      <dl className="m-0 grid border-y border-border sm:grid-cols-3">
-        <div className="grid content-start gap-0.5 py-2.5 sm:pr-4">
+      {/* What it does to the profit first: it's what the firm stands to lose. */}
+      <dl className="m-0 grid gap-x-8 gap-y-3 border-y border-border py-3 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
+        <div className="grid min-w-0 content-start gap-0.5">
+          <dt className="text-meta text-ink-3">{t("profit")}</dt>
+          <dd className="m-0 grid gap-0.5">
+            <span className="flex flex-wrap items-baseline gap-x-2">
+              <span
+                className={cn(
+                  "text-title-screen tabular-nums",
+                  alert.profitLeft < 0 ? "text-danger" : "text-ink",
+                )}
+              >
+                {money(alert.profitLeft)}
+              </span>
+              <span className="text-meta text-ink-3">lei</span>
+              <span
+                className={cn(
+                  "text-body font-medium tabular-nums",
+                  profitChange < 0 ? "text-danger" : "text-success",
+                )}
+              >
+                {t("impact", { impact: signedMoney(profitChange, locale) })}
+              </span>
+            </span>
+            <span className="text-meta tabular-nums text-ink-3">
+              {t("profitWas", { amount: money(alert.sentProfit) })}
+            </span>
+          </dd>
+        </div>
+        <div className="grid content-start gap-0.5 border-border lg:border-l lg:pl-8">
           <dt className="text-meta text-ink-3">{t("total")}</dt>
           <dd className="m-0 text-body tabular-nums text-ink">
             {t("fromTo", {
@@ -159,30 +188,13 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
             })}
           </dd>
         </div>
-        <div className="grid content-start gap-0.5 border-border py-2.5 max-sm:border-t sm:border-l sm:px-4">
+        <div className="grid content-start gap-0.5 border-border lg:border-l lg:pl-8">
           <dt className="text-meta text-ink-3">{t("direct")}</dt>
           <dd className="m-0 text-body tabular-nums text-ink">
             {t("fromTo", {
               from: money(alert.sentDirect),
               to: money(alert.currentDirect),
             })}
-          </dd>
-        </div>
-        <div className="grid content-start gap-0.5 border-border py-2.5 max-sm:border-t sm:border-l sm:pl-4">
-          <dt className="text-meta text-ink-3">{t("profit")}</dt>
-          <dd className="m-0 grid gap-0.5">
-            <span
-              className={cn(
-                "text-body font-medium tabular-nums",
-                alert.profitLeft < 0 ? "text-danger" : "text-ink",
-              )}
-            >
-              {t("fromTo", {
-                from: money(alert.sentProfit),
-                to: money(alert.profitLeft),
-              })}
-            </span>
-            <span className="text-meta text-ink-3">{t("profitHint")}</span>
           </dd>
         </div>
       </dl>

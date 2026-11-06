@@ -21,7 +21,7 @@ import {
 import { toast } from "@devize/ui/sonner";
 import { Textarea } from "@devize/ui/textarea";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
   type FormEvent,
@@ -32,7 +32,7 @@ import {
 } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
-import { NormCategoryChips } from "@/components/norm-category-chips";
+import { NormCategorySelect } from "@/components/norm-category-chips";
 import { useNormSource } from "@/components/norm-source";
 import { SearchInput } from "@/components/search-input";
 import { useErrorMessage } from "@/components/use-error-message";
@@ -178,19 +178,21 @@ function AddNorm({
         />
       ) : (
         <>
-          <SearchInput
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            placeholder={t("addNorm.searchPlaceholder")}
-            aria-label={t("addNorm.searchPlaceholder")}
-            autoFocus
-          />
-          <NormCategoryChips
-            label={t("addNorm.categories")}
-            allLabel={t("addNorm.allCategories")}
-            value={categoryKey}
-            onChange={setCategoryKey}
-          />
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_12rem]">
+            <SearchInput
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("addNorm.searchPlaceholder")}
+              aria-label={t("addNorm.searchPlaceholder")}
+              autoFocus
+            />
+            <NormCategorySelect
+              label={t("addNorm.categories")}
+              allLabel={t("addNorm.allCategories")}
+              value={categoryKey}
+              onChange={setCategoryKey}
+            />
+          </div>
           {!search && !category ? (
             <p className="m-0 text-meta text-ink-3">{t("addNorm.hint")}</p>
           ) : results === undefined ? (
@@ -239,25 +241,34 @@ function AddNorm({
           ) : (
             <ul
               aria-label={t("addNorm.results")}
-              // The rows' text starts under the search; only their fill hangs out.
-              className="-mx-3 m-0 grid list-none gap-0.5 p-0"
+              className="m-0 grid list-none p-0"
             >
               {results.map((norm) => (
-                <li key={norm._id}>
+                <li
+                  key={norm._id}
+                  className="border-t border-border first:border-t-0"
+                >
+                  {/* The text starts under the search; only the fill hangs out. */}
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="grid w-full gap-0.5 rounded-md px-3 py-2.5 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="flex items-baseline justify-between gap-3">
-                      <span className="text-body text-ink">{norm.title}</span>
-                      <span className="shrink-0 text-meta text-ink-3">
-                        {formatUnit(norm.unit, locale)}
+                    <span className="grid min-w-0 gap-0.5">
+                      <span className="text-body font-medium text-ink">
+                        {norm.title}
+                      </span>
+                      <span className="text-meta text-ink-3">
+                        <span className="tabular-nums">{norm.code}</span>
+                        {norm.source !== "base" && ` · ${normSource(norm)}`}
                       </span>
                     </span>
-                    <span className="text-meta text-ink-3">
-                      <span className="font-mono text-code">{norm.code}</span>
-                      {norm.source !== "base" && ` · ${normSource(norm)}`}
+                    <span className="flex items-center gap-2 text-meta text-ink-3">
+                      {formatUnit(norm.unit, locale)}
+                      <ChevronRight
+                        aria-hidden
+                        className="size-4 transition-transform group-hover:translate-x-0.5"
+                      />
                     </span>
                   </button>
                 </li>
@@ -672,9 +683,7 @@ function NormPreview({
           {notes}
           <div className="grid gap-1">
             <span className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-code text-ink-2">
-                {norm.code}
-              </span>
+              <span className="tabular-nums text-ink-2">{norm.code}</span>
               {norm.source === "manufacturer" && !norm.confirmedAt && (
                 <Badge>{tNorms("unconfirmed")}</Badge>
               )}

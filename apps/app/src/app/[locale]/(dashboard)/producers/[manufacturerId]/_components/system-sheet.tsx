@@ -221,7 +221,7 @@ function SystemForm({
                     }
                   />
                   <span className="min-w-0 text-body text-ink">
-                    <span className="font-mono text-code">{norm.code}</span>{" "}
+                    <span className="tabular-nums">{norm.code}</span>{" "}
                     {norm.title}
                     <span className="text-ink-3">
                       {" "}

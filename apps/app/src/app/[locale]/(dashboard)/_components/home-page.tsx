@@ -71,6 +71,8 @@ export function HomePage() {
     <>
       <PageHeader
         title={t("title")}
+        // Each figure says it on a wider screen; a phone has no room for that.
+        description={<span className="sm:hidden">{t("allWithVat")}</span>}
         actions={
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden />
@@ -165,25 +167,18 @@ function Kpi({
 }) {
   const t = useScopedI18n("home");
   return (
-    <div className="grid min-w-0 content-start gap-1 border-border p-4 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:p-5 xl:[&:not(:first-child)]:border-l">
-      <p className="m-0 text-meta text-ink-2">{label}</p>
+    <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-3 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:gap-1 sm:p-5 xl:[&:not(:first-child)]:border-l">
+      <p className="m-0 truncate text-meta text-ink-2">{label}</p>
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
-        <span className="text-[22px] font-light leading-8 tracking-[-0.01em] tabular-nums text-ink sm:text-kpi">
+        <span className="text-[22px] leading-8 tracking-[-0.01em] tabular-nums text-ink [font-weight:var(--weight-figure)] sm:text-kpi">
           {value}
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}
         {children}
       </div>
-      <p className="m-0 min-h-[18px] text-meta text-ink-3">
-        {unit ? (
-          <>
-            {t("withVat")}
-            <span className="max-sm:hidden"> · {meta}</span>
-            <span className="block sm:hidden">{meta}</span>
-          </>
-        ) : (
-          meta
-        )}
+      <p className="m-0 min-h-[18px] truncate text-meta text-ink-3">
+        {unit && <span className="max-sm:hidden">{t("withVat")} · </span>}
+        {meta}
       </p>
     </div>
   );
@@ -203,9 +198,8 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
   const tc = useScopedI18n("common");
   return (
     <Card>
-      <CardHeader className="grid justify-stretch gap-0.5">
+      <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="pb-2">
         {todo === undefined ? (
@@ -289,7 +283,7 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
     <li className={cn(!first && "border-t border-border")}>
       <Link
         href={href}
-        className="group -mx-2 grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden
@@ -353,7 +347,7 @@ function RecentCard({
               >
                 <Link
                   href={`/estimates/${row._id}`}
-                  className="-mx-2 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0.5 rounded-md px-2 py-2.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="-mx-2 grid min-h-[59px] grid-cols-[minmax(0,1fr)_auto] content-center items-center gap-x-4 gap-y-0.5 rounded-md px-2 py-1.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span className="truncate text-body font-medium text-ink">
                     {row.title}

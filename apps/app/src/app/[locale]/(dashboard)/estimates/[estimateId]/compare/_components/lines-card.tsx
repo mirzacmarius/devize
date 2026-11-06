@@ -125,7 +125,7 @@ function ChangeRow({ change }: { change: LineChange }) {
       <td className="py-2 pr-3 align-top">
         <div className="grid min-w-0">
           <span className="text-ink">{shown.title}</span>
-          <span className="font-mono text-code text-ink-3">
+          <span className="tabular-nums text-ink-3">
             {shown.code}
             {shown.section ? (
               <span className="font-sans"> · {shown.section}</span>

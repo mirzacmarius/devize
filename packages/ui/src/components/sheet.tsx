@@ -54,6 +54,8 @@ interface SheetContentProps
     VariantProps<typeof sheetVariants> {
   // The close button's name for screen readers, from the app's locale.
   closeLabel?: string;
+  // For content without the usual padding, whose title isn't where it expects.
+  closeClassName?: string;
 }
 
 const SheetContent = React.forwardRef<
@@ -61,7 +63,14 @@ const SheetContent = React.forwardRef<
   SheetContentProps
 >(
   (
-    { side = "right", className, children, closeLabel = "Închide", ...props },
+    {
+      side = "right",
+      className,
+      children,
+      closeLabel = "Închide",
+      closeClassName,
+      ...props
+    },
     ref,
   ) => (
     <SheetPortal>
@@ -72,7 +81,13 @@ const SheetContent = React.forwardRef<
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-md text-ink-3 ring-offset-background transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none">
+        {/* On the title's line, at the content's edge. */}
+        <SheetPrimitive.Close
+          className={cn(
+            "absolute right-6 top-7 rounded-md text-ink-3 ring-offset-background transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none",
+            closeClassName,
+          )}
+        >
           <X className="h-4 w-4" />
           <span className="sr-only">{closeLabel}</span>
         </SheetPrimitive.Close>

@@ -99,25 +99,29 @@ export function EstimatePage() {
 
   return (
     <>
-      <PageHeader
-        breadcrumb={
-          <Breadcrumb aria-label={t("breadcrumb")}>
-            <BreadcrumbLink asChild>
-              <Link href="/estimates">{t("breadcrumbList")}</Link>
-            </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{code}</BreadcrumbPage>
-          </Breadcrumb>
-        }
-        title={estimate.title}
-        status={<EstimateStatusPill status={estimate.status} />}
-        description={[
-          estimate.client?.name ?? t("noClient"),
-          t("pricesOf", {
-            date: formatCalendarDate(estimate.priceDate, locale),
-          }),
-        ].join(" · ")}
-        actions={
+      {/* On a phone the total comes before what can be done with it. */}
+      <div className="grid min-w-0 gap-x-4 gap-y-5 md:grid-cols-[minmax(0,1fr)_auto]">
+        <PageHeader
+          breadcrumb={
+            <Breadcrumb aria-label={t("breadcrumb")}>
+              <BreadcrumbLink asChild>
+                <Link href="/estimates">{t("breadcrumbList")}</Link>
+              </BreadcrumbLink>
+              <BreadcrumbSeparator />
+              <BreadcrumbPage>{code}</BreadcrumbPage>
+            </Breadcrumb>
+          }
+          title={estimate.title}
+          status={<EstimateStatusPill status={estimate.status} />}
+          description={[
+            estimate.client?.name ?? t("noClient"),
+            t("pricesOf", {
+              date: formatCalendarDate(estimate.priceDate, locale),
+            }),
+          ].join(" · ")}
+        />
+        {/* Beside the title, under the breadcrumb's line. */}
+        <div className="order-last flex flex-wrap items-center gap-2 md:order-none md:pt-8">
           <EstimateActions
             estimate={estimate}
             failedChecks={
@@ -125,17 +129,17 @@ export function EstimatePage() {
             }
             open={setPanel}
           />
-        }
-      />
-      <div className="-mt-1 grid gap-x-10 gap-y-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end">
-        <TotalHero
-          label={t("summary.total")}
-          total={formatMoney(estimate.totals.total, locale)}
-          note={t("summary.withoutVat", {
-            total: formatMoney(estimate.totals.subtotal, locale),
-          })}
-        />
-        <EstimateStepper estimate={estimate} />
+        </div>
+        <div className="grid gap-x-10 gap-y-3 md:col-span-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end">
+          <TotalHero
+            label={t("summary.total")}
+            total={formatMoney(estimate.totals.total, locale)}
+            note={t("summary.withoutVat", {
+              total: formatMoney(estimate.totals.subtotal, locale),
+            })}
+          />
+          <EstimateStepper estimate={estimate} />
+        </div>
       </div>
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
         <div className="grid min-w-0 gap-6">

@@ -135,11 +135,11 @@ function NormsPanel({ norms }: { norms: Row[] }) {
                       key={norm.code}
                       className="border-b border-border last:border-0"
                     >
-                      <td className="hidden whitespace-nowrap py-3 pl-4 pr-4 font-mono text-meta text-ink-2 sm:table-cell sm:pl-5">
+                      <td className="hidden whitespace-nowrap py-3 pl-4 pr-4 text-meta tabular-nums text-ink-2 sm:table-cell sm:pl-5">
                         {norm.code}
                       </td>
                       <td className="py-3 pl-4 pr-4 sm:pl-0">
-                        <span className="block font-mono text-meta text-ink-3 sm:hidden">
+                        <span className="block text-meta tabular-nums text-ink-3 sm:hidden">
                           {norm.code} · {formatUnit(norm.unit, locale)}
                         </span>
                         {norm.normId ? (

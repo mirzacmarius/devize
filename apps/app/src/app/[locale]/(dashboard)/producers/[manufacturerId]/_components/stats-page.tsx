@@ -316,7 +316,7 @@ function NormsCard({ stats }: { stats: Stats }) {
                       href={`/catalog/${norm._id}`}
                       className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className="font-mono text-code text-ink-3">
+                      <span className="tabular-nums text-ink-3">
                         {norm.code}
                       </span>
                       <span className="text-body font-medium text-ink group-hover:underline">

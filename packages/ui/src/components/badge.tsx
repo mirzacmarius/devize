@@ -15,7 +15,7 @@ const tones = {
 // Tag: a property of a row, after its name ("Preț vechi", "Fără normă",
 // "Normă producător"). At most two per table row.
 const badgeVariants = cva(
-  "inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-xs px-1.5 align-middle text-[12px] leading-4 [&_svg]:size-3 [&_svg]:shrink-0",
+  "inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-full px-2 align-middle text-[12px] leading-4 [&_svg]:size-3 [&_svg]:shrink-0",
   {
     variants: { tone: tones },
     defaultVariants: { tone: "neutral" },

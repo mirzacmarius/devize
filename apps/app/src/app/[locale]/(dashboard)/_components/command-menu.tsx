@@ -134,6 +134,8 @@ export function CommandMenuProvider({
         <DialogContent
           data-command-menu
           closeLabel={tc("close")}
+          // In the search row, and only where there's no Esc key to press.
+          closeClassName="right-4 top-4 md:hidden"
           onCloseAutoFocus={(event) => {
             const target = returnFocus.current;
             returnFocus.current = null;
@@ -546,7 +548,7 @@ function CommandSearch({
           onKeyDown={onKeyDown}
           autoComplete="off"
           spellCheck={false}
-          className="h-12 min-w-0 flex-1 bg-transparent pr-8 text-body text-ink outline-none placeholder:text-ink-3"
+          className="h-12 min-w-0 flex-1 bg-transparent text-body text-ink outline-none placeholder:text-ink-3 max-md:pr-8"
         />
       </div>
       <div
@@ -556,7 +558,7 @@ function CommandSearch({
         aria-busy={!settled}
         hidden={entries.length === 0}
         // Fades where it scrolls, so a row cut in half looks like more to come.
-        className="max-h-[min(60vh,28rem)] overflow-y-auto p-2 pb-6 [mask-image:linear-gradient(to_top,transparent,#000_24px)]"
+        className="max-h-[min(60vh,28rem)] overflow-y-auto p-2 pb-4 [mask-image:linear-gradient(to_top,transparent,#000_12px)]"
       >
         {groups.map(({ group, entries: inGroup }) => (
           // biome-ignore lint/a11y/useSemanticElements: a listbox groups its options with role="group"; a fieldset groups form fields

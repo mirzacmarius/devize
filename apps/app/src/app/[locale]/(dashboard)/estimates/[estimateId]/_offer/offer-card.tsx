@@ -84,9 +84,9 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
   if (offer === null) {
     body = (
       <>
-        <p className="m-0 text-body text-ink-2">{t("hint")}</p>
-        <OfferVariants estimate={estimate} />
+        <p className="m-0 text-meta text-ink-2">{t("hint")}</p>
         {createButton(t("create"))}
+        <OfferVariants estimate={estimate} />
       </>
     );
   } else if (offer.status === "sent" || offer.status === "viewed") {

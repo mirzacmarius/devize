@@ -79,7 +79,7 @@ export function WorksCard({
       >
         {sectionName(section)}
       </h3>
-      <span className="shrink-0 text-meta tabular-nums text-ink-2">
+      <span className="shrink-0 text-body font-medium tabular-nums text-ink">
         {t("lei", { total: formatMoney(total, locale) })}
       </span>
     </div>
@@ -144,10 +144,10 @@ function ItemRow({
   const switchId = `${id}-include`;
   return (
     <li className="grid gap-2 border-b border-border py-4 last:border-b-0">
-      <div className="grid grid-cols-[1.75rem_minmax(0,1fr)_auto] items-start gap-x-3">
+      <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-start gap-x-2 sm:grid-cols-[1.75rem_minmax(0,1fr)_auto] sm:gap-x-3">
         <span className="pt-px text-meta tabular-nums text-ink-3">{index}</span>
         <div className={cn("grid min-w-0 gap-1", !included && "opacity-60")}>
-          <span className="text-body font-medium text-ink">{item.title}</span>
+          <span className="text-body text-ink">{item.title}</span>
           <span className="text-meta tabular-nums text-ink-3">
             {t("line", {
               quantity: formatQuantity(item.quantity, locale),
@@ -167,7 +167,7 @@ function ItemRow({
         <div className="grid justify-items-end gap-1 text-right">
           <span
             className={cn(
-              "text-body font-medium tabular-nums text-ink",
+              "text-body tabular-nums text-ink",
               !included && "text-ink-3 line-through",
             )}
           >
@@ -179,7 +179,7 @@ function ItemRow({
         </div>
       </div>
       {(item.optional || item.materials.length > 0) && (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-[calc(1.75rem+0.75rem)]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-7 sm:pl-10">
           {item.optional && (
             <div className="flex items-center gap-2">
               <Switch
@@ -203,7 +203,7 @@ function ItemRow({
               aria-expanded={showMaterials}
               aria-controls={materialsId}
               onClick={() => setShowMaterials(!showMaterials)}
-              className="rounded-xs text-meta text-ink-2 underline underline-offset-[3px] hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="rounded-xs text-meta text-ink-3 underline-offset-[3px] hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {showMaterials ? t("hideMaterials") : t("showMaterials")}
             </button>

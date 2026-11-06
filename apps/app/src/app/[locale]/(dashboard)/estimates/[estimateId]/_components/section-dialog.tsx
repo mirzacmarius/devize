@@ -149,7 +149,6 @@ function SectionForm({
             value={code}
             onChange={(event) => setCode(event.target.value)}
             placeholder={kind === "object" ? "01" : "1.1"}
-            className="font-mono"
           />
         </Field>
         <Field label={t("sections.name")} htmlFor="section-name" error={error}>

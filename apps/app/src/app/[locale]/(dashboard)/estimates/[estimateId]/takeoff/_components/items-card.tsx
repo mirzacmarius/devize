@@ -157,7 +157,7 @@ function ItemRow({
             {item.title}
           </span>
           <span className="flex flex-wrap items-center gap-2 text-meta text-ink-3">
-            <span className="font-mono text-code">{item.code}</span>
+            <span className="tabular-nums">{item.code}</span>
             <span className="tabular-nums">
               {t("inEstimate", {
                 quantity: formatQuantity(item.quantity, locale),

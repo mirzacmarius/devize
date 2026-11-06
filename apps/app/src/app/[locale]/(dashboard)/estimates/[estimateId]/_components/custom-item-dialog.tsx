@@ -228,7 +228,6 @@ function CustomItemForm({
             id={`${ids}-code`}
             value={code}
             onChange={(event) => setCode(event.target.value)}
-            className="font-mono"
           />
         </Field>
         <Field label={t("custom.unit")} htmlFor={`${ids}-unit`}>

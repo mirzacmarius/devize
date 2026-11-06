@@ -39,13 +39,18 @@ type Todo = { estimate: EstimateSummary } & (
   | { kind: "unread"; days: number }
 );
 
+// Someone waiting first, then money moving, then what runs out soonest.
 const todoOrder: Record<Todo["kind"], number> = {
   question: 0,
   alert: 1,
   deadline: 2,
-  expiring: 3,
-  unread: 4,
+  expiring: 2,
+  unread: 3,
 };
+
+function daysLeft(todo: Todo): number {
+  return todo.kind === "deadline" || todo.kind === "expiring" ? todo.days : 0;
+}
 
 async function byStatus(
   ctx: QueryCtx,
@@ -202,7 +207,10 @@ export const overview = query({
         });
       }
     }
-    todo.sort((a, b) => todoOrder[a.kind] - todoOrder[b.kind]);
+    todo.sort(
+      (a, b) =>
+        todoOrder[a.kind] - todoOrder[b.kind] || daysLeft(a) - daysLeft(b),
+    );
 
     const recentRows = await ctx.db
       .query("estimates")

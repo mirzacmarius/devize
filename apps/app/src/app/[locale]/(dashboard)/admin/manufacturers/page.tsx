@@ -17,11 +17,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { useScopedI18n } from "@/locales/client";
 import {
-  Confidence,
   ErrorText,
   Field,
   manufacturerTone,
-  messageTone,
   NativeSelect,
   Panel,
   Pill,
@@ -52,6 +50,8 @@ export default function ManufacturersPage() {
     api.manufacturers.admin.list,
     status === "all" ? {} : { status },
   );
+  // A single stage says nothing, so its column goes.
+  const stages = new Set(rows?.map((row) => row.wave)).size;
   const [selected, setSelected] = useState<Set<Id<"manufacturers">>>(new Set());
   const [started, setStarted] = useState<number | null>(null);
   const startResearchMany = useMutation(
@@ -87,7 +87,7 @@ export default function ManufacturersPage() {
           </label>
           <NativeSelect
             id="status_filter"
-            className="w-full sm:w-48"
+            className="h-8 w-full sm:w-48"
             value={status}
             onChange={(event) =>
               setStatus(event.target.value as Status | "all")
@@ -151,7 +151,7 @@ export default function ManufacturersPage() {
                   <span className="sr-only">{t("selectNew")}</span>
                 </TableHead>
                 <TableHead>{t("columns.name")}</TableHead>
-                <TableHead>{t("columns.wave")}</TableHead>
+                {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
                 <TableHead>{t("columns.status")}</TableHead>
                 <TableHead>{t("columns.norms")}</TableHead>
                 <TableHead>{t("columns.confidence")}</TableHead>
@@ -185,9 +185,11 @@ export default function ManufacturersPage() {
                         </p>
                       )}
                     </TableCell>
-                    <TableCell className="tabular-nums text-ink-2">
-                      {row.wave}
-                    </TableCell>
+                    {stages > 1 && (
+                      <TableCell className="tabular-nums text-ink-2">
+                        {row.wave}
+                      </TableCell>
+                    )}
                     <TableCell>
                       {row.activeJob ? (
                         <Pill tone="active">
@@ -203,26 +205,18 @@ export default function ManufacturersPage() {
                     <TableCell className="text-ink-2">
                       {tAdmin(`status.norms.${row.normsStatus}`)}
                     </TableCell>
-                    <TableCell>
-                      {row.confidence && (
-                        <Confidence level={row.confidence}>
-                          {tAdmin(`confidence.${row.confidence}`)}
-                        </Confidence>
-                      )}
+                    <TableCell className="text-ink-2">
+                      {row.confidence && tAdmin(`confidence.${row.confidence}`)}
                     </TableCell>
-                    <TableCell>
-                      {row.message && (
-                        <Pill
-                          tone={
-                            row.message.blocked &&
-                            row.message.status === "draft"
-                              ? "danger"
-                              : messageTone[row.message.status]
-                          }
-                        >
-                          {tAdmin(`status.message.${row.message.status}`)}
-                        </Pill>
-                      )}
+                    <TableCell
+                      className={
+                        row.message?.blocked && row.message.status === "draft"
+                          ? "text-danger"
+                          : "text-ink-2"
+                      }
+                    >
+                      {row.message &&
+                        tAdmin(`status.message.${row.message.status}`)}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -54,7 +54,11 @@ const config = {
         ],
         kpi: [
           "32px",
-          { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "300" },
+          {
+            lineHeight: "36px",
+            letterSpacing: "-0.01em",
+            fontWeight: "var(--weight-figure)",
+          },
         ],
         figure: [
           "20px",

@@ -66,7 +66,7 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-3">
             <SearchInput
               value={text}
               onChange={(event) => setText(event.target.value)}
@@ -75,11 +75,12 @@ export function ClientList() {
               className="w-full sm:max-w-xs"
             />
           </div>
-          <Table stack>
+          <Table stack twoLine>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.name")}</TableHead>
-                <TableHead>{t("columns.contact")}</TableHead>
+                <TableHead>{t("columns.phone")}</TableHead>
+                <TableHead>{t("columns.email")}</TableHead>
                 <TableHead className="hidden md:table-cell">
                   {t("columns.address")}
                 </TableHead>
@@ -88,20 +89,20 @@ export function ClientList() {
             <TableBody>
               {clients === undefined && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {clients?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
               )}
               {clients?.map((row) => (
-                <TableRow key={row._id} className="md:[&>td]:h-[63px]">
+                <TableRow key={row._id}>
                   <TableCell data-stack="wide">
                     <div className="grid gap-0.5">
                       <button
@@ -117,28 +118,26 @@ export function ClientList() {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell data-stack="wide">
-                    <div className="grid gap-0.5 text-body">
-                      {row.phone && (
-                        <a
-                          href={`tel:${row.phone}`}
-                          className="text-ink hover:underline"
-                        >
-                          {row.phone}
-                        </a>
-                      )}
-                      {row.email && (
-                        <a
-                          href={`mailto:${row.email}`}
-                          className="truncate text-meta text-ink-3 hover:underline"
-                        >
-                          {row.email}
-                        </a>
-                      )}
-                      {!row.phone && !row.email && (
-                        <span className="text-ink-3">{tc("notSet")}</span>
-                      )}
-                    </div>
+                  <TableCell className="whitespace-nowrap tabular-nums text-ink-2">
+                    {row.phone ? (
+                      <a href={`tel:${row.phone}`} className="hover:underline">
+                        {row.phone}
+                      </a>
+                    ) : (
+                      <span className="text-ink-3">{tc("notSet")}</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="max-w-64 truncate text-ink-2 max-md:text-right">
+                    {row.email ? (
+                      <a
+                        href={`mailto:${row.email}`}
+                        className="hover:underline"
+                      >
+                        {row.email}
+                      </a>
+                    ) : (
+                      <span className="text-ink-3">{tc("notSet")}</span>
+                    )}
                   </TableCell>
                   <TableCell className="hidden max-w-xs truncate text-ink-2 md:table-cell">
                     {row.address ?? (

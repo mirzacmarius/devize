@@ -131,7 +131,6 @@ function ItemForm({ item, onDone }: { item: LineItem; onDone: () => void }) {
             value={code}
             onChange={(event) => setCode(event.target.value)}
             disabled={!own}
-            className="font-mono"
           />
         </Field>
         <Field

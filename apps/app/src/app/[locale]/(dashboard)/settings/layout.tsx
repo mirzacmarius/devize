@@ -17,8 +17,10 @@ export default async function Layout({
   return (
     <>
       <PageHeader title={t("title")} />
-      <SettingsTabs />
-      <div className="grid max-w-3xl gap-6">{children}</div>
+      <div className="grid max-w-3xl gap-6">
+        <SettingsTabs />
+        {children}
+      </div>
     </>
   );
 }

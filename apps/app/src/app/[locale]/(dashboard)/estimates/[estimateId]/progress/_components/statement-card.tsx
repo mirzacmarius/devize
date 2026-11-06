@@ -335,13 +335,12 @@ function RowsTable({
           <TableHead>{t("article")}</TableHead>
           <TableHead className="text-right">{t("contract")}</TableHead>
           <TableHead className="text-right">{t("previous")}</TableHead>
-          <TableHead className="text-right">{t("quantity")}</TableHead>
+          <TableHead className="bg-sunken text-right">
+            {t("quantity")}
+          </TableHead>
           <TableHead className="text-right">{t("cumulative")}</TableHead>
           <TableHead className="text-right">{t("remaining")}</TableHead>
           <TableHead className="text-right">{t("value")}</TableHead>
-          <TableHead className="w-8">
-            <span className="sr-only">{t("attachment")}</span>
-          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -358,7 +357,7 @@ function RowsTable({
               {heading && (
                 <TableGroupRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={7}
                     className="band-start band-end font-medium"
                   >
                     {heading}
@@ -366,8 +365,8 @@ function RowsTable({
                 </TableGroupRow>
               )}
               <TableRow className="group/row">
-                <TableCell className="align-top">
-                  <div className="grid min-w-64 justify-items-start gap-0.5">
+                <TableCell className="relative align-top">
+                  <div className="grid min-w-64 justify-items-start gap-0.5 pr-14">
                     <span>
                       <span className="tabular-nums text-ink-3">
                         {row.position}.{" "}
@@ -375,13 +374,45 @@ function RowsTable({
                       {row.title}
                     </span>
                     <span className="text-meta tabular-nums text-ink-3">
-                      <span className="font-mono text-code">{row.code}</span>
+                      <span className="tabular-nums">{row.code}</span>
                       {" · "}
                       {t("pricePerUnit", {
                         price: formatMoney(row.unitPrice, locale),
                         unit,
                       })}
                     </span>
+                  </div>
+                  <div className="absolute right-1 top-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-8 gap-1 px-2",
+                        differs ? "text-warning" : "text-ink-2",
+                        // An empty one shows on the row it belongs to.
+                        lines === 0 &&
+                          "focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0",
+                      )}
+                      aria-label={t("attachmentLabel", { title: row.title })}
+                      title={
+                        differs
+                          ? t("attachmentDiffers", {
+                              total: formatQuantity(
+                                row.attachmentTotal,
+                                locale,
+                              ),
+                              unit,
+                            })
+                          : t("attachment")
+                      }
+                      onClick={() => onAttachment(row)}
+                    >
+                      <Paperclip aria-hidden />
+                      {lines > 0 && (
+                        <span className="tabular-nums">{lines}</span>
+                      )}
+                    </Button>
                   </div>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
@@ -393,7 +424,8 @@ function RowsTable({
                     formatQuantity(row.previousQuantity, locale),
                   )}
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-right align-top">
+                {/* The column being filled in. */}
+                <TableCell className="whitespace-nowrap bg-sunken text-right align-top">
                   <InlineNumber
                     value={row.quantity}
                     format={(value) => formatQuantity(value, locale)}
@@ -437,33 +469,6 @@ function RowsTable({
                 <TableCell className="whitespace-nowrap text-right align-top tabular-nums">
                   {orDash(row.value, formatMoney(row.value, locale))}
                 </TableCell>
-                <TableCell className="w-8 align-top">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "-my-1.5 -mr-2 h-8 gap-1 px-2",
-                      differs ? "text-warning" : "text-ink-2",
-                      // An empty one shows on the row it belongs to.
-                      lines === 0 &&
-                        "focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0",
-                    )}
-                    aria-label={t("attachmentLabel", { title: row.title })}
-                    title={
-                      differs
-                        ? t("attachmentDiffers", {
-                            total: formatQuantity(row.attachmentTotal, locale),
-                            unit,
-                          })
-                        : t("attachment")
-                    }
-                    onClick={() => onAttachment(row)}
-                  >
-                    <Paperclip aria-hidden />
-                    {lines > 0 && <span className="tabular-nums">{lines}</span>}
-                  </Button>
-                </TableCell>
               </TableRow>
             </Fragment>
           );
@@ -475,7 +480,6 @@ function RowsTable({
           <TableCell className="whitespace-nowrap text-right font-medium tabular-nums">
             {formatMoney(Math.round(periodValue * 100) / 100, locale)}
           </TableCell>
-          <TableCell />
         </TableRow>
       </TableBody>
     </Table>

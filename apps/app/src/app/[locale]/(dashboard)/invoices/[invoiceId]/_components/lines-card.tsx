@@ -100,20 +100,22 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
           <TableBody>
             {invoice.lines.map((line, index) => (
               <TableRow key={keys[index]}>
-                <TableCell className="text-ink">{line.description}</TableCell>
-                <TableCell className="hidden text-ink-2 sm:table-cell">
+                <TableCell className="align-top text-ink">
+                  {line.description}
+                </TableCell>
+                <TableCell className="hidden align-top text-ink-2 sm:table-cell">
                   {formatUnit(line.unit, locale)}
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
+                <TableCell className="text-right align-top tabular-nums">
                   {formatQuantity(line.quantity, locale)}
                 </TableCell>
-                <TableCell className="hidden text-right tabular-nums md:table-cell">
+                <TableCell className="hidden text-right align-top tabular-nums md:table-cell">
                   {formatMoney(line.unitPrice, locale)}
                 </TableCell>
-                <TableCell className="hidden text-right text-ink-2 tabular-nums sm:table-cell">
+                <TableCell className="hidden text-right align-top text-ink-2 tabular-nums sm:table-cell">
                   {formatPercent(line.vatRate, locale)}
                 </TableCell>
-                <TableCell className="text-right font-medium tabular-nums">
+                <TableCell className="text-right align-top font-medium tabular-nums">
                   {formatMoney(line.net, locale)}
                 </TableCell>
               </TableRow>

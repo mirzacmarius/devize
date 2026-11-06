@@ -51,23 +51,23 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
+        {overview.statements.length > 0 && (
+          <span className="text-body font-medium tabular-nums text-ink">
+            {t("executed", { percent: formatPercent(percent, locale) })}
+          </span>
+        )}
       </CardHeader>
       <CardContent>
         {overview.statements.length === 0 ? (
           <p className="m-0 text-body text-ink-2">{t("noStatements")}</p>
         ) : (
-          <div className="grid gap-1.5">
-            <span className="text-body font-medium tabular-nums text-ink">
-              {t("executed", { percent: formatPercent(percent, locale) })}
-            </span>
-            <MeterBar
-              value={percent}
-              tone={percent > 100 ? "warning" : "action"}
-              label={t("executed", {
-                percent: formatPercent(percent, locale),
-              })}
-            />
-          </div>
+          <MeterBar
+            value={percent}
+            tone={percent > 100 ? "warning" : "action"}
+            label={t("executed", {
+              percent: formatPercent(percent, locale),
+            })}
+          />
         )}
         <FactList>
           {overview.statements.length > 0 && (
@@ -89,12 +89,7 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
             </Fact>
           ))}
         </FactList>
-        <Button
-          variant="outline"
-          size="sm"
-          className="justify-self-start"
-          asChild
-        >
+        <Button variant="link" className="justify-self-start" asChild>
           <Link href={`/estimates/${estimate._id}/progress`}>{t("open")}</Link>
         </Button>
       </CardContent>
