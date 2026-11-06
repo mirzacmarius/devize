@@ -32,7 +32,11 @@ export function InlineNumber({
 
   if (disabled) {
     return (
-      <span className={cn("tabular-nums", className)}>{format(value)}</span>
+      <span
+        className={cn("inline-block px-2 text-right tabular-nums", className)}
+      >
+        {format(value)}
+      </span>
     );
   }
 
@@ -72,7 +76,7 @@ export function InlineNumber({
         }
       }}
       className={cn(
-        "h-8 w-28 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors hover:border-input focus:border-input focus:bg-field focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "h-8 w-28 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors hover:border-input focus:border-ink/60 focus:bg-field focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10",
         className,
       )}
     />

@@ -4,13 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Badge, Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,8 +40,6 @@ import { orderedSections } from "./section-select";
 import type { Estimate, LineItem, OpenPanel, Section, Updates } from "./types";
 
 type Group = SectionGroup<Section, LineItem>;
-
-const COLUMNS = 6;
 
 // The card is a size container, so the columns follow its width, not the
 // screen's: beside the checks at 1280 px it's narrower than alone at 1024 px.
@@ -97,6 +89,9 @@ export function LineItemsCard({
     lastItems.set(item.sectionId ?? "", item._id);
   }
 
+  // The menu column shows only on a draft.
+  const columns = editable ? 6 : 5;
+
   const toggle = (itemId: string) =>
     setExpanded((current) => {
       const next = new Set(current);
@@ -142,7 +137,7 @@ export function LineItemsCard({
         <TableRow className="hover:bg-transparent">
           <TableCell className={FROM_MID} />
           <TableCell
-            colSpan={COLUMNS - 1}
+            colSpan={columns - 1}
             className={cn(
               "text-meta text-ink-3",
               nested ? NESTED_ITEM_CELL : ITEM_CELL,
@@ -179,7 +174,7 @@ export function LineItemsCard({
                   {tProposal("open")}
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   size="sm"
                   onClick={() => open({ kind: "addNorm" })}
                 >
@@ -187,7 +182,7 @@ export function LineItemsCard({
                   {t("items.addNorm")}
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => open({ kind: "custom" })}
                 >
@@ -197,7 +192,7 @@ export function LineItemsCard({
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="outline" size="sm">
                   {t("items.addSection")}
                 </Button>
               </DropdownMenuTrigger>
@@ -221,8 +216,7 @@ export function LineItemsCard({
           </div>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4 [container-type:inline-size]">
+      <CardContent className="[container-type:inline-size]">
         {!editable && (
           <p className="m-0 flex items-center gap-2 rounded-md bg-sunken px-3 py-2 text-meta text-ink-2">
             <Lock className="size-4 shrink-0" aria-hidden />
@@ -266,7 +260,7 @@ export function LineItemsCard({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className={cn("w-10", FROM_MID)}>#</TableHead>
+                <TableHead className={cn("w-7", FROM_MID)}>#</TableHead>
                 <TableHead className={ITEM_CELL}>
                   {t("items.columns.item")}
                 </TableHead>
@@ -280,9 +274,13 @@ export function LineItemsCard({
                 <TableHead className="whitespace-normal text-right [@container(min-width:38rem)]:whitespace-nowrap">
                   {t("items.columns.value")}
                 </TableHead>
-                <TableHead className="w-10">
-                  <span className="sr-only">{t("items.columns.actions")}</span>
-                </TableHead>
+                {editable && (
+                  <TableHead className="w-10">
+                    <span className="sr-only">
+                      {t("items.columns.actions")}
+                    </span>
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -329,11 +327,17 @@ function SectionRow({
   return (
     // The same cells as an item row, since which columns show depends on the
     // card's width and a span can't follow it.
-    <TableRow className="bg-sunken hover:bg-sunken">
+    <TableRow className="border-0 bg-sunken hover:bg-sunken [&>td:first-child]:rounded-l-md [&>td:last-child]:rounded-r-md [&>td:last-child]:pr-3 [&>td]:h-10 [&>td]:py-1">
       <TableCell className={FROM_MID} />
-      <TableCell className={nested ? NESTED_ITEM_CELL : ITEM_CELL}>
+      <TableCell
+        className={cn(
+          // The band's own padding, with its first cell hidden on a narrow card.
+          "pl-3 [@container(max-width:37.99rem)]:rounded-l-md",
+          nested && NESTED_ITEM_CELL,
+        )}
+      >
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-          <span className="text-label uppercase text-ink-3">
+          <span className="text-caption text-ink-3">
             {section.kind === "object"
               ? t("sections.object")
               : t("sections.chapter")}
@@ -351,8 +355,8 @@ function SectionRow({
       <TableCell className="text-right font-medium tabular-nums">
         {formatMoney(group.total, locale)}
       </TableCell>
-      <TableCell>
-        {editable && (
+      {editable && (
+        <TableCell>
           <DropdownMenu onOpenChange={(next) => !next && setConfirming(false)}>
             <DropdownMenuTrigger asChild>
               <Button
@@ -439,8 +443,8 @@ function SectionRow({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )}
-      </TableCell>
+        </TableCell>
+      )}
     </TableRow>
   );
 }
@@ -510,10 +514,11 @@ function ItemRows({
   const price = formatMoney(unitPrice(item), locale);
   // Own items without a code are stored with a dash, for the printed forms.
   const code = item.code === "—" ? undefined : item.code;
+  const source = useItemSource()(item);
 
   return (
     <>
-      <TableRow>
+      <TableRow className="[&>td]:py-2.5">
         <TableCell
           className={cn("align-top tabular-nums text-ink-3", FROM_MID)}
         >
@@ -569,15 +574,11 @@ function ItemRows({
                   {" · "}
                 </>
               )}
-              {code && (
-                <>
-                  <span className="font-mono text-code">{code}</span>
-                  {" · "}
-                </>
-              )}
-              <ItemSource item={item} />
+              {code && <span className="font-mono text-code">{code}</span>}
+              {code && source && " · "}
+              {source}
               <span className={MID_ONLY}>
-                {" · "}
+                {(code || source) && " · "}
                 <span className="whitespace-nowrap">
                   {t("items.pricePerUnit", { price, unit })}
                 </span>
@@ -614,8 +615,8 @@ function ItemRows({
         <TableCell className="align-top text-right tabular-nums text-ink">
           {formatMoney(item.totals.total, locale)}
         </TableCell>
-        <TableCell className="align-top">
-          {editable && (
+        {editable && (
+          <TableCell className="align-top">
             <ItemMenu
               item={item}
               siblings={siblings}
@@ -625,14 +626,14 @@ function ItemRows({
               newNorm={newNorm}
               open={open}
             />
-          )}
-        </TableCell>
+          </TableCell>
+        )}
       </TableRow>
       {expanded && (
         <TableRow id={detailsId} className="hover:bg-transparent">
           <TableCell className={FROM_MID} />
           <TableCell
-            colSpan={COLUMNS - 1}
+            colSpan={editable ? 5 : 4}
             className={cn("pt-0", nested ? NESTED_ITEM_CELL : ITEM_CELL)}
           >
             {/* No width of its own, so the wide resource table scrolls
@@ -667,9 +668,7 @@ function TenderRef({ item }: { item: LineItem }) {
   }
   return (
     <div className="grid gap-0.5 rounded-md bg-sunken px-3 py-2 text-meta">
-      <p className="m-0 text-label uppercase text-ink-3">
-        {t("tenderRef.title")}
-      </p>
+      <p className="m-0 text-caption text-ink-3">{t("tenderRef.title")}</p>
       <p className="m-0 text-ink-2">
         {[
           t("tenderRef.position", { position: ref.position }),
@@ -688,23 +687,28 @@ function TenderRef({ item }: { item: LineItem }) {
   );
 }
 
-/** Where a line item comes from: "normă ROCKWOOL · v2", "articol propriu". */
-function ItemSource({ item }: { item: LineItem }) {
+/**
+ * Where a line item comes from, when that's worth saying on its row: "normă
+ * ROCKWOOL · v2", "articol propriu". A first version of a base norm, the usual
+ * case, says nothing.
+ */
+function useItemSource() {
   const t = useScopedI18n("estimate");
   const normSource = useNormSource();
-  if (item.origin !== "norm") {
-    return <>{t(`origins.${item.origin}`)}</>;
-  }
-  const norm = item.norm;
-  if (!norm) {
-    return <>{t("origins.deletedNorm")}</>;
-  }
-  return (
-    <>
-      {normSource(norm)}
-      {norm.version > 1 && ` · v${norm.version}`}
-    </>
-  );
+  return (item: LineItem): string | undefined => {
+    if (item.origin !== "norm") {
+      return t(`origins.${item.origin}`);
+    }
+    const norm = item.norm;
+    if (!norm) {
+      return t("origins.deletedNorm");
+    }
+    if (norm.source === "base" && norm.version <= 1) {
+      return undefined;
+    }
+    const version = norm.version > 1 ? ` · v${norm.version}` : "";
+    return `${normSource(norm)}${version}`;
+  };
 }
 
 function ItemMenu({

@@ -7,8 +7,8 @@ import { useScopedI18n } from "@/locales/client";
 export type EstimateStatus = Doc<"estimates">["status"];
 
 const tones: Record<EstimateStatus, StatusPillProps["tone"]> = {
-  draft: "neutral",
-  sent: "neutral",
+  draft: "draft",
+  sent: "active",
   accepted: "success",
   rejected: "danger",
   archived: "neutral",

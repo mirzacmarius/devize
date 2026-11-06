@@ -43,7 +43,8 @@ const LOGO_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_LOGO_BYTES = 5 * 1024 * 1024;
 
 // A settings card's footer: a hint on the left, the card's action on the right.
-const footer = "justify-between gap-4 border-t bg-sunken py-3";
+const footer =
+  "sticky bottom-0 z-10 justify-between gap-4 rounded-b-[11px] border-t bg-sunken py-3";
 
 /**
  * The Firmă's logo and the details its devize, offers and official forms
@@ -148,7 +149,7 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <CardHeader className="items-start">
         <div className="grid gap-1">
           <CardTitle>{t("logoTitle")}</CardTitle>
@@ -286,7 +287,7 @@ function DetailsForm({
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <form onSubmit={submit} noValidate>
         <CardHeader className="grid justify-stretch gap-1">
           <CardTitle>{t("detailsTitle")}</CardTitle>
@@ -317,7 +318,6 @@ function DetailsForm({
                   onChange={(event) => setCui(event.target.value)}
                   placeholder={tFirm("cuiPlaceholder")}
                   inputMode="numeric"
-                  className="font-mono"
                   aria-invalid={errors.cui !== undefined}
                 />
               </Field>
@@ -327,7 +327,6 @@ function DetailsForm({
                   value={tradeRegister}
                   onChange={(event) => setTradeRegister(event.target.value)}
                   placeholder={t("tradeRegisterPlaceholder")}
-                  className="font-mono"
                   maxLength={50}
                 />
               </Field>

@@ -22,6 +22,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
 import { useRun } from "@/components/use-run";
+import { WarningNote } from "@/components/warning-note";
 import {
   formatInputNumber,
   formatMoney,
@@ -265,9 +266,9 @@ function ReadForm({
         </p>
       )}
       {status && status !== "pending" && status !== "done" && (
-        <p role="alert" className="m-0 text-body text-warning">
+        <WarningNote role="alert" className="text-body text-ink">
           {t(`statuses.${status}`)}
-        </p>
+        </WarningNote>
       )}
       <DialogFooter className="gap-2 sm:justify-between">
         <Button type="button" variant="ghost" onClick={onTypePrice}>

@@ -1,25 +1,20 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
+import { laborFloor } from "@devize/backend/convex/lib/labor";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardHeader,
-  CardTitle,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
+import { Segments } from "@devize/ui/meter";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { Check, CircleAlert, TriangleAlert } from "lucide-react";
+import { Check, ChevronRight, CircleAlert, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRun } from "@/components/use-run";
 import { formatAmount, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { useStartOmissions } from "../_proposal/omissions-sheet";
-import { laborFloor } from "@devize/backend/convex/lib/labor";
 import type { Check as CheckResult, CheckState } from "./checks";
 import { useRefreshedMessage } from "./estimate-actions";
 import type { Estimate, OpenPanel, Updates } from "./types";
@@ -52,32 +47,73 @@ export function ChecksCard({
   open: OpenPanel;
 }) {
   const t = useScopedI18n("estimate");
-  const passed = checks.filter((check) => check.state === "passed").length;
+  const [showPassed, setShowPassed] = useState(false);
+  const passed = checks.filter((check) => check.state === "passed");
+  const open_ = checks.filter((check) => check.state !== "passed");
+  const row = (check: CheckResult) => (
+    <CheckRow
+      key={check.id}
+      estimate={estimate}
+      check={check}
+      updates={updates}
+      editable={editable}
+      open={open}
+    />
+  );
   return (
-    <CardFrame>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("checks.title")}</CardTitle>
-          <span className="text-meta text-ink-3">
-            {t("checks.score", { passed, total: checks.length })}
-          </span>
-        </CardHeader>
-        <CardContent>
-          <ul className="m-0 grid list-none gap-3 p-0">
-            {checks.map((check) => (
-              <CheckRow
-                key={check.id}
-                estimate={estimate}
-                check={check}
-                updates={updates}
-                editable={editable}
-                open={open}
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle>{t("checks.title")}</CardTitle>
+        <span className="text-meta tabular-nums text-ink-3">
+          {t("checks.score", { passed: passed.length, total: checks.length })}
+        </span>
+      </CardHeader>
+      <CardContent className="gap-3">
+        <Segments
+          value={passed.length}
+          max={checks.length}
+          tone={
+            open_.some((check) => check.state === "failed")
+              ? "danger"
+              : "action"
+          }
+          label={t("checks.scoreLabel", {
+            passed: passed.length,
+            total: checks.length,
+          })}
+          className="[&>span]:h-1"
+        />
+        {open_.length > 0 && (
+          <ul className="m-0 grid list-none gap-3 p-0">{open_.map(row)}</ul>
+        )}
+        {passed.length > 0 && (
+          <div className="grid gap-3">
+            <button
+              type="button"
+              aria-expanded={showPassed}
+              onClick={() => setShowPassed((value) => !value)}
+              className="flex w-fit items-center gap-1 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <ChevronRight
+                aria-hidden
+                className={cn(
+                  "size-3.5 transition-transform",
+                  showPassed && "rotate-90",
+                )}
               />
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-    </CardFrame>
+              {showPassed
+                ? t("checks.hidePassed")
+                : t("checks.showPassed", { count: passed.length })}
+            </button>
+            {showPassed && (
+              <ul className="m-0 grid list-none gap-3 p-0">
+                {passed.map(row)}
+              </ul>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -97,10 +133,10 @@ function CheckRow({
   const t = useScopedI18n("estimate");
   const { title, detail } = useCheckText()(check);
   return (
-    <li className="grid grid-cols-[24px_minmax(0,1fr)] items-start gap-3">
+    <li className="grid grid-cols-[20px_minmax(0,1fr)] items-start gap-2.5">
       <span
         className={cn(
-          "grid size-6 place-items-center rounded-full",
+          "grid size-5 place-items-center rounded-full",
           ringClass[check.state],
         )}
       >
@@ -117,14 +153,7 @@ function CheckRow({
           <span className="sr-only">{t(`checks.states.${check.state}`)}: </span>
           {title}
         </span>
-        <span
-          className={cn(
-            "text-meta",
-            check.state === "warning" ? "text-warning" : "text-ink-3",
-          )}
-        >
-          {detail}
-        </span>
+        <span className="text-meta text-ink-2">{detail}</span>
         {editable &&
           (check.id === "omissions" ? (
             <OmissionsFix estimate={estimate} check={check} open={open} />
@@ -378,8 +407,9 @@ function OmissionsFix({
   return (
     <Button
       type="button"
-      variant="link"
-      className="mt-1 text-meta"
+      variant="outline"
+      size="sm"
+      className="mt-2"
       disabled={starting}
       onClick={async () => {
         if (check.status !== "none" || (await start())) {
@@ -481,7 +511,7 @@ function CheckFix({
   }
   if ("href" in fix) {
     return (
-      <Button asChild variant="link" className="mt-1 text-meta">
+      <Button asChild variant="outline" size="sm" className="mt-2">
         <Link href={fix.href}>{fix.label}</Link>
       </Button>
     );
@@ -489,8 +519,9 @@ function CheckFix({
   return (
     <Button
       type="button"
-      variant="link"
-      className="mt-1 text-meta"
+      variant="outline"
+      size="sm"
+      className="mt-2"
       disabled={busy}
       onClick={fix.onClick}
     >

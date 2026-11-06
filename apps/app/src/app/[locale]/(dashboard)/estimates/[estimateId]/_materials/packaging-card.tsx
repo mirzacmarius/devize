@@ -3,15 +3,10 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { WarningNote } from "@/components/warning-note";
 import { formatCount, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
@@ -55,8 +50,7 @@ export function PackagingCard({ estimateId }: { estimateId: Id<"estimates"> }) {
           </Button>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-1 pt-3">
+      <CardContent className="gap-1">
         <p className="m-0 text-body text-ink-2">
           {list === undefined || empty
             ? t("hint")
@@ -67,9 +61,7 @@ export function PackagingCard({ estimateId }: { estimateId: Id<"estimates"> }) {
         </p>
         {empty && <p className="m-0 text-meta text-ink-3">{t("empty")}</p>}
         {notes.map((note) => (
-          <p key={note} className="m-0 text-meta text-warning">
-            {note}
-          </p>
+          <WarningNote key={note}>{note}</WarningNote>
         ))}
       </CardContent>
     </Card>

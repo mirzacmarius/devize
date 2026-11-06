@@ -3,13 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -125,8 +119,7 @@ export function GuaranteeCard({ estimateId }: { estimateId: Id<"estimates"> }) {
           </DropdownMenu>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {current ? (
           <>
             <div className="grid gap-0.5">
@@ -202,9 +195,7 @@ export function GuaranteeCard({ estimateId }: { estimateId: Id<"estimates"> }) {
             </dl>
             {current.releases.length > 0 && (
               <div className="grid gap-1">
-                <span className="text-label uppercase text-ink-3">
-                  {t("releases")}
-                </span>
+                <span className="text-caption text-ink-3">{t("releases")}</span>
                 <ul className="m-0 grid list-none gap-1 p-0">
                   {current.releases.map((release, index) => (
                     <li

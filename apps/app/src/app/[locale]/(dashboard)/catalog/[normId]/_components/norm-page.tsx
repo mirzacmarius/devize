@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
 import { useRouteParam } from "@/components/use-route-param";
+import { WarningNote } from "@/components/warning-note";
 import { formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { AboutCard } from "./about-card";
@@ -116,9 +117,9 @@ function NormNotice({ norm }: { norm: Norm }) {
       <div className="grid gap-1">
         <p className="m-0 text-body text-ink-2">{notice}</p>
         {norm.status === "draft" && norm.reviewNote && (
-          <p className="m-0 text-body text-warning">
+          <WarningNote className="text-body text-ink">
             {t("notices.reviewNote", { note: norm.reviewNote })}
-          </p>
+          </WarningNote>
         )}
       </div>
       {newer && (

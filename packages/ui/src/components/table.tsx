@@ -2,23 +2,30 @@ import * as React from "react";
 
 import { cn } from "../utils";
 
+export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  // On a phone the rows become stacked blocks instead of squeezed columns:
+  // each cell takes a slot of a two-column grid, `data-stack="wide"` cells take
+  // the whole row. Hide what a phone doesn't need with `max-md:hidden`.
+  stack?: boolean;
+}
+
 // Numbers: put `text-right tabular-nums` on numeric heads and cells, two
 // decimals, dot for thousands (39.916,16). Currency goes in the head, "(lei)".
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full min-w-0 overflow-x-auto">
-    <table
-      ref={ref}
-      className={cn(
-        "w-full caption-bottom border-collapse text-body",
-        className,
-      )}
-      {...props}
-    />
-  </div>
-));
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, stack, ...props }, ref) => (
+    <div className="relative w-full min-w-0 overflow-x-auto">
+      <table
+        ref={ref}
+        className={cn(
+          "w-full caption-bottom border-collapse text-body",
+          stack && "table-stack",
+          className,
+        )}
+        {...props}
+      />
+    </div>
+  ),
+);
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<
@@ -75,7 +82,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "whitespace-nowrap px-3 pb-3 text-left align-bottom text-label uppercase text-ink-3 first:pl-0 last:pr-0",
+      "whitespace-nowrap px-3 pb-2.5 text-left align-bottom text-caption text-ink-3 first:pl-0 last:pr-0",
       className,
     )}
     {...props}

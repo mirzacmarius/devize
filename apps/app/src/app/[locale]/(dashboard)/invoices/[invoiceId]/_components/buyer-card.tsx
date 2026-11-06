@@ -9,7 +9,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -80,8 +79,7 @@ function BuyerDetails({ buyer }: { buyer: Buyer }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <p className="m-0 text-body font-medium text-ink">
           {buyer.name || (
             <span className="font-normal text-ink-3">{tc("notSet")}</span>
@@ -237,8 +235,7 @@ function BuyerForm({ invoice }: { invoice: Invoice }) {
           <CardTitle>{t("title")}</CardTitle>
           <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
-        <TickRule />
-        <CardContent className="pt-4">
+        <CardContent>
           <fieldset
             disabled={busy !== null}
             className="m-0 grid gap-4 border-0 p-0"

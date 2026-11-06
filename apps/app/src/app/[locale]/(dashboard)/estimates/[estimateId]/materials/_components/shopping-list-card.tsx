@@ -22,7 +22,8 @@ import {
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { ListRow, ShoppingList } from "./types";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+const headClass =
+  "whitespace-nowrap pb-2 pl-3 text-right text-caption text-ink-3";
 
 /**
  * The Lista de cumpărături: each material of the whole Deviz, in the whole
@@ -49,7 +50,7 @@ export function ShoppingListCard({
           <table className="w-full min-w-[44rem] border-collapse text-body">
             <thead>
               <tr>
-                <th className="pb-2 text-left text-label uppercase text-ink-3">
+                <th className="pb-2 text-left text-caption text-ink-3">
                   {t("material")}
                 </th>
                 <th className={headClass}>{t("need")}</th>
@@ -186,7 +187,12 @@ function Packages({ row }: { row: ListRow }) {
   if (!purchase || !row.package) {
     return <span className="text-ink-3">{t("bulk")}</span>;
   }
-  if (row.package.source === "counted") {
+  // One piece at a time needs no package: "5 buc", not "5 × bucată de 1 buc".
+  if (
+    row.package.source === "counted" ||
+    (row.package.kind === "piece" &&
+      purchase.counts.every((entry) => entry.size === 1))
+  ) {
     return (
       <span>
         {t("pieces", { count: formatCount(purchase.packages, locale), unit })}

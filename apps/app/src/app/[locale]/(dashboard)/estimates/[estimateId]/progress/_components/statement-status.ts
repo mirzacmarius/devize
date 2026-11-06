@@ -6,7 +6,7 @@ export const statementTone: Record<
   ListedStatement["status"],
   StatusPillProps["tone"]
 > = {
-  draft: "neutral",
-  sent: "warning",
+  draft: "draft",
+  sent: "active",
   approved: "success",
 };

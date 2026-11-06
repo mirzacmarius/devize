@@ -8,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
-import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -62,13 +61,6 @@ export function MaterialsPage() {
         }
         title={t("title")}
         description={t("description", { code, title: estimate.title })}
-        actions={
-          <Button variant="outline" asChild>
-            <Link href={`/estimates/${estimate._id}`}>
-              {t("backToEstimate")}
-            </Link>
-          </Button>
-        }
       />
       {list.rows.length === 0 ? (
         <EmptyState
@@ -77,15 +69,12 @@ export function MaterialsPage() {
           description={t("emptyDescription")}
         />
       ) : (
-        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+        <div className="grid min-w-0 gap-6">
+          <SummaryCard list={list} />
           <ShoppingListCard list={list} onEdit={setEditing} />
-          {/* The totals first on a phone, beside the list on a wide screen. */}
-          <div className="order-first grid min-w-0 gap-6 xl:order-none">
-            <SummaryCard list={list} />
-            {list.layouts.length > 0 && (
-              <LayoutCard layouts={list.layouts} locked={estimate.locked} />
-            )}
-          </div>
+          {list.layouts.length > 0 && (
+            <LayoutCard layouts={list.layouts} locked={estimate.locked} />
+          )}
         </div>
       )}
       <PackageDialog

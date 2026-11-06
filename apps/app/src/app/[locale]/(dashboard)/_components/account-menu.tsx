@@ -29,15 +29,19 @@ export function AccountMenu({
   const t = useScopedI18n("navigation");
   const { signOut } = useAuthActions();
   return (
-    <div className="grid grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-3 pl-2 pt-2">
-      <Avatar>
+    <div className="grid grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-2.5 pl-2 pt-2">
+      <Avatar className="size-7">
         {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
-        <AvatarFallback>{initials(name)}</AvatarFallback>
+        <AvatarFallback className="bg-nav-active text-[11px]">
+          {initials(name)}
+        </AvatarFallback>
       </Avatar>
       <div className="grid min-w-0">
-        <span className="truncate text-body font-medium text-ink">{name}</span>
+        <span className="truncate text-meta font-medium text-ink">{name}</span>
         {email && email !== name && (
-          <span className="truncate text-meta text-ink-3">{email}</span>
+          <span className="truncate text-[12px] leading-4 text-ink-3">
+            {email}
+          </span>
         )}
       </div>
       <DropdownMenu modal={false}>

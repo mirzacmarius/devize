@@ -25,7 +25,7 @@ function EmptyState({
   return (
     <div
       className={cn(
-        "grid justify-items-center gap-4 rounded-lg border bg-card px-6 py-16 text-center",
+        "grid justify-items-center gap-4 rounded-lg border border-dashed border-input px-6 py-14 text-center",
         className,
       )}
       {...props}
@@ -33,7 +33,7 @@ function EmptyState({
       {icon && (
         <span
           aria-hidden
-          className="grid size-12 place-items-center rounded-lg bg-tile text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border-control))] [&_svg]:size-6"
+          className="grid size-10 place-items-center rounded-lg bg-muted text-ink-2 [&_svg]:size-5"
         >
           {icon}
         </span>

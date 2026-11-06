@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -113,9 +114,6 @@ export function EstimatePage() {
         description={[
           estimate.title,
           estimate.client?.name ?? t("noClient"),
-          t("totalWithVat", {
-            total: formatMoney(estimate.totals.total, locale),
-          }),
           t("pricesOf", {
             date: formatCalendarDate(estimate.priceDate, locale),
           }),
@@ -130,7 +128,16 @@ export function EstimatePage() {
           />
         }
       />
-      <EstimateStepper estimate={estimate} />
+      <div className="-mt-1 grid gap-x-10 gap-y-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end">
+        <TotalHero
+          label={t("summary.total")}
+          total={formatMoney(estimate.totals.total, locale)}
+          note={t("summary.withoutVat", {
+            total: formatMoney(estimate.totals.subtotal, locale),
+          })}
+        />
+        <EstimateStepper estimate={estimate} />
+      </div>
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
         <div className="grid min-w-0 gap-6">
           {editable && (
@@ -155,15 +162,15 @@ export function EstimatePage() {
             editable={editable}
             open={setPanel}
           />
-          <CompatibilityCard estimate={estimate} editable={editable} />
-          <TakeoffCard estimate={estimate} />
           <OfferCard estimate={estimate} />
           {estimate.status === "accepted" && (
             <ProgressCard estimate={estimate} />
           )}
           <InvoicesCard estimate={estimate} />
-          <DocumentsCard estimate={estimate} />
+          <CompatibilityCard estimate={estimate} editable={editable} />
+          <TakeoffCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />
+          <DocumentsCard estimate={estimate} />
           <DetailsCard
             estimate={estimate}
             editable={editable}

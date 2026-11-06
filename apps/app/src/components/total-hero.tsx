@@ -1,0 +1,25 @@
+import type { ReactNode } from "react";
+
+/** A document's total at the top of its page, the figure the page is about. */
+export function TotalHero({
+  label,
+  total,
+  note,
+}: {
+  label: ReactNode;
+  total: string;
+  note?: ReactNode;
+}) {
+  return (
+    <div className="grid min-w-0">
+      <p className="m-0 text-meta text-ink-2">{label}</p>
+      <p className="m-0 flex flex-wrap items-baseline gap-x-2">
+        <span className="text-kpi tabular-nums text-ink">{total}</span>
+        <span className="text-body text-ink-2">lei</span>
+        {note && (
+          <span className="ml-1 text-meta tabular-nums text-ink-3">{note}</span>
+        )}
+      </p>
+    </div>
+  );
+}

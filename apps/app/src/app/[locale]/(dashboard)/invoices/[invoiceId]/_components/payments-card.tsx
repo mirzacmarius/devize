@@ -4,13 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import type { Doc } from "@devize/backend/convex/_generated/dataModel";
 import { roundLei } from "@devize/backend/convex/estimates/recap";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
 import {
@@ -63,8 +57,7 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
             : t("settled")}
         </span>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {invoice.payments.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("none")}</p>
         ) : (

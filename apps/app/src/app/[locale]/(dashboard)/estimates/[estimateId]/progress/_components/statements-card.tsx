@@ -39,7 +39,7 @@ export function StatementsCard({
 
   return (
     <Card>
-      <CardHeader className="grid gap-1">
+      <CardHeader className="grid justify-stretch gap-1">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle>{t("title")}</CardTitle>
           {overview.accepted && (
@@ -64,7 +64,7 @@ export function StatementsCard({
         {overview.statements.length === 0 ? (
           <p className="m-0 text-body text-ink-2">{t("empty")}</p>
         ) : (
-          <ul className="m-0 grid list-none gap-1 p-0">
+          <ul className="m-0 grid list-none gap-2 p-0 md:grid-cols-2 xl:grid-cols-3">
             {overview.statements.map((statement) => {
               const active = statement._id === selected;
               return (
@@ -75,11 +75,11 @@ export function StatementsCard({
                     aria-label={t("select", { number: statement.number })}
                     onClick={() => onSelect(statement._id)}
                     className={cn(
-                      "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5 rounded-md border px-3 py-2 text-left transition-colors hover:bg-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      active ? "border-ring bg-sunken" : "border-border",
+                      "grid h-full w-full justify-items-start gap-1 rounded-md border px-3 py-2.5 text-left transition-colors hover:bg-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      active ? "border-input bg-sunken" : "border-border",
                     )}
                   >
-                    <span className="flex flex-wrap items-center gap-2">
+                    <span className="flex w-full flex-wrap items-center justify-between gap-2">
                       <span className="text-body font-medium text-ink">
                         {t("number", { number: statement.number })}
                       </span>
@@ -87,12 +87,12 @@ export function StatementsCard({
                         {tStatus(statement.status)}
                       </StatusPill>
                     </span>
-                    <span className="text-right text-body tabular-nums text-ink">
+                    <span className="text-body tabular-nums text-ink">
                       {t("subtotal", {
                         amount: formatMoney(statement.subtotal, locale),
                       })}
                     </span>
-                    <span className="text-meta text-ink-3">
+                    <span className="text-meta tabular-nums text-ink-3">
                       {t("period", {
                         start: formatCalendarDate(
                           statement.periodStart,

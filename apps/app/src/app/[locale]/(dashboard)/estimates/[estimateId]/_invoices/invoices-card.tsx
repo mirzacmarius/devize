@@ -2,13 +2,8 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -69,29 +64,30 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
           </Button>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {accepted === null && billing.invoices.length === 0 ? (
           <p className="m-0 text-body text-ink-2">{t("card.noOffer")}</p>
         ) : (
           <>
             {facts.length > 0 && (
-              <dl className="m-0 grid gap-1.5">
-                {facts.map((fact) => (
-                  <div
-                    key={fact.label}
-                    className="flex items-baseline justify-between gap-4"
-                  >
-                    <dt className="text-body text-ink-3">{fact.label}</dt>
-                    <dd className="m-0 text-body font-medium text-ink tabular-nums">
-                      {formatMoney(fact.value, locale)} lei{" "}
-                      <span className="font-normal text-ink-3">
-                        {t("card.withoutVat")}
-                      </span>
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              <div className="grid gap-2">
+                <dl className="m-0 grid gap-1.5">
+                  {facts.map((fact) => (
+                    <div
+                      key={fact.label}
+                      className="flex items-baseline justify-between gap-4"
+                    >
+                      <dt className="text-body text-ink-3">{fact.label}</dt>
+                      <dd className="m-0 whitespace-nowrap text-body font-medium text-ink tabular-nums">
+                        {formatMoney(fact.value, locale)} lei
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="m-0 text-meta text-ink-3">
+                  {t("card.amountsWithoutVat")}
+                </p>
+              </div>
             )}
             {billing.invoices.length > 0 && (
               <ul className="m-0 grid list-none gap-2 border-t border-border p-0 pt-3">
@@ -99,24 +95,29 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
                   <li key={invoice._id}>
                     <Link
                       href={`/invoices/${invoice._id}`}
-                      className="group flex items-center justify-between gap-3 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="group grid gap-1 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className="grid min-w-0 gap-0.5">
-                        <span className="font-mono text-code text-ink-3">
-                          {invoice.code ?? t("draftCode")}
-                        </span>
-                        <span className="truncate text-body font-medium text-ink group-hover:underline">
+                      <span className="flex items-baseline justify-between gap-3">
+                        <span className="min-w-0 text-body font-medium text-ink group-hover:underline">
                           {t(`kind.${invoice.kind}`)}
                         </span>
+                        <span className="shrink-0 text-body tabular-nums text-ink">
+                          {formatMoney(invoice.total, locale)}
+                        </span>
                       </span>
-                      <span className="flex shrink-0 items-center gap-3">
+                      <span className="flex items-center justify-between gap-3">
+                        <span
+                          className={cn(
+                            "text-meta text-ink-3",
+                            invoice.code && "font-mono",
+                          )}
+                        >
+                          {invoice.code ?? t("draftCode")}
+                        </span>
                         <InvoiceStatusPill
                           status={invoice.status}
                           overdue={invoice.dueDate < today}
                         />
-                        <span className="text-body tabular-nums text-ink">
-                          {formatMoney(invoice.total, locale)}
-                        </span>
                       </span>
                     </Link>
                   </li>

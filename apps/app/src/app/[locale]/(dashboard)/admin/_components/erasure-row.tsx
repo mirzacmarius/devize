@@ -29,20 +29,20 @@ export function ErasureRow({
   const { run, error, pending } = useRun();
 
   return (
-    <li className="flex flex-col gap-2 py-3 text-sm first:pt-0">
+    <li className="flex flex-col gap-2 py-3 text-body first:pt-0">
       <div className="flex flex-wrap items-center gap-2">
         {manufacturerName && (
-          <span className="font-medium text-primary">{manufacturerName}</span>
+          <span className="font-medium text-ink">{manufacturerName}</span>
         )}
-        <span className="text-primary/70">{format.date(erasure.erasedAt)}</span>
+        <span className="text-ink-2">{format.date(erasure.erasedAt)}</span>
         <Pill>{t(`rules.${erasure.rule}`)}</Pill>
-        <span className="text-primary/60">
+        <span className="text-ink-3">
           {t("addresses", { count: erasure.addresses })}
         </span>
       </div>
       {erasure.mailboxClearedAt === undefined ? (
         <div className="flex flex-wrap items-center gap-3">
-          <p className="text-primary/70">
+          <p className="text-ink-2">
             {t("mailbox", { subjects: erasure.subjects.join(" · ") })}
           </p>
           <Button
@@ -58,7 +58,7 @@ export function ErasureRow({
           <ErrorText error={error} />
         </div>
       ) : erasure.subjects.length > 0 ? (
-        <p className="text-primary/50">
+        <p className="text-ink-3">
           {t("mailboxCleared", {
             date: format.date(erasure.mailboxClearedAt),
           })}

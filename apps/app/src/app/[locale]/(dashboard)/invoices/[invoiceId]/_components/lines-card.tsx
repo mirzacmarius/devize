@@ -13,7 +13,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -78,8 +77,7 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
@@ -326,8 +324,7 @@ function LinesEditor({ invoice }: { invoice: Invoice }) {
           </span>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <div className="hidden grid-cols-[minmax(0,1fr)_72px_88px_112px_72px_104px_32px] gap-2 text-meta text-ink-3 md:grid">
           <span>{t("columns.description")}</span>
           <span>{t("columns.unit")}</span>

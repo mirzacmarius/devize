@@ -3,7 +3,9 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import * as validators from "@devize/backend/convex/utils/validators";
 import { Button } from "@devize/ui/button";
+import { Card } from "@devize/ui/card";
 import { Input } from "@devize/ui/input";
+import { cn } from "@devize/ui/utils";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { Loader2 } from "lucide-react";
@@ -46,74 +48,66 @@ export default function OnboardingUsername() {
   }
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-96 flex-col items-center justify-center gap-6">
-      <div className="flex flex-col items-center gap-2">
-        <span className="mb-2 select-none text-6xl">👋</span>
-        <h3 className="text-center text-2xl font-medium text-primary">
-          {t("title")}
-        </h3>
-        <p className="text-center text-base font-normal text-primary/60">
-          {t("description")}
-        </p>
-      </div>
-      <form
-        className="flex w-full flex-col items-start gap-1"
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        <form.Field name="username">
-          {(field) => (
-            <div className="flex w-full flex-col gap-1.5">
-              <label htmlFor={field.name} className="sr-only">
-                {tUsername("label")}
-              </label>
-              <Input
-                id={field.name}
-                placeholder={tUsername("placeholder")}
-                autoComplete="off"
-                required
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-                aria-invalid={field.state.meta.errors.length > 0}
-                className={`bg-transparent ${
-                  field.state.meta.errors.length > 0 &&
-                  "border-destructive focus-visible:ring-destructive"
-                }`}
-              />
-              {field.state.meta.errors.length > 0 && (
-                <span className="mb-2 text-sm text-destructive dark:text-destructive-foreground">
-                  {field.state.meta.errors.join(" ")}
-                </span>
-              )}
-            </div>
-          )}
-        </form.Field>
+    <div className="mx-auto grid w-full max-w-[400px] flex-1 content-center gap-4 pb-24">
+      <Card className="grid gap-6 p-6 sm:p-8">
+        <div className="grid gap-1.5">
+          <h1 className="m-0 text-title-screen text-ink">{t("title")}</h1>
+          <p className="m-0 text-body text-ink-2">{t("description")}</p>
+        </div>
+        <form
+          className="grid w-full gap-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+        >
+          <form.Field name="username">
+            {(field) => (
+              <div className="flex w-full flex-col gap-1.5">
+                <label
+                  htmlFor={field.name}
+                  className="text-meta font-medium text-ink"
+                >
+                  {tUsername("label")}
+                </label>
+                <Input
+                  id={field.name}
+                  placeholder={tUsername("placeholder")}
+                  autoComplete="off"
+                  required
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={field.state.meta.errors.length > 0}
+                  className={cn(
+                    field.state.meta.errors.length > 0 &&
+                      "border-danger focus-visible:border-danger focus-visible:ring-danger/15",
+                  )}
+                />
+                {field.state.meta.errors.length > 0 && (
+                  <span className="text-meta text-danger">
+                    {field.state.meta.errors.join(" ")}
+                  </span>
+                )}
+              </div>
+            )}
+          </form.Field>
 
-        <form.Subscribe selector={(state) => state.isSubmitting}>
-          {(isSubmitting) => (
-            <Button
-              type="submit"
-              size="sm"
-              className="w-full"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                t("continue")
-              )}
-            </Button>
-          )}
-        </form.Subscribe>
-      </form>
-
-      <p className="px-6 text-center text-sm font-normal leading-normal text-primary/60">
-        {t("hint")}
-      </p>
+          <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => (
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  t("continue")
+                )}
+              </Button>
+            )}
+          </form.Subscribe>
+        </form>
+      </Card>
+      <p className="m-0 text-center text-meta text-ink-3">{t("hint")}</p>
     </div>
   );
 }

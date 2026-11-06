@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { InvoiceStatusPill } from "@/components/invoice-status";
+import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { formatMoney, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -77,15 +78,21 @@ export function InvoicePage() {
         description={[
           t(`kind.${invoice.kind}`),
           invoice.buyer.name || tc("notSet"),
-          t("page.totalWithVat", {
-            total: formatMoney(invoice.totals.total, locale),
-          }),
           invoice.estimate && t("page.deviz", { code: invoice.estimate.code }),
         ]
           .filter(Boolean)
           .join(" · ")}
         actions={<InvoiceActions invoice={invoice} />}
       />
+      <div className="-mt-1">
+        <TotalHero
+          label={t("page.total")}
+          total={formatMoney(invoice.totals.total, locale)}
+          note={t("page.withoutVat", {
+            total: formatMoney(invoice.totals.net, locale),
+          })}
+        />
+      </div>
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
         <div className="grid min-w-0 gap-6">
           <LinesCard invoice={invoice} />

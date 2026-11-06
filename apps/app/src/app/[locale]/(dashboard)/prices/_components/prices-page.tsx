@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
 import { useFirm } from "@/components/firm-provider";
@@ -42,17 +41,13 @@ export function PricesPage() {
 function HowCard() {
   const t = useScopedI18n("prices.how");
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="m-0 grid list-disc gap-2 pl-5 text-body text-ink-2">
-          <li>{t("read")}</li>
-          <li>{t("check")}</li>
-          <li>{t("never")}</li>
-        </ul>
-      </CardContent>
-    </Card>
+    <section className="grid gap-2 px-1">
+      <h3 className="m-0 text-caption text-ink-2">{t("title")}</h3>
+      <ul className="m-0 grid list-none gap-2 p-0 text-meta text-ink-3">
+        <li>{t("read")}</li>
+        <li>{t("check")}</li>
+        <li>{t("never")}</li>
+      </ul>
+    </section>
   );
 }

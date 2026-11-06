@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import {
   Table,
@@ -53,8 +52,7 @@ export function ProductsCard() {
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {rows?.length === 0 ? (
           <div className="grid gap-1 rounded-md bg-tile px-4 py-3">
             <p className="m-0 text-body font-medium text-ink">

@@ -1,13 +1,7 @@
 "use client";
 
 import { baseCategoryByName } from "@devize/backend/convex/catalog/baseCategories";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useNormSource } from "@/components/norm-source";
@@ -98,8 +92,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
       <CardHeader>
         <CardTitle>{t("about.title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <dl className="m-0 grid gap-3">
           {rows.map((row) => (
             <div

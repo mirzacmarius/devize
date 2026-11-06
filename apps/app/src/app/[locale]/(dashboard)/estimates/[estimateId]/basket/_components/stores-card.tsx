@@ -82,7 +82,7 @@ export function StoresCard({
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <CardContent className="gap-0">
+      <CardContent className="gap-x-8 gap-y-0 md:grid-cols-2">
         {singles.map((single, index) => {
           const { store } = single;
           const used = !leaveOut.includes(store);
@@ -93,8 +93,9 @@ export function StoresCard({
               key={store}
               aria-label={tStores(store)}
               className={cn(
-                "grid gap-2 py-3",
-                index > 0 && "border-t border-border",
+                "grid content-start gap-1.5 border-t border-border py-3",
+                index === 0 && "border-t-0 pt-0",
+                index === 1 && "md:border-t-0 md:pt-0",
               )}
             >
               <div className="flex items-center justify-between gap-3">

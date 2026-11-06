@@ -28,66 +28,49 @@ const defaultStateLabels: Record<StepState, string> = {
 };
 
 const dotClass: Record<StepState, string> = {
-  done: "bg-primary text-primary-foreground",
+  done: "bg-ink-2 text-panel",
   failed: "bg-danger-solid text-danger-solid-foreground",
-  current: "shadow-[inset_0_0_0_1.5px_hsl(var(--action))]",
+  current: "shadow-[inset_0_0_0_1.5px_hsl(var(--ink))]",
   todo: "shadow-[inset_0_0_0_1.5px_hsl(var(--tick))]",
 };
 
-function tickLine(color: string): React.CSSProperties {
-  return {
-    backgroundImage: `repeating-linear-gradient(90deg, hsl(var(${color})) 0 1px, transparent 1px 4px)`,
-  };
-}
-
-// The lifecycle of a deviz, from draft to settlement. It shows state; it is not
-// navigation, so the steps are not clickable. At most 7 steps.
+// The lifecycle of a deviz, from draft to settlement, as one quiet line. It
+// shows state; it is not navigation, so the steps are not clickable. At most 7.
 const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
   ({ steps, stateLabels, className, ...props }, ref) => {
     const labels = { ...defaultStateLabels, ...stateLabels };
     return (
       <ol
         ref={ref}
-        className={cn(
-          "m-0 grid list-none auto-cols-[minmax(0,1fr)] grid-flow-col rounded-lg border bg-sunken px-5 py-4",
-          className,
-        )}
+        className={cn("m-0 flex min-w-0 list-none gap-2 p-0", className)}
         {...props}
       >
         {steps.map((step, index) => (
           <li
             key={step.id}
             aria-current={step.state === "current" ? "step" : undefined}
-            className="grid min-w-0 grid-cols-[24px_minmax(0,1fr)] grid-rows-[24px_auto] gap-2"
+            className="flex min-w-0 flex-[1_1_auto] items-center gap-2 last:flex-none"
           >
             <span
               className={cn(
-                "grid size-6 place-items-center rounded-full",
+                "grid size-[18px] shrink-0 place-items-center rounded-full",
                 dotClass[step.state],
               )}
             >
               {step.state === "done" && (
-                <Check className="size-[13px] stroke-[2.25]" aria-hidden />
+                <Check className="size-[11px] stroke-[2.5]" aria-hidden />
               )}
               {step.state === "failed" && (
-                <X className="size-[13px] stroke-[2.25]" aria-hidden />
+                <X className="size-[11px] stroke-[2.5]" aria-hidden />
               )}
               {step.state === "current" && (
-                <span className="size-2 rounded-full bg-primary" />
+                <span className="size-1.5 rounded-full bg-ink" />
               )}
             </span>
-            <span
-              aria-hidden
-              className={cn(
-                "mr-2 h-1.5 self-center",
-                index === steps.length - 1 && "invisible",
-              )}
-              style={tickLine(step.state === "done" ? "--action" : "--tick")}
-            />
-            <div className="col-span-2 grid min-w-0 pr-2">
+            <span className="grid min-w-0 sm:flex sm:items-baseline sm:gap-1.5 sm:whitespace-nowrap">
               <span
                 className={cn(
-                  "truncate text-body",
+                  "text-meta",
                   step.state === "todo" ? "text-ink-3" : "font-medium text-ink",
                 )}
               >
@@ -97,14 +80,23 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
               {step.meta && (
                 <span
                   className={cn(
-                    "truncate text-meta",
+                    "text-meta tabular-nums",
                     step.state === "failed" ? "text-danger" : "text-ink-3",
                   )}
                 >
                   {step.meta}
                 </span>
               )}
-            </div>
+            </span>
+            {index < steps.length - 1 && (
+              <span
+                aria-hidden
+                className={cn(
+                  "mx-1 h-px min-w-3 flex-1",
+                  step.state === "done" ? "bg-ink-3/70" : "bg-tick",
+                )}
+              />
+            )}
           </li>
         ))}
       </ol>

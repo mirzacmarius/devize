@@ -40,6 +40,7 @@ export function EstimateStepper({ estimate }: { estimate: Estimate }) {
         };
   return (
     <Stepper
+      className="pb-1 lg:ml-auto lg:max-w-[560px]"
       aria-label={t("steps.label")}
       stateLabels={{
         done: t("steps.states.done"),

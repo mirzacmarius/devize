@@ -1,5 +1,6 @@
 "use client";
 
+import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { ConvexError } from "convex/values";
 import {
@@ -24,73 +25,73 @@ export function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className="flex w-full flex-col rounded-lg border border-border bg-card">
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-6 py-5">
-        <div className="flex max-w-2xl flex-col gap-1">
-          <h2 className="text-lg font-medium text-primary">{title}</h2>
+    <section className="flex w-full min-w-0 flex-col rounded-lg border border-card-border bg-card shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 pb-3.5 pt-4 sm:px-5">
+        <div className="flex max-w-2xl flex-col gap-0.5">
+          <h2 className="m-0 text-title-card text-ink">{title}</h2>
           {description && (
-            <p className="text-sm text-primary/60">{description}</p>
+            <p className="m-0 text-meta text-ink-3">{description}</p>
           )}
         </div>
         {actions && (
           <div className="flex flex-wrap items-center gap-2">{actions}</div>
         )}
       </div>
-      <div className="flex flex-col gap-4 px-6 py-5">{children}</div>
+      <div className="flex flex-col gap-4 px-4 pb-5 sm:px-5">{children}</div>
     </section>
   );
 }
 
-const tones = {
-  neutral: "bg-primary/5 text-primary/70",
-  info: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  success: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  warning: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
-  danger: "bg-red-500/10 text-red-700 dark:text-red-300",
+export type Tone = NonNullable<StatusPillProps["tone"]>;
+
+export const Pill = StatusPill;
+
+const confidenceDot: Record<string, string> = {
+  high: "bg-success-dot",
+  medium: "bg-warning-dot",
+  low: "bg-neutral-dot",
 };
 
-export type Tone = keyof typeof tones;
-
-export function Pill({
-  tone = "neutral",
+/** How much research trusts a finding: worth a glance, never an alarm. */
+export function Confidence({
+  level,
   children,
 }: {
-  tone?: Tone;
+  level: string;
   children: ReactNode;
 }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium",
-        tones[tone],
-      )}
-    >
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-meta text-ink-2">
+      <span
+        aria-hidden
+        className={cn("size-1.5 rounded-full", confidenceDot[level])}
+      />
       {children}
     </span>
   );
 }
 
 export const manufacturerTone: Record<string, Tone> = {
-  new: "neutral",
+  new: "draft",
   review: "warning",
-  approved: "info",
-  contacted: "info",
+  approved: "active",
+  contacted: "active",
   replied: "success",
   norms_received: "success",
-  declined: "danger",
-  excluded: "danger",
+  declined: "neutral",
+  excluded: "neutral",
 };
 
 export const messageTone: Record<string, Tone> = {
-  draft: "warning",
-  approved: "info",
+  draft: "draft",
+  approved: "active",
   rejected: "neutral",
   sent: "success",
 };
 
 export const jobTone: Record<string, Tone> = {
   queued: "neutral",
-  running: "info",
+  running: "active",
   needs_review: "warning",
   succeeded: "success",
   failed: "danger",
@@ -98,15 +99,9 @@ export const jobTone: Record<string, Tone> = {
 
 export const importTone: Record<string, Tone> = {
   queued: "neutral",
-  extracting: "info",
+  extracting: "active",
   review: "warning",
   failed: "danger",
-};
-
-export const confidenceTone: Record<string, Tone> = {
-  high: "success",
-  medium: "warning",
-  low: "danger",
 };
 
 export const levelTone: Record<string, Tone> = {
@@ -116,7 +111,7 @@ export const levelTone: Record<string, Tone> = {
 };
 
 const fieldClass =
-  "w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-md border border-input bg-field px-3 py-2 text-body text-ink transition-[border-color,box-shadow] hover:border-ink/25 placeholder:text-ink-3 focus-visible:border-ink/60 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-muted disabled:text-ink-3";
 
 export function Textarea({
   className,
@@ -129,7 +124,12 @@ export function NativeSelect({
   className,
   ...props
 }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn(fieldClass, "h-10", className)} {...props} />;
+  return (
+    <select
+      className={cn(fieldClass, "select-native h-9 py-0 pr-8", className)}
+      {...props}
+    />
+  );
 }
 
 export function Field({
@@ -145,7 +145,7 @@ export function Field({
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={htmlFor} className="text-sm font-medium text-primary/80">
+      <label htmlFor={htmlFor} className="text-body font-medium text-ink-2">
         {label}
       </label>
       {children}
@@ -239,7 +239,7 @@ export function useRun() {
 
 export function ErrorText({ error }: { error: string | null }) {
   return error ? (
-    <p className="text-sm text-red-700 dark:text-red-300" role="alert">
+    <p className="text-body text-danger" role="alert">
       {error}
     </p>
   ) : null;
@@ -289,7 +289,7 @@ export function ExternalLink({
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className="break-all text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary"
+      className="break-all text-ink underline decoration-tick underline-offset-2 hover:decoration-current"
     >
       {children ?? href}
     </a>
@@ -344,7 +344,7 @@ export function IssueList({
       {issues.map((issue) => (
         <li
           key={`${issue.code}-${issue.detail ?? ""}`}
-          className="flex items-start gap-2 text-sm text-primary/80"
+          className="flex items-start gap-2 text-body text-ink-2"
         >
           <Pill tone={levelTone[issue.level] ?? "neutral"}>
             {issue.level === "error" || issue.level === "warning"

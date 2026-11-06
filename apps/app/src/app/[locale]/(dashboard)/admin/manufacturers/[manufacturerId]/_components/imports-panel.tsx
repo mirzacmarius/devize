@@ -95,7 +95,7 @@ export function ImportsPanel({
       <ErrorText error={error} />
       {normImports.length === 0 ? (
         keptConsents.length === 0 && (
-          <p className="text-sm text-primary/60">{t("empty")}</p>
+          <p className="text-body text-ink-3">{t("empty")}</p>
         )
       ) : (
         <ul className="flex flex-col divide-y divide-border">
@@ -106,7 +106,7 @@ export function ImportsPanel({
             >
               <div className="flex min-w-0 flex-col gap-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="truncate font-medium text-primary">
+                  <span className="truncate font-medium text-ink">
                     {normImport.fileName}
                   </span>
                   <Pill tone={importTone[normImport.status]}>
@@ -119,7 +119,7 @@ export function ImportsPanel({
                     <Pill tone="warning">{t("noConsent")}</Pill>
                   )}
                 </div>
-                <p className="text-xs text-primary/50">
+                <p className="text-meta text-ink-3">
                   {format.date(normImport._creationTime)}
                   {normImport.articles.length > 0 &&
                     ` · ${t("progress", {
@@ -128,7 +128,7 @@ export function ImportsPanel({
                     })}`}
                 </p>
                 {normImport.error && (
-                  <p className="text-xs text-red-700 dark:text-red-300">
+                  <p className="text-meta text-danger">
                     {errorText(normImport.error)}
                   </p>
                 )}
@@ -171,15 +171,15 @@ export function ImportsPanel({
       )}
       {keptConsents.length > 0 && (
         <div className="flex flex-col gap-2 border-t border-border pt-4 first:border-t-0 first:pt-0">
-          <p className="text-sm font-medium text-primary">{t("kept")}</p>
-          <p className="text-xs text-primary/50">{t("keptHint")}</p>
+          <p className="text-body font-medium text-ink">{t("kept")}</p>
+          <p className="text-meta text-ink-3">{t("keptHint")}</p>
           <ul className="flex flex-col gap-2">
             {keptConsents.map((kept) => (
               <li
                 key={`${kept.fileName}-${kept.deletedAt}`}
-                className="flex flex-col gap-0.5 text-xs"
+                className="flex flex-col gap-0.5 text-meta"
               >
-                <span className="text-primary/70">
+                <span className="text-ink-2">
                   {t("keptFile", {
                     file: kept.fileName,
                     date: format.date(kept.deletedAt),
@@ -187,7 +187,7 @@ export function ImportsPanel({
                   {kept.edition &&
                     ` · ${t("keptEdition", { edition: kept.edition })}`}
                 </span>
-                <span className="text-primary">
+                <span className="text-ink">
                   {t("keptConsent", {
                     date: format.date(kept.recordedAt),
                     note: kept.note,

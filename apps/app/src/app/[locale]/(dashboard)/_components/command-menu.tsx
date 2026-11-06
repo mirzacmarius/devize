@@ -196,11 +196,11 @@ export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
         open();
       }}
       aria-keyshortcuts="Control+K Meta+K"
-      className="flex h-9 w-full items-center gap-2 rounded-md border border-border bg-background px-2.5 text-left text-meta text-ink-3 transition-colors hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-8 w-full items-center gap-2 rounded-md bg-nav-active/60 px-2.5 text-left text-meta text-ink-3 transition-colors hover:bg-nav-active hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Search aria-hidden className="size-4 shrink-0" />
       <span className="min-w-0 flex-1 truncate">{t("button")}</span>
-      <kbd className="rounded border border-border bg-sunken px-1.5 font-sans text-[11px] leading-5 text-ink-3">
+      <kbd className="font-sans text-[11px] leading-5 text-ink-3 max-md:hidden">
         {shortcut}
       </kbd>
     </button>
@@ -567,7 +567,7 @@ function CommandSearch({
           >
             <div
               id={`${listId}-${group}`}
-              className="px-2 pb-1 pt-2 text-label uppercase text-ink-3"
+              className="px-2 pb-1 pt-2 text-caption text-ink-3"
             >
               {t(`groups.${group}`)}
             </div>
@@ -599,12 +599,13 @@ function CommandSearch({
                     )}
                   </div>
                   {entry.pill}
-                  {selected && (
-                    <CornerDownLeft
-                      aria-hidden
-                      className="size-4 shrink-0 text-ink-3"
-                    />
-                  )}
+                  <CornerDownLeft
+                    aria-hidden
+                    className={cn(
+                      "size-4 shrink-0 text-ink-3",
+                      !selected && "invisible",
+                    )}
+                  />
                 </div>
               );
             })}

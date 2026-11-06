@@ -29,7 +29,7 @@ import { formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Room } from "./types";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+const headClass = "pb-2 pl-3 text-right text-caption text-ink-3";
 const cellClass =
   "whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums";
 
@@ -106,13 +106,13 @@ export function RoomsCard({
             <table className="w-full min-w-[40rem] border-collapse text-body">
               <thead>
                 <tr>
-                  <th className="pb-2 text-left text-label uppercase text-ink-3">
+                  <th className="pb-2 text-left text-caption text-ink-3">
                     {t("columns.room")}
                   </th>
                   <th className={headClass}>{t("columns.length")}</th>
                   <th className={headClass}>{t("columns.width")}</th>
                   <th className={headClass}>{t("columns.height")}</th>
-                  <th className="pb-2 pl-3 text-left text-label uppercase text-ink-3">
+                  <th className="pb-2 pl-3 text-left text-caption text-ink-3">
                     {t("columns.openings")}
                   </th>
                   <th className={headClass}>{t("columns.floor")}</th>
@@ -128,7 +128,7 @@ export function RoomsCard({
                       <tr className="border-t border-border">
                         <td
                           colSpan={locked ? 8 : 9}
-                          className="pt-3 pb-1 text-meta font-medium uppercase text-ink-3"
+                          className="pt-3 pb-1 text-caption text-ink-3"
                         >
                           {group.level ?? "–"}
                         </td>
@@ -280,7 +280,7 @@ function RoomRow({
       <td className={cellClass}>{metres(room.length)}</td>
       <td className={cellClass}>{metres(room.width)}</td>
       <td className={cellClass}>{metres(room.height)}</td>
-      <td className="py-2 pl-3 align-top text-meta text-ink-2">
+      <td className="py-2 pl-3 align-top text-ink-2">
         {openingsText(room, t)}
       </td>
       <td className={cellClass}>

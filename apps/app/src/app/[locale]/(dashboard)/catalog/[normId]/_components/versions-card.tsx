@@ -1,13 +1,7 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { NormStatusPill } from "@/components/norm-status";
@@ -28,8 +22,7 @@ export function VersionsCard({ norm }: { norm: Norm }) {
       <CardHeader>
         <CardTitle>{t("versions.title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <ul className="m-0 grid list-none p-0">
           {versions.map((version) => {
             const name = t("versions.name", { version: version.version });

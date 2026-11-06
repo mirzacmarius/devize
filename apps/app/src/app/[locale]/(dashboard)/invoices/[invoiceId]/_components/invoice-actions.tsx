@@ -28,7 +28,7 @@ import {
 } from "@devize/ui/select";
 import { toast } from "@devize/ui/sonner";
 import { useMutation, useQuery } from "convex/react";
-import { Download, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -44,8 +44,8 @@ type Open = "issue" | "delete" | "storno" | "cancel" | null;
 
 /**
  * The header's actions, which follow the invoice's life: issue a draft or
- * delete it; download an issued one as PDF or e-Factura XML, reverse it with
- * a storno, or cancel one that never left the firm.
+ * delete it; download an issued one as PDF, reverse it with a storno, or
+ * cancel one that never left the firm. Its XML is on the e-Factura card.
  */
 export function InvoiceActions({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.page");
@@ -136,20 +136,10 @@ export function InvoiceActions({ invoice }: { invoice: Invoice }) {
         <FileText aria-hidden />
         {t("pdf")}
       </Button>
-      {draft ? (
+      {draft && (
         <Button onClick={() => setOpen("issue")} disabled={busy}>
           {t("issue")}
         </Button>
-      ) : (
-        live && (
-          <Button
-            disabled={busy}
-            onClick={() => withBusy(() => download.xml(invoice._id))}
-          >
-            <Download aria-hidden />
-            {t("xml")}
-          </Button>
-        )
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

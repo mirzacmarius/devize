@@ -3,13 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { AIMeta } from "@devize/ui/ai-suggestion";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { Textarea } from "@devize/ui/textarea";
@@ -99,8 +93,7 @@ export function QuestionsCard({
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="grid gap-4 pt-4">
+      <CardContent className="grid gap-4">
         {open && (
           <p className="m-0 text-body text-ink-2">
             {offer.assistant

@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import type { ReactNode } from "react";
 import { formatCalendarDate } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -72,8 +66,7 @@ export function DetailsCard({
           </Button>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <dl className="m-0 grid gap-3">
           {rows.map((row) => (
             <div

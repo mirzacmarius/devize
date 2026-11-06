@@ -11,7 +11,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
@@ -209,8 +208,7 @@ function MonthsCard({ stats }: { stats: Stats }) {
           ]}
         />
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-4 pt-4">
+      <CardContent className="gap-4">
         {view === "chart" ? (
           <>
             <SegmentedControl
@@ -288,8 +286,7 @@ function NormsCard({ stats }: { stats: Stats }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {stats.norms.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (
@@ -393,8 +390,7 @@ function CountiesCard({ stats }: { stats: Stats }) {
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <ul className="m-0 grid list-none gap-4 p-0">
           {rows.map((row) => (
             <li key={row.key} className="grid gap-1.5">
@@ -441,8 +437,7 @@ function ProductsCard({ stats }: { stats: Stats }) {
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {stats.products.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (

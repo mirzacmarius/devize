@@ -2,6 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Doc } from "@devize/backend/convex/_generated/dataModel";
+import { belowLaborFloor, laborFloor } from "@devize/backend/convex/lib/labor";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -9,7 +10,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { PageHeader } from "@devize/ui/page-header";
 import {
@@ -23,9 +23,9 @@ import {
 import { useMutation, useQuery } from "convex/react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Fragment, useState } from "react";
-import { belowLaborFloor, laborFloor } from "@devize/backend/convex/lib/labor";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
+import { WarningNote } from "@/components/warning-note";
 import { formatAmount, formatMoney, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { MarkupsCard } from "./markups-card";
@@ -68,8 +68,7 @@ export function RatesPage() {
             <CardTitle>{t("ratesTitle")}</CardTitle>
             <CardDescription>{t("ratesDescription")}</CardDescription>
           </CardHeader>
-          <TickRule />
-          <CardContent className="pt-4">
+          <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -97,10 +96,10 @@ export function RatesPage() {
                     );
                   return (
                     <Fragment key={kind}>
-                      <TableRow className="hover:bg-transparent">
+                      <TableRow className="border-0 hover:bg-transparent">
                         <TableCell
                           colSpan={canEdit ? 4 : 3}
-                          className="h-auto pb-1 pt-5 text-label uppercase text-ink-3"
+                          className="h-auto pb-1 pt-5 text-body font-medium text-ink"
                         >
                           {t(`kinds.${kind}`)}
                         </TableCell>
@@ -150,14 +149,14 @@ export function RatesPage() {
                                 unit: rate.unit,
                                 unitPrice: rate.price,
                               }) && (
-                                <span className="text-meta text-warning">
+                                <WarningNote>
                                   {t("belowFloor", {
                                     floor: formatMoney(
                                       laborFloor.hourly,
                                       locale,
                                     ),
                                   })}
-                                </span>
+                                </WarningNote>
                               )}
                             </div>
                           </TableCell>

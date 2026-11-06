@@ -8,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
-import { Card, CardContent, CardHeader, TickRule } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -62,69 +61,64 @@ export function ProducersPage() {
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
-        <Card>
-          <CardHeader className="flex-wrap">
+        <section className="grid min-w-0 gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <SearchInput
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full max-w-xs"
+              className="w-full sm:max-w-xs"
             />
-          </CardHeader>
-          <TickRule />
-          <CardContent className="pt-4">
-            <Table>
-              <TableHeader>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("columns.name")}</TableHead>
+                <TableHead>{t("columns.profile")}</TableHead>
+                <TableHead className="hidden sm:table-cell">
+                  {t("columns.edition")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows === undefined && (
                 <TableRow>
-                  <TableHead>{t("columns.name")}</TableHead>
-                  <TableHead>{t("columns.profile")}</TableHead>
-                  <TableHead className="hidden sm:table-cell">
-                    {t("columns.edition")}
-                  </TableHead>
+                  <TableCell colSpan={3} className="text-ink-3">
+                    {tc("loading")}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows === undefined && (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-ink-3">
-                      {tc("loading")}
-                    </TableCell>
-                  </TableRow>
-                )}
-                {rows?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-ink-3">
-                      {t("noResults", { text: search })}
-                    </TableCell>
-                  </TableRow>
-                )}
-                {rows?.map((producer) => (
-                  <TableRow key={producer._id}>
-                    <TableCell>
-                      <Link
-                        href={`/producers/${producer._id}`}
-                        className="rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      >
-                        {producer.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <StatusPill
-                        tone={producer.claimed ? "success" : "neutral"}
-                      >
-                        {producer.claimed ? t("claimed") : t("unclaimed")}
-                      </StatusPill>
-                    </TableCell>
-                    <TableCell className="hidden text-ink-2 sm:table-cell">
-                      {producer.edition ?? "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              )}
+              {rows?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-ink-3">
+                    {t("noResults", { text: search })}
+                  </TableCell>
+                </TableRow>
+              )}
+              {rows?.map((producer) => (
+                <TableRow key={producer._id}>
+                  <TableCell>
+                    <Link
+                      href={`/producers/${producer._id}`}
+                      className="rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {producer.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <StatusPill tone={producer.claimed ? "success" : "neutral"}>
+                      {producer.claimed ? t("claimed") : t("unclaimed")}
+                    </StatusPill>
+                  </TableCell>
+                  <TableCell className="hidden text-ink-2 sm:table-cell">
+                    {producer.edition ?? "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </section>
       )}
     </>
   );

@@ -59,7 +59,7 @@ export function EmailPanel({
           contacts={contacts}
         />
       ) : (
-        <p className="text-sm text-primary/60">{t("none")}</p>
+        <p className="text-body text-ink-3">{t("none")}</p>
       )}
       <MessageHistory history={history} />
     </Panel>
@@ -75,8 +75,8 @@ export function MessageHistory({ history }: { history: Message[] }) {
     return null;
   }
   return (
-    <details className="text-sm">
-      <summary className="cursor-pointer font-medium text-primary/80">
+    <details className="text-body">
+      <summary className="cursor-pointer font-medium text-ink-2">
         {t("history")}
       </summary>
       <ul className="mt-2 flex flex-col gap-2">
@@ -85,14 +85,14 @@ export function MessageHistory({ history }: { history: Message[] }) {
             <Pill tone={messageTone[old.status]}>
               {tAdmin(`status.message.${old.status}`)}
             </Pill>
-            <span className="text-primary/70">
+            <span className="text-ink-2">
               {old.recipientErasedAt !== undefined && !old.to
                 ? t("recipientErased", {
                     date: format.date(old.recipientErasedAt),
                   })
                 : old.to}
             </span>
-            <span className="text-primary/50">
+            <span className="text-ink-3">
               {format.date(old.sentAt ?? old.updatedAt)}
             </span>
           </li>
@@ -185,7 +185,7 @@ export function EmailEditor({
       {message.issues.length > 0 ? (
         <IssueList issues={message.issues} />
       ) : (
-        <p className="text-sm text-emerald-700 dark:text-emerald-300">
+        <p className="text-body text-emerald-700 dark:text-emerald-300">
           {t("rules")}
         </p>
       )}
@@ -242,15 +242,15 @@ export function EmailEditor({
           </Button>
         )}
       </div>
-      {caption && <p className="text-xs text-primary/50">{caption}</p>}
+      {caption && <p className="text-meta text-ink-3">{caption}</p>}
 
       {message.approvedAt && message.status === "approved" && (
-        <p className="text-xs text-primary/50">
+        <p className="text-meta text-ink-3">
           {t("approvedAt", { date: format.date(message.approvedAt) })}
         </p>
       )}
       {message.sentAt && (
-        <p className="text-xs text-primary/50">
+        <p className="text-meta text-ink-3">
           {t("sentAt", { date: format.date(message.sentAt) })}
         </p>
       )}

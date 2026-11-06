@@ -126,17 +126,12 @@ function Comparison() {
           : current.title
       }
       actions={
-        <>
-          <Button variant="outline" asChild>
-            <Link href={`/estimates/${estimateId}`}>{t("backToEstimate")}</Link>
+        comparison && (
+          <Button type="button" onClick={copy}>
+            <Icons.Copy aria-hidden />
+            {t("copy")}
           </Button>
-          {comparison && (
-            <Button type="button" onClick={copy}>
-              <Icons.Copy aria-hidden />
-              {t("copy")}
-            </Button>
-          )}
-        </>
+        )
       }
     />
   );

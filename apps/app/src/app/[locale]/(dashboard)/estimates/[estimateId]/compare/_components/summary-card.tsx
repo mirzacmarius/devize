@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import {
   estimateCode,
@@ -40,9 +34,8 @@ export function SummaryCard({ comparison }: { comparison: Comparison }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-4 pt-2">
-        <p className="m-0 text-label uppercase text-ink-3">{t("total")}</p>
+      <CardContent className="gap-4">
+        <p className="m-0 text-caption text-ink-3">{t("total")}</p>
         <dl className="m-0 grid gap-2">
           {[before, after].map((revision) => (
             <div
@@ -82,9 +75,7 @@ export function SummaryCard({ comparison }: { comparison: Comparison }) {
         </p>
         {markups.length > 0 && (
           <div className="grid gap-1">
-            <p className="m-0 text-label uppercase text-ink-3">
-              {t("markups")}
-            </p>
+            <p className="m-0 text-caption text-ink-3">{t("markups")}</p>
             <ul className="m-0 grid list-none gap-1 p-0 text-body text-ink-2">
               {markups.map((key) => (
                 <li key={key}>

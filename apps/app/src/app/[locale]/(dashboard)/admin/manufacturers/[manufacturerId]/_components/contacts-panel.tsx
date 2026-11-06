@@ -63,10 +63,10 @@ export function ContactsPanel({
         )
       }
     >
-      <p className="text-sm text-primary/60">{t("retention")}</p>
+      <p className="text-body text-ink-3">{t("retention")}</p>
       <ErrorText error={error} />
       {contacts.length === 0 ? (
-        <p className="text-sm text-primary/60">{t("empty")}</p>
+        <p className="text-body text-ink-3">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col divide-y divide-border">
           {contacts.map((contact) => (
@@ -74,8 +74,8 @@ export function ContactsPanel({
               key={contact._id}
               className="flex flex-col gap-2 py-3 first:pt-0"
             >
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="font-medium text-primary">
+              <div className="flex flex-wrap items-center gap-2 text-body">
+                <span className="font-medium text-ink">
                   {contact.email ?? <ExternalLink href={contact.url ?? ""} />}
                 </span>
                 <Pill>{tAdmin(`contactKind.${contact.kind}`)}</Pill>
@@ -90,7 +90,7 @@ export function ContactsPanel({
                   <Pill tone="danger">{t("suppressed")}</Pill>
                 )}
                 {message?.to && contact.email === message.to && (
-                  <Pill tone="info">{tAdmin("manufacturer.email.to")}</Pill>
+                  <Pill tone="active">{tAdmin("manufacturer.email.to")}</Pill>
                 )}
                 {contact.retention &&
                   (contact.retention.at === null ? (
@@ -111,7 +111,7 @@ export function ContactsPanel({
                     </Pill>
                   ))}
               </div>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-primary/60">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-meta text-ink-3">
                 {contact.role && <span>{contact.role}</span>}
                 {contact.sourceUrl && (
                   <ExternalLink href={contact.sourceUrl}>
@@ -207,8 +207,8 @@ function AddContact({
   const { run, error, pending } = useRun();
 
   return (
-    <details className="text-sm">
-      <summary className="cursor-pointer font-medium text-primary/80">
+    <details className="text-body">
+      <summary className="cursor-pointer font-medium text-ink-2">
         {t("title")}
       </summary>
       <form

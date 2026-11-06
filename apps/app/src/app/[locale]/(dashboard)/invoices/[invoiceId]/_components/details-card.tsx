@@ -9,7 +9,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -182,8 +181,7 @@ function DetailsList({ invoice }: { invoice: Invoice }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <Rows rows={rows} />
         {invoice.notes && (
           <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
@@ -263,8 +261,7 @@ function DetailsForm({ invoice }: { invoice: Invoice }) {
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
-        <TickRule />
-        <CardContent className="pt-4">
+        <CardContent>
           <Rows rows={references} />
           <div className="grid gap-4 border-t border-border pt-4 sm:grid-cols-2">
             <Field

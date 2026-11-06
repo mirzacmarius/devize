@@ -3,13 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Check, CircleAlert, Plus, TriangleAlert } from "lucide-react";
@@ -70,8 +64,7 @@ export function CompatibilityCard({
           </span>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-3">
+      <CardContent>
         {check === undefined ? (
           <p className="m-0 text-meta text-ink-3">{t("loading")}</p>
         ) : estimate.lineItems.length === 0 ? (
@@ -101,9 +94,7 @@ export function CompatibilityCard({
         )}
         {shownRest.length > 0 && (
           <div className="grid gap-3">
-            <h4 className="m-0 text-label uppercase text-ink-3">
-              {t("rest.title")}
-            </h4>
+            <h4 className="m-0 text-caption text-ink-3">{t("rest.title")}</h4>
             <ul className="m-0 grid list-none gap-4 p-0">
               {shownRest.map((suggestion) => (
                 <RestRow
@@ -293,9 +284,7 @@ function FindingRow({
         </div>
         {editable && !finding.dismissed && finding.alternatives.length > 0 && (
           <div className="mt-2 grid w-full gap-1 rounded-md bg-sunken px-3 py-2">
-            <span className="text-label uppercase text-ink-3">
-              {t("alternatives")}
-            </span>
+            <span className="text-caption text-ink-3">{t("alternatives")}</span>
             <ul className="m-0 grid list-none gap-1 p-0">
               {finding.alternatives.map((alternative) => (
                 <li

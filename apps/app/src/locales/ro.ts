@@ -77,6 +77,7 @@ export default {
   },
   login: {
     title: "Intră în Devize",
+    heading: "Intră în cont",
     description: "Creează devize cu norme de la producători și prețuri la zi.",
     google: "Continuă cu Google",
     or: "sau",
@@ -403,6 +404,10 @@ export default {
     noClient: "Fără client",
     totalWithVat: "{total} lei cu TVA",
     pricesOf: "prețuri din {date}",
+    summary: {
+      total: "Total cu TVA",
+      withoutVat: "{total} lei fără TVA",
+    },
     notFoundTitle: "Nu am găsit devizul",
     notFoundDescription: "Poate a fost șters sau e al altei firme.",
     backToList: "Înapoi la devize",
@@ -565,6 +570,9 @@ export default {
     checks: {
       title: "Verificări",
       score: "{passed} din {total} trecute",
+      scoreLabel: "{passed} din {total} verificări trecute",
+      showPassed: "Arată cele trecute ({count})",
+      hidePassed: "Ascunde cele trecute",
       pending: "Se verifică…",
       states: {
         passed: "trece",
@@ -1415,9 +1423,6 @@ export default {
       completion: "la recepția lucrărilor",
       final: "la recepția finală",
     },
-    share: "{stage}: {percent} {trigger}",
-    shareAmount: "{stage}: {percent} {trigger} ({amount} lei)",
-    fixed: "{stage}: {amount} lei {trigger}",
   },
   offer: {
     title: "Oferta pentru client",
@@ -1474,7 +1479,7 @@ export default {
     withdrawDone: "Linkul a fost retras.",
     madeBy: "Creat de {name}",
     deposit: "Avans cerut: {percent}",
-    payment: "Plata: {schedule}",
+    payment: "Plata",
     consumer: "Client consumator: pagina îi arată drepturile din OUG 34/2014",
     evidence: {
       title: "Dovezile semnării",
@@ -4136,7 +4141,7 @@ export default {
       invoice: "Factura",
       client: "Client",
       status: "Stare",
-      total: "Total cu TVA",
+      total: "Total cu TVA (lei)",
       due: "Scadență",
       efactura: "e-Factura",
     },
@@ -4172,9 +4177,9 @@ export default {
       accepted: "Acceptat de client",
       invoiced: "Facturat",
       remaining: "Rămas de facturat",
-      withoutVat: "fără TVA",
       advance: "Factură de avans {percent}",
       final: "Factură finală",
+      amountsWithoutVat: "Sume fără TVA.",
       finalHint: "Avansurile emise se scad automat din factura finală.",
       created: "Ciorna a fost creată. Verifică datele și emite factura.",
       all: "Toate facturile",
@@ -4184,7 +4189,8 @@ export default {
       breadcrumbList: "Facturi",
       draft: "Factură (ciornă)",
       deviz: "Deviz {code}",
-      totalWithVat: "{total} lei cu TVA",
+      total: "Total cu TVA",
+      withoutVat: "{total} lei fără TVA",
       issue: "Emite factura",
       issueTitle: "Emite factura",
       issueDescription:
@@ -4217,7 +4223,6 @@ export default {
       cancelConfirm: "Anulează",
       cancelled: "Factura a fost anulată.",
       pdf: "PDF",
-      xml: "XML e-Factura",
       downloadFailed: "Nu am putut face fișierul. Încearcă din nou.",
     },
     lines: {
@@ -4483,16 +4488,16 @@ export default {
       open: "Coș de cumpărături",
       breadcrumb: "Coș",
       description: "{code} · {title} · prețuri cu TVA, la magazine",
-      backToEstimate: "Înapoi la deviz",
       emptyTitle: "Devizul nu are materiale",
       emptyDescription:
         "Adaugă articole cu materiale și vezi aici de unde le cumperi cel mai ieftin.",
       plan: {
         title: "Cea mai ieftină împărțire",
         none: "Niciun material nu are încă preț la magazine. Adaugă, la fiecare material, linkul produsului de la magazinul tău.",
-        total: "{total} lei cu TVA",
+        totalUnit: "lei cu TVA",
         breakdown: "Produse {goods} lei + livrare {delivery} lei",
-        store: "{store}: materiale {count}, {total} lei",
+        lines: "Materiale: {count}",
+        amount: "{total} lei",
         savings: "Cu {amount} lei mai puțin decât totul de la {store}.",
         oneStore: "Totul de la {store} iese cel mai ieftin.",
         coverage: "Materiale cu preț la magazine: {priced} din {total}.",
@@ -4607,7 +4612,6 @@ export default {
     title: "Comparare revizii",
     breadcrumb: "Comparare",
     description: "{after} față de {before} · {title}",
-    backToEstimate: "Înapoi la deviz",
     with: "Compară cu",
     option: "{code} · {total} lei",
     singleTitle: "Devizul are o singură revizie",
@@ -4668,7 +4672,6 @@ export default {
     breadcrumb: "Ambalaje",
     description:
       "{code} · {title}: ce cumperi în saci, cutii și role întregi, ce rămâne după lucrare și pierderile după modul de montaj.",
-    backToEstimate: "Înapoi la deviz",
     emptyTitle: "Devizul nu are încă materiale",
     emptyDescription:
       "Adaugă articole cu materiale și aici le vezi în ambalaje întregi, cu ce rămâne.",
@@ -4778,7 +4781,6 @@ export default {
     breadcrumb: "Antemăsurătoare",
     description:
       "{code} · {title}: camerele cu dimensiunile și golurile lor, și rândurile din spatele cantității fiecărui articol.",
-    backToEstimate: "Înapoi la deviz",
     locked: "Devizul e trimis, așa că antemăsurătoarea rămâne cea de atunci.",
     download: { pdf: "Anexa în PDF", xlsx: "Anexa în Excel" },
     card: {
@@ -4813,9 +4815,9 @@ export default {
         "Adaugă camerele cu lungimea, lățimea, înălțimea și golurile lor, apoi leagă articolele de ele.",
       columns: {
         room: "Camera",
-        length: "L",
-        width: "l",
-        height: "h",
+        length: "Lungime",
+        width: "Lățime",
+        height: "Înălțime",
         openings: "Goluri",
         floor: "Pardoseală",
         walls: "Pereți",
@@ -5202,7 +5204,6 @@ export default {
     breadcrumb: "Situații de lucrări",
     description:
       "{code} · {title}: ce s-a executat în fiecare perioadă, procesele-verbale de recepție și garanția de bună execuție.",
-    backToEstimate: "Înapoi la deviz",
     notAcceptedTitle: "Devizul nu e încă acceptat",
     notAcceptedDescription:
       "Situațiile de lucrări încep după ce clientul acceptă devizul. Marchează devizul acceptat din pagina lui și revino aici.",
@@ -5218,12 +5219,12 @@ export default {
       title: "Stadiul lucrărilor",
       executed: "{percent} executat",
       contract: "Valoarea contractului",
-      executedValue: "Executat, cu situația deschisă",
+      executedValue: "Executat",
       approved: "Confirmat de beneficiar",
       noApproved: "Nicio situație confirmată încă",
       remaining: "Rest de executat",
       withheld: "Garanție reținută din situații",
-      hint: "Lei fără TVA, la prețurile din deviz. Contractul e devizul așa cum l-a acceptat clientul, cu varianta și articolele alese.",
+      hint: "Lei fără TVA, la prețurile din deviz. Executatul include situația deschisă. Contractul e devizul așa cum l-a acceptat clientul, cu varianta și articolele alese.",
     },
     list: {
       title: "Situații de lucrări",

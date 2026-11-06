@@ -9,7 +9,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import {
@@ -65,8 +64,7 @@ export function LayoutCard({
           {locked ? t("locked") : t("description")}
         </CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <ul className="m-0 grid list-none p-0">
           {layouts.map((row) => (
             <li

@@ -6,11 +6,16 @@ import { cn } from "../utils";
 // The state of an object (deviz, price, invoice, sync): a dot and a word on a
 // soft fill. The word carries the meaning; the dot is decorative.
 const statusPillVariants = cva(
-  "inline-flex h-6 items-center gap-2 whitespace-nowrap rounded-full pl-2 pr-3 text-pill before:size-1.5 before:shrink-0 before:rounded-full before:content-['']",
+  "inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-pill before:size-1.5 before:shrink-0 before:rounded-full before:content-['']",
   {
     variants: {
       tone: {
-        // In progress or finished, nothing to do: Ciornă, Trimis clientului, Decontat
+        // Not out in the world yet: Ciornă. An outline, an open dot.
+        draft:
+          "text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border-control))] before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
+        // Out and moving, waiting on someone: Trimis clientului, Emisă
+        active: "bg-muted text-ink before:bg-ink",
+        // Finished or set aside, nothing to do: Decontat, Expirat
         neutral: "bg-muted text-ink-2 before:bg-neutral-dot",
         // A good result just reached: Acceptat de client, Sincronizat
         success: "bg-success-soft text-success before:bg-success-dot",
@@ -23,7 +28,7 @@ const statusPillVariants = cva(
       },
       dot: {
         true: "",
-        false: "pl-3 before:hidden",
+        false: "pl-2.5 before:hidden",
       },
     },
     defaultVariants: {

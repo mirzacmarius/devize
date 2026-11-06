@@ -8,8 +8,8 @@ export type InvoiceStatus = Doc<"invoices">["status"];
 export type EfacturaStatus = Doc<"invoices">["efactura"]["status"];
 
 const statusTones: Record<InvoiceStatus, StatusPillProps["tone"]> = {
-  draft: "neutral",
-  issued: "neutral",
+  draft: "draft",
+  issued: "active",
   paid: "success",
   cancelled: "danger",
 };
@@ -35,9 +35,9 @@ export function InvoiceStatusPill({
 }
 
 const efacturaTones: Record<EfacturaStatus, StatusPillProps["tone"]> = {
-  not_sent: "neutral",
-  uploading: "neutral",
-  processing: "neutral",
+  not_sent: "draft",
+  uploading: "active",
+  processing: "active",
   accepted: "success",
   rejected: "danger",
   failed: "danger",

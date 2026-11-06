@@ -195,7 +195,7 @@ function SystemForm({
         />
       </Field>
       <fieldset className="m-0 grid gap-2 border-0 p-0">
-        <legend className="mb-2 p-0 text-label uppercase text-ink-3">
+        <legend className="mb-2 p-0 text-caption text-ink-3">
           {t("norms")}
         </legend>
         {normChoices.length > SEARCH_FROM && (
@@ -235,7 +235,7 @@ function SystemForm({
         )}
       </fieldset>
       <fieldset className="m-0 grid gap-2 border-0 p-0">
-        <legend className="mb-2 p-0 text-label uppercase text-ink-3">
+        <legend className="mb-2 p-0 text-caption text-ink-3">
           {t("products")}
         </legend>
         {productChoices.length === 0 ? (
@@ -265,7 +265,7 @@ function SystemForm({
         )}
       </fieldset>
       <fieldset className="m-0 grid gap-2 border-0 p-0">
-        <legend className="mb-1 p-0 text-label uppercase text-ink-3">
+        <legend className="mb-1 p-0 text-caption text-ink-3">
           {t("contexts")}
         </legend>
         <p className="m-0 text-meta text-ink-3">{t("contextsHint")}</p>

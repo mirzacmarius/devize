@@ -35,7 +35,7 @@ function PageHeader({
   ...props
 }: PageHeaderProps) {
   return (
-    <header className={cn("grid min-w-0 gap-6", className)} {...props}>
+    <header className={cn("grid min-w-0 gap-3", className)} {...props}>
       {(breadcrumb || tools) && (
         <div className="flex min-w-0 items-center justify-between gap-4">
           {breadcrumb ?? <span />}
@@ -46,7 +46,7 @@ function PageHeader({
           )}
         </div>
       )}
-      <div className="flex min-w-0 flex-wrap items-start gap-4">
+      <div className="flex min-w-0 flex-wrap items-start gap-x-4 gap-y-3">
         {thumb && (
           <span
             aria-hidden
@@ -55,19 +55,19 @@ function PageHeader({
             {thumb}
           </span>
         )}
-        <div className="grid min-w-0 flex-1 basis-64 gap-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="m-0 text-title-page text-ink">{title}</h1>
+        <div className="grid min-w-0 flex-1 basis-64 gap-0.5">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h1 className="m-0 text-title-screen text-ink">{title}</h1>
             {status}
           </div>
           {description && (
-            <p className="m-0 text-body-lg text-ink-2 tabular-nums">
+            <p className="m-0 text-body text-ink-2 tabular-nums">
               {description}
             </p>
           )}
         </div>
         {actions && (
-          <div className="flex shrink-0 flex-wrap items-center gap-3 pt-1">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
             {actions}
           </div>
         )}

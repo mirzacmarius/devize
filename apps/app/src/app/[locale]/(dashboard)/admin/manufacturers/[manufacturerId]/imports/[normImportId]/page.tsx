@@ -53,10 +53,10 @@ export default function NormImportPage() {
   const [page, setPage] = useState<number | undefined>();
 
   if (data === undefined) {
-    return <Loader2 className="h-5 w-5 animate-spin text-primary/40" />;
+    return <Loader2 className="h-5 w-5 animate-spin text-ink-3" />;
   }
   if (data === null) {
-    return <p className="text-sm text-primary/60">{t("notFound")}</p>;
+    return <p className="text-body text-ink-3">{t("notFound")}</p>;
   }
 
   const { normImport, consentBy, norms, fileUrl } = data;
@@ -82,17 +82,15 @@ export default function NormImportPage() {
     <div className="flex w-full flex-col gap-6">
       <Link
         href={`/admin/manufacturers/${normImport.manufacturerId}`}
-        className="flex w-fit items-center gap-1 text-sm text-primary/60 hover:text-primary"
+        className="flex w-fit items-center gap-1 text-body text-ink-3 hover:text-ink"
       >
         <ArrowLeft className="h-4 w-4" />
         {t("back")}
       </Link>
 
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-medium text-primary/80">
-          {normImport.fileName}
-        </h1>
-        <div className="flex flex-wrap items-center gap-2 text-sm text-primary/60">
+        <h1 className="text-title-screen text-ink">{normImport.fileName}</h1>
+        <div className="flex flex-wrap items-center gap-2 text-body text-ink-3">
           <Pill tone={importTone[normImport.status]}>
             {tAdmin(`status.import.${normImport.status}`)}
           </Pill>
@@ -118,9 +116,9 @@ export default function NormImportPage() {
             <ExternalLink href={fileUrl}>{t("openPdf")}</ExternalLink>
           )}
         </div>
-        <p className="text-sm text-primary/50">{t("catalogNote")}</p>
+        <p className="text-body text-ink-3">{t("catalogNote")}</p>
         {differing > 0 && (
-          <p className="max-w-3xl rounded-md bg-primary/5 p-3 text-sm text-primary/70">
+          <p className="max-w-3xl rounded-md bg-muted p-3 text-body text-ink-2">
             {t(mostDiffer ? "totalsDiffer.most" : "totalsDiffer.few", {
               count: differing,
               total: compared,
@@ -185,10 +183,10 @@ function Consent({
 
   if (consent && !editing) {
     return (
-      <div className="flex flex-wrap items-center gap-2 text-sm">
+      <div className="flex flex-wrap items-center gap-2 text-body">
         <Pill tone="success">{t("recorded")}</Pill>
-        <span className="text-primary/80">{consent.note}</span>
-        <span className="text-primary/50">
+        <span className="text-ink-2">{consent.note}</span>
+        <span className="text-ink-3">
           {consentBy
             ? t("recordedBy", {
                 name: consentBy,
@@ -198,7 +196,7 @@ function Consent({
         </span>
         <button
           type="button"
-          className="text-primary/60 underline underline-offset-2 hover:text-primary"
+          className="text-ink-3 underline underline-offset-2 hover:text-ink"
           onClick={() => {
             setNote(consent.note);
             setEditing(true);
@@ -224,7 +222,7 @@ function Consent({
       }}
     >
       {!consent && (
-        <p className="flex items-center gap-2 text-sm font-medium text-amber-900 dark:text-amber-200">
+        <p className="flex items-center gap-2 text-body font-medium text-amber-900 dark:text-amber-200">
           <TriangleAlert className="size-4 shrink-0" aria-hidden />
           {t("missing")}
         </p>
@@ -239,7 +237,7 @@ function Consent({
           onChange={(event) => setNote(event.target.value)}
         />
       </Field>
-      <p className="text-xs text-primary/50">{t("hint")}</p>
+      <p className="text-meta text-ink-3">{t("hint")}</p>
       <div className="flex gap-2">
         <Button
           type="submit"
@@ -318,14 +316,14 @@ function Publish({
         {!consented && articles.length > 0 && (
           <button
             type="button"
-            className="text-sm text-primary/60 underline underline-offset-2 hover:text-primary"
+            className="text-body text-ink-3 underline underline-offset-2 hover:text-ink"
             onClick={focusConsent}
           >
             {t("needsConsent")}
           </button>
         )}
         {result && (
-          <span className="text-sm text-primary/60" role="status">
+          <span className="text-body text-ink-3" role="status">
             {t("result", result)}
           </span>
         )}
@@ -363,15 +361,15 @@ function Article({
     <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-medium text-primary">
+          <h2 className="text-title-card text-ink">
             {article.baseCode} · {article.title}
           </h2>
-          <div className="flex flex-wrap gap-2 text-xs text-primary/50">
+          <div className="flex flex-wrap gap-2 text-meta text-ink-3">
             <span>{article.unit}</span>
             {article.pages.length > 0 && (
               <button
                 type="button"
-                className="underline underline-offset-2 hover:text-primary"
+                className="underline underline-offset-2 hover:text-ink"
                 onClick={() => onShowPage(article.pages[0] ?? 1)}
               >
                 {t("pages", { pages: article.pages.join(", ") })}
@@ -417,7 +415,7 @@ function Article({
       </div>
       <ErrorText error={error} />
       {(scope?.includes || scope?.excludes) && (
-        <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 text-xs text-primary/60">
+        <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 text-meta text-ink-3">
           {scope.includes && (
             <>
               <dt className="font-medium">{t("includes")}</dt>
@@ -433,7 +431,7 @@ function Article({
         </dl>
       )}
       {norms.length === 0 ? (
-        <p className="text-sm text-primary/50">{t("pending")}</p>
+        <p className="text-body text-ink-3">{t("pending")}</p>
       ) : (
         norms.map((norm) => (
           <div
@@ -441,7 +439,7 @@ function Article({
             className="flex flex-col gap-2 border-t border-border pt-4"
           >
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-sm font-medium text-primary">
+              <span className="font-mono text-body font-medium text-ink">
                 {norm.code}
               </span>
               <Pill tone={normTone[norm.status]}>
@@ -449,14 +447,14 @@ function Article({
               </Pill>
               {norm.publishedAt !== null && (
                 <span title={format.date(norm.publishedAt)}>
-                  <Pill tone="info">{t("inCatalog")}</Pill>
+                  <Pill tone="active">{t("inCatalog")}</Pill>
                 </span>
               )}
-              <span className="text-sm text-primary/70">{norm.title}</span>
+              <span className="text-body text-ink-2">{norm.title}</span>
             </div>
             <div className="-mx-2 overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="text-xs text-primary/50">
+              <table className="w-full text-left text-body">
+                <thead className="text-meta text-ink-3">
                   <tr>
                     <th className="px-2 py-1">{t("columns.kind")}</th>
                     <th className="px-2 py-1">{t("columns.name")}</th>
@@ -477,26 +475,23 @@ function Article({
                       key={index}
                       className="border-t border-border/60"
                     >
-                      <td className="px-2 py-1 text-primary/60">
+                      <td className="px-2 py-1 text-ink-3">
                         {tAdmin(`resourceKind.${resource.kind}`)}
                       </td>
-                      <td className="px-2 py-1 text-primary/80">
-                        {resource.name}
-                      </td>
+                      <td className="px-2 py-1 text-ink-2">{resource.name}</td>
                       <td className="px-2 py-1 text-right font-mono">
                         {format.number(resource.quantity)}
                       </td>
                       <td
                         className={cn(
                           "px-2 py-1",
-                          resource.unit !== resource.unitRaw &&
-                            "text-primary/60",
+                          resource.unit !== resource.unitRaw && "text-ink-3",
                         )}
                         title={resource.unitRaw}
                       >
                         {resource.unit}
                       </td>
-                      <td className="px-2 py-1 text-right font-mono text-primary/60">
+                      <td className="px-2 py-1 text-right font-mono text-ink-3">
                         {resource.unitPrice === undefined
                           ? ""
                           : format.number(resource.unitPrice)}
@@ -533,7 +528,7 @@ function NormTotals({ norm, mostDiffer }: { norm: Norm; mostDiffer: boolean }) {
       : null;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-primary/50">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-meta text-ink-3">
       {norm.totalLaborHours !== undefined && (
         <span>
           {t("totalLabor", { hours: format.number(norm.totalLaborHours) })}

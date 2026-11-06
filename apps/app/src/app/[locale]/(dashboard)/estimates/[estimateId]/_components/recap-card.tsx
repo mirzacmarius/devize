@@ -2,13 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
 import { EurAmount } from "@/components/eur-amount";
@@ -104,9 +98,8 @@ export function RecapCard({
           </div>
         )}
       </CardHeader>
-      <TickRule />
       {/* A size container: a narrow card puts each rate under its label. */}
-      <CardContent className="pt-2 [container-type:inline-size]">
+      <CardContent className="[container-type:inline-size]">
         <table className="w-full border-collapse text-body">
           <caption className="sr-only">{t("recap.caption")}</caption>
           <thead className="sr-only">
@@ -124,13 +117,13 @@ export function RecapCard({
                 key={row.label}
                 className={cn(
                   row.kind && "border-t border-border",
-                  row.kind === "total" && "border-ink",
+                  row.kind === "total" && "border-input",
                 )}
               >
                 <th
                   scope="row"
                   className={cn(
-                    "py-2 pr-3 text-left font-normal",
+                    "py-1.5 pr-3 text-left font-normal",
                     row.kind ? "text-ink font-medium" : "text-ink-2",
                   )}
                 >
@@ -144,15 +137,18 @@ export function RecapCard({
                   )}
                 </th>
                 <td
-                  className={cn("py-2 pr-3 text-meta text-ink-3", RATE_COLUMN)}
+                  className={cn(
+                    "py-1.5 pr-3 text-meta text-ink-3",
+                    RATE_COLUMN,
+                  )}
                 >
                   {row.rate}
                 </td>
                 <td
                   className={cn(
-                    "py-2 text-right tabular-nums",
+                    "py-1.5 text-right tabular-nums",
                     row.kind === "total"
-                      ? "text-title-card font-light text-ink"
+                      ? "text-figure text-ink"
                       : row.kind
                         ? "font-medium text-ink"
                         : "text-ink",

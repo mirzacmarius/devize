@@ -79,6 +79,7 @@ export default {
   },
   login: {
     title: "Sign in to Devize",
+    heading: "Sign in",
     description:
       "Build estimates with manufacturers' norms and up-to-date prices.",
     google: "Continue with Google",
@@ -408,6 +409,10 @@ export default {
     noClient: "No client",
     totalWithVat: "{total} lei incl. VAT",
     pricesOf: "prices of {date}",
+    summary: {
+      total: "Total incl. VAT",
+      withoutVat: "{total} lei excl. VAT",
+    },
     notFoundTitle: "Estimate not found",
     notFoundDescription:
       "It may have been deleted, or it belongs to another company.",
@@ -571,6 +576,9 @@ export default {
     checks: {
       title: "Checks",
       score: "{passed} of {total} passed",
+      scoreLabel: "{passed} of {total} checks passed",
+      showPassed: "Show passed ({count})",
+      hidePassed: "Hide passed",
       pending: "Checking…",
       states: {
         passed: "passed",
@@ -1420,9 +1428,6 @@ export default {
       completion: "on acceptance of the works",
       final: "on final acceptance",
     },
-    share: "{stage}: {percent} {trigger}",
-    shareAmount: "{stage}: {percent} {trigger} ({amount} lei)",
-    fixed: "{stage}: {amount} lei {trigger}",
   },
   offer: {
     title: "Offer for the client",
@@ -1479,7 +1484,7 @@ export default {
     withdrawDone: "The link was withdrawn.",
     madeBy: "Created by {name}",
     deposit: "Deposit asked: {percent}",
-    payment: "Payment: {schedule}",
+    payment: "Payment",
     consumer:
       "Consumer client: the page shows them their rights under OUG 34/2014",
     evidence: {
@@ -4145,7 +4150,7 @@ export default {
       invoice: "Invoice",
       client: "Client",
       status: "Status",
-      total: "Total with VAT",
+      total: "Total with VAT (lei)",
       due: "Due",
       efactura: "e-Factura",
     },
@@ -4181,9 +4186,9 @@ export default {
       accepted: "Accepted by the client",
       invoiced: "Invoiced",
       remaining: "Left to invoice",
-      withoutVat: "without VAT",
       advance: "Advance invoice {percent}",
       final: "Final invoice",
+      amountsWithoutVat: "Amounts without VAT.",
       finalHint: "Issued advances are deducted from the final invoice.",
       created: "The draft is ready. Check it and issue the invoice.",
       all: "All invoices",
@@ -4193,7 +4198,8 @@ export default {
       breadcrumbList: "Invoices",
       draft: "Invoice (draft)",
       deviz: "Estimate {code}",
-      totalWithVat: "{total} lei with VAT",
+      total: "Total with VAT",
+      withoutVat: "{total} lei without VAT",
       issue: "Issue the invoice",
       issueTitle: "Issue the invoice",
       issueDescription:
@@ -4227,7 +4233,6 @@ export default {
       cancelConfirm: "Cancel it",
       cancelled: "The invoice was cancelled.",
       pdf: "PDF",
-      xml: "e-Factura XML",
       downloadFailed: "The file could not be made. Try again.",
     },
     lines: {
@@ -4492,16 +4497,16 @@ export default {
       open: "Shopping basket",
       breadcrumb: "Basket",
       description: "{code} · {title} · store prices with VAT",
-      backToEstimate: "Back to the estimate",
       emptyTitle: "This estimate has no materials",
       emptyDescription:
         "Add line items with materials to see where to buy them for less.",
       plan: {
         title: "The cheapest split",
         none: "No material has a store price yet. Add the link to the product at your store for each material.",
-        total: "{total} lei with VAT",
+        totalUnit: "lei with VAT",
         breakdown: "Products {goods} lei + delivery {delivery} lei",
-        store: "{store}: {count} materials, {total} lei",
+        lines: "Materials: {count}",
+        amount: "{total} lei",
         savings: "{amount} lei less than buying everything at {store}.",
         oneStore: "Buying everything at {store} is the cheapest.",
         coverage: "Materials with a store price: {priced} of {total}.",
@@ -4616,7 +4621,6 @@ export default {
     title: "Compare revisions",
     breadcrumb: "Compare",
     description: "{after} against {before} · {title}",
-    backToEstimate: "Back to the estimate",
     with: "Compare with",
     option: "{code} · {total} lei",
     singleTitle: "The estimate has a single revision",
@@ -4678,7 +4682,6 @@ export default {
     breadcrumb: "Packaging",
     description:
       "{code} · {title}: what you buy in whole bags, boxes and rolls, what is left after the job, and the waste of each laying method.",
-    backToEstimate: "Back to the estimate",
     emptyTitle: "The estimate has no materials yet",
     emptyDescription:
       "Add line items with materials and see them here in whole packages, with what is left over.",
@@ -4788,7 +4791,6 @@ export default {
     breadcrumb: "Take-off",
     description:
       "{code} · {title}: the rooms with their dimensions and openings, and the rows behind each line item's quantity.",
-    backToEstimate: "Back to the estimate",
     locked: "The estimate was sent, so its take-off stays as it was.",
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
@@ -4824,9 +4826,9 @@ export default {
         "Add the rooms with their length, width, height and openings, then link line items to them.",
       columns: {
         room: "Room",
-        length: "L",
-        width: "W",
-        height: "H",
+        length: "Length",
+        width: "Width",
+        height: "Height",
         openings: "Openings",
         floor: "Floor",
         walls: "Walls",
@@ -5216,7 +5218,6 @@ export default {
     breadcrumb: "Progress statements",
     description:
       "{code} · {title}: what was executed in each period, the reception reports and the performance guarantee.",
-    backToEstimate: "Back to the estimate",
     notAcceptedTitle: "The estimate is not accepted yet",
     notAcceptedDescription:
       "Progress statements start once the client accepts the estimate. Mark it accepted on its page and come back here.",
@@ -5232,12 +5233,12 @@ export default {
       title: "State of the works",
       executed: "{percent} executed",
       contract: "Contract value",
-      executedValue: "Executed, with the open statement",
+      executedValue: "Executed",
       approved: "Confirmed by the beneficiary",
       noApproved: "No statement confirmed yet",
       remaining: "Left to execute",
       withheld: "Guarantee withheld from statements",
-      hint: "Lei without VAT, at the estimate's prices. The contract is the estimate as the client accepted it, with the chosen variant and items.",
+      hint: "Lei without VAT, at the estimate's prices. Executed includes the open statement. The contract is the estimate as the client accepted it, with the chosen variant and items.",
     },
     list: {
       title: "Progress statements",

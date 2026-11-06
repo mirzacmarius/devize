@@ -15,7 +15,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
-import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -98,13 +97,6 @@ export function BasketPage() {
         }
         title={t("title")}
         description={t("description", { code, title: estimate.title })}
-        actions={
-          <Button variant="outline" asChild>
-            <Link href={`/estimates/${estimate._id}`}>
-              {t("backToEstimate")}
-            </Link>
-          </Button>
-        }
       />
       {basket.materials.length === 0 ? (
         <EmptyState
@@ -113,15 +105,8 @@ export function BasketPage() {
           description={t("emptyDescription")}
         />
       ) : (
-        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
-          <MaterialsCard
-            basket={basket}
-            plan={plans.plan}
-            leaveOut={leaveOut}
-            open={setPanel}
-          />
-          {/* The answer first on a phone, beside the table on a wide screen. */}
-          <div className="order-first grid min-w-0 gap-6 xl:order-none">
+        <div className="grid min-w-0 gap-6">
+          <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <PlanCard
               basket={basket}
               plan={plans.plan}
@@ -136,6 +121,12 @@ export function BasketPage() {
               open={setPanel}
             />
           </div>
+          <MaterialsCard
+            basket={basket}
+            plan={plans.plan}
+            leaveOut={leaveOut}
+            open={setPanel}
+          />
         </div>
       )}
 

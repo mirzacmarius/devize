@@ -5,27 +5,27 @@ import * as React from "react";
 import { cn } from "../utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-body font-medium ring-offset-background transition-[background-color,opacity] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-45 [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-body font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-45 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         // The next action on the screen: one per view.
-        default: "bg-primary text-primary-foreground hover:opacity-90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         // Actions next to the primary one.
-        outline:
-          "border border-input bg-card text-ink shadow-raised hover:bg-tile",
+        outline: "border border-input bg-card text-ink hover:bg-tile",
         // Tonal: filled secondary action inside a card ("Adaugă articol").
-        secondary: "bg-secondary text-secondary-foreground hover:bg-tile",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/70",
         // Applies an AI proposal ("Aplică sugestiile"). AI content only.
         ai: "border border-ai-border bg-card text-ai hover:bg-ai-soft",
         // No red filled buttons: destructive actions are soft and confirmed.
         destructive: "bg-danger-soft text-danger hover:opacity-90",
         ghost: "text-ink-2 hover:bg-tile hover:text-ink",
-        link: "gap-1 text-ink underline-offset-[3px] hover:underline",
+        link: "gap-1 text-ink underline decoration-tick underline-offset-[3px] hover:decoration-current",
       },
       size: {
-        default: "h-9 px-4",
-        sm: "h-7 px-3",
+        default: "h-9 px-3.5",
+        sm: "h-8 px-3 text-meta",
         lg: "h-10 px-5",
         icon: "h-9 w-9 [&_svg]:size-[18px]",
       },

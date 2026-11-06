@@ -23,21 +23,19 @@ export default function ReviewPage() {
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-medium text-primary/80">{t("title")}</h1>
-        <p className="max-w-3xl text-base text-primary/60">
-          {t("description")}
-        </p>
+        <h1 className="text-title-screen text-ink">{t("title")}</h1>
+        <p className="max-w-3xl text-body text-ink-2">{t("description")}</p>
       </div>
       {waiting === undefined ? (
-        <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
+        <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (
-        <section className="w-full rounded-lg border border-border bg-card px-6 py-5">
+        <section className="w-full rounded-lg border border-card-border bg-card px-4 py-4 shadow-card sm:px-5">
           {waiting.length === 0 ? (
-            <p className="text-sm text-primary/60">{t("empty")}</p>
+            <p className="text-body text-ink-3">{t("empty")}</p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full text-body">
               <thead>
-                <tr className="border-b border-border text-left text-primary/60">
+                <tr className="border-b border-border text-left text-caption text-ink-3">
                   <th className="py-2 pr-4 font-medium">{t("columns.norm")}</th>
                   <th className="hidden py-2 pr-4 font-medium md:table-cell">
                     {t("columns.source")}
@@ -58,20 +56,20 @@ export default function ReviewPage() {
                         href={`/catalog/${norm._id}`}
                         className="group flex flex-col"
                       >
-                        <span className="font-mono text-xs text-primary/60">
+                        <span className="font-mono text-meta text-ink-3">
                           {norm.version > 1
                             ? `${norm.code} · v${norm.version}`
                             : norm.code}
                         </span>
-                        <span className="font-medium text-primary group-hover:underline">
+                        <span className="font-medium text-ink group-hover:underline">
                           {norm.title}
                         </span>
                       </Link>
                     </td>
-                    <td className="hidden py-2 pr-4 text-primary/70 md:table-cell">
+                    <td className="hidden py-2 pr-4 text-ink-2 md:table-cell">
                       {normSource(norm)}
                     </td>
-                    <td className="py-2 text-right text-primary/60 tabular-nums">
+                    <td className="py-2 text-right text-ink-3 tabular-nums">
                       {format.date(norm.updatedAt)}
                     </td>
                   </tr>

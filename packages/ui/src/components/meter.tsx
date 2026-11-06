@@ -20,7 +20,7 @@ export interface TickBarProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
 }
 
-// Progress from 2px ticks at a 4px pitch: done in `action`, the rest in `tick`.
+// Progress from 3px ticks at a 5px pitch: done in `action`, the rest in `tick`.
 const TickBar = React.forwardRef<HTMLDivElement, TickBarProps>(
   (
     { value, tone = "action", thin, label, className, style, ...props },
@@ -32,9 +32,9 @@ const TickBar = React.forwardRef<HTMLDivElement, TickBarProps>(
         ref={ref}
         role="img"
         aria-label={label}
-        className={cn(thin ? "h-1.5" : "h-2.5", className)}
+        className={cn(thin ? "h-1.5" : "h-2", className)}
         style={{
-          background: `repeating-linear-gradient(90deg, hsl(var(${tickTones[tone]})) 0 2px, transparent 2px 4px) left / ${percent}% 100% no-repeat, repeating-linear-gradient(90deg, hsl(var(--tick)) 0 2px, transparent 2px 4px)`,
+          background: `repeating-linear-gradient(90deg, hsl(var(${tickTones[tone]})) 0 3px, transparent 3px 5px) left / ${percent}% 100% no-repeat, repeating-linear-gradient(90deg, hsl(var(--tick)) 0 3px, transparent 3px 5px)`,
           ...style,
         }}
         {...props}

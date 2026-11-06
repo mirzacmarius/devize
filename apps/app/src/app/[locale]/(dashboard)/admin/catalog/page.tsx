@@ -15,7 +15,7 @@ type Status = FunctionReturnType<typeof api.catalog.baseCatalog.status>;
 type Row = Status["norms"][number];
 
 const stateTone: Record<Row["state"], Tone> = {
-  new: "info",
+  new: "active",
   changed: "warning",
   unchanged: "success",
 };
@@ -31,11 +31,11 @@ export default function AdminCatalogPage() {
   return (
     <div className="flex w-full min-w-0 flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-medium text-primary/80">{t("title")}</h1>
-        <p className="text-base text-primary/60">{t("description")}</p>
+        <h1 className="text-title-screen text-ink">{t("title")}</h1>
+        <p className="text-body text-ink-2">{t("description")}</p>
       </div>
       {status === undefined ? (
-        <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
+        <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (
         <>
           <EditionPanel status={status} />
@@ -80,7 +80,7 @@ function EditionPanel({ status }: { status: Status }) {
           {t("counts.unchanged", { count: count("unchanged") })}
         </Pill>
       </div>
-      <p className="text-sm text-primary/60">
+      <p className="text-body text-ink-3">
         {waiting === 0 ? t("upToDate") : t("waiting")}
       </p>
       <ErrorText error={error} />
@@ -105,28 +105,28 @@ function NormsPanel({ norms }: { norms: Row[] }) {
 
   return (
     <Panel title={t("norms")}>
-      <div className="-mx-6 overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-border text-xs uppercase tracking-wide text-primary/50">
+      <div className="-mx-4 overflow-x-auto sm:-mx-5">
+        <table className="w-full text-left text-body">
+          <thead className="border-b border-border text-caption text-ink-3">
             <tr>
-              <th className="hidden py-2 pl-6 pr-4 sm:table-cell">
+              <th className="hidden py-2 pl-4 pr-4 sm:table-cell sm:pl-5">
                 {t("columns.code")}
               </th>
-              <th className="py-2 pl-6 pr-4 sm:pl-0">{t("columns.title")}</th>
+              <th className="py-2 pl-4 pr-4 sm:pl-0">{t("columns.title")}</th>
               <th className="hidden py-2 pr-4 sm:table-cell">
                 {t("columns.unit")}
               </th>
-              <th className="py-2 pr-6">{t("columns.state")}</th>
+              <th className="py-2 pr-4 sm:pr-5">{t("columns.state")}</th>
             </tr>
           </thead>
           <tbody>
             {categories.map((category) => (
               <Fragment key={category}>
-                <tr className="border-b border-border bg-primary/[0.02]">
+                <tr className="border-b border-border bg-sunken">
                   <th
                     scope="colgroup"
                     colSpan={4}
-                    className="py-2 pl-6 pr-6 text-xs font-medium text-primary/70"
+                    className="px-4 py-2 text-meta font-medium text-ink-2 sm:px-5"
                   >
                     {category}
                   </th>
@@ -138,28 +138,28 @@ function NormsPanel({ norms }: { norms: Row[] }) {
                       key={norm.code}
                       className="border-b border-border last:border-0"
                     >
-                      <td className="hidden whitespace-nowrap py-3 pl-6 pr-4 font-mono text-xs text-primary/70 sm:table-cell">
+                      <td className="hidden whitespace-nowrap py-3 pl-4 pr-4 font-mono text-meta text-ink-2 sm:table-cell sm:pl-5">
                         {norm.code}
                       </td>
-                      <td className="py-3 pl-6 pr-4 sm:pl-0">
-                        <span className="block font-mono text-xs text-primary/60 sm:hidden">
+                      <td className="py-3 pl-4 pr-4 sm:pl-0">
+                        <span className="block font-mono text-meta text-ink-3 sm:hidden">
                           {norm.code} · {formatUnit(norm.unit, locale)}
                         </span>
                         {norm.normId ? (
                           <Link
                             href={`/catalog/${norm.normId}`}
-                            className="text-primary hover:underline"
+                            className="text-ink hover:underline"
                           >
                             {norm.title}
                           </Link>
                         ) : (
-                          <span className="text-primary">{norm.title}</span>
+                          <span className="text-ink">{norm.title}</span>
                         )}
                       </td>
-                      <td className="hidden whitespace-nowrap py-3 pr-4 text-primary/70 sm:table-cell">
+                      <td className="hidden whitespace-nowrap py-3 pr-4 text-ink-2 sm:table-cell">
                         {formatUnit(norm.unit, locale)}
                       </td>
-                      <td className="py-3 pr-6">
+                      <td className="py-3 pr-4 sm:pr-5">
                         <Pill tone={stateTone[norm.state]}>
                           {stateLabel(norm)}
                         </Pill>

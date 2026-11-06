@@ -80,14 +80,7 @@ export function TakeoffPage() {
         title={t("title")}
         description={t("description", { code, title: data.estimate.title })}
         actions={
-          <>
-            {estimate && measured && <AppendixButtons estimate={estimate} />}
-            <Button variant="outline" asChild>
-              <Link href={`/estimates/${estimateId}`}>
-                {t("backToEstimate")}
-              </Link>
-            </Button>
-          </>
+          estimate && measured && <AppendixButtons estimate={estimate} />
         }
       />
       {locked && (
@@ -96,28 +89,24 @@ export function TakeoffPage() {
           {t("locked")}
         </p>
       )}
-      <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
-        <div className="grid min-w-0 gap-6">
-          <RoomsCard
-            estimateId={estimateId}
-            rooms={data.rooms}
-            locked={locked}
-            onAdd={() => setPanel({ kind: "room", room: "new" })}
-            onEdit={(room) => setPanel({ kind: "room", room })}
-          />
-          <ItemsCard
-            sections={data.sections}
-            items={data.items}
-            orphans={data.orphans}
-            rooms={data.rooms}
-            locked={locked}
-            onRows={(target) => setPanel({ kind: "rows", target })}
-            onFromRooms={(target) => setPanel({ kind: "fromRooms", target })}
-          />
-        </div>
-        <div className="order-first grid min-w-0 gap-6 xl:order-none">
-          <SummaryCard data={data} />
-        </div>
+      <div className="grid min-w-0 gap-6">
+        <SummaryCard data={data} />
+        <RoomsCard
+          estimateId={estimateId}
+          rooms={data.rooms}
+          locked={locked}
+          onAdd={() => setPanel({ kind: "room", room: "new" })}
+          onEdit={(room) => setPanel({ kind: "room", room })}
+        />
+        <ItemsCard
+          sections={data.sections}
+          items={data.items}
+          orphans={data.orphans}
+          rooms={data.rooms}
+          locked={locked}
+          onRows={(target) => setPanel({ kind: "rows", target })}
+          onFromRooms={(target) => setPanel({ kind: "fromRooms", target })}
+        />
       </div>
       <RoomDialog
         estimateId={estimateId}
@@ -164,7 +153,7 @@ function AppendixButtons({
       {(["pdf", "xlsx"] as const).map((format) => (
         <Button
           key={format}
-          variant={format === "pdf" ? "secondary" : "ghost"}
+          variant="outline"
           disabled={downloading !== undefined}
           onClick={() => void save(format)}
         >

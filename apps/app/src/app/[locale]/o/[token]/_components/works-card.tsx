@@ -1,13 +1,7 @@
 "use client";
 
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { StatusPill } from "@devize/ui/status-pill";
 import { Switch } from "@devize/ui/switch";
 import { cn } from "@devize/ui/utils";
@@ -72,7 +66,9 @@ export function WorksCard({
     <div
       className={cn(
         "flex items-baseline justify-between gap-3 py-2",
-        nested ? "border-b border-border" : "-mx-5 bg-sunken px-5",
+        nested
+          ? "border-b border-border"
+          : "-mx-4 bg-sunken px-4 sm:-mx-5 sm:px-5",
       )}
     >
       <h3
@@ -97,8 +93,7 @@ export function WorksCard({
           {t("count", { count: offer.items.length })}
         </span>
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-0 pt-0">
+      <CardContent className="gap-0">
         {groups.loose.length > 0 && list(groups.loose)}
         {groups.sections.map((group) => {
           const chapters = group.chapters.filter(

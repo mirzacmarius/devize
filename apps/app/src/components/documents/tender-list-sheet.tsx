@@ -40,6 +40,7 @@ import {
 import { Field } from "@/components/field";
 import { SegmentedControl } from "@/components/segmented-control";
 import { useErrorMessage } from "@/components/use-error-message";
+import { WarningNote } from "@/components/warning-note";
 import { appErrorOf } from "@/lib/errors";
 import { formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -489,9 +490,7 @@ function SheetFields({
         {columnField("unitPrice", t("unitPrice"))}
         {columnField("total", t("total"))}
       </div>
-      {sheet.guessed && (
-        <p className="m-0 text-meta text-warning">{t("guessed")}</p>
-      )}
+      {sheet.guessed && <WarningNote>{t("guessed")}</WarningNote>}
       {kinds && <p className="m-0 text-meta text-ink-3">{kinds}</p>}
       {sheet.details.length > 0 && (
         <p className="m-0 text-meta text-ink-3">{t("details")}</p>

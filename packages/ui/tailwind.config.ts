@@ -37,6 +37,8 @@ const config = {
         departure: ["var(--font-departure-mono)"],
       },
       // Devize type styles. Big means thin: display, title-page and kpi are 300.
+      // Inside the app a screen's title is title-screen, and the sum that
+      // matters on a document is kpi; `figure` is the step below it.
       fontSize: {
         display: [
           "60px",
@@ -46,19 +48,33 @@ const config = {
           "34px",
           { lineHeight: "40px", letterSpacing: "-0.015em", fontWeight: "300" },
         ],
+        "title-screen": [
+          "26px",
+          { lineHeight: "32px", letterSpacing: "-0.018em", fontWeight: "400" },
+        ],
         kpi: [
           "32px",
-          { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "300" },
+          { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "300" },
         ],
-        "title-card": ["17px", { lineHeight: "24px", fontWeight: "500" }],
+        figure: [
+          "20px",
+          { lineHeight: "26px", letterSpacing: "-0.01em", fontWeight: "400" },
+        ],
+        "title-card": [
+          "15px",
+          { lineHeight: "22px", letterSpacing: "-0.003em", fontWeight: "550" },
+        ],
         "body-lg": ["15px", { lineHeight: "22px" }],
         body: ["14px", { lineHeight: "20px" }],
         meta: ["13px", { lineHeight: "18px" }],
         pill: ["13px", { lineHeight: "20px", fontWeight: "500" }],
+        // The uppercase eyebrow of the marketing site.
         label: [
           "12px",
           { lineHeight: "16px", letterSpacing: "0.06em", fontWeight: "500" },
         ],
+        // A name for what follows, inside the app: table heads, groups, facts.
+        caption: ["13px", { lineHeight: "18px", fontWeight: "450" }],
         code: ["13px", { lineHeight: "20px" }],
       },
       colors: {
@@ -102,6 +118,8 @@ const config = {
         sunken: "hsl(var(--sunken))",
         field: "hsl(var(--field))",
         selected: "hsl(var(--selected))",
+        "nav-active": "hsl(var(--nav-active))",
+        scrim: "hsl(var(--scrim))",
         tile: "hsl(var(--tile))",
         backdrop: "hsl(var(--backdrop))",
         tick: "hsl(var(--tick))",
@@ -142,18 +160,19 @@ const config = {
         xs: "4px",
         sm: "6px",
         md: "8px",
-        lg: "14px",
-        xl: "18px",
-        "2xl": "20px",
+        lg: "12px",
+        xl: "14px",
+        "2xl": "16px",
       },
       boxShadow: {
         raised: "var(--shadow-raised)",
         card: "var(--shadow-card)",
         panel: "var(--shadow-panel)",
+        overlay: "var(--shadow-overlay)",
       },
       spacing: {
         sidebar: "256px",
-        rail: "360px",
+        rail: "320px",
       },
       keyframes: {
         "accordion-down": {

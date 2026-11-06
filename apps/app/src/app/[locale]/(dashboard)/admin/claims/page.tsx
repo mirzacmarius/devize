@@ -33,18 +33,16 @@ export default function ClaimsPage() {
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-medium text-primary/80">{t("title")}</h1>
-        <p className="max-w-3xl text-base text-primary/60">
-          {t("description")}
-        </p>
+        <h1 className="text-title-screen text-ink">{t("title")}</h1>
+        <p className="max-w-3xl text-body text-ink-2">{t("description")}</p>
       </div>
       {queue === undefined ? (
-        <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
+        <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (
         <>
           <Panel title={t("claims")}>
             {queue.claims.length === 0 ? (
-              <p className="text-sm text-primary/60">{t("claimsEmpty")}</p>
+              <p className="text-body text-ink-3">{t("claimsEmpty")}</p>
             ) : (
               queue.claims.map((claim) => (
                 <ClaimRow key={claim._id} claim={claim} />
@@ -53,7 +51,7 @@ export default function ClaimsPage() {
           </Panel>
           <Panel title={t("removals")}>
             {queue.removals.length === 0 ? (
-              <p className="text-sm text-primary/60">{t("removalsEmpty")}</p>
+              <p className="text-body text-ink-3">{t("removalsEmpty")}</p>
             ) : (
               queue.removals.map((request) => (
                 <RemovalRow key={request._id} request={request} />
@@ -85,11 +83,11 @@ function Who({
     <div className="flex flex-col gap-1">
       <Link
         href={`/admin/manufacturers/${manufacturerId}`}
-        className="w-fit text-base font-medium text-primary hover:underline"
+        className="w-fit text-body font-medium text-ink hover:underline"
       >
         {manufacturerName}
       </Link>
-      <p className="text-sm text-primary/60">
+      <p className="text-body text-ink-3">
         {[name, email, t("sent", { date: format.date(createdAt) })]
           .filter(Boolean)
           .join(" · ")}
@@ -100,7 +98,7 @@ function Who({
 
 function Message({ text }: { text: string }) {
   return (
-    <p className="whitespace-pre-wrap rounded-md bg-primary/5 px-3 py-2 text-sm text-primary/80">
+    <p className="whitespace-pre-wrap rounded-md bg-muted px-3 py-2 text-body text-ink-2">
       {text}
     </p>
   );
@@ -134,7 +132,7 @@ function ClaimRow({ claim }: { claim: Claim }) {
         {claim.claimed && <Pill tone="warning">{t("alreadyClaimed")}</Pill>}
       </div>
       {claim.firmName && (
-        <p className="text-sm text-primary/70">
+        <p className="text-body text-ink-2">
           {t("firm", { name: claim.firmName })}
         </p>
       )}
@@ -142,7 +140,7 @@ function ClaimRow({ claim }: { claim: Claim }) {
       {claim.cui && (
         <div className="flex flex-col gap-2 rounded-md border border-border px-3 py-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-mono text-sm text-primary/80">
+            <p className="font-mono text-body text-ink-2">
               {t("cui", { cui: claim.cui })}
             </p>
             <Button
@@ -158,7 +156,7 @@ function ClaimRow({ claim }: { claim: Claim }) {
         </div>
       )}
       <Signals claim={claim} />
-      <p className="text-xs text-primary/50">{t("caution")}</p>
+      <p className="text-meta text-ink-3">{t("caution")}</p>
       <div className="flex flex-wrap gap-2">
         <Button
           size="sm"
@@ -194,19 +192,19 @@ function AnafRecord({ claim }: { claim: Claim }) {
   const t = useScopedI18n("admin.claims.anaf");
   const anaf = claim.anaf;
   if (!anaf) {
-    return <p className="text-sm text-primary/60">{t("waiting")}</p>;
+    return <p className="text-body text-ink-3">{t("waiting")}</p>;
   }
   if (anaf.outcome === "not_found") {
-    return <p className="text-sm text-primary/70">{t("notFound")}</p>;
+    return <p className="text-body text-ink-2">{t("notFound")}</p>;
   }
   if (anaf.outcome === "unavailable") {
-    return <p className="text-sm text-primary/60">{t("unavailable")}</p>;
+    return <p className="text-body text-ink-3">{t("unavailable")}</p>;
   }
   return (
-    <div className="flex flex-col gap-1 text-sm text-primary/80">
+    <div className="flex flex-col gap-1 text-body text-ink-2">
       <p className="font-medium">{anaf.name}</p>
-      {anaf.address && <p className="text-primary/70">{anaf.address}</p>}
-      <p className="text-primary/60">
+      {anaf.address && <p className="text-ink-2">{anaf.address}</p>}
+      <p className="text-ink-3">
         {[anaf.tradeRegister, anaf.registration].filter(Boolean).join(" · ")}
       </p>
       <div className="flex flex-wrap gap-1.5">

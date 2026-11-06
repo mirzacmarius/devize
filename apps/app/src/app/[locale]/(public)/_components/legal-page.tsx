@@ -105,9 +105,7 @@ export async function LegalPage({
           aria-label={t("documents")}
           className="flex flex-col gap-3 border-t border-border pt-6"
         >
-          <h2 className="m-0 text-label uppercase text-ink-3">
-            {t("documents")}
-          </h2>
+          <h2 className="m-0 text-caption text-ink-3">{t("documents")}</h2>
           <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0 text-body">
             {documents.map((other) => (
               <li key={other}>

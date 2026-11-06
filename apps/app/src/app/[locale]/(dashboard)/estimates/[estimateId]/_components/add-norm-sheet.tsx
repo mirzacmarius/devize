@@ -249,16 +249,14 @@ function AddNorm({
                     className="grid w-full gap-0.5 rounded-md px-3 py-2.5 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <span className="flex items-baseline justify-between gap-3">
-                      <span className="font-mono text-code text-ink-2">
-                        {norm.code}
-                      </span>
+                      <span className="text-body text-ink">{norm.title}</span>
                       <span className="shrink-0 text-meta text-ink-3">
                         {formatUnit(norm.unit, locale)}
                       </span>
                     </span>
-                    <span className="text-body text-ink">{norm.title}</span>
                     <span className="text-meta text-ink-3">
-                      {normSource(norm)}
+                      <span className="font-mono">{norm.code}</span>
+                      {norm.source !== "base" && ` · ${normSource(norm)}`}
                     </span>
                   </button>
                 </li>
@@ -524,7 +522,7 @@ function AiNorm({
           <div className="grid gap-3">
             {request.assumptions.length > 0 && (
               <div className="grid gap-1">
-                <p className="m-0 text-label uppercase text-ink-3">
+                <p className="m-0 text-caption text-ink-3">
                   {t("addNorm.ai.assumptions")}
                 </p>
                 <ul className="m-0 grid list-disc gap-1 pl-4 text-ink-2">
@@ -535,7 +533,7 @@ function AiNorm({
               </div>
             )}
             <div className="grid gap-1">
-              <p className="m-0 text-label uppercase text-ink-3">
+              <p className="m-0 text-caption text-ink-3">
                 {t("addNorm.ai.checks")}
               </p>
               <ul className="m-0 grid list-disc gap-1 pl-4 text-ink-2">
@@ -696,9 +694,7 @@ function NormPreview({
             <dl className="m-0 grid gap-2">
               {notesList.map((note) => (
                 <div key={note.label} className="grid gap-0.5">
-                  <dt className="text-label uppercase text-ink-3">
-                    {note.label}
-                  </dt>
+                  <dt className="text-caption text-ink-3">{note.label}</dt>
                   <dd className="m-0 whitespace-pre-line text-body text-ink-2">
                     {note.text}
                   </dd>
@@ -707,7 +703,7 @@ function NormPreview({
             </dl>
           )}
           <div className="grid gap-2 rounded-md border border-border bg-sunken px-4 py-3">
-            <p className="m-0 text-label uppercase text-ink-3">
+            <p className="m-0 text-caption text-ink-3">
               {t("addNorm.resources", { unit: formatUnit(norm.unit, locale) })}
             </p>
             <ul className="m-0 grid list-none gap-1.5 p-0">

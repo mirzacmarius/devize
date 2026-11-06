@@ -42,7 +42,7 @@ export function MobileNav({
           side="left"
           closeLabel={t("closeMenu")}
           aria-describedby={undefined}
-          className="w-sidebar gap-3 bg-shell px-3 py-4"
+          className="gap-2 bg-shell px-3 py-3"
         >
           <SheetTitle className="sr-only">{t("main")}</SheetTitle>
           <SidebarContent

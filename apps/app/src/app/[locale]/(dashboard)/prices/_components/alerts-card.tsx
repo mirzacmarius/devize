@@ -149,45 +149,51 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
         </div>
       </div>
 
-      <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-1.5 text-body">
-        <dt className="text-ink-3">{t("total")}</dt>
-        <dd className="m-0 tabular-nums text-ink">
-          {t("fromTo", {
-            from: money(alert.sentTotal),
-            to: money(alert.currentTotal),
-          })}
-        </dd>
-        <dt className="text-ink-3">{t("direct")}</dt>
-        <dd className="m-0 tabular-nums text-ink">
-          {t("fromTo", {
-            from: money(alert.sentDirect),
-            to: money(alert.currentDirect),
-          })}
-        </dd>
-        <dt className="text-ink-3">{t("profit")}</dt>
-        <dd className="m-0 grid gap-0.5">
-          <span
-            className={cn(
-              "tabular-nums",
-              alert.profitLeft < 0
-                ? "text-danger"
-                : alert.profitLeft < alert.sentProfit
-                  ? "text-warning"
-                  : "text-success",
-            )}
-          >
+      <dl className="m-0 grid rounded-md bg-sunken sm:grid-cols-3">
+        <div className="grid content-start gap-0.5 px-3 py-2.5">
+          <dt className="text-meta text-ink-2">{t("total")}</dt>
+          <dd className="m-0 text-body tabular-nums text-ink">
             {t("fromTo", {
-              from: money(alert.sentProfit),
-              to: money(alert.profitLeft),
+              from: money(alert.sentTotal),
+              to: money(alert.currentTotal),
             })}
-          </span>
-          <span className="text-meta text-ink-3">{t("profitHint")}</span>
-        </dd>
+          </dd>
+        </div>
+        <div className="grid content-start gap-0.5 border-border px-3 py-2.5 max-sm:border-t sm:border-l">
+          <dt className="text-meta text-ink-2">{t("direct")}</dt>
+          <dd className="m-0 text-body tabular-nums text-ink">
+            {t("fromTo", {
+              from: money(alert.sentDirect),
+              to: money(alert.currentDirect),
+            })}
+          </dd>
+        </div>
+        <div className="grid content-start gap-0.5 border-border px-3 py-2.5 max-sm:border-t sm:border-l">
+          <dt className="text-meta text-ink-2">{t("profit")}</dt>
+          <dd className="m-0 grid gap-0.5">
+            <span
+              className={cn(
+                "text-body font-medium tabular-nums",
+                alert.profitLeft < 0
+                  ? "text-danger"
+                  : alert.profitLeft < alert.sentProfit
+                    ? "text-warning"
+                    : "text-success",
+              )}
+            >
+              {t("fromTo", {
+                from: money(alert.sentProfit),
+                to: money(alert.profitLeft),
+              })}
+            </span>
+            <span className="text-meta text-ink-3">{t("profitHint")}</span>
+          </dd>
+        </div>
       </dl>
 
       {alert.changes.length > 0 && (
         <div className="grid gap-1.5">
-          <p className="m-0 text-label uppercase text-ink-3">{t("changes")}</p>
+          <p className="m-0 text-caption text-ink-3">{t("changes")}</p>
           <ul className="m-0 grid list-none gap-1 p-0">
             {alert.changes.map((change) => (
               <li
@@ -206,7 +212,7 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
                 </span>
                 <span
                   className={cn(
-                    "tabular-nums",
+                    "font-medium tabular-nums",
                     change.impact > 0 ? "text-warning" : "text-success",
                   )}
                 >

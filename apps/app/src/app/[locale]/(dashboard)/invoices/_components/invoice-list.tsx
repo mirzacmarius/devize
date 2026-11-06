@@ -2,7 +2,6 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, TickRule } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -81,8 +80,8 @@ export function InvoiceList() {
           }
         />
       ) : (
-        <Card>
-          <CardHeader className="flex-wrap">
+        <section className="grid min-w-0 gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <SegmentedControl
               label={t("filterLabel")}
               value={filter}
@@ -92,125 +91,136 @@ export function InvoiceList() {
                 label: t(`filters.${value}`),
               }))}
             />
-          </CardHeader>
-          <TickRule />
-          <CardContent className="pt-4">
-            <Table>
-              <TableHeader>
+          </div>
+          <Table stack>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("columns.invoice")}</TableHead>
+                <TableHead className="hidden md:table-cell">
+                  {t("columns.client")}
+                </TableHead>
+                <TableHead>{t("columns.status")}</TableHead>
+                <TableHead className="text-right">
+                  {t("columns.total")}
+                </TableHead>
+                <TableHead className="hidden text-right md:table-cell">
+                  {t("columns.due")}
+                </TableHead>
+                <TableHead className="hidden lg:table-cell">
+                  {t("columns.efactura")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows === undefined && (
                 <TableRow>
-                  <TableHead>{t("columns.invoice")}</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    {t("columns.client")}
-                  </TableHead>
-                  <TableHead>{t("columns.status")}</TableHead>
-                  <TableHead className="text-right">
-                    {t("columns.total")}
-                  </TableHead>
-                  <TableHead className="hidden text-right sm:table-cell">
-                    {t("columns.due")}
-                  </TableHead>
-                  <TableHead className="hidden lg:table-cell">
-                    {t("columns.efactura")}
-                  </TableHead>
+                  <TableCell colSpan={6} className="text-ink-3">
+                    {tc("loading")}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows === undefined && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-ink-3">
-                      {tc("loading")}
-                    </TableCell>
-                  </TableRow>
-                )}
-                {rows?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-ink-3">
-                      {t("noneHere")}
-                    </TableCell>
-                  </TableRow>
-                )}
-                {rows?.map((row) => {
-                  const live = row.status === "issued" || row.status === "paid";
-                  return (
-                    <TableRow key={row._id}>
-                      <TableCell>
-                        <Link
-                          href={`/invoices/${row._id}`}
-                          className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          <span className="font-mono text-code text-ink-3">
-                            {row.code ?? t("draftCode")}
-                            {row.estimate && ` · ${row.estimate.code}`}
+              )}
+              {rows?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-ink-3">
+                    {t("noneHere")}
+                  </TableCell>
+                </TableRow>
+              )}
+              {rows?.map((row) => {
+                const live = row.status === "issued" || row.status === "paid";
+                return (
+                  <TableRow key={row._id}>
+                    <TableCell data-stack="wide">
+                      <Link
+                        href={`/invoices/${row._id}`}
+                        className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <span className="truncate text-meta text-ink-3">
+                          {row.code ? (
+                            <span className="font-mono">{row.code}</span>
+                          ) : (
+                            t("draftCode")
+                          )}
+                          {row.estimate && (
+                            <>
+                              {" · "}
+                              <span className="font-mono">
+                                {row.estimate.code}
+                              </span>
+                            </>
+                          )}
+                          <span className="md:hidden">
+                            {row.buyerName && ` · ${row.buyerName}`}
                           </span>
-                          <span className="text-body font-medium text-ink group-hover:underline">
-                            {t(`kind.${row.kind}`)}
+                        </span>
+                        <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
+                          {t(`kind.${row.kind}`)}
+                        </span>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="hidden text-ink-2 md:table-cell">
+                      {row.buyerName || (
+                        <span className="text-ink-3">{tc("notSet")}</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="grid justify-items-start gap-1">
+                        <InvoiceStatusPill
+                          status={row.status}
+                          overdue={row.dueDate < today}
+                        />
+                        {row.status === "issued" && row.paidAmount > 0 && (
+                          <span className="text-meta text-ink-3 tabular-nums">
+                            {t("paidPart", {
+                              paid: formatMoney(row.paidAmount, locale),
+                            })}
                           </span>
-                        </Link>
-                      </TableCell>
-                      <TableCell className="hidden text-ink-2 md:table-cell">
-                        {row.buyerName || (
-                          <span className="text-ink-3">{tc("notSet")}</span>
                         )}
-                      </TableCell>
-                      <TableCell>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums max-md:text-body-lg">
+                      {formatMoney(row.total, locale)}
+                    </TableCell>
+                    <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
+                      {formatCalendarDate(row.dueDate, locale)}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {live ? (
                         <div className="grid justify-items-start gap-1">
-                          <InvoiceStatusPill
-                            status={row.status}
-                            overdue={row.dueDate < today}
+                          <EfacturaPill
+                            status={row.efactura.status}
+                            late={row.efactura.deadline < today}
                           />
-                          {row.status === "issued" && row.paidAmount > 0 && (
-                            <span className="text-meta text-ink-3 tabular-nums">
-                              {t("paidPart", {
-                                paid: formatMoney(row.paidAmount, locale),
+                          {row.efactura.status === "not_sent" && (
+                            <span className="text-meta text-ink-3">
+                              {t("efacturaDue", {
+                                date: formatCalendarDate(
+                                  row.efactura.deadline,
+                                  locale,
+                                ),
                               })}
                             </span>
                           )}
                         </div>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatMoney(row.total, locale)}
-                      </TableCell>
-                      <TableCell className="hidden text-right text-ink-3 tabular-nums sm:table-cell">
-                        {formatCalendarDate(row.dueDate, locale)}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell">
-                        {live ? (
-                          <div className="grid justify-items-start gap-1">
-                            <EfacturaPill
-                              status={row.efactura.status}
-                              late={row.efactura.deadline < today}
-                            />
-                            {row.efactura.status === "not_sent" && (
-                              <span className="text-meta text-ink-3">
-                                {t("efacturaDue", {
-                                  date: formatCalendarDate(
-                                    row.efactura.deadline,
-                                    locale,
-                                  ),
-                                })}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-ink-3">–</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            {listed.status === "CanLoadMore" && (
-              <Button
-                variant="ghost"
-                className="justify-self-center"
-                onClick={() => listed.loadMore(25)}
-              >
-                {tc("loadMore")}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+                      ) : (
+                        <span className="text-ink-3">—</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          {listed.status === "CanLoadMore" && (
+            <Button
+              variant="ghost"
+              className="justify-self-center"
+              onClick={() => listed.loadMore(25)}
+            >
+              {tc("loadMore")}
+            </Button>
+          )}
+        </section>
       )}
     </>
   );

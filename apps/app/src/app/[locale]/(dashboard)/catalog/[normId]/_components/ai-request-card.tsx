@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { useScopedI18n } from "@/locales/client";
@@ -38,21 +37,16 @@ export function AiRequestCard({
         </div>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-5 pt-4">
+      <CardContent className="gap-5">
         <section className="grid gap-1">
-          <h4 className="m-0 text-label font-normal uppercase text-ink-3">
-            {t("request")}
-          </h4>
+          <h4 className="m-0 text-caption text-ink-3">{t("request")}</h4>
           <p className="m-0 whitespace-pre-line text-body text-ink-2">
             {request.description}
           </p>
         </section>
         {request.assumptions.length > 0 && (
           <section className="grid gap-2">
-            <h4 className="m-0 text-label font-normal uppercase text-ink-3">
-              {t("assumptions")}
-            </h4>
+            <h4 className="m-0 text-caption text-ink-3">{t("assumptions")}</h4>
             <ul className="m-0 grid list-none gap-2 p-0">
               {request.assumptions.map((assumption) => (
                 <li key={assumption} className="text-body text-ink-2">

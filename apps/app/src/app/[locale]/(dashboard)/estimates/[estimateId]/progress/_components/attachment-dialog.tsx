@@ -186,7 +186,7 @@ function AttachmentForm({
   };
 
   const cell = "px-1 py-1";
-  const head = "pb-1 px-1 text-left text-label uppercase text-ink-3";
+  const head = "pb-1 px-1 text-left text-caption text-ink-3";
 
   return (
     <form onSubmit={submit} className="grid gap-4">

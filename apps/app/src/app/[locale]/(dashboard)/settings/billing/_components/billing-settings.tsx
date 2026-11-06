@@ -45,7 +45,8 @@ type Settings = FunctionReturnType<typeof api.invoices.settings.get>;
 type Series = Settings["series"][number];
 
 // A settings card's footer: a hint on the left, the card's action on the right.
-const footer = "justify-between gap-4 border-t bg-sunken py-3";
+const footer =
+  "sticky bottom-0 z-10 justify-between gap-4 rounded-b-[11px] border-t bg-sunken py-3";
 
 /**
  * How the Firmă invoices: the details every invoice prints, the series its
@@ -117,7 +118,7 @@ function DetailsForm({ settings }: { settings: Settings }) {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <form onSubmit={submit} noValidate>
         <CardHeader className="grid justify-stretch gap-1">
           <CardTitle>{t("detailsTitle")}</CardTitle>
@@ -135,7 +136,6 @@ function DetailsForm({ settings }: { settings: Settings }) {
                   value={iban}
                   onChange={(event) => setIban(event.target.value)}
                   placeholder={t("ibanPlaceholder")}
-                  className="font-mono"
                   maxLength={40}
                 />
               </Field>
@@ -288,7 +288,7 @@ function SeriesCard({ settings }: { settings: Settings }) {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <CardHeader className="grid justify-stretch gap-1">
         <CardTitle>{t("seriesTitle")}</CardTitle>
         <CardDescription>{t("seriesDescription")}</CardDescription>

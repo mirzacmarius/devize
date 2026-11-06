@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@devize/ui/card";
-import { Download } from "lucide-react";
+import { Download, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { EfacturaPill } from "@/components/invoice-status";
@@ -51,7 +51,11 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
             </div>
           )}
           {late && (
-            <p role="alert" className="m-0 text-body text-warning">
+            <p role="alert" className="m-0 flex gap-2 text-body text-ink">
+              <TriangleAlert
+                aria-hidden
+                className="mt-0.5 size-4 shrink-0 text-warning"
+              />
               {t("overdue")}
             </p>
           )}
@@ -81,10 +85,10 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
             </div>
           )}
           {live && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <Button
                 type="button"
-                variant="outline"
+                variant={efactura.status === "not_sent" ? "default" : "outline"}
                 size="sm"
                 disabled={busy}
                 onClick={async () => {
@@ -96,7 +100,7 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
                 <Download aria-hidden />
                 {t("download")}
               </Button>
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="link" className="h-auto px-0 text-meta" asChild>
                 <Link href="/settings/billing">{t("settings")}</Link>
               </Button>
             </div>

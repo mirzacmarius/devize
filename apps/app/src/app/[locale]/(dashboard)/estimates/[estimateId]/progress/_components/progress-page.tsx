@@ -8,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
-import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -25,10 +24,9 @@ import { StatementsCard } from "./statements-card";
 import { SummaryCard } from "./summary-card";
 
 /**
- * A Deviz under execution: its Situații de lucrări, one open at a time,
- * with the Atașament behind each quantity; on the right, where the works
- * stand, the Garanție de bună execuție and the two Procese-verbale de
- * recepție.
+ * A Deviz under execution: where the works stand, its Situații de lucrări,
+ * one open at a time, with the Atașament behind each quantity, then the
+ * Garanție de bună execuție and the two Procese-verbale de recepție.
  */
 export function ProgressPage() {
   const estimateId = useRouteParam("estimateId") as Id<"estimates">;
@@ -72,25 +70,22 @@ export function ProgressPage() {
     );
   } else {
     body = (
-      <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
-        <div className="grid min-w-0 gap-6">
-          <StatementsCard
-            overview={overview}
-            selected={selected}
-            onSelect={setPicked}
+      <div className="grid min-w-0 gap-6">
+        <SummaryCard overview={overview} />
+        <StatementsCard
+          overview={overview}
+          selected={selected}
+          onSelect={setPicked}
+        />
+        {selected && (
+          <StatementCard
+            key={selected}
+            statementId={selected}
+            works={estimate}
+            onDeleted={() => setPicked(null)}
           />
-          {selected && (
-            <StatementCard
-              key={selected}
-              statementId={selected}
-              works={estimate}
-              onDeleted={() => setPicked(null)}
-            />
-          )}
-        </div>
-        {/* The state of the works first on a phone, beside the list on a wide screen. */}
-        <div className="order-first grid min-w-0 gap-6 xl:order-none">
-          <SummaryCard overview={overview} />
+        )}
+        <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2">
           <GuaranteeCard estimateId={estimateId} />
           <ReceptionsCard works={estimate} />
         </div>
@@ -116,13 +111,6 @@ export function ProgressPage() {
         }
         title={t("title")}
         description={t("description", { code, title: estimate.title })}
-        actions={
-          <Button variant="outline" asChild>
-            <Link href={`/estimates/${estimate._id}`}>
-              {t("backToEstimate")}
-            </Link>
-          </Button>
-        }
       />
       {body}
     </>

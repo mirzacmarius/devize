@@ -8,19 +8,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { TickBar } from "@devize/ui/meter";
 import { PageHeader } from "@devize/ui/page-header";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
@@ -88,7 +79,7 @@ export function HomePage() {
           </Button>
         }
       />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <Card className="grid grid-cols-2 xl:grid-cols-4">
         <Kpi
           label={t("kpi.drafts")}
           value={money(home?.drafts.total)}
@@ -129,17 +120,22 @@ export function HomePage() {
             value={rate ?? 0}
             thin
             label={t("kpi.acceptanceLabel", { percent })}
-            className="my-1.5"
+            className="max-w-28 flex-1"
           />
         </Kpi>
-      </div>
+      </Card>
       <div
         className={cn(
           "grid items-start gap-6",
           showSetup && "lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]",
         )}
       >
-        <div className="grid min-w-0 gap-6">
+        <div
+          className={cn(
+            "grid min-w-0 items-start gap-6",
+            !showSetup && "xl:grid-cols-2",
+          )}
+        >
           <TodoCard todo={home?.todo} />
           <RecentCard
             recent={home?.recent}
@@ -173,15 +169,26 @@ function Kpi({
   children?: ReactNode;
 }) {
   return (
-    <Card className="grid content-start gap-1 p-5">
-      <p className="m-0 text-meta text-ink-3">{label}</p>
-      <p className="m-0 flex flex-wrap items-baseline gap-x-2">
-        <span className="text-kpi tabular-nums text-ink">{value}</span>
-        {unit && <span className="text-meta text-ink-3">{unit}</span>}
+    <div className="grid min-w-0 content-start gap-1 border-border p-4 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:p-5 xl:[&:not(:first-child)]:border-l">
+      <p className="m-0 text-meta text-ink-2">{label}</p>
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="text-[22px] font-light leading-8 tracking-[-0.02em] tabular-nums text-ink sm:text-kpi">
+          {value}
+        </span>
+        {children}
+      </div>
+      <p className="m-0 min-h-[18px] text-meta text-ink-3">
+        {unit ? (
+          <>
+            {unit}
+            <span className="max-sm:hidden"> · {meta}</span>
+            <span className="block sm:hidden">{meta}</span>
+          </>
+        ) : (
+          meta
+        )}
       </p>
-      {children}
-      <p className="m-0 min-h-5 text-meta text-ink-3">{meta}</p>
-    </Card>
+    </div>
   );
 }
 
@@ -199,12 +206,11 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
   const tc = useScopedI18n("common");
   return (
     <Card>
-      <CardHeader className="grid justify-stretch gap-1">
+      <CardHeader className="grid justify-stretch gap-0.5">
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent className="pb-2">
         {todo === undefined ? (
           <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
         ) : todo.length === 0 ? (
@@ -239,6 +245,11 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
   const Icon = todoIcons[item.kind];
   const href =
     item.kind === "alert" ? "/prices" : `/estimates/${item.estimate._id}`;
+  // Colour only where time or money is running out: a price change, or a
+  // deadline within the week.
+  const urgent =
+    item.kind === "alert" ||
+    ((item.kind === "deadline" || item.kind === "expiring") && item.days <= 7);
 
   let text: string;
   switch (item.kind) {
@@ -278,21 +289,22 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
   }
 
   return (
-    <li className={cn("py-3", first ? "pt-0" : "border-t border-border")}>
+    <li className={cn(!first && "border-t border-border")}>
       <Link
         href={href}
-        className="group grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group -mx-2 grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden
-          className="grid size-8 place-items-center rounded-md bg-tile text-ink-2 [&_svg]:size-4"
+          className={cn(
+            "grid size-7 place-items-center rounded-md [&_svg]:size-4",
+            urgent ? "bg-warning-soft text-warning" : "bg-muted text-ink-2",
+          )}
         >
           <Icon />
         </span>
-        <span className="grid min-w-0 gap-0.5">
-          <span className="text-body text-ink group-hover:underline">
-            {text}
-          </span>
+        <span className="grid min-w-0">
+          <span className="text-body text-ink">{text}</span>
           <span className="truncate text-meta text-ink-3">
             {item.estimate.title}
             {item.estimate.clientName && ` · ${item.estimate.clientName}`}
@@ -313,19 +325,17 @@ function RecentCard({
 }) {
   const t = useScopedI18n("home.recent");
   const th = useScopedI18n("home");
-  const te = useScopedI18n("estimates");
   const tc = useScopedI18n("common");
   const locale = useCurrentLocale();
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="link" asChild>
           <Link href="/estimates">{t("all")}</Link>
         </Button>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent className="pb-2">
         {recent?.length === 0 ? (
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="m-0 text-body text-ink-2">{t("empty")}</p>
@@ -335,62 +345,39 @@ function RecentCard({
             </Button>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{te("columns.estimate")}</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  {te("columns.client")}
-                </TableHead>
-                <TableHead>{te("columns.status")}</TableHead>
-                <TableHead className="text-right">
-                  {te("columns.total")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recent === undefined && (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
-                    {tc("loading")}
-                  </TableCell>
-                </TableRow>
-              )}
-              {recent?.map((row) => (
-                <TableRow key={row._id}>
-                  <TableCell>
-                    <Link
-                      href={`/estimates/${row._id}`}
-                      className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <span className="font-mono text-code text-ink-3">
-                        {estimateCode(row.number, row.revision)}
-                      </span>
-                      <span className="text-body font-medium text-ink group-hover:underline">
-                        {row.title}
-                      </span>
-                    </Link>
-                  </TableCell>
-                  <TableCell className="hidden text-ink-2 md:table-cell">
-                    {row.clientName ?? (
-                      <span className="text-ink-3">{t("noClient")}</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
+          <ul className="m-0 grid list-none p-0">
+            {recent === undefined && (
+              <li className="py-2 text-body text-ink-3">{tc("loading")}</li>
+            )}
+            {recent?.map((row, index) => (
+              <li
+                key={row._id}
+                className={cn(index > 0 && "border-t border-border")}
+              >
+                <Link
+                  href={`/estimates/${row._id}`}
+                  className="-mx-2 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0.5 rounded-md px-2 py-2.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <span className="truncate text-body font-medium text-ink">
+                    {row.title}
+                  </span>
+                  <span className="text-right text-body tabular-nums text-ink">
+                    {formatMoney(row.total, locale)}
+                  </span>
+                  <span className="truncate text-meta text-ink-3">
+                    {estimateCode(row.number, row.revision)}
+                    {" · "}
+                    {row.clientName ?? t("noClient")}
+                    {" · "}
+                    {formatDay(row.updatedAt, locale)}
+                  </span>
+                  <span className="justify-self-end">
                     <EstimateStatusPill status={row.status} />
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    <span className="grid gap-0.5">
-                      <span>{formatMoney(row.total, locale)}</span>
-                      <span className="text-meta text-ink-3">
-                        {formatDay(row.updatedAt, locale)}
-                      </span>
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
       </CardContent>
     </Card>
@@ -442,8 +429,7 @@ function SetupCard({
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <ol className="m-0 grid list-none gap-4 p-0">
           {steps.map((step, index) => (
             <li

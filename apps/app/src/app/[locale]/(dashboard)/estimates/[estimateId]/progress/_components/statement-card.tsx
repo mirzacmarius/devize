@@ -3,13 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +18,6 @@ import { Switch } from "@devize/ui/switch";
 import { Textarea } from "@devize/ui/textarea";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Pencil } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
@@ -47,7 +40,8 @@ import { statementTone } from "./statement-status";
 import type { Statement, StatementRow, Works } from "./types";
 import { useDownloadProgress } from "./use-download-progress";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+const headClass =
+  "whitespace-nowrap pb-2 pl-3 text-right text-caption text-ink-3";
 
 /**
  * One Situație de lucrări: every Articol of the contract with what was
@@ -149,7 +143,7 @@ export function StatementCard({
 
   return (
     <Card>
-      <CardHeader className="grid gap-2">
+      <CardHeader className="grid justify-stretch gap-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <CardTitle>{t("title", { number })}</CardTitle>
@@ -233,8 +227,7 @@ export function StatementCard({
           </p>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <RowsTable
           statement={statement}
           onAttachment={setAttachmentRow}
@@ -329,10 +322,10 @@ function RowsTable({
       <table className="w-full min-w-[60rem] border-collapse text-body">
         <thead>
           <tr>
-            <th className="pb-2 text-left text-label uppercase text-ink-3">
+            <th className="pb-2 text-left text-caption text-ink-3">
               {t("article")}
             </th>
-            <th className="pb-2 pl-3 text-center text-label uppercase text-ink-3">
+            <th className="pb-2 pl-3 text-center text-caption text-ink-3">
               {t("unit")}
             </th>
             <th className={headClass}>{t("unitPrice")}</th>
@@ -361,7 +354,7 @@ function RowsTable({
                   <tr className="border-t border-border">
                     <td
                       colSpan={11}
-                      className="pt-3 pb-1 text-label uppercase text-ink-3"
+                      className="pt-3 pb-1 text-caption text-ink-3"
                     >
                       {heading}
                     </td>
@@ -448,7 +441,6 @@ function RowsTable({
                       }
                       onClick={() => onAttachment(row)}
                     >
-                      <Pencil aria-hidden />
                       {lines > 0
                         ? t("attachmentLines", { count: lines })
                         : t("attachment")}
@@ -503,7 +495,7 @@ function Recap({ statement }: { statement: Statement }) {
   ];
   return (
     <div className="grid content-start gap-2">
-      <span className="text-label uppercase text-ink-3">{t("title")}</span>
+      <span className="text-caption text-ink-3">{t("title")}</span>
       <dl className="m-0 grid gap-1.5">
         {lines.map((line) => (
           <div
@@ -551,7 +543,7 @@ function Notes({ statement }: { statement: Statement }) {
   if (!statement.editable) {
     return (
       <div className="grid content-start gap-2">
-        <span className="text-label uppercase text-ink-3">{t("notes")}</span>
+        <span className="text-caption text-ink-3">{t("notes")}</span>
         <p className="m-0 whitespace-pre-line text-body text-ink-2">
           {notes || "–"}
         </p>
@@ -578,7 +570,7 @@ function Notes({ statement }: { statement: Statement }) {
     <div className="grid content-start gap-2">
       <label
         htmlFor="statement-notes-inline"
-        className="text-label uppercase text-ink-3"
+        className="text-caption text-ink-3"
       >
         {t("notes")}
       </label>

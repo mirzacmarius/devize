@@ -244,7 +244,7 @@ function OfferHero({ offer }: { offer: OpenOfferView }) {
   ].filter(Boolean);
   return (
     <div className="grid gap-2">
-      <span className="text-label uppercase text-ink-3">
+      <span className="text-caption text-ink-3">
         {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
       </span>
       <h1 className="m-0 text-title-page text-ink">{offer.title}</h1>

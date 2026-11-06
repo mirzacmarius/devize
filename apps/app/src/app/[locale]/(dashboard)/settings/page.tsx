@@ -27,7 +27,8 @@ import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
 
 // A settings card's footer: a hint on the left, the card's action on the right.
-const footer = "justify-between border-t bg-sunken py-3";
+const footer =
+  "sticky bottom-0 z-10 justify-between rounded-b-[11px] border-t bg-sunken py-3";
 
 export default function DashboardSettings() {
   const t = useScopedI18n("settings");
@@ -66,7 +67,7 @@ export default function DashboardSettings() {
 
   return (
     <>
-      <Card className="overflow-hidden">
+      <Card>
         <CardHeader className="items-start">
           <div className="grid gap-1">
             <CardTitle>{t("avatar.title")}</CardTitle>
@@ -140,7 +141,7 @@ function DeleteAccountCard({
   const blocked = firms === undefined || (withInvoices && !confirmed);
 
   return (
-    <Card className="overflow-hidden border-danger-border">
+    <Card className="border-danger-border">
       <CardHeader>
         <div className="grid gap-1">
           <CardTitle>{t("title")}</CardTitle>
@@ -233,7 +234,7 @@ function UsernameForm({ username }: { username: string }) {
         form.handleSubmit();
       }}
     >
-      <Card className="overflow-hidden">
+      <Card>
         <CardHeader>
           <div className="grid gap-1">
             <CardTitle>{t("username.title")}</CardTitle>

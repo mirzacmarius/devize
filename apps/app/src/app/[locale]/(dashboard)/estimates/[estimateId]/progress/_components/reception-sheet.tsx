@@ -271,7 +271,7 @@ function ReceptionForm({
     }
   };
 
-  const section = "text-label uppercase text-ink-3";
+  const section = "text-caption text-ink-3";
 
   return (
     <form onSubmit={submit} className="grid gap-5">

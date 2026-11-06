@@ -3,13 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { withdrawalDeadline } from "@devize/backend/convex/offers/consumer";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
 import { toast } from "@devize/ui/sonner";
@@ -19,7 +13,7 @@ import type { FunctionReturnType } from "convex/server";
 import { ExternalLink, Mail, MessageCircle } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { useScheduleWords } from "@/components/payment-schedule";
+import { PaymentStages } from "@/components/payment-schedule";
 import { SignatureImage } from "@/components/signature/signature-image";
 import { useRun } from "@/components/use-run";
 import {
@@ -123,8 +117,7 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
           </StatusPill>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">{body}</CardContent>
+      <CardContent>{body}</CardContent>
       <OfferDialog
         estimate={estimate}
         open={creating}
@@ -134,18 +127,27 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
   );
 }
 
-/** The stages of payment in one line: "Avans: 30% la semnare (1.200,00 lei); …". */
-function useScheduleLine() {
-  const words = useScheduleWords();
-  return (offer: Offer) =>
-    words(offer.paymentSchedule, offer.choice.totals.total).join("; ");
+/** How the client pays the offer's choice, stage by stage. */
+function OfferPayment({ offer }: { offer: Offer }) {
+  const t = useScopedI18n("offer");
+  if (offer.paymentSchedule.length === 0) {
+    return null;
+  }
+  return (
+    <div className="grid gap-1.5">
+      <p className="m-0 text-meta text-ink-3">{t("payment")}</p>
+      <PaymentStages
+        stages={offer.paymentSchedule}
+        total={offer.choice.totals.total}
+      />
+    </div>
+  );
 }
 
 /** A link the client can still open: sharing it and following the visits. */
 function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
   const t = useScopedI18n("offer");
   const locale = useCurrentLocale();
-  const scheduleLine = useScheduleLine();
   const run = useRun();
   const withdraw = useMutation(api.offers.offers.withdraw);
   const firm = useQuery(api.accounts.organizations.get, {
@@ -201,10 +203,9 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
     t("sentOn", { date: formatDay(offer.sentAt, locale) }),
     offer.expiresAt !== undefined &&
       t("expiresOn", { date: formatDay(offer.expiresAt, locale) }),
-    offer.paymentSchedule.length > 0
-      ? t("payment", { schedule: scheduleLine(offer) })
-      : offer.depositPercent !== undefined &&
-        t("deposit", { percent: formatPercent(offer.depositPercent, locale) }),
+    offer.paymentSchedule.length === 0 &&
+      offer.depositPercent !== undefined &&
+      t("deposit", { percent: formatPercent(offer.depositPercent, locale) }),
     offer.consumer && t("consumer"),
     offer.createdByName && t("madeBy", { name: offer.createdByName }),
   ].filter(Boolean);
@@ -254,6 +255,7 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
           </a>
         </Button>
       </div>
+      <OfferPayment offer={offer} />
       <div className="grid gap-1 text-meta text-ink-2">
         <span>{facts.join(" · ")}</span>
         <span>
@@ -335,7 +337,6 @@ function AcceptedOffer({
 }) {
   const t = useScopedI18n("offer");
   const locale = useCurrentLocale();
-  const scheduleLine = useScheduleLine();
   const { signature } = offer;
   const signedAt = signature?.signedAt ?? offer.decidedAt;
   const name = signature?.name ?? estimate.client?.name ?? "";
@@ -351,11 +352,7 @@ function AcceptedOffer({
         </p>
       )}
       <ChoiceBox offer={offer} />
-      {offer.paymentSchedule.length > 0 && (
-        <p className="m-0 text-meta text-ink-2">
-          {t("payment", { schedule: scheduleLine(offer) })}
-        </p>
-      )}
+      <OfferPayment offer={offer} />
       {signature &&
         (signature.path ? (
           <div className="rounded-md border border-border bg-card px-2">

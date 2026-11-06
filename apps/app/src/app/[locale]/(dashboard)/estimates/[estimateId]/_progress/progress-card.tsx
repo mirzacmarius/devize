@@ -2,13 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { TickBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
 import Link from "next/link";
@@ -57,8 +51,7 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {overview.statements.length === 0 ? (
           <p className="m-0 text-body text-ink-2">{t("noStatements")}</p>
         ) : (

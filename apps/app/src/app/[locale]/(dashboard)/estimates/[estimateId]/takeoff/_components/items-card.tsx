@@ -92,13 +92,13 @@ export function ItemsCard({
             {rows(groups.loose)}
             {groups.sections.map((group) => (
               <Fragment key={group.section._id}>
-                <li className="pt-2 text-meta font-medium uppercase text-ink-3">
+                <li className="pt-2 text-caption text-ink-3">
                   {sectionName(group.section)}
                 </li>
                 {rows(group.items)}
                 {group.chapters.map((chapter) => (
                   <Fragment key={chapter.section._id}>
-                    <li className="pl-3 pt-1 text-meta font-medium uppercase text-ink-3">
+                    <li className="pl-3 pt-1 text-caption text-ink-3">
                       {sectionName(chapter.section)}
                     </li>
                     {rows(chapter.items)}

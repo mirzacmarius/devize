@@ -2,13 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { useQuery } from "convex/react";
 import { type ReactNode, useState } from "react";
@@ -59,8 +53,7 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <ul className="m-0 grid list-none p-0">
           <DocumentRow
             icon={<Icons.Deviz aria-hidden />}

@@ -12,7 +12,7 @@ const Breadcrumb = React.forwardRef<
   <nav
     ref={ref}
     className={cn(
-      "flex min-w-0 items-center gap-2 text-body text-ink-3 [&_svg]:size-4 [&_svg]:shrink-0",
+      "flex min-w-0 items-center gap-1.5 text-meta text-ink-3 [&_svg]:size-4 [&_svg]:shrink-0",
       className,
     )}
     {...props}
@@ -49,7 +49,7 @@ function BreadcrumbSeparator({
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span aria-hidden className={cn("text-ink-3", className)} {...props}>
+    <span aria-hidden className={cn("text-ink-3/60", className)} {...props}>
       {children}
     </span>
   );

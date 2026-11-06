@@ -13,7 +13,7 @@ import { useScopedI18n } from "@/locales/client";
 import { gmailComposeUrl, mailtoUrl } from "../_components/email-links";
 import { ErasureRow } from "../_components/erasure-row";
 import {
-  confidenceTone,
+  Confidence,
   ErrorText,
   messageTone,
   Panel,
@@ -51,9 +51,9 @@ export default function OutreachPage() {
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-medium text-primary/80">{t("title")}</h1>
-        <p className="text-base text-primary/60">{t("description")}</p>
-        <p className="text-sm text-primary/60">
+        <h1 className="text-title-screen text-ink">{t("title")}</h1>
+        <p className="text-body text-ink-2">{t("description")}</p>
+        <p className="text-body text-ink-3">
           {t("pace", { count: sentToday ?? 0 })}
         </p>
       </div>
@@ -75,7 +75,7 @@ export default function OutreachPage() {
         </Panel>
       )}
       {messages === undefined ? (
-        <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
+        <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (
         <>
           <Panel title={t("approved")}>
@@ -190,10 +190,10 @@ function ReadinessPanel({ readiness }: { readiness: Readiness }) {
             <span
               aria-hidden
               className={cn(
-                "grid size-6 place-items-center rounded-full text-xs tabular-nums",
+                "grid size-6 place-items-center rounded-full text-meta tabular-nums",
                 step.done
                   ? "bg-success-dot/15 text-success-dot [&_svg]:size-3.5"
-                  : "bg-primary/5 text-primary/70",
+                  : "bg-muted text-ink-2",
               )}
             >
               {step.done ? <Icons.Check /> : index + 1}
@@ -202,15 +202,15 @@ function ReadinessPanel({ readiness }: { readiness: Readiness }) {
               <div className="flex min-w-0 flex-col gap-0.5">
                 <p
                   className={cn(
-                    "text-sm",
-                    step.done ? "text-primary/50" : "text-primary",
+                    "text-body",
+                    step.done ? "text-ink-3" : "text-ink",
                   )}
                 >
                   {step.text}
                   {step.done && <span className="sr-only"> {t("done")}</span>}
                 </p>
                 {step.detail && (
-                  <p className="text-xs text-primary/50">{step.detail}</p>
+                  <p className="text-meta text-ink-3">{step.detail}</p>
                 )}
               </div>
               {!step.done && step.action}
@@ -231,7 +231,7 @@ function MessageList({
 }) {
   const t = useScopedI18n("admin.outreach");
   if (messages.length === 0) {
-    return <p className="text-sm text-primary/60">{t("empty")}</p>;
+    return <p className="text-body text-ink-3">{t("empty")}</p>;
   }
   return (
     <ul className="flex flex-col divide-y divide-border">
@@ -265,7 +265,7 @@ function MessageRow({
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/admin/manufacturers/${message.manufacturerId}`}
-            className="font-medium text-primary hover:underline"
+            className="font-medium text-ink hover:underline"
           >
             {message.manufacturerName}
           </Link>
@@ -274,9 +274,9 @@ function MessageRow({
             {tAdmin(`status.message.${message.status}`)}
           </Pill>
           {message.confidence && (
-            <Pill tone={confidenceTone[message.confidence]}>
+            <Confidence level={message.confidence}>
               {tAdmin(`confidence.${message.confidence}`)}
-            </Pill>
+            </Confidence>
           )}
           {problems.length > 0 && (
             <Pill tone={blocked ? "danger" : "warning"}>
@@ -284,7 +284,7 @@ function MessageRow({
             </Pill>
           )}
         </div>
-        <p className="truncate text-sm text-primary/60">
+        <p className="truncate text-body text-ink-3">
           {message.to ?? "—"} · {message.subject}
         </p>
         <ErrorText error={error} />

@@ -10,7 +10,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import {
   Dialog,
@@ -148,8 +147,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
           </Button>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         {members === undefined ? (
           <p className="m-0 py-2 text-body text-ink-3">{tc("loading")}</p>
         ) : (
@@ -295,8 +293,7 @@ function InvitationsCard() {
         <CardTitle>{t("invitationsTitle")}</CardTitle>
         <CardDescription>{t("invitationsDescription")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <ul className="m-0 grid list-none p-0">
           {invitations.map((invitation) => (
             <li

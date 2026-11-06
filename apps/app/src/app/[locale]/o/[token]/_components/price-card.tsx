@@ -3,13 +3,7 @@
 import { roundLei } from "@devize/backend/convex/estimates/recap";
 import { stageAmount } from "@devize/backend/convex/offers/payments";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useState } from "react";
 import { EurAmount } from "@/components/eur-amount";
@@ -99,8 +93,7 @@ export function PriceCard({
           {details ? t("hideDetails") : t("showDetails")}
         </Button>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <dl
           aria-busy={updating}
           className={cn(
