@@ -25,7 +25,7 @@ export function FirmMark({ firm }: { firm: OfferFirm }) {
   return (
     <span
       aria-hidden
-      className="grid size-10 shrink-0 place-items-center rounded-lg bg-tile text-body font-medium text-ink-2 sm:size-12 sm:text-body-lg"
+      className="grid size-10 shrink-0 place-items-center rounded-lg bg-card text-body font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:size-12 sm:text-body-lg"
     >
       {initials}
     </span>
@@ -88,7 +88,7 @@ export function OfferHeader({
   const t = useScopedI18n("offerPage");
   const details = [firm.cui && `CUI ${firm.cui}`, firm.county].filter(Boolean);
   return (
-    <header className="border-b border-border bg-card">
+    <header className="max-sm:border-b max-sm:border-border">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <FirmMark firm={firm} />
@@ -108,7 +108,7 @@ export function OfferHeader({
       {preview && (
         <p
           role="note"
-          className="m-0 border-t border-border bg-sunken px-4 py-2 text-center text-meta text-ink-2"
+          className="m-0 border-t border-border bg-sunken px-4 py-2 text-center text-meta text-ink-2 sm:mx-2 sm:mb-2 sm:rounded-lg sm:border-t-0"
         >
           {t("preview")}
         </p>

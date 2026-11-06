@@ -34,8 +34,9 @@ import {
 type EstimateKind = Doc<"estimates">["kind"];
 
 /**
- * Starts a Deviz: from nothing or from a Șablon, what the work is, for whom
- * and where, and the date of its prices.
+ * Starts a Deviz: what the work is and for whom, and, folded away until
+ * they're wanted, a Șablon to start from, the kind, the site and the date of
+ * its prices.
  */
 export function NewEstimateDialog({
   open,
@@ -96,6 +97,7 @@ function NewEstimateForm({
   const [county, setCounty] = useState("");
   const [priceDate, setPriceDate] = useState(() => todayInput());
   const [addingClient, setAddingClient] = useState(false);
+  const [more, setMore] = useState(initial.kind !== "blank");
   const [error, setError] = useState<string>();
   const [saving, setSaving] = useState(false);
 
@@ -107,6 +109,7 @@ function NewEstimateForm({
     }
     const starter = parsedStarter(startFrom);
     if (startFrom.kind === "starter" && !starter) {
+      setMore(true);
       return;
     }
     setError(undefined);
@@ -149,11 +152,6 @@ function NewEstimateForm({
   return (
     <>
       <form className="grid gap-5" onSubmit={submit} noValidate>
-        <StartFromField
-          templates={templates}
-          value={startFrom}
-          onChange={setStartFrom}
-        />
         <Field label={t("fields.title")} htmlFor="estimate-title" error={error}>
           <Input
             id="estimate-title"
@@ -162,17 +160,6 @@ function NewEstimateForm({
             placeholder={t("fields.titlePlaceholder")}
             aria-invalid={error !== undefined}
             autoFocus
-          />
-        </Field>
-        <Field label={t("fields.kind")}>
-          <SegmentedControl
-            label={t("fields.kind")}
-            value={kind}
-            onChange={setKind}
-            options={[
-              { value: "private", label: t("kinds.private") },
-              { value: "tender", label: t("kinds.tender") },
-            ]}
           />
         </Field>
         <Field label={t("fields.client")} htmlFor="estimate-client">
@@ -191,35 +178,64 @@ function NewEstimateForm({
             </Button>
           </div>
         </Field>
-        <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_200px]">
-          <Field label={t("fields.siteAddress")} htmlFor="estimate-address">
-            <Input
-              id="estimate-address"
-              value={siteAddress}
-              onChange={(event) => setSiteAddress(event.target.value)}
-            />
-          </Field>
-          <Field label={t("fields.county")} htmlFor="estimate-county">
-            <CountySelect
-              id="estimate-county"
-              value={county}
-              onChange={setCounty}
-            />
-          </Field>
-        </div>
-        <Field
-          label={t("fields.priceDate")}
-          htmlFor="estimate-price-date"
-          hint={t("fields.priceDateHint")}
+        <details
+          open={more}
+          onToggle={(event) => setMore(event.currentTarget.open)}
         >
-          <Input
-            id="estimate-price-date"
-            type="date"
-            value={priceDate}
-            onChange={(event) => setPriceDate(event.target.value)}
-            className="w-48"
-          />
-        </Field>
+          <summary className="min-h-6 w-fit rounded-xs text-body text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            {t("moreDetails")}
+            <span className="text-meta text-ink-3 max-sm:hidden">
+              {t("moreDetailsHint")}
+            </span>
+          </summary>
+          <div className="grid gap-5 pt-4">
+            <StartFromField
+              templates={templates}
+              value={startFrom}
+              onChange={setStartFrom}
+            />
+            <Field label={t("fields.kind")}>
+              <SegmentedControl
+                label={t("fields.kind")}
+                value={kind}
+                onChange={setKind}
+                options={[
+                  { value: "private", label: t("kinds.private") },
+                  { value: "tender", label: t("kinds.tender") },
+                ]}
+              />
+            </Field>
+            <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_200px]">
+              <Field label={t("fields.siteAddress")} htmlFor="estimate-address">
+                <Input
+                  id="estimate-address"
+                  value={siteAddress}
+                  onChange={(event) => setSiteAddress(event.target.value)}
+                />
+              </Field>
+              <Field label={t("fields.county")} htmlFor="estimate-county">
+                <CountySelect
+                  id="estimate-county"
+                  value={county}
+                  onChange={setCounty}
+                />
+              </Field>
+            </div>
+            <Field
+              label={t("fields.priceDate")}
+              htmlFor="estimate-price-date"
+              hint={t("fields.priceDateHint")}
+            >
+              <Input
+                id="estimate-price-date"
+                type="date"
+                value={priceDate}
+                onChange={(event) => setPriceDate(event.target.value)}
+                className="w-full sm:w-[200px]"
+              />
+            </Field>
+          </div>
+        </details>
         <div className="flex justify-end gap-3">
           <Button type="button" variant="ghost" onClick={onClose}>
             {tc("cancel")}

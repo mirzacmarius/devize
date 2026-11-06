@@ -78,7 +78,7 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
           </div>
         )}
         {live && (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <ValidateXml invoice={invoice}>
             <Button
               type="button"
               variant={efactura.status === "not_sent" ? "default" : "outline"}
@@ -93,12 +93,17 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
               <Download aria-hidden />
               {t("download")}
             </Button>
-            <Button variant="link" className="h-auto px-0 text-meta" asChild>
-              <Link href="/settings/billing">{t("settings")}</Link>
-            </Button>
-          </div>
+          </ValidateXml>
         )}
-        {live && <ValidateXml invoice={invoice} />}
+        {live && (
+          <Button
+            variant="link"
+            className="h-auto justify-self-start px-0 text-meta"
+            asChild
+          >
+            <Link href="/settings/billing">{t("settings")}</Link>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

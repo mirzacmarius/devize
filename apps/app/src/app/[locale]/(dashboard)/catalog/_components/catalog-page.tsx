@@ -1,7 +1,10 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { baseCategoryByKey } from "@devize/backend/convex/catalog/baseCategories";
+import {
+  type BaseCategoryKey,
+  baseCategoryByKey,
+} from "@devize/backend/convex/catalog/baseCategories";
 import { normalizeText } from "@devize/backend/convex/lib/text";
 import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
@@ -15,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
-import { cn } from "@devize/ui/utils";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Plus } from "lucide-react";
@@ -23,12 +25,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
-import { NormCategoryChips } from "@/components/norm-category-chips";
+import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
 import { SearchInput } from "@/components/search-input";
 import { SegmentedControl } from "@/components/segmented-control";
-import { formatDay, formatUnit } from "@/lib/format";
+import { formatDay, formatMoney, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 export type CatalogView = "catalog" | "own";
@@ -109,7 +111,7 @@ export function CatalogPage() {
         : listed.status === "LoadingFirstPage"
           ? undefined
           : listed.results;
-  const columns = isOwn ? 4 : 3;
+  const columns = isOwn ? 5 : 4;
 
   const changeView = (next: CatalogView) => {
     setText("");
@@ -119,7 +121,7 @@ export function CatalogPage() {
       next === "own" ? "/catalog?view=own" : "/catalog",
     );
   };
-  const changeCategory = (key: string | null) => {
+  const changeCategory = (key: BaseCategoryKey | null) => {
     window.history.replaceState(
       null,
       "",
@@ -146,7 +148,11 @@ export function CatalogPage() {
 
   return (
     <>
-      <PageHeader title={t("title")} actions={actions} />
+      <PageHeader
+        title={t("title")}
+        description={t("costNote")}
+        actions={actions}
+      />
       <section className="grid min-w-0 gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <SegmentedControl
@@ -158,172 +164,170 @@ export function CatalogPage() {
               { value: "own", label: t("views.own") },
             ]}
           />
-          <SearchInput
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            aria-label={t("searchPlaceholder")}
-            className="w-full sm:max-w-xs"
-          />
-        </div>
-        <div
-          className={cn(
-            "grid min-w-0 items-start gap-x-8 gap-y-3",
-            !isOwn && "md:grid-cols-[216px_minmax(0,1fr)]",
-          )}
-        >
-          {!isOwn && (
-            <NormCategoryChips
-              label={t("categories.label")}
-              allLabel={t("categories.all")}
-              value={category?.key ?? null}
-              onChange={changeCategory}
-            />
-          )}
-          <div className="grid min-w-0 gap-4">
-            {isOwn && !search && own?.length === 0 ? (
-              <EmptyState
-                icon={<Icons.Catalog />}
-                title={t("ownEmptyTitle")}
-                description={t("ownEmptyDescription")}
-                action={
-                  <Button variant="outline" asChild>
-                    <Link href="/catalog/new">{t("ownEmptyAction")}</Link>
-                  </Button>
-                }
+          <div className="flex min-w-0 flex-wrap items-center gap-2 max-sm:w-full">
+            {!isOwn && (
+              <NormCategorySelect
+                label={t("categories.label")}
+                allLabel={t("categories.all")}
+                value={category?.key ?? null}
+                onChange={changeCategory}
+                className="w-full sm:w-56"
               />
-            ) : (
-              <Table twoLine>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t("columns.norm")}</TableHead>
-                    {!isOwn && (
-                      <TableHead className="hidden lg:table-cell">
-                        {t("columns.source")}
-                      </TableHead>
-                    )}
-                    <TableHead className="hidden text-right sm:table-cell">
-                      {t("columns.unit")}
+            )}
+            <SearchInput
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:w-80"
+            />
+          </div>
+        </div>
+        <div className="grid min-w-0 gap-4">
+          {isOwn && !search && own?.length === 0 ? (
+            <EmptyState
+              icon={<Icons.Catalog />}
+              title={t("ownEmptyTitle")}
+              description={t("ownEmptyDescription")}
+              action={
+                <Button variant="outline" asChild>
+                  <Link href="/catalog/new">{t("ownEmptyAction")}</Link>
+                </Button>
+              }
+            />
+          ) : (
+            <Table twoLine>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("columns.norm")}</TableHead>
+                  {!isOwn && (
+                    <TableHead className="hidden lg:table-cell">
+                      {t("columns.source")}
                     </TableHead>
-                    {isOwn && <TableHead>{t("columns.status")}</TableHead>}
-                    {isOwn && (
-                      <TableHead className="hidden text-right sm:table-cell">
-                        {t("columns.updated")}
-                      </TableHead>
-                    )}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows === undefined && (
-                    <TableRow>
-                      <TableCell colSpan={columns} className="text-ink-3">
-                        {tc("loading")}
-                      </TableCell>
-                    </TableRow>
                   )}
-                  {rows?.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={columns} className="text-ink-3">
-                        {search && !isOwn && category ? (
-                          <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                            {t("noResultsInCategory", {
-                              category: category.name,
-                              text: search,
-                            })}
-                            <Button
-                              type="button"
-                              variant="link"
-                              onClick={() => changeCategory(null)}
-                            >
-                              {t("searchAllCategories")}
-                            </Button>
+                  {isOwn && <TableHead>{t("columns.status")}</TableHead>}
+                  {isOwn && (
+                    <TableHead className="hidden sm:table-cell">
+                      {t("columns.updated")}
+                    </TableHead>
+                  )}
+                  <TableHead className="hidden sm:table-cell">
+                    {t("columns.unit")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("columns.cost")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows === undefined && (
+                  <TableRow>
+                    <TableCell colSpan={columns} className="text-ink-3">
+                      {tc("loading")}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {rows?.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={columns} className="text-ink-3">
+                      {search && !isOwn && category ? (
+                        <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                          {t("noResultsInCategory", {
+                            category: category.name,
+                            text: search,
+                          })}
+                          <Button
+                            type="button"
+                            variant="link"
+                            onClick={() => changeCategory(null)}
+                          >
+                            {t("searchAllCategories")}
+                          </Button>
+                        </span>
+                      ) : search ? (
+                        t("noResults", { text: search })
+                      ) : category ? (
+                        t("categoryEmpty", { category: category.name })
+                      ) : (
+                        t("catalogEmpty")
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {rows?.map((norm) => (
+                  <TableRow key={norm._id}>
+                    <TableCell>
+                      <Link
+                        href={`/catalog/${norm._id}`}
+                        className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <span className="text-body font-medium text-ink group-hover:underline">
+                          {norm.title}
+                        </span>
+                        <span className="text-meta text-ink-3">
+                          <span className="tabular-nums">
+                            {norm.version > 1
+                              ? `${norm.code} · v${norm.version}`
+                              : norm.code}
                           </span>
-                        ) : search ? (
-                          t("noResults", { text: search })
-                        ) : category ? (
-                          t("categoryEmpty", { category: category.name })
+                          {norm.category && ` · ${norm.category}`}
+                          {/* What its columns say on a wider screen. */}
+                          <span className="sm:hidden">
+                            {` · ${formatUnit(norm.unit, locale)}`}
+                          </span>
+                          <span className={isOwn ? undefined : "lg:hidden"}>
+                            {norm.source !== "base" && ` · ${normSource(norm)}`}
+                          </span>
+                          {unconfirmed(norm) && ` · ${t("unconfirmed")}`}
+                        </span>
+                      </Link>
+                    </TableCell>
+                    {!isOwn && (
+                      <TableCell className="hidden text-ink-2 lg:table-cell">
+                        {norm.source === "base" ? (
+                          <span className="text-ink-3">–</span>
                         ) : (
-                          t("catalogEmpty")
+                          (norm.manufacturerName ?? normSource(norm))
                         )}
                       </TableCell>
-                    </TableRow>
-                  )}
-                  {rows?.map((norm) => (
-                    <TableRow key={norm._id}>
+                    )}
+                    {isOwn && (
                       <TableCell>
-                        <Link
-                          href={`/catalog/${norm._id}`}
-                          className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          <span className="text-body font-medium text-ink group-hover:underline">
-                            {norm.title}
-                          </span>
-                          <span className="text-meta text-ink-3">
-                            <span className="tabular-nums">
-                              {norm.version > 1
-                                ? `${norm.code} · v${norm.version}`
-                                : norm.code}
-                            </span>
-                            {norm.category && ` · ${norm.category}`}
-                            {/* What its columns say on a wider screen. */}
-                            <span className="sm:hidden">
-                              {` · ${formatUnit(norm.unit, locale)}`}
-                            </span>
-                            <span className={isOwn ? undefined : "lg:hidden"}>
-                              {norm.source !== "base" &&
-                                ` · ${normSource(norm)}`}
-                              {unconfirmed(norm) && ` · ${t("unconfirmed")}`}
-                            </span>
-                          </span>
-                        </Link>
+                        <NormStatusPill status={norm.status} />
                       </TableCell>
-                      {!isOwn && (
-                        <TableCell className="hidden lg:table-cell">
-                          {norm.source !== "base" && (
-                            <span className="grid gap-0.5">
-                              <span className="text-ink-2">
-                                {norm.manufacturerName ?? normSource(norm)}
-                              </span>
-                              {unconfirmed(norm) && (
-                                <span className="text-meta text-ink-3">
-                                  {t("unconfirmed")}
-                                </span>
-                              )}
-                            </span>
-                          )}
-                        </TableCell>
-                      )}
-                      <TableCell className="hidden text-right tabular-nums text-ink-2 sm:table-cell">
-                        {formatUnit(norm.unit, locale)}
+                    )}
+                    {isOwn && (
+                      <TableCell className="hidden text-ink-3 tabular-nums sm:table-cell">
+                        {formatDay(norm.updatedAt, locale)}
                       </TableCell>
-                      {isOwn && (
-                        <TableCell>
-                          <NormStatusPill status={norm.status} />
-                        </TableCell>
+                    )}
+                    <TableCell className="hidden text-ink-2 sm:table-cell">
+                      {formatUnit(norm.unit, locale)}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-right tabular-nums">
+                      {norm.referenceCost === undefined ? (
+                        <span className="text-ink-3">–</span>
+                      ) : (
+                        formatMoney(norm.referenceCost, locale)
                       )}
-                      {isOwn && (
-                        <TableCell className="hidden text-right text-ink-3 tabular-nums sm:table-cell">
-                          {formatDay(norm.updatedAt, locale)}
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          {!isOwn &&
+            !search &&
+            !category &&
+            listed.status === "CanLoadMore" && (
+              <Button
+                variant="ghost"
+                className="justify-self-center"
+                onClick={() => listed.loadMore(50)}
+              >
+                {tc("loadMore")}
+              </Button>
             )}
-            {!isOwn &&
-              !search &&
-              !category &&
-              listed.status === "CanLoadMore" && (
-                <Button
-                  variant="ghost"
-                  className="justify-self-center"
-                  onClick={() => listed.loadMore(50)}
-                >
-                  {tc("loadMore")}
-                </Button>
-              )}
-          </div>
         </div>
       </section>
     </>

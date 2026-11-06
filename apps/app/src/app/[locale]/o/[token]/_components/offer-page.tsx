@@ -155,55 +155,57 @@ export function OpenOffer({
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-shell max-sm:bg-panel">
       <OfferHeader firm={offer.firm} preview={offer.preview} />
-      <main className="offer-main mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 max-sm:gap-6 max-sm:pt-5 sm:px-6 lg:pb-16">
-        <OfferHero offer={offer} />
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
-          <div className="grid min-w-0 gap-6">
-            {offer.message && (
-              <MessageCard firm={offer.firm.name} message={offer.message} />
-            )}
-            {offer.variants.length > 0 && (
-              <VariantPicker
+      <div className="flex-1 bg-panel sm:mx-2 sm:mb-2 sm:rounded-2xl sm:shadow-panel">
+        <main className="offer-main mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 max-sm:gap-6 max-sm:pt-5 sm:px-6 lg:pb-16">
+          <OfferHero offer={offer} />
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+            <div className="grid min-w-0 gap-6">
+              {offer.message && (
+                <MessageCard firm={offer.firm.name} message={offer.message} />
+              )}
+              {offer.variants.length > 0 && (
+                <VariantPicker
+                  offer={offer}
+                  value={choice.variantId}
+                  disabled={!open}
+                  onChange={(variantId) => onChoose({ ...choice, variantId })}
+                />
+              )}
+              <WorksCard
                 offer={offer}
-                value={choice.variantId}
+                excluded={new Set(choice.excludedItemIds)}
                 disabled={!open}
-                onChange={(variantId) => onChoose({ ...choice, variantId })}
+                onToggle={toggle}
               />
-            )}
-            <WorksCard
-              offer={offer}
-              excluded={new Set(choice.excludedItemIds)}
-              disabled={!open}
-              onToggle={toggle}
-            />
-            <PriceCard offer={offer} updating={updating} />
-            {offer.consumer && <RightsCard token={token} offer={offer} />}
-            <QuestionsCard token={token} offer={offer} choice={choice} />
+              <PriceCard offer={offer} updating={updating} />
+              {offer.consumer && <RightsCard token={token} offer={offer} />}
+              <QuestionsCard token={token} offer={offer} choice={choice} />
+            </div>
+            <aside className="grid min-w-0 gap-6 lg:sticky lg:top-6">
+              <AnswerCard
+                offer={offer}
+                choice={choice}
+                updating={updating}
+                downloading={downloading}
+                onAccept={() => setDialog("accept")}
+                onDecline={() => setDialog("decline")}
+                onDownload={download}
+              />
+            </aside>
           </div>
-          <aside className="grid min-w-0 gap-6 lg:sticky lg:top-6">
-            <AnswerCard
-              offer={offer}
-              choice={choice}
-              updating={updating}
-              downloading={downloading}
-              onAccept={() => setDialog("accept")}
-              onDecline={() => setDialog("decline")}
-              onDownload={download}
-            />
-          </aside>
-        </div>
-        <p className="m-0 text-center text-meta text-ink-3">
-          {t("footer")} ·{" "}
-          <Link
-            href="/confidentialitate"
-            className="underline-offset-2 hover:text-ink-2 hover:underline"
-          >
-            {t("privacy")}
-          </Link>
-        </p>
-      </main>
+          <p className="m-0 text-center text-meta text-ink-3">
+            {t("footer")} ·{" "}
+            <Link
+              href="/confidentialitate"
+              className="underline-offset-2 hover:text-ink-2 hover:underline"
+            >
+              {t("privacy")}
+            </Link>
+          </p>
+        </main>
+      </div>
       {open && (
         <>
           <MobileAnswerBar
@@ -294,7 +296,7 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
   const t = useScopedI18n("offerPage");
   return (
     <Card>
-      <CardContent className="gap-2 pt-5">
+      <CardContent className="gap-2 py-5">
         <span className="text-meta font-medium text-ink-3">
           {t("messageFrom", { firm })}
         </span>

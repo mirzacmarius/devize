@@ -24,9 +24,11 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { Plus, Trash2 } from "lucide-react";
 import { type ReactNode, useState } from "react";
+import { Amount } from "@/components/amount";
 import { DecimalInput } from "@/components/decimal-input";
 import { useRun } from "@/components/use-run";
 import {
@@ -167,10 +169,15 @@ function Totals({
   }
   return (
     <dl className="m-0 grid justify-end gap-1.5 border-t border-border pt-3">
-      {rows.map((row) => (
+      {rows.map((row, index) => (
         <div
           key={row.label}
-          className="flex items-baseline justify-between gap-6 sm:justify-end"
+          className={cn(
+            "flex items-baseline justify-between gap-6 sm:justify-end",
+            // What's finally owed closes the sum, as in the Deviz's recap.
+            index === rows.length - 1 &&
+              "mt-0.5 border-t-[3px] border-double border-tick pt-2",
+          )}
         >
           <dt
             className={
@@ -188,7 +195,12 @@ function Totals({
                 : "text-body text-ink"
             }`}
           >
-            {formatMoney(row.value, locale)} lei
+            {row.strong ? (
+              <Amount value={formatMoney(row.value, locale)} />
+            ) : (
+              formatMoney(row.value, locale)
+            )}{" "}
+            lei
           </dd>
         </div>
       ))}

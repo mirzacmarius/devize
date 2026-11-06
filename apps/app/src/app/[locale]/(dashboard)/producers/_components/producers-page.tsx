@@ -63,8 +63,11 @@ export function ProducersPage() {
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
-        <section className="grid min-w-0 gap-3">
-          <div className="flex flex-wrap items-center justify-end gap-3">
+        <section className="grid min-w-0 max-w-[800px] gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="m-0 text-meta tabular-nums text-ink-3">
+              {rows !== undefined && t("count", { count: rows.length })}
+            </p>
             <SearchInput
               value={text}
               onChange={(event) => setText(event.target.value)}

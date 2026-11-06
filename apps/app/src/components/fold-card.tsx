@@ -8,7 +8,7 @@ import { type ReactNode, useId, useState } from "react";
 
 // The whole row is the target: the section's name and one line of what it holds.
 const ROW =
-  "group flex min-h-12 w-full min-w-0 items-center gap-3 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "group flex min-h-11 w-full min-w-0 items-center gap-3 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 function Lead({ lead, open }: { lead: ReactNode; open?: boolean }) {
   return (
@@ -59,7 +59,7 @@ export function FoldCard({
             onClick={() => setChoice(!open)}
             className={ROW}
           >
-            <span className="shrink-0">{title}</span>
+            <span className="shrink-0 text-body font-medium">{title}</span>
             <Lead lead={lead} open={open} />
           </button>
         </CardTitle>
@@ -91,7 +91,7 @@ export function LinkCard({
       <CardHeader className="min-h-0 py-0">
         <CardTitle className="w-full min-w-0">
           <Link href={href} className={ROW}>
-            <span className="shrink-0">{title}</span>
+            <span className="shrink-0 text-body font-medium">{title}</span>
             <Lead lead={lead} />
           </Link>
         </CardTitle>

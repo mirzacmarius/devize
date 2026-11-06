@@ -89,9 +89,13 @@ export function EstimateList() {
         title={t("title")}
         actions={
           <>
-            <Button variant="outline" onClick={() => setBrowsing(true)}>
+            <Button
+              variant="outline"
+              className="max-sm:size-9 max-sm:p-0"
+              onClick={() => setBrowsing(true)}
+            >
               <LayoutTemplate aria-hidden />
-              {tt("open")}
+              <span className="max-sm:sr-only">{tt("open")}</span>
             </Button>
             <Button onClick={startBlank}>
               <Plus aria-hidden />
@@ -116,6 +120,7 @@ export function EstimateList() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <SegmentedControl
               label={t("filterLabel")}
+              className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center"
               value={filter}
               onChange={(value) => {
                 setFilter(value);
@@ -176,15 +181,15 @@ export function EstimateList() {
                       href={`/estimates/${row._id}`}
                       className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
+                      <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
+                        {row.title}
+                      </span>
                       <span className="truncate text-meta tabular-nums text-ink-3">
                         {estimateCode(row.number, row.revision)}
                         <span className="md:hidden">
                           {" · "}
                           {row.clientName ?? t("noClient")}
                         </span>
-                      </span>
-                      <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
-                        {row.title}
                       </span>
                     </Link>
                   </TableCell>
@@ -196,7 +201,7 @@ export function EstimateList() {
                   <TableCell>
                     <EstimateStatusPill status={row.status} />
                   </TableCell>
-                  <TableCell className="text-right font-medium tabular-nums max-md:text-body-lg">
+                  <TableCell className="text-right text-body-lg font-medium tabular-nums">
                     {formatMoney(row.total, locale)}
                     <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
                       lei

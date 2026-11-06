@@ -7,6 +7,7 @@ import {
   baseCategoryByKey,
 } from "@devize/backend/convex/catalog/baseCategories";
 import { MAX_DESCRIPTION } from "@devize/backend/convex/catalog/lib/aiNorm";
+import { normalizeText } from "@devize/backend/convex/lib/text";
 import { AISuggestion } from "@devize/ui/ai-suggestion";
 import { Badge } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
@@ -32,7 +33,7 @@ import {
 } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
-import { NormCategorySelect } from "@/components/norm-category-chips";
+import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { SearchInput } from "@/components/search-input";
 import { useErrorMessage } from "@/components/use-error-message";
@@ -40,6 +41,7 @@ import { useRun } from "@/components/use-run";
 import { appErrorOf } from "@/lib/errors";
 import {
   formatConsumption,
+  formatMoney,
   formatPercent,
   formatUnit,
   parseDecimal,
@@ -139,6 +141,7 @@ function AddNorm({
     !search && category ? { category: category.key } : "skip",
   );
   const results = search ? found : category ? inCategory : undefined;
+  const words = normalizeText(search).split(" ").filter(Boolean);
 
   const onAdded = () => {
     setAdded((count) => count + 1);
@@ -252,24 +255,29 @@ function AddNorm({
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_auto_1rem] items-center gap-x-3 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <span className="grid min-w-0 gap-0.5">
-                      <span className="text-body font-medium text-ink">
-                        {norm.title}
+                      <span className="text-body text-ink-2">
+                        <MatchedWords text={norm.title} words={words} />
                       </span>
                       <span className="text-meta text-ink-3">
                         <span className="tabular-nums">{norm.code}</span>
                         {norm.source !== "base" && ` · ${normSource(norm)}`}
                       </span>
                     </span>
-                    <span className="flex items-center gap-2 text-meta text-ink-3">
-                      {formatUnit(norm.unit, locale)}
-                      <ChevronRight
-                        aria-hidden
-                        className="size-4 transition-transform group-hover:translate-x-0.5"
-                      />
+                    <span className="whitespace-nowrap text-right text-meta tabular-nums text-ink-3">
+                      {norm.referenceCost === undefined
+                        ? formatUnit(norm.unit, locale)
+                        : t("items.pricePerUnit", {
+                            price: formatMoney(norm.referenceCost, locale),
+                            unit: formatUnit(norm.unit, locale),
+                          })}
                     </span>
+                    <ChevronRight
+                      aria-hidden
+                      className="size-4 text-ink-3 transition-transform group-hover:translate-x-0.5"
+                    />
                   </button>
                 </li>
               ))}
@@ -311,6 +319,32 @@ function AddNorm({
       )}
     </div>
   );
+}
+
+/** A norm's name with the words searched for standing out, or all of it. */
+function MatchedWords({
+  text,
+  words,
+}: {
+  text: string;
+  words: readonly string[];
+}) {
+  if (words.length === 0) {
+    return <span className="font-medium text-ink">{text}</span>;
+  }
+  let offset = 0;
+  return text.split(/(\s+)/).map((part) => {
+    const key = offset;
+    offset += part.length;
+    const plain = normalizeText(part);
+    return plain && words.some((word) => plain.includes(word)) ? (
+      <span key={key} className="font-medium text-ink">
+        {part}
+      </span>
+    ) : (
+      part
+    );
+  });
 }
 
 // Why a request failed, from the code its job stored, as the sheet explains it.

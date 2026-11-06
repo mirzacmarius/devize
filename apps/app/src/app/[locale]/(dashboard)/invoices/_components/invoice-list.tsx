@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { usePaginatedQuery, useQuery } from "convex/react";
+import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Figure, FigureStrip } from "@/components/figure-strip";
@@ -57,6 +58,14 @@ export function InvoiceList() {
     organizationId: firm._id,
     today,
   });
+  // What ANAF is owed already: said once, above the list, with the way there.
+  const late = (rows ?? []).filter(
+    (row) =>
+      (row.status === "issued" || row.status === "paid") &&
+      row.efactura.status === "not_sent" &&
+      row.efactura.deadline < today,
+  );
+  const firstLate = late[0];
 
   return (
     <>
@@ -85,7 +94,7 @@ export function InvoiceList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <FigureStrip className="mb-3">
+          <FigureStrip className="mb-3 sm:max-w-[556px]">
             <Figure
               label={t("receivable.total")}
               value={receivable ? formatMoney(receivable.total, locale) : "–"}
@@ -105,9 +114,35 @@ export function InvoiceList() {
               }
             />
           </FigureStrip>
+          {firstLate && (
+            <p
+              role="status"
+              className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-danger-soft px-3.5 py-2.5 text-body text-danger"
+            >
+              <TriangleAlert aria-hidden className="size-4 shrink-0" />
+              <span className="min-w-0 flex-1 basis-56 font-medium">
+                {late.length === 1 && firstLate.code
+                  ? t("lateOne", {
+                      code: firstLate.code,
+                      date: formatCalendarDay(
+                        firstLate.efactura.deadline,
+                        locale,
+                      ),
+                    })
+                  : t("lateMany", { count: late.length })}
+              </span>
+              <Link
+                href={`/invoices/${firstLate._id}`}
+                className="rounded-xs font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {late.length === 1 ? t("lateOpen") : t("lateOpenFirst")}
+              </Link>
+            </p>
+          )}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <SegmentedControl
               label={t("filterLabel")}
+              className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center"
               value={filter}
               onChange={setFilter}
               options={filters.map((value) => ({
@@ -169,10 +204,14 @@ export function InvoiceList() {
                         href={`/invoices/${row._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
+                        <span className="text-body font-medium tabular-nums text-ink group-hover:underline max-md:text-body-lg">
+                          {row.code ?? t(`kind.${row.kind}`)}
+                        </span>
                         <span className="truncate text-meta tabular-nums text-ink-3">
                           {[
-                            row.code ?? (row.estimate ? null : t("draftCode")),
-                            row.estimate?.code,
+                            row.code ? t(`kind.${row.kind}`) : null,
+                            row.estimate?.code ??
+                              (row.code ? null : t("draftCode")),
                           ]
                             .filter(Boolean)
                             .join(" · ")}
@@ -180,15 +219,10 @@ export function InvoiceList() {
                             {row.buyerName && ` · ${row.buyerName}`}
                           </span>
                         </span>
-                        <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
-                          {t(`kind.${row.kind}`)}
-                        </span>
                       </Link>
                     </TableCell>
                     <TableCell className="hidden text-ink-2 md:table-cell">
-                      {row.buyerName || (
-                        <span className="text-ink-3">{tc("notSet")}</span>
-                      )}
+                      {row.buyerName || <span className="text-ink-3">–</span>}
                     </TableCell>
                     <TableCell>
                       <InvoiceStatusPill
@@ -196,7 +230,7 @@ export function InvoiceList() {
                         overdue={row.dueDate < today}
                       />
                     </TableCell>
-                    <TableCell className="text-right font-medium tabular-nums max-md:text-body-lg">
+                    <TableCell className="text-right text-body-lg font-medium tabular-nums">
                       {formatMoney(row.total, locale)}
                       <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
                         lei

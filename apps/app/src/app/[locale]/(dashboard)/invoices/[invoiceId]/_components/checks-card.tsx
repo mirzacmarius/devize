@@ -9,7 +9,7 @@ import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useAction } from "convex/react";
 import { Check, CircleAlert, TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useRun } from "@/components/use-run";
 import { formatDay, formatTime } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -53,7 +53,9 @@ export function ChecksCard({ invoice }: { invoice: Invoice }) {
             ))}
           </ul>
         )}
-        <ValidateXml invoice={invoice} />
+        <div className="border-t border-border pt-3">
+          <ValidateXml invoice={invoice} />
+        </div>
       </CardContent>
     </Card>
   );
@@ -105,7 +107,14 @@ export function useFindingText() {
 }
 
 /** Asks ANAF's public validator about the invoice's XML, and shows its last answer. */
-export function ValidateXml({ invoice }: { invoice: Invoice }) {
+export function ValidateXml({
+  invoice,
+  children,
+}: {
+  invoice: Invoice;
+  // What goes before the check on its row, for the place it sits in.
+  children?: ReactNode;
+}) {
   const t = useScopedI18n("invoices.checks");
   const locale = useCurrentLocale();
   const run = useRun();
@@ -136,7 +145,20 @@ export function ValidateXml({ invoice }: { invoice: Invoice }) {
   const shown = messages ?? last?.messages ?? [];
 
   return (
-    <div className="grid gap-2 border-t border-border pt-3">
+    <div className="grid gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {children}
+        <Button
+          type="button"
+          variant={children ? "ghost" : "outline"}
+          size="sm"
+          disabled={busy}
+          onClick={check}
+        >
+          {busy && <Icons.Loader className="animate-spin" aria-hidden />}
+          {t("validate")}
+        </Button>
+      </div>
       {last && (
         <p
           className={cn(
@@ -158,17 +180,6 @@ export function ValidateXml({ invoice }: { invoice: Invoice }) {
           ))}
         </ul>
       )}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="justify-self-start"
-        disabled={busy}
-        onClick={check}
-      >
-        {busy && <Icons.Loader className="animate-spin" aria-hidden />}
-        {t("validate")}
-      </Button>
     </div>
   );
 }

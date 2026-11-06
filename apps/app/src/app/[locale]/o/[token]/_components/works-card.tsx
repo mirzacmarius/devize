@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { StatusPill } from "@devize/ui/status-pill";
 import { Switch } from "@devize/ui/switch";
 import { cn } from "@devize/ui/utils";
+import { ChevronRight } from "lucide-react";
 import { useId, useState } from "react";
 import {
   groupLines,
@@ -220,8 +221,15 @@ function ItemRow({
               aria-expanded={showMaterials}
               aria-controls={materialsId}
               onClick={() => setShowMaterials(!showMaterials)}
-              className="rounded-xs text-meta text-ink-3 underline-offset-[3px] hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex items-center gap-1.5 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
+              <ChevronRight
+                aria-hidden
+                className={cn(
+                  "size-3.5 transition-transform",
+                  showMaterials && "rotate-90",
+                )}
+              />
               {showMaterials ? t("hideMaterials") : t("showMaterials")}
             </button>
           )}

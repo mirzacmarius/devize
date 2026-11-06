@@ -56,7 +56,7 @@ export function MaterialsPage() {
               <Link href={`/estimates/${estimate._id}`}>{code}</Link>
             </BreadcrumbLink>
             <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("breadcrumb")}</BreadcrumbPage>
+            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}

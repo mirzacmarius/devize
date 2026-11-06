@@ -5,6 +5,7 @@ import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
+import { Amount } from "@/components/amount";
 import { EurAmount } from "@/components/eur-amount";
 import { formatHours, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -116,8 +117,10 @@ export function RecapCard({
               <tr
                 key={row.label}
                 className={cn(
-                  row.kind && "border-t border-border",
-                  row.kind === "total" && "border-input",
+                  row.kind === "subtotal" && "border-t border-border",
+                  // The accountant's double rule, under what everything adds to.
+                  row.kind === "total" &&
+                    "border-t-[3px] border-double border-tick",
                 )}
               >
                 <th
@@ -154,7 +157,11 @@ export function RecapCard({
                         : "text-ink",
                   )}
                 >
-                  {formatMoney(row.value, locale)}
+                  {row.kind === "total" ? (
+                    <Amount value={formatMoney(row.value, locale)} />
+                  ) : (
+                    formatMoney(row.value, locale)
+                  )}
                 </td>
               </tr>
             ))}

@@ -321,6 +321,11 @@ function InvitationsCard() {
                     .filter(Boolean)
                     .join(" · ")}
                 </span>
+                {invitation.emailStatus === "not_sent" && (
+                  <span className="text-meta text-ink-2">
+                    {t("inviteEmailHint.not_sent")}
+                  </span>
+                )}
               </div>
               <div className="flex items-center justify-between gap-1 sm:justify-end">
                 <CopyLinkButton token={invitation.token} />

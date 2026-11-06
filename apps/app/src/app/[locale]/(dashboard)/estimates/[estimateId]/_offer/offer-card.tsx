@@ -14,6 +14,7 @@ import { Mail, MessageCircle } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Fact, FactList } from "@/components/fact-list";
+import { FoldCard } from "@/components/fold-card";
 import { PaymentStages } from "@/components/payment-schedule";
 import { SignatureImage } from "@/components/signature/signature-image";
 import { useRun } from "@/components/use-run";
@@ -56,6 +57,7 @@ export function OfferCard({
   onCreate: () => void;
 }) {
   const t = useScopedI18n("offer");
+  const locale = useCurrentLocale();
   const offer = useQuery(api.offers.offers.forEstimate, {
     estimateId: estimate._id,
   });
@@ -116,12 +118,30 @@ export function OfferCard({
     );
   }
 
+  // Nothing to follow yet on a draft, and nothing left to follow once signed:
+  // the row says so and the rest stays a click away.
+  const signedAt = offer?.signature?.signedAt ?? offer?.decidedAt;
+  const lead =
+    offer === null && estimate.status === "draft"
+      ? t("notCreated")
+      : offer?.status === "accepted"
+        ? signedAt === undefined
+          ? t("status.accepted")
+          : t("acceptedLead", { date: formatDay(signedAt, locale) })
+        : undefined;
+  if (lead) {
+    return (
+      <FoldCard id="offer" title={t("title")} lead={lead}>
+        {body}
+      </FoldCard>
+    );
+  }
+
   return (
     <Card id="offer" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        {/* An accepted offer says so, with who and when, in its first line. */}
-        {offer && offer.status !== "accepted" && (
+        {offer && (
           <StatusPill tone={tones[offer.status]}>
             {t(`status.${offer.status}`)}
           </StatusPill>

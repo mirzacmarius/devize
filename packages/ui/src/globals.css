@@ -81,30 +81,30 @@
 /* Darkest at the edges, lighter as things come forward: shell, panel, card,
    then a band inside a card. Text is off-white, so nothing glares. */
 .dark {
-  --shell: 60 2.9% 6.9%; /* #121211 */
-  --panel: 60 4% 9.8%; /* #1a1a18 */
+  --shell: 60 3.7% 5.3%; /* #0e0e0d */
+  --panel: 60 4.2% 9.4%; /* #191917 */
   --weight-figure: 350;
-  --card: 60 2.9% 13.3%; /* #232321 */
-  --card-border: 60 2.3% 20%; /* #343432 */
-  --sunken: 60 2.5% 15.7%; /* #292927 */
-  --muted: 60 2.5% 18%; /* #2f2f2d */
+  --card: 60 2.9% 13.7%; /* #242422 */
+  --card-border: 60 1.8% 21.6%; /* #383836 */
+  --sunken: 60 2.4% 16.5%; /* #2b2b29 */
+  --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
-  --selected: 60 2.6% 22.5%; /* #3b3b38: a segment raised on its rail */
-  --nav-active: 60 2.8% 14.1%; /* #252523 */
-  --tile: 60 2.5% 15.7%; /* #292927 */
+  --selected: 60 1.5% 26.7%; /* #454543: a segment raised on its rail */
+  --nav-active: 60 2.3% 17.3%; /* #2d2d2b */
+  --tile: 60 2.4% 16.5%; /* #2b2b29 */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.5;
 
-  --border: 60 2.4% 18%; /* #2f2f2d */
-  --border-control: 60 2.6% 22.5%; /* #3b3b38 */
-  --tick: 60 2.4% 24.1%; /* #3f3f3c */
+  --border: 60 2% 19.2%; /* #323230 */
+  --border-control: 60 2.3% 26.1%; /* #444441 */
+  --tick: 60 2.1% 28.4%; /* #4a4a47 */
 
   --ink: 60 9.5% 91.8%; /* #ecece8 */
-  --ink-2: 60 3.6% 75.7%; /* #c4c4bf */
-  --ink-3: 60 2.6% 65%; /* #a8a8a3: 7.3:1 on the panel */
+  --ink-2: 60 5% 80.2%; /* #cfcfca */
+  --ink-3: 60 3.7% 68.6%; /* #b2b2ac: 8.3:1 on the panel */
 
   --action: 60 9.5% 91.8%; /* #ecece8 */
-  --on-action: 60 4% 9.8%; /* #1a1a18 */
+  --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
   --success: 142 43.6% 69.4%; /* #8fd3a8 */
@@ -194,17 +194,20 @@
   }
   /* The native date field, drawn with the app's own calendar icon, at its end. */
   /* A disclosure opens with the app's chevron, not the browser's triangle. */
-  .app-main summary {
+  .app-main summary,
+  [role="dialog"] summary {
     display: flex;
     align-items: center;
     gap: 6px;
     cursor: pointer;
     list-style: none;
   }
-  .app-main summary::-webkit-details-marker {
+  .app-main summary::-webkit-details-marker,
+  [role="dialog"] summary::-webkit-details-marker {
     display: none;
   }
-  .app-main summary::before {
+  .app-main summary::before,
+  [role="dialog"] summary::before {
     content: "";
     flex: none;
     width: 14px;
@@ -216,7 +219,8 @@
       center / contain no-repeat;
     transition: transform 150ms ease-out;
   }
-  .app-main details[open] > summary::before {
+  .app-main details[open] > summary::before,
+  [role="dialog"] details[open] > summary::before {
     transform: rotate(90deg);
   }
   input[type="date"] {
@@ -231,6 +235,7 @@
     width: 16px;
     height: 16px;
     margin: 0;
+    vertical-align: middle;
     border: 1px solid hsl(var(--border-control));
     border-radius: 4px;
     background: hsl(var(--field));
@@ -307,13 +312,17 @@
       border-radius: 0;
       background: transparent;
       box-shadow: none;
-      padding-bottom: 28px;
+      padding-bottom: 4px;
     }
     .rail-sections > [data-slot="card"]:first-child {
       border-top-width: 0;
     }
+    /* Sections looked at now and then read as one list of rows. */
     .rail-sections > [data-fold] {
       padding-bottom: 0;
+    }
+    .rail-sections > [data-fold] + [data-fold] {
+      border-top-width: 0;
     }
     .rail-sections > [data-slot="card"] > :is(
         [data-slot="card-header"],
@@ -321,6 +330,46 @@
         [data-slot="card-footer"]
       ) {
       padding-inline: 0;
+    }
+  }
+  /* Stacked on a narrower screen, rows that are only rows stay together. */
+  @media (max-width: 1279.98px) {
+    .rail-sections > [data-fold] + [data-fold] {
+      margin-top: -16px;
+    }
+  }
+  @media (max-width: 639.98px) {
+    .rail-sections > [data-fold] + [data-fold] {
+      margin-top: -24px;
+    }
+  }
+  /* The Articole's heads stay in sight under the bar that keeps the total. */
+  @media (min-width: 768px) {
+    div:has(> .items-table) {
+      overflow: visible;
+    }
+    .items-table > thead th {
+      position: sticky;
+      top: 44px;
+      z-index: 10;
+      padding-top: 6px;
+      background: hsl(var(--card));
+      box-shadow: inset 0 -1px 0 hsl(var(--border));
+    }
+    .items-table > thead th:first-child::before,
+    .items-table > thead th:last-child::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      width: var(--card-pad);
+      background: hsl(var(--card));
+      box-shadow: inset 0 -1px 0 hsl(var(--border));
+    }
+    .items-table > thead th:first-child::before {
+      right: 100%;
+    }
+    .items-table > thead th:last-child::after {
+      left: 100%;
     }
   }
   /* A group row of a table inside a card: the band runs to the card's edges

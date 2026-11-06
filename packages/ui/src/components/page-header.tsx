@@ -57,7 +57,9 @@ function PageHeader({
         )}
         <div className="grid min-w-0 flex-1 basis-auto gap-0.5 sm:basis-64">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <h1 className="m-0 text-title-screen text-ink">{title}</h1>
+            <h1 className="m-0 text-title-screen text-ink max-sm:text-[22px] max-sm:leading-7">
+              {title}
+            </h1>
             {status}
           </div>
           {description && (
@@ -67,7 +69,8 @@ function PageHeader({
           )}
         </div>
         {actions && (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
+          // Level with the title's line, and no taller than it.
+          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:-my-0.5">
             {actions}
           </div>
         )}

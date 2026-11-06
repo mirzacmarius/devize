@@ -89,7 +89,7 @@ export default {
       materials: "Materiale",
       labour: "Manoperă",
       equipment: "Utilaj și transport",
-      withoutVat: "{amount} lei fără TVA",
+      subtotal: "Total fără TVA",
     },
     google: "Continuă cu Google",
     or: "sau",
@@ -131,7 +131,6 @@ export default {
     title: "Acasă",
     newEstimate: "Deviz nou",
     lei: "lei",
-    withVat: "cu TVA",
     allWithVat: "Sume cu TVA",
     kpi: {
       drafts: "În lucru",
@@ -151,7 +150,10 @@ export default {
         "Nimic urgent: ofertele sunt citite, întrebările au răspuns și prețurile sunt la zi.",
       questionOne: "Răspunde la o întrebare · {code}",
       question: "Răspunde la {count} întrebări · {code}",
-      alert: "Verifică prețurile: total {percent} · {code}",
+      alert: "Verifică prețurile: profit {amount} lei · {code}",
+      now: "Acum",
+      next: "Urmează",
+      showAll: "Vezi toate ({count})",
       deadlineToday: "Depune azi · {code}",
       deadlineOne: "Depune mâine · {code}",
       deadline: "Depune în {days} zile, pe {date} · {code}",
@@ -382,6 +384,8 @@ export default {
     newTitle: "Deviz nou",
     newDescription:
       "E de ajuns numele lucrării. Restul îl poți completa și după.",
+    moreDetails: "Alte detalii",
+    moreDetailsHint: "șablon, tip, adresă, data prețurilor",
     fields: {
       title: "Lucrarea",
       titlePlaceholder: "ex. Renovare baie, apartament 2 camere",
@@ -590,6 +594,7 @@ export default {
     checks: {
       title: "Verificări",
       score: "{passed} din {total} trecute",
+      left: "Rămase: {left} din {total}",
       scoreLabel: "{passed} din {total} verificări trecute",
       showPassed: "Arată cele trecute ({count})",
       hidePassed: "Ascunde cele trecute",
@@ -751,7 +756,7 @@ export default {
     addNorm: {
       title: "Adaugă din catalog",
       description:
-        "Caută după cod sau după lucrare. Resursele iau prețurile de azi, cu tarifele firmei.",
+        "Caută după cod sau după lucrare. Costul din listă e de referință; în deviz, resursele iau prețurile de azi, cu tarifele firmei.",
       searchPlaceholder: "Cod sau lucrare, ex. vată bazaltică",
       hint: "Scrie codul normei sau câteva cuvinte despre lucrare, sau alege o categorie. Normele firmei apar primele.",
       searching: "Se caută…",
@@ -1448,6 +1453,8 @@ export default {
   offer: {
     title: "Oferta pentru client",
     hint: "Clientul deschide linkul fără cont, vede devizul pe înțeles și acceptă online.",
+    notCreated: "Încă nu e creată",
+    acceptedLead: "Semnată {date}",
     create: "Creează linkul",
     empty: "Adaugă articole ca să poți trimite oferta.",
     paymentStages: "Etape de plată: {count}",
@@ -1934,7 +1941,9 @@ export default {
   },
   catalog: {
     title: "Catalog",
-    unconfirmed: "Neconfirmată",
+    costNote:
+      "Costul e direct, la prețuri de referință, pe unitatea normei. În deviz se calculează cu prețurile și tarifele firmei.",
+    unconfirmed: "neconfirmată",
     newNorm: "Normă nouă",
     views: {
       label: "Normele afișate",
@@ -1946,6 +1955,7 @@ export default {
       norm: "Normă",
       source: "Producător",
       unit: "U.M.",
+      cost: "Cost ref. (lei)",
       status: "Stare",
       updated: "Modificată",
     },
@@ -1959,7 +1969,7 @@ export default {
     producers: "Producători",
     categories: {
       label: "Categorii",
-      all: "Toate",
+      all: "Toate categoriile",
     },
     categoryEmpty: "Nicio normă publicată în „{category}” deocamdată.",
     noResultsInCategory:
@@ -2184,6 +2194,7 @@ export default {
   },
   clients: {
     title: "Clienți",
+    count: "Clienți: {count}",
     new: "Client nou",
     searchPlaceholder: "Caută un client după nume",
     emptyTitle: "Încă nu ai clienți",
@@ -3168,6 +3179,7 @@ export default {
   },
   producers: {
     title: "Producători",
+    count: "Producători: {count}",
     description: "Un profil revendicat e administrat chiar de producător.",
     empty:
       "Încă nu e niciun producător în catalog. Profilurile apar pe măsură ce publicăm normele lor.",
@@ -4169,9 +4181,13 @@ export default {
     draftCode: "Ciornă",
     overdue: "Restantă",
     owedPart: "de încasat {owed}",
+    lateOne: "{code}: termenul pentru e-Factura a trecut pe {date}",
+    lateMany: "Facturi cu termenul pentru e-Factura depășit: {count}.",
+    lateOpen: "Deschide factura",
+    lateOpenFirst: "Deschide-o pe prima",
     receivable: {
       total: "De încasat",
-      overdue: "Din care restant",
+      overdue: "Plăți restante",
       overdueCount: "{unit} · facturi: {count}",
     },
     status: {
@@ -4687,7 +4703,6 @@ export default {
   materials: {
     open: "Ambalaje și pierderi",
     title: "Ambalaje și pierderi",
-    breadcrumb: "Ambalaje",
     description: "{code} · {title}",
     emptyTitle: "Devizul nu are încă materiale",
     emptyDescription:
@@ -5267,9 +5282,12 @@ export default {
       completeAll: "Completează tot restul",
       completed: "Articole aduse la cantitatea din contract: {count}.",
       completedNone: "Toate articolele erau deja la cantitatea din contract.",
-      send: "Trimite beneficiarului",
+      send: "Marchează trimisă",
+      nextDraft:
+        "Completează coloana „În perioadă”, descarcă situația și trimite-o beneficiarului, apoi marcheaz-o aici.",
+      nextSent: "Când beneficiarul o confirmă, notează aici cine și când.",
       sentToast: "Situația e marcată trimisă beneficiarului.",
-      approve: "Confirmă",
+      approve: "Marchează confirmată",
       approvedToast: "Situația e confirmată. Poți începe următoarea.",
       reopen: "Înapoi la ciornă",
       reopened: "Situația e din nou ciornă.",

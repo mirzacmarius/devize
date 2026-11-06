@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { mutation, query } from "../_generated/server";
+import { roundLei, unitCost } from "../estimates/recap";
 import {
   isProducer,
   requireManufacturerEditor,
@@ -11,7 +12,7 @@ import {
 } from "../lib/access";
 import { appError, forbidden, invalid, notFound } from "../lib/errors";
 import { getSuperAdmin, requireSuperAdmin } from "../lib/roles";
-import { normalizeText, normalizeUnit } from "../lib/text";
+import { isPercentUnit, normalizeText, normalizeUnit } from "../lib/text";
 import {
   canEditNorm,
   canReadNorm,
@@ -170,9 +171,39 @@ async function manufacturerNames(
   return names;
 }
 
+/**
+ * What one unit of a norm's work costs at its reference prices, the direct
+ * cost its page adds up. Without a price for every resource there's no saying.
+ */
+function referenceCost(resources: readonly Doc<"normResources">[]) {
+  if (
+    resources.length === 0 ||
+    resources.some(
+      (resource) =>
+        !isPercentUnit(resource.unit) && resource.referencePrice === undefined,
+    )
+  ) {
+    return undefined;
+  }
+  const cost = unitCost(
+    resources.map((resource) => ({
+      kind: resource.kind,
+      unit: resource.unit,
+      quantity: resource.quantity,
+      unitPrice: resource.referencePrice ?? 0,
+    })),
+  ).unitCost;
+  return roundLei(cost.material + cost.labor + cost.equipment + cost.transport);
+}
+
 async function summaries(ctx: QueryCtx, norms: readonly Doc<"norms">[]) {
   const names = await manufacturerNames(ctx, norms);
-  return norms.map((norm) => ({
+  const costs = await Promise.all(
+    norms.map(async (norm) =>
+      referenceCost(await readNormResources(ctx, norm._id)),
+    ),
+  );
+  return norms.map((norm, index) => ({
     _id: norm._id,
     code: norm.code,
     baseCode: norm.baseCode,
@@ -191,6 +222,7 @@ async function summaries(ctx: QueryCtx, norms: readonly Doc<"norms">[]) {
     confirmed: norm.confirmedAt !== undefined,
     edition: norm.edition,
     updatedAt: norm.updatedAt,
+    referenceCost: costs[index],
   }));
 }
 

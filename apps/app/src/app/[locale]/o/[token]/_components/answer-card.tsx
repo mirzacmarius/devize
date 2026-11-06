@@ -6,6 +6,7 @@ import { Card, CardContent } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
+import { Amount } from "@/components/amount";
 import { SignatureImage } from "@/components/signature/signature-image";
 import {
   formatDay,
@@ -88,7 +89,7 @@ function TotalBlock({
           updating && "opacity-60",
         )}
       >
-        {formatMoney(total, locale)}{" "}
+        <Amount value={formatMoney(total, locale)} />{" "}
         <span className="text-body-lg text-ink-3">lei</span>
       </span>
       {deposit !== undefined && (
@@ -311,7 +312,9 @@ export function MobileAnswerBar({
               updating && "opacity-60",
             )}
           >
-            {t("totals.lei", { total: formatMoney(total, locale) })}
+            {t("totals.lei", {
+              total: <Amount value={formatMoney(total, locale)} />,
+            })}
           </span>
           <span className="truncate text-meta tabular-nums text-ink-3">
             {note || t("totalNoVat")}

@@ -6,7 +6,7 @@ import { cn } from "../utils";
 // The state of an object (deviz, price, invoice, sync): a dot and a word on a
 // soft fill. The word carries the meaning; the dot is decorative.
 const statusPillVariants = cva(
-  "inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-pill before:size-1.5 before:shrink-0 before:rounded-full before:content-['']",
+  "inline-flex h-[22px] items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-pill before:size-1.5 before:shrink-0 before:rounded-full before:content-['']",
   {
     variants: {
       tone: {

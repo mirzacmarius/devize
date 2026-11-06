@@ -15,6 +15,7 @@ import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
+import { Amount } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
@@ -151,86 +152,107 @@ function AlertRow({ alert, first }: { alert: PriceAlert; first: boolean }) {
       </div>
 
       {/* What it does to the profit first: it's what the firm stands to lose. */}
-      <dl className="m-0 grid gap-x-8 gap-y-3 border-y border-border py-3 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
-        <div className="grid min-w-0 content-start gap-0.5">
-          <dt className="text-meta text-ink-3">{t("profit")}</dt>
-          <dd className="m-0 grid gap-0.5">
-            <span className="flex flex-wrap items-baseline gap-x-2">
+      <div className="grid gap-x-10 gap-y-5 border-y border-border py-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="grid content-start gap-3">
+          <div className="grid gap-0.5">
+            <p className="m-0 text-meta text-ink-2">{t("profit")}</p>
+            <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
               <span
                 className={cn(
-                  "text-title-screen tabular-nums",
+                  "text-kpi tabular-nums",
                   alert.profitLeft < 0 ? "text-danger" : "text-ink",
                 )}
               >
-                {money(alert.profitLeft)}
+                {alert.profitLeft < 0 ? (
+                  money(alert.profitLeft)
+                ) : (
+                  <Amount value={money(alert.profitLeft)} />
+                )}
               </span>
-              <span className="text-meta text-ink-3">lei</span>
+              <span className="text-body text-ink-2">lei</span>
+            </p>
+            <p className="m-0 text-meta tabular-nums text-ink-3">
               <span
                 className={cn(
-                  "text-body font-medium tabular-nums",
-                  profitChange < 0 ? "text-danger" : "text-success",
+                  "font-medium",
+                  profitChange < 0 ? "text-warning" : "text-success",
                 )}
               >
                 {t("impact", { impact: signedMoney(profitChange, locale) })}
-              </span>
-            </span>
-            <span className="text-meta tabular-nums text-ink-3">
+              </span>{" "}
               {t("profitWas", { amount: money(alert.sentProfit) })}
-            </span>
-          </dd>
-        </div>
-        <div className="grid content-start gap-0.5 border-border lg:border-l lg:pl-8">
-          <dt className="text-meta text-ink-3">{t("total")}</dt>
-          <dd className="m-0 text-body tabular-nums text-ink">
-            {t("fromTo", {
-              from: money(alert.sentTotal),
-              to: money(alert.currentTotal),
-            })}
-          </dd>
-        </div>
-        <div className="grid content-start gap-0.5 border-border lg:border-l lg:pl-8">
-          <dt className="text-meta text-ink-3">{t("direct")}</dt>
-          <dd className="m-0 text-body tabular-nums text-ink">
-            {t("fromTo", {
-              from: money(alert.sentDirect),
-              to: money(alert.currentDirect),
-            })}
-          </dd>
-        </div>
-      </dl>
-
-      {alert.changes.length > 0 && (
-        <div className="grid gap-1.5">
-          <p className="m-0 text-caption text-ink-3">{t("changes")}</p>
-          <ul className="m-0 grid list-none gap-1 p-0">
-            {alert.changes.map((change) => (
-              <li
-                key={`${change.name}:${change.unit}`}
-                className="flex flex-wrap items-baseline justify-between gap-x-4 text-body"
-              >
-                <span className="min-w-0 text-ink">
-                  {change.name}{" "}
-                  <span className="text-meta tabular-nums text-ink-3">
-                    {t("change", {
-                      from: money(change.oldPrice),
-                      to: money(change.newPrice),
-                      unit: formatUnit(change.unit, locale),
-                    })}
-                  </span>
-                </span>
-                <span className="font-medium tabular-nums text-ink">
-                  {t("impact", { impact: signedMoney(change.impact, locale) })}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {more > 0 && (
-            <p className="m-0 text-meta text-ink-3">
-              {t("more", { count: more })}
             </p>
-          )}
+          </div>
+          <dl className="m-0 grid gap-1 text-meta">
+            <div className="flex flex-wrap justify-between gap-x-4">
+              <dt className="text-ink-3">{t("total")}</dt>
+              <dd className="m-0 tabular-nums text-ink-2">
+                {t("fromTo", {
+                  from: money(alert.sentTotal),
+                  to: money(alert.currentTotal),
+                })}
+              </dd>
+            </div>
+            <div className="flex flex-wrap justify-between gap-x-4">
+              <dt className="text-ink-3">{t("direct")}</dt>
+              <dd className="m-0 tabular-nums text-ink-2">
+                {t("fromTo", {
+                  from: money(alert.sentDirect),
+                  to: money(alert.currentDirect),
+                })}
+              </dd>
+            </div>
+          </dl>
         </div>
-      )}
+
+        {alert.changes.length > 0 && (
+          <div className="grid content-start gap-1.5">
+            <table className="w-full border-collapse text-body">
+              <caption className="pb-2 text-left text-meta text-ink-2">
+                {t("changes")}
+              </caption>
+              <tbody>
+                {alert.changes.map((change) => {
+                  const moved = t("change", {
+                    from: money(change.oldPrice),
+                    to: money(change.newPrice),
+                    unit: formatUnit(change.unit, locale),
+                  });
+                  return (
+                    <tr
+                      key={`${change.name}:${change.unit}`}
+                      className="border-t border-border"
+                    >
+                      <th
+                        scope="row"
+                        className="py-1.5 pr-4 text-left font-normal text-ink"
+                      >
+                        {change.name}
+                        <span className="block text-meta tabular-nums text-ink-3 sm:hidden">
+                          {moved}
+                        </span>
+                      </th>
+                      <td className="hidden whitespace-nowrap py-1.5 pr-4 text-right text-meta tabular-nums text-ink-3 sm:table-cell">
+                        {moved}
+                      </td>
+                      <td className="whitespace-nowrap py-1.5 text-right font-medium tabular-nums text-ink">
+                        {t("impact", {
+                          impact: signedMoney(change.impact, locale),
+                        })}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {more > 0 && (
+              <p className="m-0 border-t border-border pt-2 text-meta text-ink-3">
+                {t("more", { count: more })}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <Button asChild size="sm">

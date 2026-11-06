@@ -137,7 +137,12 @@ export function EstimateActions({
         {t("actions.markAccepted")}
       </Button>
     ) : (
-      <Button onClick={() => copy(true)} disabled={busy}>
+      // Once accepted, the next step is in the Execuție and the Facturi.
+      <Button
+        variant={status === "accepted" ? "outline" : "default"}
+        onClick={() => copy(true)}
+        disabled={busy}
+      >
         {t("actions.newRevision")}
       </Button>
     );
@@ -147,6 +152,7 @@ export function EstimateActions({
       {status === "sent" && (
         <Button
           variant="outline"
+          className="max-sm:hidden"
           onClick={() => changeStatus("rejected", t("actions.rejectedDone"))}
           disabled={busy}
         >
@@ -191,9 +197,19 @@ export function EstimateActions({
           ) : (
             <>
               {status === "sent" && (
-                <DropdownMenuItem onSelect={() => copy(true)}>
-                  {t("actions.newRevision")}
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem
+                    className="sm:hidden"
+                    onSelect={() =>
+                      changeStatus("rejected", t("actions.rejectedDone"))
+                    }
+                  >
+                    {t("actions.markRejected")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => copy(true)}>
+                    {t("actions.newRevision")}
+                  </DropdownMenuItem>
+                </>
               )}
               <DropdownMenuItem
                 onSelect={() => changeStatus("draft", t("actions.reopened"))}

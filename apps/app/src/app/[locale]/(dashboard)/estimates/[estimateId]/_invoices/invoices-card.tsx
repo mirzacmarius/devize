@@ -119,7 +119,6 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
               {billing.canAdvance && accepted?.depositPercent != null && (
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
                   disabled={busy}
                   onClick={() =>
@@ -134,7 +133,7 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
               {billing.canFinal && (
                 <Button
                   type="button"
-                  variant={billing.canAdvance ? "ghost" : "outline"}
+                  variant={billing.canAdvance ? "ghost" : "default"}
                   size="sm"
                   disabled={busy}
                   onClick={() =>

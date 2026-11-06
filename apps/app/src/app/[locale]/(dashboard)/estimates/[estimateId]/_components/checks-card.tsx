@@ -12,6 +12,7 @@ import { useMutation } from "convex/react";
 import { Check, ChevronRight, CircleAlert, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import { formatAmount, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -40,12 +41,15 @@ export function ChecksCard({
   updates,
   editable,
   open,
+  folded = false,
 }: {
   estimate: Estimate;
   checks: CheckResult[];
   updates: Updates | undefined;
   editable: boolean;
   open: OpenPanel;
+  // Once the Deviz has left, they are only worth a look now and then.
+  folded?: boolean;
 }) {
   const t = useScopedI18n("estimate");
   const [showPassed, setShowPassed] = useState(false);
@@ -61,59 +65,67 @@ export function ChecksCard({
       open={open}
     />
   );
+  const lead =
+    open_.length > 0
+      ? t("checks.left", { left: open_.length, total: checks.length })
+      : t("checks.score", { passed: passed.length, total: checks.length });
+  const body = (
+    <>
+      <Segments
+        value={passed.length}
+        max={checks.length}
+        tone={
+          open_.some((check) => check.state === "failed") ? "danger" : "action"
+        }
+        label={t("checks.scoreLabel", {
+          passed: passed.length,
+          total: checks.length,
+        })}
+        className="[&>span]:h-1"
+      />
+      {open_.length > 0 && (
+        <ul className="m-0 grid list-none gap-3 p-0">{open_.map(row)}</ul>
+      )}
+      {passed.length > 0 && (
+        <div className="grid gap-3">
+          <button
+            type="button"
+            aria-expanded={showPassed}
+            onClick={() => setShowPassed((value) => !value)}
+            className="flex w-fit items-center gap-1.5 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ChevronRight
+              aria-hidden
+              className={cn(
+                "size-3.5 transition-transform",
+                showPassed && "rotate-90",
+              )}
+            />
+            {showPassed
+              ? t("checks.hidePassed")
+              : t("checks.showPassed", { count: passed.length })}
+          </button>
+          {showPassed && (
+            <ul className="m-0 grid list-none gap-3 p-0">{passed.map(row)}</ul>
+          )}
+        </div>
+      )}
+    </>
+  );
+  if (folded) {
+    return (
+      <FoldCard id="checks" title={t("checks.title")} lead={lead}>
+        {body}
+      </FoldCard>
+    );
+  }
   return (
     <Card id="checks" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("checks.title")}</CardTitle>
-        <span className="text-meta tabular-nums text-ink-3">
-          {t("checks.score", { passed: passed.length, total: checks.length })}
-        </span>
+        <span className="text-meta tabular-nums text-ink-3">{lead}</span>
       </CardHeader>
-      <CardContent className="gap-3">
-        <Segments
-          value={passed.length}
-          max={checks.length}
-          tone={
-            open_.some((check) => check.state === "failed")
-              ? "danger"
-              : "action"
-          }
-          label={t("checks.scoreLabel", {
-            passed: passed.length,
-            total: checks.length,
-          })}
-          className="[&>span]:h-1"
-        />
-        {open_.length > 0 && (
-          <ul className="m-0 grid list-none gap-3 p-0">{open_.map(row)}</ul>
-        )}
-        {passed.length > 0 && (
-          <div className="grid gap-3">
-            <button
-              type="button"
-              aria-expanded={showPassed}
-              onClick={() => setShowPassed((value) => !value)}
-              className="flex w-fit items-center gap-1 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <ChevronRight
-                aria-hidden
-                className={cn(
-                  "size-3.5 transition-transform",
-                  showPassed && "rotate-90",
-                )}
-              />
-              {showPassed
-                ? t("checks.hidePassed")
-                : t("checks.showPassed", { count: passed.length })}
-            </button>
-            {showPassed && (
-              <ul className="m-0 grid list-none gap-3 p-0">
-                {passed.map(row)}
-              </ul>
-            )}
-          </div>
-        )}
-      </CardContent>
+      <CardContent className="gap-3">{body}</CardContent>
     </Card>
   );
 }

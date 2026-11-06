@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
+import { Amount } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import {
@@ -74,8 +75,7 @@ export function HomePage() {
     <>
       <PageHeader
         title={t("title")}
-        // Each figure says it on a wider screen; a phone has no room for that.
-        description={<span className="sm:hidden">{t("allWithVat")}</span>}
+        description={t("allWithVat")}
         actions={
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden />
@@ -83,7 +83,8 @@ export function HomePage() {
           </Button>
         }
       />
-      <Card className="grid grid-cols-2 xl:grid-cols-4">
+      {/* On a phone the next section's hairline closes the figures. */}
+      <Card className="grid grid-cols-2 max-sm:-mb-6 xl:grid-cols-4">
         <Kpi
           label={t("kpi.drafts")}
           value={money(home?.drafts.total)}
@@ -164,20 +165,16 @@ function Kpi({
   unit?: string;
   meta: ReactNode;
 }) {
-  const t = useScopedI18n("home");
   return (
     <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-3 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:gap-1 sm:p-5 xl:[&:not(:first-child)]:border-l">
       <p className="m-0 truncate text-meta text-ink-2">{label}</p>
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
         <span className="text-[22px] leading-8 tracking-[-0.01em] tabular-nums text-ink [font-weight:var(--weight-figure)] sm:text-kpi">
-          {value}
+          <Amount value={value} />
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}
       </div>
-      <p className="m-0 min-h-[18px] truncate text-meta text-ink-3">
-        {unit && <span className="max-sm:hidden">{t("withVat")} · </span>}
-        {meta}
-      </p>
+      <p className="m-0 min-h-[18px] truncate text-meta text-ink-3">{meta}</p>
     </div>
   );
 }
@@ -190,16 +187,41 @@ const todoIcons: Record<Todo["kind"], LucideIcon> = {
   unread: PhoneCall,
 };
 
+// What can't wait: someone asked, or money moved. The rest has a date.
+const isNow = (item: Todo) => item.kind === "question" || item.kind === "alert";
+
+// On a phone the list stops here, so the recent devize aren't far below.
+const PHONE_TODO = 4;
+
 /** What wants doing, most pressing first; each line opens its Deviz. */
 function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
   const t = useScopedI18n("home.todo");
   const tc = useScopedI18n("common");
+  const [showAll, setShowAll] = useState(false);
+  const now = todo?.filter(isNow) ?? [];
+  const next = todo?.filter((item) => !isNow(item)) ?? [];
+  const hidden = showAll ? [] : [...now, ...next].slice(PHONE_TODO);
+  const group = (title: string, items: Todo[]) =>
+    items.length > 0 && (
+      <section className="grid">
+        <h4 className="m-0 pb-1 text-caption text-ink-3">{title}</h4>
+        <ul className="m-0 grid list-none p-0">
+          {items.map((item) => (
+            <TodoRow
+              key={`${item.kind}-${item.estimate._id}`}
+              item={item}
+              phoneHidden={hidden.includes(item)}
+            />
+          ))}
+        </ul>
+      </section>
+    );
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <CardContent className="pb-2">
+      <CardContent className="gap-3 pb-2">
         {todo === undefined ? (
           <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
         ) : todo.length === 0 ? (
@@ -211,22 +233,27 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
             {t("empty")}
           </p>
         ) : (
-          <ul className="m-0 grid list-none p-0">
-            {todo.map((item, index) => (
-              <TodoRow
-                key={`${item.kind}-${item.estimate._id}`}
-                item={item}
-                first={index === 0}
-              />
-            ))}
-          </ul>
+          <>
+            {group(t("now"), now)}
+            {group(t("next"), next)}
+            {hidden.length > 0 && (
+              <Button
+                type="button"
+                variant="link"
+                className="justify-self-start pb-3 sm:hidden"
+                onClick={() => setShowAll(true)}
+              >
+                {t("showAll", { count: todo.length })}
+              </Button>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
   );
 }
 
-function TodoRow({ item, first }: { item: Todo; first: boolean }) {
+function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   const t = useScopedI18n("home.todo");
   const locale = useCurrentLocale();
   const code = estimateCode(item.estimate.number, item.estimate.revision);
@@ -251,7 +278,7 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
     case "alert":
       text = t("alert", {
         code,
-        percent: `${item.percent > 0 ? "+" : "−"}${formatPercent(Math.abs(item.percent), locale)}`,
+        amount: `${item.profitChange > 0 ? "+" : "−"}${formatMoney(Math.abs(item.profitChange), locale)}`,
       });
       break;
     case "deadline":
@@ -278,7 +305,9 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
   }
 
   return (
-    <li className={cn(!first && "border-t border-border")}>
+    <li
+      className={cn("border-t border-border", phoneHidden && "max-sm:hidden")}
+    >
       <Link
         href={href}
         className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -294,7 +323,7 @@ function TodoRow({ item, first }: { item: Todo; first: boolean }) {
         </span>
         <span className="grid min-w-0">
           <span className="text-body text-ink">{text}</span>
-          <span className="text-meta text-ink-3 max-sm:line-clamp-2 sm:truncate">
+          <span className="truncate text-meta text-ink-3">
             {item.estimate.title}
             {item.estimate.clientName && ` · ${item.estimate.clientName}`}
           </span>

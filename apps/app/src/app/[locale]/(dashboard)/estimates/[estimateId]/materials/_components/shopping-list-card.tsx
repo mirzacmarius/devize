@@ -156,7 +156,7 @@ function MaterialRow({
               <span className={UNIT_SLOT}>{unit}</span>
             </span>
             {pkg?.source !== "counted" && (
-              <span className="text-meta text-ink-3">
+              <span className="pr-[34px] text-meta text-ink-3">
                 {t("share", {
                   percent: formatPercent(
                     Math.round(row.purchase.leftoverShare * 100),

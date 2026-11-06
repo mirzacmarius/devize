@@ -6,6 +6,7 @@ import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useState } from "react";
+import { Amount } from "@/components/amount";
 import { EurAmount } from "@/components/eur-amount";
 import { useTriggerWords } from "@/components/payment-schedule";
 import { formatMoney, formatPercent } from "@/lib/format";
@@ -101,10 +102,13 @@ export function PriceCard({
             updating && "opacity-60",
           )}
         >
-          {lines.map((line) => (
+          {lines.map((line, index) => (
             <div
               key={line.label}
-              className="flex items-baseline justify-between gap-4 border-b border-border py-2.5"
+              className={cn(
+                "flex items-baseline justify-between gap-4 py-2.5",
+                index > 0 && "border-t border-border",
+              )}
             >
               <dt
                 className={cn(
@@ -124,12 +128,14 @@ export function PriceCard({
               </dd>
             </div>
           ))}
-          <div className="flex items-baseline justify-between gap-4 pt-3">
+          <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-tick pt-3">
             <dt className="text-body-lg font-medium text-ink">
               {hasVat ? t("total") : t("totalNoVat")}
             </dt>
             <dd className="m-0 text-title-card tabular-nums text-ink">
-              {t("lei", { total: formatMoney(totals.total, locale) })}
+              {t("lei", {
+                total: <Amount value={formatMoney(totals.total, locale)} />,
+              })}
             </dd>
           </div>
         </dl>

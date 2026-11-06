@@ -124,13 +124,11 @@ export default function ManufacturersPage() {
             >
               {t("selectNew")}
             </Button>
-            <Button
-              size="sm"
-              disabled={selected.size === 0 || pending}
-              onClick={research}
-            >
-              {t("research", { count: selected.size })}
-            </Button>
+            {selected.size > 0 && (
+              <Button size="sm" disabled={pending} onClick={research}>
+                {t("research", { count: selected.size })}
+              </Button>
+            )}
           </div>
         </div>
         <ErrorText error={error} />
@@ -164,13 +162,14 @@ export default function ManufacturersPage() {
                 .map((row) => (
                   <TableRow key={row._id}>
                     <TableCell className="w-8">
-                      <input
-                        type="checkbox"
-                        aria-label={row.name}
-                        className="block size-4"
-                        checked={selected.has(row._id)}
-                        onChange={() => toggle(row._id)}
-                      />
+                      <span className="flex">
+                        <input
+                          type="checkbox"
+                          aria-label={row.name}
+                          checked={selected.has(row._id)}
+                          onChange={() => toggle(row._id)}
+                        />
+                      </span>
                     </TableCell>
                     <TableCell>
                       <Link
@@ -206,8 +205,9 @@ export default function ManufacturersPage() {
                       {tAdmin(`status.norms.${row.normsStatus}`)}
                     </TableCell>
                     <TableCell className="text-ink-2">
-                      {row.confidence &&
-                        tAdmin(`confidenceLevel.${row.confidence}`)}
+                      {row.confidence
+                        ? tAdmin(`confidenceLevel.${row.confidence}`)
+                        : "–"}
                     </TableCell>
                     <TableCell
                       className={
@@ -216,8 +216,9 @@ export default function ManufacturersPage() {
                           : "text-ink-2"
                       }
                     >
-                      {row.message &&
-                        tAdmin(`status.message.${row.message.status}`)}
+                      {row.message
+                        ? tAdmin(`status.message.${row.message.status}`)
+                        : "–"}
                     </TableCell>
                   </TableRow>
                 ))}

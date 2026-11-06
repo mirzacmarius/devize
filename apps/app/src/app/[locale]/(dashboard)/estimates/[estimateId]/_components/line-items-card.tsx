@@ -47,17 +47,17 @@ type Group = SectionGroup<Section, LineItem>;
 // A narrow card drops the number and quantity columns, a mid-size one the
 // unit price, and the item's own lines then show what they held.
 const FROM_MID = "hidden [@container(min-width:38rem)]:table-cell";
-const FROM_WIDE = "hidden [@container(min-width:50rem)]:table-cell";
+const FROM_WIDE = "hidden [@container(min-width:44rem)]:table-cell";
 const NARROW_ONLY = "[@container(min-width:38rem)]:hidden";
 const MID_UP = "hidden [@container(min-width:38rem)]:block";
 const MID_ONLY =
-  "hidden [@container(min-width:38rem)]:inline [@container(min-width:50rem)]:hidden";
+  "hidden [@container(min-width:38rem)]:inline [@container(min-width:44rem)]:hidden";
 // With no number column, the item column starts at the card's edge.
-const ITEM_CELL = "pl-0 [@container(min-width:38rem)]:pl-3";
-const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-6";
+const ITEM_CELL = "pl-0 [@container(min-width:38rem)]:pl-1";
+const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-4";
 // Past the chevron, so heads and section names start where the titles do.
-const TITLE_CELL = "pl-0 [@container(min-width:38rem)]:pl-9";
-const NESTED_TITLE_CELL = "pl-3 [@container(min-width:38rem)]:pl-12";
+const TITLE_CELL = "pl-0 [@container(min-width:38rem)]:pl-7";
+const NESTED_TITLE_CELL = "pl-3 [@container(min-width:38rem)]:pl-10";
 
 const tagDot = {
   danger: "bg-danger-solid",
@@ -352,7 +352,7 @@ function SectionRow({
   return (
     // The same cells as an item row, since which columns show depends on the
     // card's width and a span can't follow it.
-    <TableGroupRow className="items-band">
+    <TableGroupRow className="items-band group/band">
       <TableCell className={cn("band-start", FROM_MID)} />
       <TableCell
         className={cn(
@@ -387,8 +387,14 @@ function SectionRow({
       </TableCell>
       <TableCell className={FROM_MID} />
       <TableCell className={FROM_WIDE} />
-      <TableCell className="band-end text-right font-medium tabular-nums">
+      <TableCell className="band-end whitespace-nowrap text-right font-medium tabular-nums">
         {formatMoney(group.total, locale)}
+        {/* A phone has no column head to say it: on the totals, not every line. */}
+        <span
+          className={cn("ml-1 text-meta font-normal text-ink-3", NARROW_ONLY)}
+        >
+          lei
+        </span>
       </TableCell>
     </TableGroupRow>
   );
@@ -424,7 +430,8 @@ function SectionMenu({
         <Button
           variant="ghost"
           size="icon"
-          className="size-8"
+          // With a pointer it shows on the band it belongs to.
+          className="size-8 focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/band:opacity-100 [@media(hover:hover)]:opacity-0"
           aria-label={t("sections.menu", { name: section.name })}
         >
           <Icons.More aria-hidden />
@@ -618,7 +625,7 @@ function ItemRows({
                 })}
               </span>
               <span className="whitespace-nowrap text-body text-ink">
-                {formatMoney(item.totals.total, locale)} lei
+                {formatMoney(item.totals.total, locale)}
               </span>
             </span>
             {/* Tags on the code's line, so a tag never moves the title. */}

@@ -90,7 +90,7 @@ export default {
       materials: "Materials",
       labour: "Labour",
       equipment: "Equipment and transport",
-      withoutVat: "{amount} lei without VAT",
+      subtotal: "Total without VAT",
     },
     description:
       "Build estimates with manufacturers' norms and up-to-date prices.",
@@ -133,7 +133,6 @@ export default {
     title: "Home",
     newEstimate: "New estimate",
     lei: "lei",
-    withVat: "with VAT",
     allWithVat: "Amounts with VAT",
     kpi: {
       drafts: "In progress",
@@ -153,7 +152,10 @@ export default {
         "Nothing urgent: the offers are read, the questions answered and the prices up to date.",
       questionOne: "Answer a question · {code}",
       question: "Answer {count} questions · {code}",
-      alert: "Check prices: total {percent} · {code}",
+      alert: "Check prices: profit {amount} lei · {code}",
+      now: "Now",
+      next: "Coming up",
+      showAll: "See all ({count})",
       deadlineToday: "Submit today · {code}",
       deadlineOne: "Submit tomorrow · {code}",
       deadline: "Submit in {days} days, on {date} · {code}",
@@ -384,6 +386,8 @@ export default {
     noCounty: "No county",
     newTitle: "New estimate",
     newDescription: "The job's name is enough. You can fill in the rest later.",
+    moreDetails: "More details",
+    moreDetailsHint: "template, type, address, price date",
     fields: {
       title: "Job",
       titlePlaceholder: "e.g. Bathroom renovation, 2-room flat",
@@ -593,6 +597,7 @@ export default {
     checks: {
       title: "Checks",
       score: "{passed} of {total} passed",
+      left: "{left} of {total} left",
       scoreLabel: "{passed} of {total} checks passed",
       showPassed: "Show passed ({count})",
       hidePassed: "Hide passed",
@@ -755,7 +760,7 @@ export default {
     addNorm: {
       title: "Add from catalog",
       description:
-        "Search by code or by job. Resources take today's prices, with the company's rates.",
+        "Search by code or by job. The cost listed is a reference; in the estimate, resources take today's prices, with the company's rates.",
       searchPlaceholder: "Code or job, e.g. stone wool",
       hint: "Type the norm's code or a few words about the job, or pick a category. The company's own norms come first.",
       searching: "Searching…",
@@ -1450,6 +1455,8 @@ export default {
   offer: {
     title: "Offer for the client",
     hint: "The client opens the link without an account, reads the estimate in plain words and accepts online.",
+    notCreated: "Not made yet",
+    acceptedLead: "Signed {date}",
     create: "Create the link",
     empty: "Add line items to send the offer.",
     paymentStages: "Payment stages: {count}",
@@ -1938,7 +1945,9 @@ export default {
   },
   catalog: {
     title: "Catalog",
-    unconfirmed: "Unconfirmed",
+    costNote:
+      "The cost is direct, at reference prices, per unit of the norm. In an estimate it uses the company's prices and rates.",
+    unconfirmed: "unconfirmed",
     newNorm: "New norm",
     views: {
       label: "Norms shown",
@@ -1950,6 +1959,7 @@ export default {
       norm: "Norm",
       source: "Producer",
       unit: "Unit",
+      cost: "Ref. cost (lei)",
       status: "Status",
       updated: "Changed",
     },
@@ -1963,7 +1973,7 @@ export default {
     producers: "Manufacturers",
     categories: {
       label: "Categories",
-      all: "All",
+      all: "All categories",
     },
     categoryEmpty: "No norm published in “{category}” yet.",
     noResultsInCategory: "No norm in “{category}” matches “{text}”.",
@@ -2185,6 +2195,7 @@ export default {
   },
   clients: {
     title: "Clients",
+    count: "Clients: {count}",
     new: "New client",
     searchPlaceholder: "Search clients by name",
     emptyTitle: "No clients yet",
@@ -3172,6 +3183,7 @@ export default {
   },
   producers: {
     title: "Manufacturers",
+    count: "Manufacturers: {count}",
     description: "A claimed profile is managed by the manufacturer itself.",
     empty:
       "No manufacturers in the catalog yet. Profiles appear as we publish their norms.",
@@ -4174,9 +4186,13 @@ export default {
     draftCode: "Draft",
     overdue: "Overdue",
     owedPart: "to collect {owed}",
+    lateOne: "{code}: the e-Factura deadline passed on {date}",
+    lateMany: "Invoices past the e-Factura deadline: {count}.",
+    lateOpen: "Open the invoice",
+    lateOpenFirst: "Open the first",
     receivable: {
       total: "To collect",
-      overdue: "Of which overdue",
+      overdue: "Overdue payments",
       overdueCount: "{unit} · invoices: {count}",
     },
     status: {
@@ -4693,7 +4709,6 @@ export default {
   materials: {
     open: "Packaging and waste",
     title: "Packaging and waste",
-    breadcrumb: "Packaging",
     description: "{code} · {title}",
     emptyTitle: "The estimate has no materials yet",
     emptyDescription:
@@ -5277,9 +5292,12 @@ export default {
       completeAll: "Complete everything left",
       completed: "Items brought to their contract quantity: {count}.",
       completedNone: "Every item was already at its contract quantity.",
-      send: "Send to the beneficiary",
+      send: "Mark as sent",
+      nextDraft:
+        "Fill in the “This period” column, download the statement and send it to the beneficiary, then mark it here.",
+      nextSent: "When the beneficiary confirms it, note here who and when.",
       sentToast: "The statement is marked sent to the beneficiary.",
-      approve: "Confirm",
+      approve: "Mark as confirmed",
       approvedToast: "The statement is confirmed. You can start the next one.",
       reopen: "Back to draft",
       reopened: "The statement is a draft again.",

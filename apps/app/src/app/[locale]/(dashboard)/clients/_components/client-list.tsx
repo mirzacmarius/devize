@@ -66,7 +66,10 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <div className="flex flex-wrap items-center justify-end gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="m-0 text-meta tabular-nums text-ink-3">
+              {clients !== undefined && t("count", { count: clients.length })}
+            </p>
             <SearchInput
               value={text}
               onChange={(event) => setText(event.target.value)}
@@ -124,7 +127,7 @@ export function ClientList() {
                         {row.phone}
                       </a>
                     ) : (
-                      <span className="text-ink-3">{tc("notSet")}</span>
+                      <span className="text-ink-3">–</span>
                     )}
                   </TableCell>
                   <TableCell className="max-w-64 truncate text-ink-2 max-md:text-right">
@@ -136,13 +139,11 @@ export function ClientList() {
                         {row.email}
                       </a>
                     ) : (
-                      <span className="text-ink-3">{tc("notSet")}</span>
+                      <span className="text-ink-3">–</span>
                     )}
                   </TableCell>
                   <TableCell className="hidden max-w-xs truncate text-ink-2 md:table-cell">
-                    {row.address ?? (
-                      <span className="text-ink-3">{tc("notSet")}</span>
-                    )}
+                    {row.address ?? <span className="text-ink-3">–</span>}
                   </TableCell>
                 </TableRow>
               ))}

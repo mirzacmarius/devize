@@ -233,6 +233,12 @@ export function StatementCard({
           </div>
         </div>
         <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
+        {/* Nothing leaves from here: the firm sends it and notes what happened. */}
+        {statement.latest && statement.status !== "approved" && (
+          <p className="m-0 text-meta text-ink-2">
+            {statement.status === "draft" ? t("nextDraft") : t("nextSent")}
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         <RowsTable
@@ -335,7 +341,7 @@ function RowsTable({
           <TableHead>{t("article")}</TableHead>
           <TableHead className="text-right">{t("contract")}</TableHead>
           <TableHead className="text-right">{t("previous")}</TableHead>
-          <TableHead className="bg-sunken text-right">
+          <TableHead className="bg-muted text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className="text-right">{t("cumulative")}</TableHead>
@@ -364,7 +370,7 @@ function RowsTable({
                   </TableCell>
                 </TableGroupRow>
               )}
-              <TableRow className="group/row">
+              <TableRow className="group/row [&>td]:py-2.5">
                 <TableCell className="relative align-top">
                   <div className="grid min-w-64 justify-items-start gap-0.5 pr-14">
                     <span>
@@ -425,10 +431,12 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken text-right align-top">
+                <TableCell className="whitespace-nowrap bg-muted text-right align-top">
                   <InlineNumber
                     value={row.quantity}
-                    format={(value) => formatQuantity(value, locale)}
+                    format={(value) =>
+                      value === 0 ? "–" : formatQuantity(value, locale)
+                    }
                     label={t("quantityLabel", { title: row.title })}
                     disabled={!editable || busy}
                     onCommit={(quantity) =>
@@ -436,7 +444,9 @@ function RowsTable({
                     }
                     className={cn(
                       // Up by the field's padding, level with the row's first line.
-                      "-my-1.5 group-hover/row:border-input",
+                      "-my-1 h-7",
+                      // What can be typed in looks like it.
+                      editable && !busy && "border-input bg-field",
                       row.quantity === 0 ? "text-ink-3" : "font-medium",
                     )}
                   />
