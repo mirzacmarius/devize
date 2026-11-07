@@ -20,6 +20,7 @@ import { Plus } from "lucide-react";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { ListToolbar } from "@/components/list-toolbar";
+import { Nil } from "@/components/nil";
 import { SearchInput } from "@/components/search-input";
 import { formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -58,7 +59,6 @@ export function ClientList() {
   return (
     <>
       <PageHeader
-        className="xl:max-w-[928px]"
         title={t("title")}
         description={
           // Keeps its line while loading, so nothing jumps.
@@ -98,7 +98,7 @@ export function ClientList() {
           }
         />
       ) : (
-        <section className="grid min-w-0 gap-3 xl:max-w-[928px]">
+        <section className="grid min-w-0 gap-3">
           {/* From a tablet up it stands in the page's head. */}
           <ListToolbar className="sm:hidden">
             <SearchInput
@@ -187,7 +187,7 @@ export function ClientList() {
                       )}
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums md:table-cell">
-                      {going?.estimates ? going.estimates : null}
+                      {going?.estimates ? going.estimates : <Nil />}
                     </TableCell>
                     <TableCell
                       data-stack="wide"
@@ -205,7 +205,9 @@ export function ClientList() {
                           <span className="font-medium">
                             {formatMoney(going.owed, locale)}
                           </span>
-                        ) : null}
+                        ) : (
+                          <Nil />
+                        )}
                       </span>
                     </TableCell>
                   </TableRow>

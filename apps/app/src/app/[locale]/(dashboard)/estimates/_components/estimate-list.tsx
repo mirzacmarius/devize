@@ -229,9 +229,6 @@ export function EstimateList() {
                   </TableCell>
                   <TableCell className="text-right text-body font-medium tabular-nums">
                     {formatMoney(row.total, locale)}
-                    <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
-                      lei
-                    </span>
                   </TableCell>
                   <TableCell className="hidden text-right text-meta text-ink-3 tabular-nums md:table-cell">
                     {formatDay(row.updatedAt, locale)}

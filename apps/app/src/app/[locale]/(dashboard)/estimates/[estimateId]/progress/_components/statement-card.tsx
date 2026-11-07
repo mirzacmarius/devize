@@ -32,6 +32,7 @@ import { Fragment, type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
+import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
@@ -55,6 +56,16 @@ import { useDownloadProgress } from "./use-download-progress";
 const ROOMY_HEAD = "hidden text-right xl:table-cell";
 const ROOMY_CELL =
   "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell";
+
+// A quantity for reference, quieter than what's being filled in and what it
+// comes to, on the row's baseline.
+function Reference({ children }: { children: ReactNode }) {
+  return (
+    <span className="block">
+      <span className="text-meta">{children}</span>
+    </span>
+  );
+}
 
 /**
  * One Situație de lucrări: every Articol of the contract with what was
@@ -379,8 +390,9 @@ function RowsTable({
     groupValues.set(row.group, (groupValues.get(row.group) ?? 0) + row.value);
   }
 
-  // What's not there stays blank, so the period's figures stand out.
-  const ifAny = (value: number, shown: string) => (value === 0 ? null : shown);
+  // What's not there is a quiet dash, so the period's figures stand out.
+  const ifAny = (value: number, shown: string) =>
+    value === 0 ? <Nil /> : shown;
 
   return (
     <Table bleed stack className="xl:min-w-[50rem]">
@@ -506,13 +518,17 @@ function RowsTable({
                   </div>
                 </TableCell>
                 <TableCell className={ROOMY_CELL}>
-                  {formatQuantity(row.contractQuantity, locale)}
+                  <Reference>
+                    {formatQuantity(row.contractQuantity, locale)}
+                  </Reference>
                 </TableCell>
                 <TableCell className={ROOMY_CELL}>
-                  {ifAny(
-                    row.previousQuantity,
-                    formatQuantity(row.previousQuantity, locale),
-                  )}
+                  <Reference>
+                    {ifAny(
+                      row.previousQuantity,
+                      formatQuantity(row.previousQuantity, locale),
+                    )}
+                  </Reference>
                 </TableCell>
                 {/* The column being filled in. */}
                 <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left">
@@ -565,10 +581,12 @@ function RowsTable({
                 </TableCell>
                 <TableCell className={ROOMY_CELL}>
                   <div className="grid justify-items-end gap-0.5">
-                    {ifAny(
-                      row.cumulativeQuantity,
-                      formatQuantity(row.cumulativeQuantity, locale),
-                    )}
+                    <Reference>
+                      {ifAny(
+                        row.cumulativeQuantity,
+                        formatQuantity(row.cumulativeQuantity, locale),
+                      )}
+                    </Reference>
                     {/* All of it done needs no saying; more than all of it does. */}
                     {row.cumulativeQuantity !== 0 && row.percent !== 100 && (
                       <span
@@ -584,10 +602,15 @@ function RowsTable({
                   </div>
                 </TableCell>
                 <TableCell className={ROOMY_CELL}>
-                  {ifAny(
-                    Math.max(0, row.remainingQuantity),
-                    formatQuantity(Math.max(0, row.remainingQuantity), locale),
-                  )}
+                  <Reference>
+                    {ifAny(
+                      Math.max(0, row.remainingQuantity),
+                      formatQuantity(
+                        Math.max(0, row.remainingQuantity),
+                        locale,
+                      ),
+                    )}
+                  </Reference>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right align-top font-medium tabular-nums">
                   {ifAny(row.value, formatMoney(row.value, locale))}

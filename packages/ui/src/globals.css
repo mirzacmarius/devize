@@ -15,7 +15,7 @@
   --shell: 60 12.5% 93.7%; /* #f1f1ed */
   --panel: 60 25% 98.4%; /* #fcfcfa */
   --card: 0 0% 100%; /* #ffffff */
-  --card-border: 60 5.9% 83.3%; /* #d7d7d2: a card's edge, the rule under a table's heads */
+  --card-border: 60 6.3% 84.5%; /* #dadad5: a card's edge, the same as a hairline */
   --sunken: 60 17.2% 94.3%; /* #f3f3ee: a band inside a card, a quiet box */
   --muted: 60 10.5% 92.5%; /* #eeeeea */
   --field: 0 0% 100%; /* #ffffff: editable looks open; disabled looks `muted` */
@@ -567,11 +567,11 @@
     pointer-events: none;
   }
   /* A heading starts a group: the row before it needs no rule of its own, and
-     heads right above one need none either. */
+     heads right above a filled band need none either. */
   :is(tr, li):has(+ [data-group]) {
     border-bottom-width: 0;
   }
-  table:has(> tbody > tr[data-group]:first-child) > thead > tr {
+  table:has(> tbody > tr[data-band]:first-child) > thead > tr {
     border-bottom-color: transparent;
   }
   /* The Articole's heads stay in sight under the bar that keeps the total. */

@@ -30,6 +30,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { ListToolbar } from "@/components/list-toolbar";
 import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
@@ -175,48 +176,39 @@ export function CatalogPage() {
         actions={actions}
       />
       <section className="grid min-w-0 gap-3">
-        {/* Where there's room the search stands on the tabs' line. */}
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
-          <TabsNav
-            aria-label={t("views.label")}
-            className="xl:col-span-2 xl:col-start-1 xl:row-start-1"
-          >
-            <TabsNavLink asChild active={!isOwn}>
-              <Link replace href="/catalog" onClick={() => setText("")}>
-                {t("views.catalog")}
-              </Link>
-            </TabsNavLink>
-            <TabsNavLink asChild active={isOwn}>
-              <Link
-                replace
-                href="/catalog?view=own"
-                onClick={() => setText("")}
-              >
-                {t("views.own")}
-              </Link>
-            </TabsNavLink>
-          </TabsNav>
-          {/* On the tabs' line, their words and the controls' on one middle. */}
-          <div className="flex min-w-0 flex-wrap items-center gap-2 xl:col-start-2 xl:row-start-1 xl:mt-1.5 xl:self-start">
-            {!isOwn && (
-              <NormCategorySelect
-                label={t("categories.label")}
-                allLabel={t("categories.all")}
-                value={category?.key ?? null}
-                onChange={changeCategory}
-                className={cn("w-full sm:w-56", toolbarField)}
-              />
-            )}
+        <TabsNav aria-label={t("views.label")}>
+          <TabsNavLink asChild active={!isOwn}>
+            <Link replace href="/catalog" onClick={() => setText("")}>
+              {t("views.catalog")}
+            </Link>
+          </TabsNavLink>
+          <TabsNavLink asChild active={isOwn}>
+            <Link replace href="/catalog?view=own" onClick={() => setText("")}>
+              {t("views.own")}
+            </Link>
+          </TabsNavLink>
+        </TabsNav>
+        <ListToolbar>
+          {!isOwn && (
+            <NormCategorySelect
+              label={t("categories.label")}
+              allLabel={t("categories.all")}
+              value={category?.key ?? null}
+              onChange={changeCategory}
+              className={cn("w-full sm:w-56", toolbarField)}
+            />
+          )}
+          <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1 sm:justify-end">
             <SearchInput
               quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-80 sm:max-xl:w-auto sm:max-xl:flex-1"
+              className="w-full sm:max-w-xs"
             />
           </div>
-        </div>
+        </ListToolbar>
         <div className="grid min-w-0 gap-4">
           {isOwn && !search && own?.length === 0 ? (
             <EmptyState
@@ -341,7 +333,7 @@ export function CatalogPage() {
                                 >
                                   {t("producerBand")}
                                   {unconfirmedBands.get(band) &&
-                                    ` · ${t("unconfirmed")}`}
+                                    ` · ${t("unconfirmedBand")}`}
                                 </span>
                               </>
                             ) : (

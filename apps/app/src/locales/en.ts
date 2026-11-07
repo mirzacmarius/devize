@@ -1978,6 +1978,7 @@ export default {
     title: "Catalog",
     costNote: "Direct cost at reference prices; an estimate uses your prices.",
     unconfirmed: "not confirmed",
+    unconfirmedBand: "norms not confirmed",
     unconfirmedHint: "The manufacturer hasn't checked it yet.",
     unconfirmedNote:
       "Unconfirmed: the norm comes from the producer's public documents and the producer hasn't checked it yet.",
@@ -4872,7 +4873,7 @@ export default {
   },
   takeoff: {
     title: "Quantity take-off",
-    locked: "Locked · the estimate was sent",
+    locked: "Locked · to change it, create a revision",
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
       title: "Quantity take-off",

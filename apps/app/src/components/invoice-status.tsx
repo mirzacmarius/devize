@@ -63,11 +63,16 @@ export function EfacturaPill({
   if (status === "not_sent" && late) {
     return (
       <StatusPill tone="danger">
-        {named
-          ? t("efacturaLateNamed")
-          : deadline
-            ? t("efacturaLateOn", { date: deadline })
-            : t("efacturaLate")}
+        {/* One run of text, so the day keeps a word's space from the fact. */}
+        <span>
+          {named
+            ? t("efacturaLateNamed")
+            : deadline
+              ? t("efacturaLateOn", {
+                  date: <span className="text-ink-2">{deadline}</span>,
+                })
+              : t("efacturaLate")}
+        </span>
       </StatusPill>
     );
   }

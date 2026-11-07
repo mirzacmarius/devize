@@ -655,7 +655,7 @@ function ItemRows({
                   price,
                 })}
               </span>
-              <span className="whitespace-nowrap text-body text-ink">
+              <span className="whitespace-nowrap text-body font-medium text-ink">
                 {formatMoney(item.totals.total, locale)}
               </span>
             </span>

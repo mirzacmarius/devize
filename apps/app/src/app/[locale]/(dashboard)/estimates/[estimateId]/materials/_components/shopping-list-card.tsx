@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { Pencil } from "lucide-react";
+import { Nil } from "@/components/nil";
 import {
   formatCount,
   formatInputNumber,
@@ -166,15 +167,17 @@ function MaterialRow({
             : undefined
         }
       >
-        {row.purchase &&
-          leftover > 0 &&
-          formatQuantityRounded(leftover, locale)}
+        {row.purchase && leftover > 0 ? (
+          formatQuantityRounded(leftover, locale)
+        ) : (
+          <Nil />
+        )}
         <span className={UNIT_SLOT}>
           {row.purchase && leftover > 0 ? unit : null}
         </span>
       </TableCell>
       <TableCell className="hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell">
-        {row.leftoverCost > 0 && formatMoney(row.leftoverCost, locale)}
+        {row.leftoverCost > 0 ? formatMoney(row.leftoverCost, locale) : <Nil />}
       </TableCell>
       <TableCell className="whitespace-nowrap text-right align-top tabular-nums max-md:self-start">
         <div className="grid justify-items-end gap-0.5">

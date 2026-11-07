@@ -1976,6 +1976,7 @@ export default {
     costNote:
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "neconfirmată",
+    unconfirmedBand: "norme neconfirmate",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
     unconfirmedNote:
       "Neconfirmată: norma vine din documentele publice ale producătorului, iar el n-a verificat-o încă.",
@@ -4868,7 +4869,7 @@ export default {
   },
   takeoff: {
     title: "Antemăsurătoare",
-    locked: "Blocată · devizul e trimis",
+    locked: "Blocată · pentru schimbări, creează o revizie",
     download: { pdf: "Anexa în PDF", xlsx: "Anexa în Excel" },
     card: {
       title: "Antemăsurătoare",

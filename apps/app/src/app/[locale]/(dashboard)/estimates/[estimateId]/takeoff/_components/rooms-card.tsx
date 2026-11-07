@@ -34,6 +34,7 @@ import { useMutation } from "convex/react";
 import { Lock, Plus } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import { formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -283,7 +284,7 @@ function RoomRow({
   const [busy, setBusy] = useState(false);
   const place = rooms.findIndex((other) => other._id === room._id);
   const metres = (value: number | undefined) =>
-    value === undefined ? null : formatQuantity(value, locale);
+    value === undefined ? <Nil /> : formatQuantity(value, locale);
   const openings = openingsOf(room, t);
   // Under the name where the columns for them are gone.
   const sides = [

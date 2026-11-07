@@ -24,7 +24,6 @@ Input.displayName = "Input";
 
 // A field that narrows a list rather than asks for anything: it stands back in
 // its toolbar until it's reached for, a size under a page's own controls.
-const toolbarField =
-  "border-border bg-sunken hover:border-input focus-visible:bg-field sm:h-8 sm:py-1";
+const toolbarField = "bg-sunken focus-visible:bg-field sm:h-8 sm:py-1";
 
 export { Input, toolbarField };

@@ -26,6 +26,7 @@ import {
   InvoiceStatusPill,
 } from "@/components/invoice-status";
 import { ListToolbar } from "@/components/list-toolbar";
+import { Nil } from "@/components/nil";
 import { SegmentedControl } from "@/components/segmented-control";
 import {
   formatCalendarDay,
@@ -147,7 +148,7 @@ export function InvoiceList() {
               // In red here as on the rows it's about.
               note={
                 anaf?.firstLate && (
-                  <StatusPill tone="danger">
+                  <StatusPill tone="danger" dot={false}>
                     {t("receivable.lateCount", { count: anaf.late })}
                   </StatusPill>
                 )
@@ -265,9 +266,6 @@ export function InvoiceList() {
                     </TableCell>
                     <TableCell className="text-right tabular-nums max-md:text-body-lg max-xl:font-medium xl:text-ink-2">
                       {formatMoney(row.total, locale)}
-                      <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
-                        lei
-                      </span>
                       {/* Below this the column's gone, so a part-paid one says it here. */}
                       {owed !== undefined && row.paidAmount > 0 && (
                         <span className="block whitespace-nowrap text-meta font-normal text-ink-3 xl:hidden">
@@ -277,7 +275,9 @@ export function InvoiceList() {
                     </TableCell>
                     {/* What's still to come in is what this list is read for. */}
                     <TableCell className="hidden pl-8 text-right tabular-nums xl:table-cell">
-                      {owed !== undefined && (
+                      {owed === undefined ? (
+                        <Nil />
+                      ) : (
                         <span className="font-medium">
                           {formatMoney(owed, locale)}
                         </span>

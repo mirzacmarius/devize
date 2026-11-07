@@ -43,7 +43,6 @@ export function ProducersPage() {
   return (
     <>
       <PageHeader
-        className="xl:max-w-[928px]"
         breadcrumb={
           <Breadcrumb aria-label={t("breadcrumb")}>
             <BreadcrumbLink asChild>
@@ -79,7 +78,7 @@ export function ProducersPage() {
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
-        <section className="grid min-w-0 gap-3 xl:max-w-[928px]">
+        <section className="grid min-w-0 gap-3">
           {/* From a tablet up it stands in the page's head. */}
           <ListToolbar className="sm:hidden">
             <SearchInput

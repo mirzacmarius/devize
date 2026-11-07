@@ -33,8 +33,6 @@ const statusPillVariants = cva(
       dot: {
         true: "",
         false: "before:hidden",
-        // At a row's right end: on the edge, so the dots line up.
-        end: "flex-row-reverse",
       },
     },
     defaultVariants: {
