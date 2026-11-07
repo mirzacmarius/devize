@@ -65,11 +65,6 @@ function matches(norm: NormRow, words: readonly string[]) {
  * words of the work; the public ones are also browsed by category of the
  * base catalog, which narrows a search too.
  */
-// The unit hangs after the number in a slot of its own, as on a Deviz, so the
-// numbers and the head over them keep one edge.
-const COST_UNIT =
-  "ml-2 inline-block w-11 text-left text-meta text-ink-3 max-md:w-auto";
-
 // Under the title only between a phone, which has its own line for it, and the
 // width with a column for it.
 const TABLET_ONLY = "hidden md:inline xl:hidden";
@@ -247,9 +242,16 @@ export function CatalogPage() {
                       {t("columns.updated")}
                     </TableHead>
                   )}
-                  <TableHead className="pr-[52px] text-right last:pr-[52px]">
+                  {/* The numbers and the head over them keep one edge; the units
+                      have a column as wide as the longest, so the table ends
+                      where they do. */}
+                  <TableHead className="text-right md:pr-0">
                     {t("columns.cost")}
                   </TableHead>
+                  <TableHead
+                    aria-hidden
+                    className="hidden w-px md:table-cell"
+                  />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -381,21 +383,25 @@ export function CatalogPage() {
                         {formatDay(norm.updatedAt, locale)}
                       </TableCell>
                     )}
-                    <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top">
+                    <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top md:pr-0">
                       {norm.referenceCost === undefined ? (
-                        <>
-                          <StatusPill tone="warning">{t("noCost")}</StatusPill>
-                          <span className={cn(COST_UNIT, "max-md:hidden")} />
-                        </>
+                        <StatusPill tone="warning">{t("noCost")}</StatusPill>
                       ) : (
                         <>
                           <span className="font-medium">
                             {formatMoney(norm.referenceCost, locale)}
                           </span>
-                          <span className={COST_UNIT}>
+                          <span className="ml-2 text-meta text-ink-3 md:hidden">
                             lei/{formatUnit(norm.unit, locale)}
                           </span>
                         </>
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden w-px whitespace-nowrap pl-2 md:table-cell">
+                      {norm.referenceCost !== undefined && (
+                        <span className="text-meta text-ink-3">
+                          lei/{formatUnit(norm.unit, locale)}
+                        </span>
                       )}
                     </TableCell>
                   </TableRow>

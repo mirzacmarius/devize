@@ -48,7 +48,6 @@ import { CustomItemDialog } from "./custom-item-dialog";
 import { DetailsCard } from "./details-card";
 import { DetailsSheet } from "./details-sheet";
 import { EstimateActions } from "./estimate-actions";
-import { EstimateStepper } from "./estimate-stepper";
 import { ItemDialog } from "./item-dialog";
 import { LineItemsCard } from "./line-items-card";
 import { MarkupsDialog } from "./markups-dialog";
@@ -117,7 +116,13 @@ export function EstimatePage() {
   });
   const { status } = estimate;
   const statusPill = <EstimateStatusPill status={status} />;
-  const answered = status === "accepted" || status === "rejected";
+  // Since when it stands where it stands, once it has moved at all.
+  const statusDay =
+    status === "sent"
+      ? estimate.lockedAt
+      : status === "accepted" || status === "rejected"
+        ? estimate.updatedAt
+        : undefined;
 
   // The rail leads with what comes next for where this Deviz is at.
   const rail = {
@@ -175,6 +180,7 @@ export function EstimatePage() {
         code={code}
         title={estimate.title}
         total={total}
+        unit={t("summary.unit")}
       />
       <div className="grid min-w-0 gap-x-4 gap-y-3 sm:gap-y-5 md:grid-cols-[minmax(0,1fr)_auto]">
         <PageHeader
@@ -188,29 +194,17 @@ export function EstimatePage() {
             </Breadcrumb>
           }
           title={estimate.title}
-          // The line opens with where it stands, whatever that is: the way
-          // there until it's answered, the answer and its day after.
+          // The line opens with where it stands and since when.
           status={
-            status === "draft" || status === "sent" ? (
-              <>
-                {/* A phone gets to the work sooner. */}
-                <span className="sm:hidden">{statusPill}</span>
-                <EstimateStepper
-                  estimate={estimate}
-                  className="max-sm:hidden"
-                />
-              </>
-            ) : answered ? (
-              <>
-                {statusPill}
+            <>
+              {statusPill}
+              {statusDay !== undefined && (
                 <span className="max-sm:hidden">
                   {" "}
-                  {formatDay(estimate.updatedAt, locale)}
+                  {formatDay(statusDay, locale)}
                 </span>
-              </>
-            ) : (
-              statusPill
-            )
+              )}
+            </>
           }
           description={
             <>
@@ -378,11 +372,14 @@ function ScrolledBar({
   code,
   title,
   total,
+  unit,
 }: {
   shown: boolean;
   code: string;
   title: string;
   total: string;
+  // The rows under it are without TVA, so it says what this one is.
+  unit: string;
 }) {
   return (
     <div
@@ -398,7 +395,7 @@ function ScrolledBar({
           <span className="ml-2 font-medium text-ink">{title}</span>
         </p>
         <p className="m-0 shrink-0 text-body-lg tabular-nums text-ink">
-          {total} <span className="text-meta text-ink-3">lei</span>
+          {total} <span className="text-meta text-ink-3">{unit}</span>
         </p>
       </div>
     </div>

@@ -37,6 +37,7 @@ import { toast } from "@devize/ui/sonner";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
+import { Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -141,16 +142,6 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
             {t("description", { firm: firm.name })}
           </CardDescription>
         </div>
-        {isAdmin && (
-          <Button
-            size="sm"
-            className="xl:mt-2 xl:justify-self-start"
-            onClick={() => setInviting(true)}
-          >
-            <Icons.Assign aria-hidden />
-            {t("invite")}
-          </Button>
-        )}
       </CardHeader>
       <CardContent>
         {members === undefined ? (
@@ -260,6 +251,17 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
             })}
           </ul>
         )}
+        {/* The list comes to this: one more person. */}
+        {isAdmin && (
+          <Button
+            size="sm"
+            className="justify-self-start"
+            onClick={() => setInviting(true)}
+          >
+            <Icons.Assign aria-hidden />
+            {t("invite")}
+          </Button>
+        )}
       </CardContent>
       <ConfirmDialog
         open={removing !== null}
@@ -303,13 +305,20 @@ function InvitationsCard() {
         <CardDescription>{t("invitationsDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="m-0 grid list-none gap-2 p-0">
+        <ul className="m-0 grid list-none p-0">
           {invitations.map((invitation) => (
             <li
               key={invitation._id}
-              className="grid items-center gap-x-4 gap-y-2 rounded-lg border border-card-border p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
+              className="grid min-h-16 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
             >
-              <div className="grid min-w-0 gap-1">
+              {/* A place kept among the members, until they accept. */}
+              <span
+                aria-hidden
+                className="grid size-9 shrink-0 place-items-center rounded-full border border-dashed border-control text-ink-3"
+              >
+                <Mail className="size-4" />
+              </span>
+              <div className="grid min-w-0">
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="truncate text-body text-ink">
                     {invitation.email}
@@ -336,14 +345,15 @@ function InvitationsCard() {
                   </span>
                 )}
               </div>
-              <div className="flex items-center justify-between gap-1 sm:justify-end">
+              {/* In the column the members' menus are in. */}
+              <div className="col-start-2 flex items-center justify-between gap-1 sm:col-start-3 sm:justify-end">
                 <CopyLinkButton token={invitation.token} />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="-mr-2 size-8"
+                      className="-mr-2.5"
                       aria-label={tc("actions")}
                     >
                       <Icons.More aria-hidden />

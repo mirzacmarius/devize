@@ -466,6 +466,7 @@ export default {
     pricesOf: "prețuri din {date}",
     summary: {
       total: "Total cu TVA",
+      unit: "lei cu TVA",
       withoutVat: "{total} lei fără TVA",
     },
     notFoundTitle: "Nu am găsit devizul",
@@ -485,19 +486,6 @@ export default {
       "Renunță la prețul scris de mână și ia prețul firmei, al magazinului sau pe cel de referință.",
     resourcesHint:
       "Consumul și prețurile se schimbă doar în acest deviz; norma din catalog rămâne la fel.",
-    steps: {
-      label: "Etapele devizului",
-      draft: "Ciornă",
-      sent: "Trimis clientului",
-      accepted: "Acceptat",
-      waiting: "Așteaptă răspunsul",
-      states: {
-        done: "încheiat",
-        failed: "eșuat",
-        current: "în curs",
-        todo: "urmează",
-      },
-    },
     actions: {
       openProgress: "Deschide situațiile",
       createOffer: "Creează oferta",
@@ -4328,7 +4316,7 @@ export default {
         "Doar pentru o factură care n-a plecat nicăieri: netrimisă la ANAF și neîncasată. Numărul rămâne ocupat și factura apare ca anulată.",
       cancelConfirm: "Anulează",
       cancelled: "Factura a fost anulată.",
-      pdf: "PDF",
+      pdf: "Descarcă PDF",
       downloadFailed: "Nu am putut face fișierul. Încearcă din nou.",
     },
     lines: {
@@ -4877,7 +4865,7 @@ export default {
   },
   takeoff: {
     title: "Antemăsurătoare",
-    locked: "Devizul e trimis, așa că antemăsurătoarea rămâne cea de atunci.",
+    locked: "Blocată · devizul e trimis",
     download: { pdf: "Anexa în PDF", xlsx: "Anexa în Excel" },
     card: {
       title: "Antemăsurătoare",

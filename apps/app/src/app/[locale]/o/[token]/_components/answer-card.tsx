@@ -248,7 +248,14 @@ export function AnswerCard({
   return (
     <Card data-framed>
       <CardContent className="gap-5 pt-5">
-        <TotalBlock offer={offer} updating={updating} />
+        <div className="grid gap-1">
+          <TotalBlock offer={offer} updating={updating} />
+          {offer.expiresAt !== undefined && (
+            <p className="m-0 text-meta text-ink-2">
+              {t("validUntil", { date: formatDay(offer.expiresAt, locale) })}
+            </p>
+          )}
+        </div>
         <div className="grid gap-2">
           <Button
             type="button"
@@ -273,11 +280,6 @@ export function AnswerCard({
             {download("ghost")}
           </div>
         </div>
-        {offer.expiresAt !== undefined && (
-          <p className="m-0 text-meta text-ink-3">
-            {t("validUntil", { date: formatDay(offer.expiresAt, locale) })}
-          </p>
-        )}
       </CardContent>
     </Card>
   );
@@ -361,7 +363,7 @@ export function MobileAnswerBar({
               type="button"
               variant="ghost"
               size="icon"
-              className="-mr-2 size-11 shrink-0"
+              className="-mr-3.5 size-11 shrink-0"
               aria-label={t("decide.download")}
               disabled={downloading}
               onClick={onDownload}

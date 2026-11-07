@@ -92,6 +92,7 @@ const config = {
         ],
         // A name for what follows, inside the app: table heads, groups, facts.
         caption: ["13px", { lineHeight: "18px", fontWeight: "450" }],
+        head: ["12px", { lineHeight: "16px", fontWeight: "500" }],
         code: ["13px", { lineHeight: "20px" }],
       },
       colors: {
@@ -194,7 +195,7 @@ const config = {
       },
       spacing: {
         sidebar: "256px",
-        rail: "288px",
+        rail: "280px",
       },
       keyframes: {
         "accordion-down": {

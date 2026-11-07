@@ -303,7 +303,7 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
       </div>
       <OfferPayment offer={offer} folded />
       <div className="grid gap-1 text-meta text-ink-2">
-        <span>{facts.join(" · ")}</span>
+        <span>{facts.join("\u00a0· ")}</span>
         <span>
           {offer.viewCount === 0 || offer.lastViewedAt === undefined
             ? t("notViewed")

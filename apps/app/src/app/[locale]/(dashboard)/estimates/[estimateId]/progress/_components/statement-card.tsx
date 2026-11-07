@@ -264,7 +264,7 @@ export function StatementCard({
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
             <span className="sr-only">{t("thisValue")}</span>
-            <span className="text-stat tabular-nums text-ink">
+            <span className="text-figure tabular-nums text-ink">
               <Amount value={formatMoney(statement.period.subtotal, locale)} />
             </span>
             {t("thisValueUnit")}
@@ -390,7 +390,8 @@ function RowsTable({
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
-          <TableHead className="w-[110px] rounded-t-lg bg-sunken/60 pr-6 text-right font-medium text-ink">
+          {/* Over the numbers, not over the unit that follows them. */}
+          <TableHead className="w-[140px] rounded-t-lg bg-sunken/60 pr-[57px] text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -407,6 +408,8 @@ function RowsTable({
           const differs =
             lines > 0 && Math.abs(row.attachmentTotal - row.quantity) > 0.0005;
           const unit = formatUnit(row.unit, locale);
+          // All of it is done and nothing's typed in for this period.
+          const spent = row.quantity === 0 && row.remainingQuantity <= 0;
           return (
             <Fragment key={row._id}>
               {heading && (
@@ -509,15 +512,15 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken/60 pr-6 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
-                  <div className="max-md:flex max-md:items-center max-md:gap-2">
+                <TableCell className="whitespace-nowrap bg-sunken/60 pr-3 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
+                  <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">
                       {t("quantity")}
                     </span>
                     <InlineNumber
                       fixed
-                      placeholder="–"
+                      placeholder={spent ? "–" : undefined}
                       value={row.quantity}
                       format={(value) =>
                         value !== 0 ? formatQuantity(value, locale) : ""
@@ -532,19 +535,27 @@ function RowsTable({
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
                         "-my-1.5 w-20",
-                        // What's to be filled in looks like it, on every row.
-                        fillable &&
-                          "border-input border-b-edge bg-field hover:border-edge",
+                        // A field's lower edge says what's to be filled in; with
+                        // nothing left it reads as the columns beside it, until
+                        // it's pointed at.
+                        fillable && !spent && "border-b-edge",
+                        fillable && "placeholder:text-ink-3/60 hover:bg-field",
                         row.quantity === 0
                           ? "text-ink-3"
                           : "font-medium text-ink",
-                        // A thumb needs room.
+                        // A thumb needs room, and has nothing to point with.
                         fillable
-                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24"
+                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:border-b-edge max-md:bg-field"
                           : "max-md:my-0 max-md:h-auto max-md:w-auto",
                       )}
                     />
-                    <span className="text-meta text-ink-3 md:hidden">
+                    {/* What's being typed in, as on the Deviz. */}
+                    <span
+                      className={cn(
+                        "text-meta text-ink-3 md:ml-[17px] md:w-7 md:text-left md:text-body",
+                        spent && "md:invisible",
+                      )}
+                    >
                       {unit}
                     </span>
                   </div>

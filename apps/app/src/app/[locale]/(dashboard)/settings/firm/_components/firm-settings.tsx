@@ -301,22 +301,23 @@ function DetailsForm({
         <CardHeader className="grid justify-stretch gap-1">
           <CardTitle>{t("detailsTitle")}</CardTitle>
           <CardDescription>{t("detailsDescription")}</CardDescription>
+          {/* Its place stays while there's something to save, so the fields
+              don't move under the one typing. */}
+          {canEdit && (
+            <span
+              aria-hidden
+              className={cn(
+                "mt-2 flex items-center gap-1 text-meta text-ink-3",
+                (changed || saving) && "invisible",
+              )}
+            >
+              <Icons.Check className="size-3.5" />
+              {t("allSaved")}
+            </span>
+          )}
         </CardHeader>
         <CardContent>
-          <fieldset
-            disabled={!canEdit}
-            className="relative m-0 grid gap-5 border-0 p-0"
-          >
-            {/* Over the fields it's about, on the first one's line. */}
-            {canEdit && !changed && !saving && (
-              <span
-                aria-hidden
-                className="absolute right-0 top-px flex items-center gap-1 text-meta text-ink-3"
-              >
-                <Icons.Check className="size-3.5" />
-                {t("allSaved")}
-              </span>
-            )}
+          <fieldset disabled={!canEdit} className="m-0 grid gap-5 border-0 p-0">
             <Field
               label={tFirm("name")}
               htmlFor="firm-name"

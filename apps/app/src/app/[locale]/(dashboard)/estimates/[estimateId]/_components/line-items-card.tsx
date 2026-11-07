@@ -61,9 +61,10 @@ const MID_ONLY =
 // The item column starts right after the number, or at the card's edge without it.
 const ITEM_CELL = "pl-0";
 const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-4";
-// Past the chevron, so heads and section names start where the titles do.
-const TITLE_CELL = "pl-7 [@container(min-width:38rem)]:pl-6";
-const NESTED_TITLE_CELL = "pl-10";
+// So heads and section names start where the titles do: past the number where
+// it's in the cell, at the cell's start where it has a column of its own.
+const TITLE_CELL = "pl-7 [@container(min-width:38rem)]:pl-0";
+const NESTED_TITLE_CELL = "pl-10 [@container(min-width:38rem)]:pl-4";
 
 /** A property of a row, on its quietest line: a dot and a word. */
 function RowTag({
@@ -162,7 +163,9 @@ export function LineItemsCard({
               nested ? NESTED_ITEM_CELL : ITEM_CELL,
             )}
           >
-            <p className="m-0 pl-6">{t("sections.empty")}</p>
+            <p className="m-0 pl-7 [@container(min-width:38rem)]:pl-0">
+              {t("sections.empty")}
+            </p>
           </TableCell>
         </TableRow>
       )}
@@ -302,11 +305,11 @@ export function LineItemsCard({
                 </TableHead>
                 {/* Over the numbers, not over the unit that follows them. */}
                 <TableHead
-                  className={cn("w-[116px] pr-12 text-right", FROM_MID)}
+                  className={cn("w-[104px] pr-9 text-right", FROM_MID)}
                 >
                   {t("items.columns.quantity")}
                 </TableHead>
-                <TableHead className={cn("w-[92px] text-right", FROM_WIDE)}>
+                <TableHead className={cn("w-[88px] text-right", FROM_WIDE)}>
                   {t("items.columns.unitPrice")}
                 </TableHead>
                 <TableHead className="w-[100px] text-right">
@@ -567,14 +570,22 @@ function ItemRows({
 
   return (
     <>
-      <TableRow className="items-row group/row [&>td]:py-[11px] [@container(min-width:38rem)]:[&>td]:h-16">
+      <TableRow className="items-row group/row [&>td]:pb-3 [&>td]:pt-[11px]">
         <TableCell
           className={cn(
             "text-right align-top tabular-nums text-ink-3",
             FROM_MID,
           )}
         >
-          {index}
+          {/* Gives way to the chevron where the row is reached for. */}
+          <span
+            className={cn(
+              "transition-opacity group-focus-within/row:opacity-0 group-hover/row:opacity-0",
+              expanded && "opacity-0",
+            )}
+          >
+            {index}
+          </span>
         </TableCell>
         <TableCell
           className={cn(
@@ -588,7 +599,7 @@ function ItemRows({
             aria-expanded={expanded}
             aria-controls={detailsId}
             className={cn(
-              "group grid w-full min-w-0 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[1rem_minmax(0,1fr)] [@container(min-width:38rem)]:gap-x-2",
+              "group relative grid w-full min-w-0 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[minmax(0,1fr)]",
               // Room for the row's menu where it's always shown; with a pointer
               // it floats over the row's end, only while it's asked for.
               editable && "[@media(hover:none)]:pr-9",
@@ -597,36 +608,45 @@ function ItemRows({
             <ChevronRight
               aria-hidden
               className={cn(
-                "mt-0.5 size-4 text-ink-3 transition-transform",
+                // In the number's column: 23 of them at rest would be 23 things
+                // to look past.
+                "absolute right-full top-0.5 mr-3 size-4 text-ink-3 opacity-0 transition-[opacity,transform] group-focus-within/row:opacity-100 group-hover/row:opacity-100",
                 MID_UP,
-                expanded && "rotate-90",
+                expanded && "rotate-90 opacity-100",
               )}
             />
             <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
               {index}
             </span>
-            <span className="text-body text-ink [text-wrap:pretty] group-hover:underline">
-              {keepUnits(item.title)}
-            </span>
-            <span className="col-start-2 hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:block">
-              {[tenderPosition, code, source]
-                .filter(Boolean)
-                .map((part, place) => (
-                  <Fragment key={part}>
-                    {place > 0 && " · "}
-                    <span className="whitespace-nowrap">{part}</span>
-                  </Fragment>
-                ))}
-              <span className={MID_ONLY}>
-                {" · "}
-                <span className="whitespace-nowrap">
-                  {t("items.pricePerUnit", { price, unit })}
-                </span>
+            {/* The code follows the title on its line: a Deviz is read by its
+                titles, and a short one takes a single row. */}
+            <span className="text-body">
+              <span className="text-ink group-hover:underline">
+                {keepUnits(item.title)}
               </span>
-              {tags.length > 0 && "\u2002"}
-              {tags.length > 0 && (
-                <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
-              )}
+              {/* A space, so it goes at the end of a line and a code that wraps
+                  starts on the title's edge. */}
+              <span className="[word-spacing:6px]"> </span>
+              <span className="hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:inline">
+                {[tenderPosition, code, source]
+                  .filter(Boolean)
+                  .map((part, place) => (
+                    <Fragment key={part}>
+                      {place > 0 && " · "}
+                      <span className="whitespace-nowrap">{part}</span>
+                    </Fragment>
+                  ))}
+                <span className={MID_ONLY}>
+                  {"\u00a0·\u00a0"}
+                  <span className="whitespace-nowrap">
+                    {t("items.pricePerUnit", { price, unit })}
+                  </span>
+                </span>
+                {tags.length > 0 && "\u2002"}
+                {tags.length > 0 && (
+                  <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
+                )}
+              </span>
             </span>
             <span
               className={cn(
@@ -676,7 +696,7 @@ function ItemRows({
             </div>
           )}
         </TableCell>
-        <TableCell className={cn("whitespace-nowrap align-top", FROM_MID)}>
+        <TableCell className={cn("whitespace-nowrap pr-0 align-top", FROM_MID)}>
           {/* Held to the cell's end, so a long number grows to the left and
               stays in line with the others. */}
           <div className="flex items-baseline justify-end">
@@ -720,7 +740,7 @@ function ItemRows({
           >
             {/* No width of its own, so the wide resource table scrolls
                 inside the row instead of widening the whole table. */}
-            <div className="grid w-0 min-w-full gap-2 pl-6">
+            <div className="grid w-0 min-w-full gap-2 pl-7 [@container(min-width:38rem)]:pl-0">
               {item.tenderRef && <TenderRef item={item} />}
               {item.notes && (
                 <p className="m-0 whitespace-pre-line text-body text-ink-2">

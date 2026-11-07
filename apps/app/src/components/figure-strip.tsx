@@ -31,7 +31,8 @@ export function FigureStrip({
 /**
  * One figure of a FigureStrip: what it is, how much, and in what. The rows are
  * the strip's, so the figures share a baseline whatever their size; `lead` is
- * the one the page comes down to.
+ * the one the page comes down to, and the only one with its bani a step back:
+ * the rest are one tone, so a strip doesn't read as five two-tone objects.
  */
 export function Figure({
   label,
@@ -54,11 +55,11 @@ export function Figure({
       <p className="m-0 flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
         <span
           className={cn(
-            "text-stat tabular-nums text-ink",
-            lead && "sm:text-hero",
+            "text-stat tabular-nums",
+            lead ? "text-ink sm:text-hero" : "text-ink-2",
           )}
         >
-          {typeof value === "string" ? <Amount value={value} /> : value}
+          {lead && typeof value === "string" ? <Amount value={value} /> : value}
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}
       </p>

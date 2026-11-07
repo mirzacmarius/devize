@@ -36,13 +36,9 @@ export function RailStat({
               href={href}
               className="group flex items-baseline justify-between gap-3 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="flex min-w-0 items-center gap-1">
-                <h3 className="m-0 text-body font-normal text-ink">{label}</h3>
-                <ChevronRight
-                  aria-hidden
-                  className="size-4 shrink-0 text-ink-3 transition-transform group-hover:translate-x-0.5"
-                />
-              </div>
+              <h3 className="m-0 min-w-0 text-body font-normal text-ink underline decoration-ink-3/50 underline-offset-[3px] group-hover:decoration-current">
+                {label}
+              </h3>
               <span className="text-body font-medium tabular-nums text-ink">
                 {value}
               </span>

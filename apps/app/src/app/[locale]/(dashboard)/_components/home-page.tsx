@@ -223,13 +223,14 @@ function Kpi({
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
         <span
           className={cn(
-            "tabular-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
+            "tabular-nums tracking-[-0.01em] [font-weight:var(--weight-figure)]",
             lead
-              ? "text-[28px] leading-9 sm:text-hero"
-              : "text-base leading-6 max-sm:[&>span]:text-ink sm:text-stat",
+              ? "text-[28px] leading-9 text-ink sm:text-hero"
+              : "text-base leading-6 text-ink-2 sm:text-stat",
           )}
         >
-          <Amount value={value} />
+          {/* One figure leads; the others are one tone. */}
+          {lead ? <Amount value={value} /> : value}
         </span>
         {unit && (
           <span
@@ -446,7 +447,8 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 const todoTones = {
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
-  quiet: "bg-sunken text-ink-3",
+  // Only what can't wait has a tile.
+  quiet: "text-ink-3",
 };
 
 /**

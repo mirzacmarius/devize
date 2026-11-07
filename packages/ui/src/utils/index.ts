@@ -37,6 +37,7 @@ const twMerge = extendTailwindMerge({
             "pill",
             "label",
             "caption",
+            "head",
             "code",
           ],
         },

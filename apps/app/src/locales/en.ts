@@ -467,6 +467,7 @@ export default {
     pricesOf: "prices of {date}",
     summary: {
       total: "Total incl. VAT",
+      unit: "lei incl. VAT",
       withoutVat: "{total} lei excl. VAT",
     },
     notFoundTitle: "Estimate not found",
@@ -487,19 +488,6 @@ export default {
       "Drops the price typed by hand and takes the company's price, the store's or the reference price.",
     resourcesHint:
       "Consumption and prices change in this estimate only; the norm in the catalog stays the same.",
-    steps: {
-      label: "Estimate stages",
-      draft: "Draft",
-      sent: "Sent to client",
-      accepted: "Accepted",
-      waiting: "Waiting for an answer",
-      states: {
-        done: "done",
-        failed: "failed",
-        current: "in progress",
-        todo: "to do",
-      },
-    },
     actions: {
       openProgress: "Open the statements",
       createOffer: "Create the offer",
@@ -4332,7 +4320,7 @@ export default {
         "Only for an invoice that went nowhere: not sent to ANAF and unpaid. Its number stays taken and the invoice shows as cancelled.",
       cancelConfirm: "Cancel it",
       cancelled: "The invoice was cancelled.",
-      pdf: "PDF",
+      pdf: "Download PDF",
       downloadFailed: "The file could not be made. Try again.",
     },
     lines: {
@@ -4881,7 +4869,7 @@ export default {
   },
   takeoff: {
     title: "Quantity take-off",
-    locked: "The estimate was sent, so its take-off stays as it was.",
+    locked: "Locked · the estimate was sent",
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
       title: "Quantity take-off",
