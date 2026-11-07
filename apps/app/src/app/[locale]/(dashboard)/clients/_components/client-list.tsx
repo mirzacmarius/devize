@@ -204,12 +204,11 @@ export function ClientList() {
                           <span className="truncate text-meta text-ink-2 group-hover/latest:underline">
                             {going.latest.title}
                           </span>
-                          <span className="truncate text-meta tabular-nums text-ink-3">
+                          <span className="flex min-w-0 items-baseline gap-2 text-meta tabular-nums text-ink-3">
                             {estimateCode(
                               going.latest.number,
                               going.latest.revision,
                             )}
-                            {" · "}
                             <EstimateStatusPill
                               short
                               status={going.latest.status}

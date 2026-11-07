@@ -4,7 +4,7 @@ import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Download, TriangleAlert } from "lucide-react";
 import { useState } from "react";
-import { FoldRow, LinkRow } from "@/components/fold-card";
+import { FoldCard } from "@/components/fold-card";
 import { EfacturaPill } from "@/components/invoice-status";
 import { formatCalendarDate, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -12,20 +12,14 @@ import { ValidateXml } from "./checks-card";
 import type { Invoice } from "./types";
 import { useDownloadInvoice } from "./use-download-invoice";
 
-/**
- * Where an issued invoice stands with ANAF's e-Factura: the deadline to send
- * it, the XML to download and upload in SPV, and what ANAF answered.
- */
-export function EfacturaCard({ invoice }: { invoice: Invoice }) {
+/** What's known about an invoice's way to ANAF, wherever it's shown. */
+function useEfacturaParts(invoice: Invoice) {
   const t = useScopedI18n("invoices.efactura");
   const locale = useCurrentLocale();
   const download = useDownloadInvoice();
   const [busy, setBusy] = useState(false);
   const { efactura } = invoice;
   const live = invoice.status === "issued" || invoice.status === "paid";
-  const late =
-    live && efactura.status === "not_sent" && efactura.deadline < todayInput();
-  const settled = efactura.status === "accepted";
 
   const deadline = live && (
     <div className="grid gap-0.5">
@@ -65,52 +59,78 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
       </Button>
     </ValidateXml>
   );
+  return { deadline, identifiers, xml };
+}
+
+/**
+ * Where an issued invoice stands with ANAF's e-Factura: the deadline to send
+ * it, the XML to download and upload in SPV, and what ANAF answered. Once ANAF
+ * has accepted it, only that.
+ */
+export function EfacturaCard({ invoice }: { invoice: Invoice }) {
+  const t = useScopedI18n("invoices.efactura");
+  const { deadline, identifiers, xml } = useEfacturaParts(invoice);
+  const { efactura } = invoice;
+  const live = invoice.status === "issued" || invoice.status === "paid";
+  const late =
+    live && efactura.status === "not_sent" && efactura.deadline < todayInput();
+  const settled = efactura.status === "accepted";
+  const errors = efactura.errors ?? [];
+  const failed = errors.length > 0;
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className={settled && !failed ? "!pb-0" : undefined}>
         <CardTitle>{t("title")}</CardTitle>
         {live && <EfacturaPill status={efactura.status} late={late} />}
       </CardHeader>
-      <CardContent>
-        {!settled && deadline}
-        {late && (
-          <p role="alert" className="m-0 flex gap-2 text-body text-ink">
-            <TriangleAlert
-              aria-hidden
-              className="mt-0.5 size-4 shrink-0 text-warning"
-            />
-            {t("overdue")}
-          </p>
-        )}
-        {live && efactura.status === "not_sent" && (
-          <p className="m-0 text-body text-ink-2">{t("manual")}</p>
-        )}
-        {!settled && identifiers}
-        {efactura.errors && efactura.errors.length > 0 && (
-          <div className="grid gap-1">
-            <span className="text-meta text-danger">{t("errors")}</span>
-            <ul className="m-0 grid list-disc gap-1 pl-4 text-meta text-ink-2">
-              {efactura.errors.map((error) => (
-                <li key={error} className="[overflow-wrap:anywhere]">
-                  {error}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {!settled && xml}
-        <div className="grid">
-          {settled && (
-            <FoldRow title={t("details")}>
-              {deadline}
-              {identifiers}
-              {xml}
-            </FoldRow>
+      {(!settled || failed) && (
+        <CardContent>
+          {!settled && deadline}
+          {late && (
+            <p role="alert" className="m-0 flex gap-2 text-body text-ink">
+              <TriangleAlert
+                aria-hidden
+                className="mt-0.5 size-4 shrink-0 text-warning"
+              />
+              {t("overdue")}
+            </p>
           )}
-          {live && <LinkRow title={t("settings")} href="/settings/billing" />}
-        </div>
-      </CardContent>
+          {live && efactura.status === "not_sent" && (
+            <p className="m-0 text-body text-ink-2">{t("manual")}</p>
+          )}
+          {!settled && identifiers}
+          {failed && (
+            <div className="grid gap-1">
+              <span className="text-meta text-danger">{t("errors")}</span>
+              <ul className="m-0 grid list-disc gap-1 pl-4 text-meta text-ink-2">
+                {errors.map((error) => (
+                  <li key={error} className="[overflow-wrap:anywhere]">
+                    {error}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {!settled && xml}
+        </CardContent>
+      )}
     </Card>
+  );
+}
+
+/** Once ANAF has accepted it, the rest is a row to open now and then. */
+export function EfacturaDetails({ invoice }: { invoice: Invoice }) {
+  const t = useScopedI18n("invoices.efactura");
+  const { deadline, identifiers, xml } = useEfacturaParts(invoice);
+  if (invoice.efactura.status !== "accepted") {
+    return null;
+  }
+  return (
+    <FoldCard title={t("details")}>
+      {deadline}
+      {identifiers}
+      {xml}
+    </FoldCard>
   );
 }

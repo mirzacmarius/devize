@@ -8,13 +8,7 @@ import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import {
-  Check,
-  ChevronRight,
-  CircleAlert,
-  CircleDashed,
-  TriangleAlert,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
 import { FoldCard } from "@/components/fold-card";
@@ -26,13 +20,13 @@ import type { Check as CheckResult, CheckState } from "./checks";
 import { useRefreshedMessage } from "./estimate-actions";
 import type { Estimate, OpenPanel, Updates } from "./types";
 
-const stateIcon: Record<CheckState, { icon: typeof Check; className: string }> =
-  {
-    passed: { icon: Check, className: "text-success" },
-    warning: { icon: CircleAlert, className: "text-warning-dot" },
-    failed: { icon: TriangleAlert, className: "text-danger" },
-    pending: { icon: CircleDashed, className: "text-ink-3" },
-  };
+// The dots of every status in the app; the row's words say what it means.
+const stateDot: Record<CheckState, string> = {
+  passed: "bg-success-dot",
+  warning: "bg-warning-dot",
+  failed: "bg-danger",
+  pending: "shadow-[inset_0_0_0_1.5px_hsl(var(--active-dot))]",
+};
 
 // How many missing resources to name before "și încă 3".
 const NAMED = 3;
@@ -98,12 +92,12 @@ export function ChecksCard({
             type="button"
             aria-expanded={showPassed}
             onClick={() => setShowPassed((value) => !value)}
-            className="grid w-fit grid-cols-[16px_minmax(0,1fr)] items-center gap-2.5 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex w-fit items-center gap-[5px] rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ChevronRight
               aria-hidden
               className={cn(
-                "size-3.5 justify-self-center transition-transform",
+                "-ml-[3px] size-3.5 transition-transform",
                 showPassed && "rotate-90",
               )}
             />
@@ -163,13 +157,15 @@ function CheckRow({
 }) {
   const t = useScopedI18n("estimate");
   const { title, detail, explanation } = useCheckText()(check);
-  const { icon: Icon, className } = stateIcon[check.state];
   return (
     <li
       title={explanation}
-      className="grid grid-cols-[16px_minmax(0,1fr)] items-start gap-2.5"
+      className="grid grid-cols-[8px_minmax(0,1fr)] items-start gap-2"
     >
-      <Icon className={cn("mt-0.5 size-4", className)} aria-hidden />
+      <span
+        aria-hidden
+        className={cn("mt-1.5 size-2 rounded-full", stateDot[check.state])}
+      />
       {/* What's wrong and, at the end of its line, what to do about it. */}
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3">
         <span className="text-body font-medium text-ink">

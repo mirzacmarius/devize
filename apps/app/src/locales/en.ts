@@ -4269,6 +4269,9 @@ export default {
       overdue: "Overdue payments",
       toSend: "To send to ANAF",
       lateCount: "Deadline passed: {count}",
+      "toSendUnit#one": "invoice",
+      "toSendUnit#few": "invoices",
+      "toSendUnit#other": "invoices",
       "invoices#zero": "No invoices",
       "invoices#one": "One invoice",
       "invoices#few": "{count} invoices",
@@ -4519,7 +4522,7 @@ export default {
     },
     efactura: {
       title: "e-Factura",
-      details: "Details",
+      details: "e-Factura details",
       deadline: "Deadline to send to ANAF: {date}",
       deadlineHint: "5 working days from issue (OUG 89/2025).",
       overdue:
@@ -4570,7 +4573,7 @@ export default {
       direct: "Direct costs",
       profitDown: "Profit drops by",
       profitUp: "Profit rises by",
-      profitLeft: "{left} lei left of the {was} lei when sent",
+      profit: "Profit",
       fromTo: "{from} → {to}",
       changes: "Biggest changes",
       change: "{from} → {to}\u00a0lei/{unit}",
@@ -4927,7 +4930,7 @@ export default {
     },
     rooms: {
       title: "Rooms",
-      description: "Dimensions in metres.",
+      description: "Dimensions and perimeter in metres, areas in sqm.",
       add: "Add a room",
       emptyTitle: "No rooms yet",
       emptyDescription:
@@ -4938,9 +4941,9 @@ export default {
         width: "Width",
         height: "Height",
         openings: "Openings",
-        floor: "Floor (sqm)",
-        walls: "Walls (sqm)",
-        perimeter: "Perimeter (m)",
+        floor: "Floor",
+        walls: "Walls",
+        perimeter: "Perimeter",
       },
       openings: {
         door: "{count} door",

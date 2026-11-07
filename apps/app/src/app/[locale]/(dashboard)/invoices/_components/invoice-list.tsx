@@ -5,7 +5,6 @@ import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
-import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
@@ -118,7 +117,7 @@ export function InvoiceList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <FigureStrip className="mb-3 xl:grid-cols-[minmax(0,1fr)]">
+          <FigureStrip className="mb-3">
             <Figure
               lead
               label={t("receivable.total")}
@@ -149,13 +148,11 @@ export function InvoiceList() {
             <Figure
               label={t("receivable.toSend")}
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
-              // In red here as on the rows it's about.
+              unit={anaf && t("receivable.toSendUnit", { count: anaf.toSend })}
+              // Red on the rows it's about, not here as well.
               note={
-                anaf?.firstLate && (
-                  <StatusPill tone="danger" dot={false}>
-                    {t("receivable.lateCount", { count: anaf.late })}
-                  </StatusPill>
-                )
+                anaf?.firstLate &&
+                t("receivable.lateCount", { count: anaf.late })
               }
             />
           </FigureStrip>

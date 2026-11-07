@@ -75,40 +75,6 @@ export function LinkRow({
   );
 }
 
-/** A row that unfolds what it holds, among the other rows of a section. */
-export function FoldRow({
-  title,
-  lead,
-  attention = false,
-  children,
-}: {
-  title: ReactNode;
-  lead?: ReactNode;
-  attention?: boolean;
-  children: ReactNode;
-}) {
-  const { open, toggle, contentId } = useFold(attention);
-  return (
-    <div data-row>
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={contentId}
-        onClick={toggle}
-        className={ROW}
-      >
-        <RowText title={title} lead={lead} open={open} />
-      </button>
-      <div
-        id={contentId}
-        className={cn("grid gap-3 pb-3 pt-1", !open && "hidden")}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
 /**
  * What the rows under it are about, where they stand beside the main column
  * and read as one list.
@@ -228,7 +194,7 @@ export function LinkCard({
   children,
 }: {
   title: string;
-  lead: ReactNode;
+  lead?: ReactNode;
   href: string;
   children?: ReactNode;
 }) {

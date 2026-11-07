@@ -135,7 +135,7 @@ export function RoomsCard({
             <TableHeader>
               <TableRow>
                 {/* The numbers share the width; the words take what they need. */}
-                <TableHead className="xl:w-[22%]">
+                <TableHead className="xl:w-[23%]">
                   {t("columns.room")}
                 </TableHead>
                 <TableHead className="hidden xl:table-cell xl:w-[18%]">
@@ -156,7 +156,7 @@ export function RoomsCard({
                 <TableHead className="text-right xl:w-[10%]">
                   {t("columns.walls")}
                 </TableHead>
-                <TableHead className="text-right xl:w-[10%]">
+                <TableHead className="text-right xl:w-[9%]">
                   {t("columns.perimeter")}
                 </TableHead>
                 {!locked && <TableHead className="w-8" />}

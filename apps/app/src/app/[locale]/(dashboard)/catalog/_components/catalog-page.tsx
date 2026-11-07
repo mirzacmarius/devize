@@ -177,7 +177,7 @@ export function CatalogPage() {
         <div className="grid min-w-0 gap-3 md:flex md:min-h-11 md:items-center md:justify-between md:gap-6">
           <TabsNav
             aria-label={t("views.label")}
-            className="md:shrink-0 md:border-b-0"
+            className="md:h-11 md:shrink-0 md:border-b-0"
           >
             <TabsNavLink asChild active={!isOwn}>
               <Link replace href="/catalog" onClick={() => setText("")}>
@@ -300,7 +300,7 @@ function PartRow({
     <TableRow
       data-group
       data-part
-      className="border-b-0 hover:bg-transparent max-md:pb-2 max-md:pt-8 max-md:first:pt-2 md:[&>td]:h-auto md:[&>td]:pb-2 md:[&>td]:pt-8 md:first:[&>td]:pt-4"
+      className="hover:bg-transparent max-md:pb-2 max-md:pt-8 max-md:first:pt-2 md:[&>td]:h-auto md:[&>td]:pb-2 md:[&>td]:pt-8 md:first:[&>td]:pt-4"
     >
       <TableCell colSpan={7} data-stack="wide">
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-0.5">

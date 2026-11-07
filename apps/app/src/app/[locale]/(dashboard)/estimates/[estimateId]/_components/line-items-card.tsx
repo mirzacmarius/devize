@@ -572,7 +572,7 @@ function ItemRows({
 
   return (
     <>
-      <TableRow className="items-row group/row [&>td]:py-[11px] [@container(min-width:38rem)]:[&>td]:h-16">
+      <TableRow className="items-row group/row [&>td]:py-[11px] [@container(min-width:38rem)]:[&>td]:h-14 [@container(min-width:38rem)]:[&>td]:py-2">
         <TableCell
           className={cn(
             "text-right align-top tabular-nums text-ink-3",

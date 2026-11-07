@@ -278,9 +278,7 @@ export default function ManufacturersPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {!row.message ? (
-                          <Nil />
-                        ) : row.message.status === "draft" &&
+                        {!row.message ? null : row.message.status === "draft" &&
                           row.message.blocked ? (
                           <Pill tone="danger">
                             {tAdmin(`status.message.${row.message.status}`)}

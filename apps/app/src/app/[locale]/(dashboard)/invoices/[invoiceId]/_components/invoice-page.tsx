@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { LinkCard } from "@/components/fold-card";
 import { InvoiceStatusPill } from "@/components/invoice-status";
 import { Rail, RailList, RailSummary } from "@/components/rail-stat";
 import { TotalHero } from "@/components/total-hero";
@@ -17,7 +18,7 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { BuyerCard } from "./buyer-card";
 import { ChecksCard } from "./checks-card";
 import { DetailsCard } from "./details-card";
-import { EfacturaCard } from "./efactura-card";
+import { EfacturaCard, EfacturaDetails } from "./efactura-card";
 import { InvoiceActions } from "./invoice-actions";
 import { LinesCard } from "./lines-card";
 import { PaymentsCard } from "./payments-card";
@@ -96,8 +97,15 @@ export function InvoicePage() {
             {live && <EfacturaCard invoice={invoice} />}
           </RailSummary>
           <RailList>
+            {live && <EfacturaDetails invoice={invoice} />}
             <BuyerCard invoice={invoice} />
             <DetailsCard invoice={invoice} />
+            {live && (
+              <LinkCard
+                title={t("efactura.settings")}
+                href="/settings/billing"
+              />
+            )}
           </RailList>
         </Rail>
       </div>

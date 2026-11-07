@@ -6,22 +6,18 @@ import { Amount } from "@/components/amount";
 /** The figures a page is about, side by side in one card, with a note under it. */
 export function FigureStrip({
   hint,
-  compact = false,
   className,
   children,
 }: {
   hint?: ReactNode;
-  /** Above a page's own work, where the table is what the page is about. */
-  compact?: boolean;
   className?: string;
   children: ReactNode;
 }) {
   return (
     <section className="grid min-w-0 gap-2 sm:-mt-1">
       <Card
-        data-compact={compact || undefined}
         className={cn(
-          "group/strip grid grid-cols-2 xl:auto-cols-[minmax(0,1fr)] xl:grid-flow-col xl:grid-cols-[minmax(0,1.25fr)]",
+          "grid grid-cols-2 xl:auto-cols-[minmax(0,1fr)] xl:grid-flow-col xl:grid-cols-[minmax(0,1.25fr)]",
           className,
         )}
       >
@@ -63,9 +59,7 @@ export function Figure({
         <span
           className={cn(
             "tabular-nums text-ink",
-            lead
-              ? "text-stat sm:text-hero sm:group-data-[compact]/strip:text-lead"
-              : "text-figure",
+            lead ? "text-stat sm:text-hero" : "text-figure",
           )}
         >
           {lead && typeof value === "string" ? <Amount value={value} /> : value}

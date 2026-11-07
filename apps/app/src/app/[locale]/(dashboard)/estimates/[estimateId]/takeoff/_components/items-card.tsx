@@ -110,7 +110,8 @@ export function ItemsCard({
                 groups.loose.length > 0 && "border-b border-rule",
               )}
             >
-              <span className="col-start-2">{t("columnItem")}</span>
+              <span className="w-4 text-right">#</span>
+              <span>{t("columnItem")}</span>
               <span>{t("columnState")}</span>
               <span className="pr-9 text-right">{t("columnInEstimate")}</span>
             </li>
@@ -192,7 +193,7 @@ function ItemRow({
   );
 
   return (
-    <li className="grid gap-1.5 border-b border-border py-3 last:border-0">
+    <li className="grid gap-1.5 border-b border-border py-3 last:border-0 md:py-2">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div
           className={cn(

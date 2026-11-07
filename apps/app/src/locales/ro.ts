@@ -4266,6 +4266,9 @@ export default {
       overdue: "Plăți restante",
       toSend: "De transmis la ANAF",
       lateCount: "Termen depășit: {count}",
+      "toSendUnit#one": "factură",
+      "toSendUnit#few": "facturi",
+      "toSendUnit#other": "de facturi",
       "invoices#zero": "Nicio factură",
       "invoices#one": "O factură",
       "invoices#few": "{count} facturi",
@@ -4516,7 +4519,7 @@ export default {
     },
     efactura: {
       title: "e-Factura",
-      details: "Detalii",
+      details: "Detalii e-Factura",
       deadline: "Termen de trimitere la ANAF: {date}",
       deadlineHint: "5 zile lucrătoare de la emitere (OUG 89/2025).",
       overdue:
@@ -4567,7 +4570,7 @@ export default {
       direct: "Costuri directe",
       profitDown: "Profitul scade cu",
       profitUp: "Profitul crește cu",
-      profitLeft: "Rămân {left} lei din {was} lei la trimitere",
+      profit: "Profit",
       fromTo: "{from} → {to}",
       changes: "Cele mai mari schimbări",
       change: "{from} → {to}\u00a0lei/{unit}",
@@ -4922,7 +4925,7 @@ export default {
     },
     rooms: {
       title: "Camere",
-      description: "Dimensiunile în metri.",
+      description: "Dimensiunile și perimetrul în metri, suprafețele în mp.",
       add: "Adaugă o cameră",
       emptyTitle: "Nicio cameră încă",
       emptyDescription:
@@ -4933,9 +4936,9 @@ export default {
         width: "Lățime",
         height: "Înălțime",
         openings: "Goluri",
-        floor: "Pardoseală (mp)",
-        walls: "Pereți (mp)",
-        perimeter: "Perimetru (m)",
+        floor: "Pardoseală",
+        walls: "Pereți",
+        perimeter: "Perimetru",
       },
       openings: {
         door: "{count} ușă",

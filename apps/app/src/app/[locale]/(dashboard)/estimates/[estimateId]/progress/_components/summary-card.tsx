@@ -13,7 +13,7 @@ export function SummaryCard({ overview }: { overview: Overview }) {
   const percent = Math.round(overview.executed.percent * 10) / 10;
   const executed = formatPercent(percent, locale);
   return (
-    <FigureStrip compact>
+    <FigureStrip>
       <Figure
         lead
         label={t("title")}

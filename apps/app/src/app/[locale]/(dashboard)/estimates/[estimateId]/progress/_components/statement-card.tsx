@@ -452,7 +452,7 @@ function RowsTable({
                   </TableCell>
                 </TableGroupRow>
               )}
-              <TableRow className="group/row md:[&>td]:h-16 md:[&>td]:pb-[9px] md:[&>td]:pt-[13px]">
+              <TableRow className="group/row md:[&>td]:h-14">
                 <TableCell data-stack="wide" className="relative align-top">
                   <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-6 xl:min-w-64">
                     <span className="w-4 text-right tabular-nums text-ink-3">
@@ -555,12 +555,15 @@ function RowsTable({
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
                         "-my-1 h-7 w-20",
-                        // What's to be filled in is a field like any other; with
-                        // nothing left it's blank, until it's pointed at.
+                        // What's still to fill in is a field like any other. Once
+                        // filled in it's a number on the column's tint, a field
+                        // again when pointed at; without the tint, always one.
                         fillable &&
                           !spent &&
-                          "border-input border-b-edge bg-field",
-                        fillable && "hover:bg-field",
+                          (row.quantity === 0
+                            ? "border-input border-b-edge bg-field"
+                            : "md:max-xl:border-input md:max-xl:border-b-edge md:max-xl:bg-field"),
+                        fillable && "hover:bg-field focus:bg-field",
                         row.quantity === 0
                           ? "text-ink-3"
                           : "font-medium text-ink",

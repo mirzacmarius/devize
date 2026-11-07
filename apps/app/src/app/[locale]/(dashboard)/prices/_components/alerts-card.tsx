@@ -180,11 +180,12 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         </div>
       </div>
 
-      {/* What it does to the profit first: it's what the firm stands to lose. */}
-      <div className="grid gap-x-12 gap-y-5 xl:grid-cols-2">
-        {/* The rules on both sides fall on one line. */}
-        <div className="grid content-start gap-4">
-          <div className="grid gap-1">
+      {/* What it does to the profit first: it's what the firm stands to lose.
+          Both sides share one set of rows, so their rules fall on one line and
+          they end together. */}
+      <div className="grid gap-x-12 gap-y-5 xl:grid-cols-2 xl:gap-y-0">
+        <div className="grid content-start xl:row-span-5 xl:grid-rows-subgrid">
+          <div className="grid gap-1 pb-3 xl:row-span-2 xl:gap-px xl:pb-1">
             <p className="m-0 text-meta text-ink-2">
               {profitChange < 0 ? t("profitDown") : t("profitUp")}
             </p>
@@ -200,19 +201,8 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               </span>
               <span className="text-meta text-ink-3">lei</span>
             </p>
-            <p
-              className={cn(
-                "m-0 text-meta tabular-nums",
-                alert.profitLeft < 0 ? "text-danger" : "text-ink-2",
-              )}
-            >
-              {t("profitLeft", {
-                left: money(alert.profitLeft),
-                was: money(alert.sentProfit),
-              })}
-            </p>
           </div>
-          <dl className="m-0 grid">
+          <dl className="contents">
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-body text-ink-2">
                 {t("total")}
@@ -237,57 +227,54 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
             </div>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
+              <dt className="text-body text-ink-2">{t("profit")}</dt>
+              <dd
+                className={cn(
+                  "m-0 text-body tabular-nums",
+                  alert.profitLeft < 0 ? "text-danger" : "text-ink",
+                )}
+              >
+                {t("fromTo", {
+                  from: money(alert.sentProfit),
+                  to: money(alert.profitLeft),
+                })}
+                <span className="text-ink-3">{"\u00a0"}lei</span>
+              </dd>
+            </div>
           </dl>
         </div>
 
         {alert.changes.length > 0 && (
-          <div className="grid content-start">
-            <table className="w-full border-collapse text-body">
-              <caption className="pb-2 text-left text-meta text-ink-2">
-                {t("changes")}
-              </caption>
-              <tbody>
-                {alert.changes.map((change) => {
-                  const moved = t("change", {
-                    from: money(change.oldPrice),
-                    to: money(change.newPrice),
-                    unit: formatUnit(change.unit, locale),
-                  });
-                  return (
-                    <tr
-                      key={`${change.name}:${change.unit}`}
-                      className="border-t border-border"
-                    >
-                      <th
-                        scope="row"
-                        className="py-1.5 pl-0 pr-4 text-left font-normal text-ink-2"
-                      >
-                        {change.name}
-                        <span className="block text-meta tabular-nums text-ink-3 sm:hidden">
-                          {moved}
-                        </span>
-                      </th>
-                      <td className="hidden whitespace-nowrap py-1.5 pr-4 text-right text-meta tabular-nums text-ink-3 sm:table-cell">
-                        {moved}
-                      </td>
-                      <td className="whitespace-nowrap py-1.5 pr-0 text-right tabular-nums text-ink">
-                        <Lei value={signedMoney(change.impact, locale)} />
-                      </td>
-                    </tr>
-                  );
-                })}
-                {more > 0 && (
-                  <tr className="border-t border-border">
-                    <td
-                      colSpan={3}
-                      className="py-1.5 text-meta leading-5 text-ink-3"
-                    >
-                      {t("more", { count: more })}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          <div className="grid content-start xl:row-span-5 xl:grid-rows-subgrid">
+            <p className="m-0 pb-2 text-meta text-ink-2">{t("changes")}</p>
+            <dl className="contents">
+              {alert.changes.map((change) => (
+                <div
+                  key={`${change.name}:${change.unit}`}
+                  className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 border-t border-border py-1.5 text-body sm:grid-cols-[minmax(0,1fr)_auto_7rem]"
+                >
+                  <dt className="col-start-1 row-start-1 text-ink-2">
+                    {change.name}
+                  </dt>
+                  <dd className="col-start-1 row-start-2 m-0 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
+                    {t("change", {
+                      from: money(change.oldPrice),
+                      to: money(change.newPrice),
+                      unit: formatUnit(change.unit, locale),
+                    })}
+                  </dd>
+                  <dd className="col-start-2 row-start-1 m-0 whitespace-nowrap text-right tabular-nums text-ink sm:col-start-3">
+                    <Lei value={signedMoney(change.impact, locale)} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            {more > 0 && (
+              <p className="m-0 border-t border-border py-1.5 text-meta leading-5 text-ink-3">
+                {t("more", { count: more })}
+              </p>
+            )}
           </div>
         )}
       </div>

@@ -597,11 +597,8 @@ function RecentCard({
                       {" · "}
                       {row.clientName ?? t("noClient")}
                     </span>
-                    {/* As wide as the longest word, so the dots stand in a column. */}
                     <span className="flex h-[18px] items-center justify-end max-sm:hidden">
-                      <span className="flex min-w-[68px]">
-                        <EstimateStatusPill short status={row.status} />
-                      </span>
+                      <EstimateStatusPill short status={row.status} />
                     </span>
                     {/* On a phone, its own line: where it stands and how much. */}
                     <span className="flex items-baseline justify-between gap-4 sm:hidden">

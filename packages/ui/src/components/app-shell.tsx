@@ -94,7 +94,7 @@ const SidebarNavItem = React.forwardRef<HTMLAnchorElement, SidebarNavItemProps>(
         ref={ref}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex h-8 items-center gap-2.5 rounded-md px-2 text-body text-ink-2 transition-colors hover:bg-nav-active/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&>svg]:size-4 [&>svg]:shrink-0",
+          "flex h-8 items-center gap-2.5 rounded-md px-2 text-body text-ink-2 transition-colors hover:bg-nav-active/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&>svg]:mx-1.5 [&>svg]:size-4 [&>svg]:shrink-0",
           active && "bg-nav-active font-medium text-ink hover:bg-nav-active",
           className,
         )}

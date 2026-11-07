@@ -199,7 +199,7 @@ export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
       aria-keyshortcuts="Control+K Meta+K"
       className="flex h-8 w-full items-center gap-2.5 rounded-md px-2 text-left text-body text-ink-2 transition-colors hover:bg-nav-active/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Search aria-hidden className="size-4 shrink-0" />
+      <Search aria-hidden className="mx-1.5 size-4 shrink-0" />
       <span className="min-w-0 flex-1 truncate">{t("button")}</span>
       <kbd className="font-sans text-[11px] leading-5 text-ink-3 max-md:hidden">
         {shortcut}
