@@ -370,7 +370,7 @@ function RowsTable({
           <TableHead>{t("article")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
-          <TableHead className="w-[110px] rounded-t-lg bg-sunken/50 pr-6 text-right font-medium text-ink">
+          <TableHead className="w-[110px] rounded-t-lg bg-sunken pr-6 text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -480,7 +480,7 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken/50 pr-6 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
+                <TableCell className="whitespace-nowrap bg-sunken pr-6 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
                   <div className="max-md:flex max-md:items-center max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">

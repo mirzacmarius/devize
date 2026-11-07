@@ -74,7 +74,7 @@ export function ProducersPage() {
             : "\u00a0"
         }
         actions={
-          producers?.length ? searchInput("w-72 max-sm:hidden") : undefined
+          producers?.length ? searchInput("w-80 max-sm:hidden") : undefined
         }
       />
       {producers?.length === 0 ? (
@@ -82,14 +82,11 @@ export function ProducersPage() {
       ) : (
         <section className="grid min-w-0 gap-3">
           {searchInput("w-full sm:hidden")}
-          <Table stack twoLine>
+          <Table stack>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("columns.name")}</TableHead>
-                <TableHead className="hidden w-44 md:table-cell">
-                  {t("columns.status")}
-                </TableHead>
-                <TableHead className="hidden w-28 md:table-cell">
+                <TableHead className="hidden w-24 text-right md:table-cell">
                   {t("columns.edition")}
                 </TableHead>
                 <TableHead className="hidden w-20 text-right md:table-cell">
@@ -101,14 +98,14 @@ export function ProducersPage() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
@@ -121,21 +118,28 @@ export function ProducersPage() {
                   // The whole row leads to the profile.
                   <TableRow
                     key={producer._id}
-                    className="group/row relative transition-colors hover:bg-tile"
+                    className="group/row relative transition-colors hover:bg-tile md:[&>td]:h-[60px]"
                   >
                     <TableCell data-stack="wide">
                       <Link
                         href={`/producers/${producer._id}`}
-                        className="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 gap-y-0.5 rounded-xs after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
+                        className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5 rounded-xs after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
                       >
                         <span
                           aria-hidden
-                          className="row-span-2 grid size-10 place-items-center rounded-lg border border-border bg-card text-caption font-medium text-ink-2"
+                          className="row-span-2 grid size-8 place-items-center rounded-md bg-tile text-[12px] font-medium leading-4 text-ink-2"
                         >
                           {initials(producer.name)}
                         </span>
-                        <span className="self-baseline truncate text-body font-medium text-ink">
-                          {producer.name}
+                        <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+                          <span className="min-w-0 truncate text-body font-medium text-ink">
+                            {producer.name}
+                          </span>
+                          {producer.claimed && (
+                            <StatusPill tone="success">
+                              {t("managed")}
+                            </StatusPill>
+                          )}
                         </span>
                         <span className="col-start-2 truncate text-meta text-ink-3">
                           {producer.categories.join(" · ")}
@@ -147,22 +151,13 @@ export function ProducersPage() {
                         </span>
                       </Link>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {producer.claimed ? (
-                        <StatusPill tone="success" title={t("managed")}>
-                          {t("managedShort")}
-                        </StatusPill>
-                      ) : (
-                        <Nil />
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden tabular-nums text-ink-2 md:table-cell">
+                    <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
                       {producer.edition ?? <Nil />}
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums md:table-cell">
                       {norms}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell md:!align-middle">
+                    <TableCell className="hidden md:table-cell">
                       <ChevronRight
                         aria-hidden
                         className="-mr-[5px] ml-auto size-4 text-ink-3"

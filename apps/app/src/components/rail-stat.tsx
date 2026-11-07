@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@devize/ui/card";
+import { cn } from "@devize/ui/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -64,12 +65,38 @@ export function RailStat({
 }
 
 /**
- * What a rail opens with, whatever the Deviz is at: one frame, its parts a
- * hairline apart. Nothing to show, no frame.
+ * A page's rail. Beside the main column it's one panel, with one edge for its
+ * text and one for its chevrons, and its sections a hairline apart; stacked
+ * under the main column, a list of sections. `sticky` keeps it in sight beside
+ * a long page.
+ */
+export function Rail({
+  sticky = false,
+  children,
+}: {
+  sticky?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "rail-sections grid min-w-0 gap-6 xl:gap-0 xl:rounded-lg xl:border xl:border-card-border xl:px-4 xl:pb-2.5 xl:pt-4",
+        sticky &&
+          "xl:sticky xl:top-14 xl:max-h-[calc(100vh-4.5rem)] xl:overflow-y-auto xl:[scrollbar-width:thin]",
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * What a rail opens with, whatever the Deviz is at, its parts a hairline apart.
+ * Stacked it has its own frame; nothing to show, no frame.
  */
 export function RailSummary({ children }: { children: ReactNode }) {
   return (
-    <div className="rail-summary grid min-w-0 rounded-lg border border-card-border p-4">
+    <div className="rail-summary grid min-w-0 rounded-lg border border-card-border p-4 xl:rounded-none xl:border-0 xl:p-0">
       {children}
     </div>
   );

@@ -29,7 +29,6 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
       }
     >
       <Figure
-        lead
         label={t("measured")}
         value={t("ofItems", {
           measured: formatCount(measured.length, locale),

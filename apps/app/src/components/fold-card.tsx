@@ -114,10 +114,60 @@ export function RailLabel({ children }: { children: ReactNode }) {
   return (
     <h3
       data-rail-label
-      className="m-0 mb-0.5 mt-6 hidden text-caption text-ink-3 xl:block"
+      className="m-0 mb-0.5 mt-4 hidden border-t border-border pt-3 text-caption text-ink-3 xl:block"
     >
       {children}
     </h3>
+  );
+}
+
+/**
+ * A group of rows whose time has passed. Beside the main column its name is one
+ * row and the rest shows once opened; stacked under it, the rows are just there.
+ */
+export function RailFold({
+  label,
+  folded,
+  children,
+}: {
+  label: string;
+  folded: boolean;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const contentId = useId();
+  if (!folded) {
+    return (
+      <>
+        <RailLabel>{label}</RailLabel>
+        {children}
+      </>
+    );
+  }
+  return (
+    <>
+      <div
+        data-rail-label
+        className="mt-4 hidden border-t border-border pt-2 xl:block"
+      >
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={contentId}
+          onClick={() => setOpen(!open)}
+          className={ROW}
+        >
+          <RowText title={label} open={open} />
+        </button>
+      </div>
+      <div
+        id={contentId}
+        data-rail-part
+        className={cn("contents", !open && "xl:hidden")}
+      >
+        {children}
+      </div>
+    </>
   );
 }
 

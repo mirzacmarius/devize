@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { TabsNav, TabsNavLink } from "@devize/ui/tabs-nav";
+import { cn } from "@devize/ui/utils";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Plus } from "lucide-react";
@@ -27,7 +28,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
-import { Nil } from "@/components/nil";
 import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
@@ -61,9 +61,10 @@ function matches(norm: NormRow, words: readonly string[]) {
  * base catalog, which narrows a search too.
  */
 // The unit hangs after the number in a slot of its own, as on a Deviz, so the
-// numbers and the head over them keep one edge.
+// numbers and the head over them keep one edge, and the column ends on the
+// table's.
 const COST_UNIT =
-  "ml-2 inline-block w-11 text-left text-meta text-ink-3 max-md:w-auto";
+  "ml-2 inline-block w-11 text-right text-meta text-ink-3 max-md:w-auto";
 
 // Under the title only between a phone, which has its own line for it, and the
 // width with a column for it.
@@ -152,7 +153,16 @@ export function CatalogPage() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("costNote")}
+        description={
+          <>
+            {t("costNote")}
+            {!isOwn && (
+              <span className="block max-sm:hidden">
+                {t("unconfirmedNote")}
+              </span>
+            )}
+          </>
+        }
         actions={actions}
       />
       <section className="grid min-w-0 gap-3">
@@ -177,7 +187,8 @@ export function CatalogPage() {
               </Link>
             </TabsNavLink>
           </TabsNav>
-          <div className="flex min-w-0 flex-wrap items-center gap-2 xl:col-start-2 xl:row-start-1 xl:self-start">
+          {/* On the tabs' line, their words and the controls' on one middle. */}
+          <div className="flex min-w-0 flex-wrap items-center gap-2 xl:col-start-2 xl:row-start-1 xl:mt-1 xl:self-start">
             {!isOwn && (
               <NormCategorySelect
                 label={t("categories.label")}
@@ -192,7 +203,7 @@ export function CatalogPage() {
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-80"
+              className="w-full sm:w-80 sm:max-xl:w-auto sm:max-xl:flex-1"
             />
           </div>
         </div>
@@ -214,12 +225,7 @@ export function CatalogPage() {
                 <TableRow>
                   <TableHead>{t("columns.norm")}</TableHead>
                   {!isOwn && (
-                    <TableHead className="hidden w-48 xl:table-cell">
-                      {t("columns.category")}
-                    </TableHead>
-                  )}
-                  {!isOwn && (
-                    <TableHead className="hidden w-40 xl:table-cell">
+                    <TableHead className="hidden w-64 xl:table-cell">
                       {t("columns.source")}
                     </TableHead>
                   )}
@@ -238,7 +244,7 @@ export function CatalogPage() {
                 {rows === undefined && (
                   <TableRow>
                     <TableCell
-                      colSpan={4}
+                      colSpan={3}
                       data-stack="wide"
                       className="text-ink-3"
                     >
@@ -249,7 +255,7 @@ export function CatalogPage() {
                 {rows?.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={4}
+                      colSpan={3}
                       data-stack="wide"
                       className="text-ink-3"
                     >
@@ -294,10 +300,8 @@ export function CatalogPage() {
                                 ? `${norm.code} · v${norm.version}`
                                 : norm.code}
                             </span>
-                            {/* The public list has columns for these where there's room. */}
-                            <span className={isOwn ? undefined : "xl:hidden"}>
-                              {norm.category && ` · ${norm.category}`}
-                            </span>
+                            {norm.category && ` · ${norm.category}`}
+                            {/* The public list has a column for this where there's room. */}
                             <span className={isOwn ? undefined : TABLET_ONLY}>
                               {norm.source !== "base" &&
                                 ` · ${norm.manufacturerName ?? normSource(norm)}`}
@@ -317,25 +321,26 @@ export function CatalogPage() {
                       </Link>
                     </TableCell>
                     {!isOwn && (
-                      <TableCell className="hidden text-ink-2 xl:table-cell">
-                        {norm.category ?? <Nil />}
-                      </TableCell>
-                    )}
-                    {!isOwn && (
                       // On a phone it opens the line with the cost.
                       <TableCell className="md:max-xl:hidden">
-                        <span className="grid gap-0.5 text-ink-2 max-md:block max-md:text-meta max-md:text-ink-3">
-                          <span className="first-letter:uppercase max-md:inline-block">
+                        <span
+                          className={cn(
+                            "flex flex-wrap items-baseline gap-x-2.5 max-md:text-meta",
+                            norm.source === "base"
+                              ? "text-ink-3"
+                              : "text-ink-2 max-md:text-ink-3",
+                          )}
+                        >
+                          <span className="first-letter:uppercase">
                             {norm.manufacturerName ?? normSource(norm)}
                           </span>
                           {unconfirmed(norm) && (
-                            <span
+                            <StatusPill
+                              tone="draft"
                               title={t("unconfirmedHint")}
-                              className="text-meta text-ink-3"
                             >
-                              <span className="md:hidden"> · </span>
                               {t("unconfirmed")}
-                            </span>
+                            </StatusPill>
                           )}
                         </span>
                       </TableCell>
@@ -354,7 +359,7 @@ export function CatalogPage() {
                       {norm.referenceCost === undefined ? (
                         <>
                           <StatusPill tone="warning">{t("noCost")}</StatusPill>
-                          <span className={COST_UNIT} />
+                          <span className={cn(COST_UNIT, "max-md:hidden")} />
                         </>
                       ) : (
                         <>

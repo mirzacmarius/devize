@@ -206,7 +206,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         <SelectTrigger
                           // A value until it's pointed at: a list of bordered
                           // fields would outweigh the people.
-                          className="h-8 w-36 border-transparent bg-transparent"
+                          className="h-8 w-auto justify-start gap-2 border-transparent bg-transparent"
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />

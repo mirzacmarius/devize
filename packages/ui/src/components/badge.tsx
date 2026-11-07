@@ -32,7 +32,7 @@ function Badge({ className, tone, ...props }: BadgeProps) {
 
 // Count: how many ("Probleme 3", "Articole 24"). `plain` inside tabs and titles.
 const countVariants = cva(
-  "inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-sm px-2 text-pill tabular-nums",
+  "inline-flex h-5 min-w-5 items-center justify-center rounded-sm px-1.5 text-meta tabular-nums",
   {
     variants: {
       tone: {

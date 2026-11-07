@@ -98,12 +98,12 @@ export function ChecksCard({
             type="button"
             aria-expanded={showPassed}
             onClick={() => setShowPassed((value) => !value)}
-            className="flex w-fit items-center gap-1.5 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="grid w-fit grid-cols-[16px_minmax(0,1fr)] items-center gap-2.5 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ChevronRight
               aria-hidden
               className={cn(
-                "-ml-[5px] size-3.5 transition-transform",
+                "size-3.5 justify-self-center transition-transform",
                 showPassed && "rotate-90",
               )}
             />

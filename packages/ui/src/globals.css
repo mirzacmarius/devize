@@ -23,13 +23,14 @@
   --nav-active: 60 9.4% 87.5%; /* #e2e2dc: the current page in the sidebar */
   --tile: 60 15.4% 94.9%; /* #f4f4f0: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 40 8% 12% / 0.28; /* behind whatever comes forward: a dialog, a sheet */
+  --scrim: 220 6% 10% / 0.18; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
-  --border: 60 9.8% 90%; /* #e8e8e3 */
-  --border-control: 60 4.3% 77.5%; /* #c8c8c3: outlined buttons */
+  --border: 60 8.5% 88.4%; /* #e4e4df */
+  --border-control: 60 3.4% 65.1%; /* #a9a9a3: outlined buttons, in the fields' family */
   --border-field: 60 3.1% 55.9%; /* #92928b: a field's edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
+  --tick-major: 60 4.3% 77.5%; /* #c8c8c3 */
   --meter: 60 2.3% 42.2%; /* #6e6e69: how far along, quieter than a button */
 
   /* Text */
@@ -68,8 +69,8 @@
   --shadow-raised: 0 0 0 1px rgb(27 27 25 / 0.06), 0 1px 2px rgb(27 27 25 / 0.06);
   --shadow-card: none;
   --shadow-panel: 0 0 0 1px rgb(27 27 25 / 0.045), 0 1px 3px rgb(27 27 25 / 0.03);
-  --shadow-overlay: 0 0 0 1px rgb(27 27 25 / 0.05), 0 2px 4px rgb(27 27 25 / 0.04),
-    0 12px 32px -4px rgb(27 27 25 / 0.14);
+  --shadow-overlay: 0 0 0 1px rgb(27 27 25 / 0.06), 0 2px 4px rgb(27 27 25 / 0.04),
+    0 24px 64px -8px rgb(27 27 25 / 0.22);
 
   --radius: 12px;
 
@@ -99,6 +100,7 @@
 
   --border: 60 2% 19.6%; /* #333331 */
   --border-control: 60 2.6% 37.5%; /* #62625d */
+  --tick-major: 60 2.6% 37.5%; /* #62625d */
   --border-field: 60 2.5% 39%; /* #666661 */
   --tick: 60 2.1% 28.4%; /* #4a4a47 */
   --meter: 60 3.2% 62.7%; /* #a3a39d */
@@ -119,7 +121,7 @@
   --warning: 38.2 47.8% 59.4%; /* #c9a566 */
   --warning-soft: 36 32.5% 15.1%; /* #33291a */
   --warning-dot: 36.8 74.9% 59.4%; /* #e5a94a */
-  --danger: 6.5 52.2% 68.8%; /* #d98f86 */
+  --danger: 9.4 63.1% 65.7%; /* #e0806f */
   --danger-soft: 6.4 31.8% 17.3%; /* #3a211e */
   --danger-solid: 4.9 72.2% 63.3%; /* #e5695e */
   --on-danger-solid: 2.9 53.8% 7.6%; /* #1e0a09 */
@@ -182,6 +184,10 @@
     @apply bg-background font-sans text-foreground antialiased;
     /* Codes and sums in a line of text are as wide here as in a table. */
     font-variant-numeric: tabular-nums;
+  }
+  /* No sentence ends on a word by itself. */
+  p {
+    text-wrap: pretty;
   }
   /* Native controls the app draws in its own ink. */
   input[type="checkbox"],
@@ -408,33 +414,18 @@
   }
   /* Stacked, there are no labels: a line starts each group of rows. */
   @media (max-width: 1279.98px) {
-    .app-main .rail-sections > [data-rail-label] + [data-fold] {
+    .app-main .rail-sections > [data-rail-label] + [data-fold],
+    .app-main .rail-sections > [data-rail-label] + [data-rail-part] > [data-fold]:first-child {
       padding-top: 8px;
       border-top: 1px solid hsl(var(--border));
     }
   }
-  /* Beside the main card, a column of sections rather than a stack of cards. */
+  /* Beside the main column, every line of the panel has one size. */
   @media (min-width: 1280px) {
-    .app-main .rail-sections > [data-stat]:not(:first-child) {
-      margin-top: 24px;
-    }
-    /* Its first label reads on one line with the title of the main column. */
-    .app-main .rail-sections > [data-stat]:first-child > [data-slot="card-content"] {
-      padding-top: 8px;
-    }
-    .app-main .rail-sections > [data-slot="card"]:not([data-fold]) {
-      padding-bottom: 0;
-    }
-    .app-main .rail-sections > [data-slot="card"]:not([data-fold]):not([data-stat]):not(:first-child) {
-      margin-top: 28px;
-    }
-    .app-main .rail-sections > [data-slot="card"]:not([data-fold]) > [data-slot="card-header"] {
-      min-height: 0;
-      padding-bottom: 4px;
-    }
-    /* Its first title reads on one line with the title of the main column. */
-    .app-main .rail-sections > [data-slot="card"]:first-child > [data-slot="card-header"] {
-      padding-top: 4px;
+    .rail-sections [data-slot="fact"] :is(dt, dd) {
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 430;
     }
   }
   /* In a rail, values end on one edge, where a row's chevron starts. */
@@ -455,7 +446,7 @@
     padding-bottom: 0;
   }
   .app-main .rail-summary > [data-slot="card"] + [data-slot="card"] {
-    margin-top: 16px;
+    margin-top: 10px;
     padding-top: 16px;
     border-top: 1px solid hsl(var(--border));
   }
@@ -471,9 +462,18 @@
   .app-main .rail-summary > [data-slot="card"] > [data-slot="card-content"] {
     padding: 0;
   }
+  /* Beside the main column the rail's own frame holds it: the parts that come
+     after what it opens with start a hairline below. */
   @media (min-width: 1280px) {
-    .app-main .rail-sections > .rail-summary + [data-fold] {
+    .app-main .rail-sections > .rail-summary:not(:empty) + [data-fold] {
       margin-top: 16px;
+      padding-top: 8px;
+      border-top: 1px solid hsl(var(--border));
+    }
+    .app-main .rail-sections > .rail-summary:empty + [data-rail-label] {
+      margin-top: 0;
+      padding-top: 0;
+      border-top-width: 0;
     }
   }
   .rail-summary [data-slot="fact"],
@@ -482,7 +482,8 @@
   }
   /* Stacked on a narrower screen, rows that are only rows stay together. */
   @media (max-width: 1279.98px) {
-    .rail-sections > [data-fold] + [data-fold] {
+    .rail-sections [data-fold] + [data-fold],
+    .rail-sections > [data-rail-part] + [data-fold] {
       margin-top: -24px;
     }
   }
@@ -664,7 +665,7 @@
     background:
       repeating-linear-gradient(
           90deg,
-          hsl(var(--border-control)) 0 1px,
+          hsl(var(--tick-major)) 0 1px,
           transparent 1px 40px
         )
         left bottom / 100% 8px no-repeat,
@@ -682,6 +683,6 @@
     bottom: 0;
     width: 1px;
     height: 8px;
-    background: hsl(var(--border-control));
+    background: hsl(var(--tick-major));
   }
 }

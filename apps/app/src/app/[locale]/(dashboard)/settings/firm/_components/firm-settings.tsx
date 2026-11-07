@@ -389,7 +389,7 @@ function DetailsForm({
                 aria-invalid={errors.email !== undefined}
               />
             </Field>
-            <div className="flex items-start justify-between gap-4 border-t border-border pt-4">
+            <div className="flex items-start justify-between gap-4 pt-1">
               <div className="grid gap-0.5">
                 <label
                   htmlFor="firm-vat"

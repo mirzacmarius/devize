@@ -99,9 +99,9 @@ export function HomePage() {
       {/* Where there's room the last figure starts on the column under it. */}
       <Card
         className={cn(
-          "grid grid-cols-3 max-sm:-mb-4 sm:grid-cols-2 xl:grid-cols-4",
+          "grid grid-cols-3 max-sm:-mb-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.25fr)_repeat(3,minmax(0,1fr))]",
           !showSetup &&
-            "min-[1400px]:grid-cols-[repeat(3,minmax(0,1fr))_calc((100%-3rem)*0.4+1.5rem)]",
+            "min-[1400px]:grid-cols-[minmax(0,1.25fr)_repeat(2,minmax(0,1fr))_calc((100%-3rem)*0.4+1.5rem)]",
         )}
       >
         <Kpi
@@ -233,7 +233,7 @@ function Kpi({
           className={cn(
             "tabular-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
             lead
-              ? "text-[28px] leading-9 sm:text-kpi"
+              ? "text-[28px] leading-9 sm:text-hero"
               : "text-base leading-6 max-sm:[&>span]:text-ink sm:text-stat",
           )}
         >
@@ -322,6 +322,16 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
     <Card className="max-sm:-mb-3">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
+        {hidden.length > 0 && todo !== undefined && (
+          <Button
+            type="button"
+            variant="link"
+            className="sm:hidden"
+            onClick={() => setShowAll(true)}
+          >
+            {t("showAll", { count: todo.length + (late ? 1 : 0) })}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="gap-5 pb-2">
         {todo === undefined ? (
@@ -354,16 +364,6 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
               ),
             )}
             {group(t("next"), next)}
-            {hidden.length > 0 && (
-              <Button
-                type="button"
-                variant="link"
-                className="justify-self-start pb-3 sm:hidden"
-                onClick={() => setShowAll(true)}
-              >
-                {t("showAll", { count: todo.length + (late ? 1 : 0) })}
-              </Button>
-            )}
           </>
         )}
       </CardContent>
@@ -396,7 +396,7 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   let figureClass = "text-ink-2";
   // The icon's colour says what the figure's says, and only then.
   let tone: keyof typeof todoTones = "quiet";
-  const sub: string[] = [item.estimate.title];
+  let note: string | undefined;
   switch (item.kind) {
     case "question":
       text = t("question", { code });
@@ -410,19 +410,17 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
         // The words say which way it went.
         text = t(down ? "alertDown" : "alertUp", { code });
         figure = t("alertAmount", {
-          amount: formatMoney(Math.abs(item.profitChange), locale),
+          amount: `${down ? "−" : "+"}${formatMoney(Math.abs(item.profitChange), locale)}`,
         });
         figureClass = cn("font-medium", down ? "text-warning" : "text-success");
         tone = down ? "warning" : "quiet";
-        sub.push(
-          t("alertLeft", { left: formatMoney(item.profitLeft, locale) }),
-        );
+        note = t("alertLeft", { left: formatMoney(item.profitLeft, locale) });
       }
       break;
     case "deadline":
       text = t("deadline", { code });
       figure = inDays(item.days);
-      sub.push(formatCalendarDay(item.date, locale));
+      note = formatCalendarDay(item.date, locale);
       break;
     case "expiring":
       text = t("expiring", { code });
@@ -444,7 +442,8 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
       icon={icon}
       tone={tone}
       text={text}
-      sub={sub.join(" · ")}
+      sub={item.estimate.title}
+      note={note}
       figure={figure}
       figureClass={figureClass}
       phoneHidden={phoneHidden}
@@ -455,12 +454,13 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 const todoTones = {
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
-  quiet: "bg-muted text-ink-2",
+  quiet: "text-ink-3",
 };
 
 /**
  * One line of the list: what to do and, in the column at its end, how much or
- * how soon; under them the Deviz it's about, whole, even on a phone.
+ * how soon; under them the Deviz it's about, whole, even on a phone, and what
+ * else there is to know, on a line of its own there.
  */
 function TodoLine({
   href,
@@ -468,6 +468,7 @@ function TodoLine({
   tone,
   text,
   sub,
+  note,
   figure,
   figureClass,
   phoneHidden = false,
@@ -477,6 +478,7 @@ function TodoLine({
   tone: keyof typeof todoTones;
   text: string;
   sub: string;
+  note?: string;
   figure?: string;
   figureClass: string;
   phoneHidden?: boolean;
@@ -516,8 +518,14 @@ function TodoLine({
             {figure}
           </span>
         )}
-        <span className="col-span-2 col-start-2 line-clamp-2 text-meta text-ink-3">
+        <span className="col-span-2 col-start-2 text-meta text-ink-3 sm:line-clamp-2">
           {sub}
+          {note && (
+            <span className="max-sm:block">
+              <span className="max-sm:hidden"> · </span>
+              {note}
+            </span>
+          )}
         </span>
       </Link>
     </li>
@@ -569,10 +577,10 @@ function RecentCard({
                   >
                     {/* Each line on its own, so a title gives way only to its sum. */}
                     <span className="flex min-w-0 items-baseline justify-between gap-4">
-                      <span className="min-w-0 text-body text-ink sm:truncate">
+                      <span className="min-w-0 text-body font-medium text-ink sm:truncate">
                         {row.title}
                       </span>
-                      <span className="whitespace-nowrap text-body tabular-nums text-ink max-sm:hidden">
+                      <span className="whitespace-nowrap text-body font-medium tabular-nums text-ink max-sm:hidden">
                         {formatMoney(row.total, locale)}
                       </span>
                     </span>
@@ -581,8 +589,10 @@ function RecentCard({
                         {estimateCode(row.number, row.revision)}
                         {" · "}
                         {row.clientName ?? t("noClient")}
-                        {" · "}
-                        {formatDay(row.updatedAt, locale)}
+                        <span className="xl:max-[1399px]:hidden">
+                          {" · "}
+                          {formatDay(row.updatedAt, locale)}
+                        </span>
                       </span>
                       <span className="-my-px flex h-[18px] shrink-0 items-center max-sm:hidden">
                         <EstimateStatusPill status={row.status} />
@@ -591,9 +601,9 @@ function RecentCard({
                     {/* On a phone, its own line: where it stands and how much. */}
                     <span className="flex items-baseline justify-between gap-4 sm:hidden">
                       <EstimateStatusPill status={row.status} />
-                      <span className="whitespace-nowrap text-body tabular-nums text-ink">
+                      <span className="whitespace-nowrap text-body font-medium tabular-nums text-ink">
                         {formatMoney(row.total, locale)}
-                        <span className="ml-1 text-meta text-ink-3">
+                        <span className="ml-1 text-meta font-normal text-ink-3">
                           {th("lei")}
                         </span>
                       </span>

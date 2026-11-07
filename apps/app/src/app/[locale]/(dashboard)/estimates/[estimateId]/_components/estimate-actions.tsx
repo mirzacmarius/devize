@@ -206,7 +206,11 @@ export function EstimateActions({
         </Button>
       )}
       {status === "draft" && !empty && openChecks > 0 && (
-        <Button variant="ghost" className="max-xl:hidden" asChild>
+        <Button
+          variant="ghost"
+          className="text-warning hover:text-warning max-xl:hidden"
+          asChild
+        >
           <a href="#checks">
             <span
               aria-hidden

@@ -17,8 +17,8 @@ import { useEffect, useRef, useState } from "react";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
-import { RailLabel } from "@/components/fold-card";
-import { RailSummary } from "@/components/rail-stat";
+import { RailFold, RailLabel } from "@/components/fold-card";
+import { Rail, RailSummary } from "@/components/rail-stat";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { useScrolledPast } from "@/components/use-scrolled-past";
@@ -140,21 +140,17 @@ export function EstimatePage() {
     progress: <ProgressCard key="progress" estimate={estimate} />,
     invoices: <InvoicesCard key="invoices" estimate={estimate} />,
   };
-  // What the Deviz is at first, in one frame; the rest in one quiet list of rows.
-  const railLead =
-    status === "accepted" ? (
-      <RailSummary>
-        {rail.progress}
-        {rail.invoices}
-      </RailSummary>
-    ) : (
-      <>
-        <RailSummary>
-          {status === "draft" ? rail.checks : rail.offer}
-        </RailSummary>
-        {rail.invoices}
-      </>
-    );
+  // What the Deviz is at first; the rest in one quiet list of rows.
+  const railLead = (
+    <RailSummary>
+      {status === "accepted"
+        ? rail.progress
+        : status === "draft"
+          ? rail.checks
+          : rail.offer}
+      {rail.invoices}
+    </RailSummary>
+  );
 
   return (
     <>
@@ -165,38 +161,42 @@ export function EstimatePage() {
         total={total}
       />
       <div className="grid min-w-0 gap-x-4 gap-y-3 sm:gap-y-5 md:grid-cols-[minmax(0,1fr)_auto]">
-        <PageHeader
-          breadcrumb={
-            <Breadcrumb aria-label={t("breadcrumb")}>
-              <BreadcrumbLink asChild>
-                <Link href="/estimates">{t("breadcrumbList")}</Link>
-              </BreadcrumbLink>
-              <BreadcrumbSeparator />
-              <BreadcrumbPage>{code}</BreadcrumbPage>
-            </Breadcrumb>
-          }
-          title={estimate.title}
-          // The stepper says where it stands, and an archived one has none.
-          status={status === "archived" ? statusPill : undefined}
-          description={
-            <>
-              {status !== "archived" && (
-                <span className="sm:hidden">
-                  <EstimateStatusPill status={status} />
+        {/* Who it's for and where it stands, one under the other; the total on its own. */}
+        <div className="grid min-w-0 gap-2.5">
+          <PageHeader
+            breadcrumb={
+              <Breadcrumb aria-label={t("breadcrumb")}>
+                <BreadcrumbLink asChild>
+                  <Link href="/estimates">{t("breadcrumbList")}</Link>
+                </BreadcrumbLink>
+                <BreadcrumbSeparator />
+                <BreadcrumbPage>{code}</BreadcrumbPage>
+              </Breadcrumb>
+            }
+            title={estimate.title}
+            // The stepper says where it stands, and an archived one has none.
+            status={status === "archived" ? statusPill : undefined}
+            description={
+              <>
+                {status !== "archived" && (
+                  <span className="sm:hidden">
+                    <EstimateStatusPill status={status} />
+                    {" · "}
+                  </span>
+                )}
+                {estimate.client?.name ?? t("noClient")}
+                {/* A phone keeps the line to one row; the Deviz's data has the date. */}
+                <span className="max-sm:hidden">
                   {" · "}
+                  {t("pricesOf", {
+                    date: formatCalendarDate(estimate.priceDate, locale),
+                  })}
                 </span>
-              )}
-              {estimate.client?.name ?? t("noClient")}
-              {/* A phone keeps the line to one row; the Deviz's data has the date. */}
-              <span className="max-sm:hidden">
-                {" · "}
-                {t("pricesOf", {
-                  date: formatCalendarDate(estimate.priceDate, locale),
-                })}
-              </span>
-            </>
-          }
-        />
+              </>
+            }
+          />
+          <EstimateStepper estimate={estimate} />
+        </div>
         {/* Beside the title; on a phone, in a bar at the screen's foot, with the
             total once the one above has scrolled away. */}
         <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
@@ -223,16 +223,12 @@ export function EstimatePage() {
             fill={!pastHero}
           />
         </div>
-        <div
-          ref={hero}
-          className="grid gap-x-10 gap-y-3 md:col-span-2 xl:grid-cols-[auto_minmax(0,1fr)] xl:[align-items:last_baseline]"
-        >
+        <div ref={hero} className="md:col-span-2">
           <TotalHero
             label={t("summary.total")}
             total={total}
             note={withoutVat}
           />
-          <EstimateStepper estimate={estimate} />
         </div>
         <SectionLinks estimate={estimate} checks={checks} />
       </div>
@@ -256,12 +252,14 @@ export function EstimatePage() {
           <RecapCard estimate={estimate} editable={editable} open={setPanel} />
         </div>
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
-        <div className="rail-sections grid min-w-0 gap-6 xl:sticky xl:top-14 xl:-mx-1 xl:max-h-[calc(100vh-4.5rem)] xl:gap-0 xl:overflow-y-auto xl:px-1 xl:[scrollbar-width:thin]">
+        <Rail sticky>
           {railLead}
-          <RailLabel>{t("rail.preparation")}</RailLabel>
-          {status !== "draft" && rail.checks}
-          <CompatibilityCard estimate={estimate} editable={editable} />
-          <TakeoffCard estimate={estimate} />
+          {/* Once it's sent, the preparation has had its day; what to buy hasn't. */}
+          <RailFold label={t("rail.preparation")} folded={status !== "draft"}>
+            {status !== "draft" && rail.checks}
+            <CompatibilityCard estimate={estimate} editable={editable} />
+            <TakeoffCard estimate={estimate} />
+          </RailFold>
           <PackagingCard estimateId={estimate._id} />
           <RailLabel>{t("rail.records")}</RailLabel>
           {(status === "accepted" || status === "draft") && rail.offer}
@@ -272,7 +270,7 @@ export function EstimatePage() {
             open={setPanel}
           />
           <RevisionsCard estimate={estimate} />
-        </div>
+        </Rail>
       </div>
 
       <DetailsSheet

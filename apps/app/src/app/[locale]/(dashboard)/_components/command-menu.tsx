@@ -535,7 +535,7 @@ function CommandSearch({
 
   return (
     <div className="grid">
-      <div className="flex items-center gap-2 border-b border-border px-4">
+      <div className="flex items-center gap-3 border-b border-border px-4">
         <Search aria-hidden className="size-4 shrink-0 text-ink-3" />
         {/* The dialog focuses it as it opens, the first thing in it. */}
         <input

@@ -54,7 +54,11 @@ export function ContactLinks({
         <Button
           variant="outline"
           size="sm"
-          className={compact ? "max-sm:size-11 max-sm:p-0" : undefined}
+          className={
+            compact
+              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0"
+              : undefined
+          }
           asChild
         >
           <a href={`tel:${phone}`}>
@@ -69,7 +73,11 @@ export function ContactLinks({
         <Button
           variant="outline"
           size="sm"
-          className={compact ? "max-sm:size-11 max-sm:p-0" : undefined}
+          className={
+            compact
+              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0"
+              : undefined
+          }
           asChild
         >
           <a href={`mailto:${firm.email}`}>

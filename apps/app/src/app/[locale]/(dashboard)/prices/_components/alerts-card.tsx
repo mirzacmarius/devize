@@ -135,7 +135,9 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid min-w-0 flex-1 basis-80 gap-0.5">
-          <h4 className="m-0 text-title-card text-ink">{estimate.title}</h4>
+          <h4 className="m-0 text-body-lg font-medium text-ink">
+            {estimate.title}
+          </h4>
           <p className="m-0 flex flex-wrap items-center gap-x-2 text-meta tabular-nums text-ink-3">
             {[
               code,
@@ -150,13 +152,14 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="ghost"
+            size="sm"
             onClick={() =>
               run(() => dismiss({ alertId: alert._id }), t("dismissed"))
             }
           >
             {t("dismiss")}
           </Button>
-          <Button asChild>
+          <Button size="sm" asChild>
             <Link href={`/estimates/${estimate._id}`}>{t("open")}</Link>
           </Button>
         </div>
@@ -172,7 +175,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
             <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
               <span
                 className={cn(
-                  "text-kpi tabular-nums",
+                  "text-stat tabular-nums",
                   profitChange < 0 ? "text-warning" : "text-success",
                 )}
               >
@@ -259,7 +262,10 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 })}
                 {more > 0 && (
                   <tr className="border-t border-border">
-                    <td colSpan={3} className="py-1.5 text-meta text-ink-3">
+                    <td
+                      colSpan={3}
+                      className="py-1.5 text-meta leading-5 text-ink-3"
+                    >
                       {t("more", { count: more })}
                     </td>
                   </tr>

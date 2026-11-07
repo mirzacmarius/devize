@@ -90,15 +90,17 @@ export function EstimateList() {
         description={t("allWithVat")}
         actions={
           <>
-            {/* On a phone, room goes to the one main action. */}
-            <Button
-              variant="outline"
-              className="max-sm:border-transparent max-sm:bg-transparent max-sm:px-2 max-sm:text-ink-2"
-              onClick={() => setBrowsing(true)}
-            >
-              <LayoutTemplate aria-hidden className="max-sm:hidden" />
-              {tt("open")}
-            </Button>
+            {/* On a phone they wait beside the search: here, the one main action. */}
+            {!isEmpty && (
+              <Button
+                variant="outline"
+                className="max-sm:hidden"
+                onClick={() => setBrowsing(true)}
+              >
+                <LayoutTemplate aria-hidden />
+                {tt("open")}
+              </Button>
+            )}
             <Button onClick={startBlank}>
               <Plus aria-hidden />
               {t("new")}
@@ -133,13 +135,24 @@ export function EstimateList() {
                 label: t(`filters.${value}`),
               }))}
             />
-            <SearchInput
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-full sm:max-w-xs"
-            />
+            <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1 sm:justify-end">
+              <SearchInput
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="w-full sm:max-w-xs"
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-10 shrink-0 sm:hidden"
+                aria-label={tt("open")}
+                onClick={() => setBrowsing(true)}
+              >
+                <LayoutTemplate aria-hidden />
+              </Button>
+            </div>
           </div>
           <Table stack twoLine>
             <TableHeader>

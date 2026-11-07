@@ -71,7 +71,7 @@ export function ClientList() {
         }
         actions={
           <>
-            {!isEmpty && searchInput("w-72 max-sm:hidden")}
+            {!isEmpty && searchInput("w-80 max-sm:hidden")}
             <Button onClick={() => edit(null)}>
               <Plus aria-hidden />
               {t("new")}
@@ -152,7 +152,7 @@ export function ClientList() {
                           {row.email && (
                             <a
                               href={`mailto:${row.email}`}
-                              className="max-w-full truncate text-body text-ink-2 hover:underline"
+                              className="max-w-full truncate text-meta text-ink-2 hover:underline"
                             >
                               {row.email}
                             </a>
@@ -161,10 +161,8 @@ export function ClientList() {
                             <a
                               href={`tel:${row.phone}`}
                               className={cn(
-                                "whitespace-nowrap tabular-nums hover:underline",
-                                row.email
-                                  ? "text-meta text-ink-3"
-                                  : "text-body text-ink-2",
+                                "whitespace-nowrap text-meta tabular-nums hover:underline",
+                                row.email ? "text-ink-3" : "text-ink-2",
                               )}
                             >
                               {row.phone}
@@ -173,7 +171,7 @@ export function ClientList() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 xl:table-cell">
+                    <TableCell className="hidden text-meta text-ink-2 xl:table-cell">
                       <span className="line-clamp-2">{row.address}</span>
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums md:table-cell">
@@ -192,7 +190,9 @@ export function ClientList() {
                           {t("columns.owed")}
                         </span>
                         {going?.owed ? (
-                          formatMoney(going.owed, locale)
+                          <span className="font-medium">
+                            {formatMoney(going.owed, locale)}
+                          </span>
                         ) : (
                           <Nil />
                         )}

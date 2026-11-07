@@ -1868,7 +1868,6 @@ export default {
       accept: "Accept oferta",
       decline: "Nu accept",
       download: "Descarcă PDF",
-      downloadShort: "PDF",
       downloadFailed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
     },
     accept: {
@@ -1980,6 +1979,7 @@ export default {
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "Neconfirmată",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
+    unconfirmedNote: "Neconfirmată: producătorul n-a verificat-o încă.",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
     views: {
@@ -1990,7 +1990,6 @@ export default {
     searchPlaceholder: "Caută după cod sau lucrare",
     columns: {
       norm: "Normă",
-      category: "Categorie",
       source: "Sursă",
       cost: "Cost ref.",
       status: "Stare",
@@ -3227,7 +3226,6 @@ export default {
     "count#other": "{count} de producători",
     managedCount: "{count} își administrează profilul",
     managed: "Administrat de producător",
-    managedShort: "Administrat",
     empty:
       "Încă nu e niciun producător în catalog. Profilurile apar pe măsură ce publicăm normele lor.",
     normCount: "Norme: {count}",
@@ -3237,7 +3235,6 @@ export default {
     moreNorms: "{count}+",
     columns: {
       name: "Producător",
-      status: "Profil",
       edition: "Ediție",
       norms: "Norme",
     },
