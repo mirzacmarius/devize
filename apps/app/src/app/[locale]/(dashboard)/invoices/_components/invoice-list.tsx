@@ -281,9 +281,7 @@ export function InvoiceList() {
                     </TableCell>
                     {/* What's still to come in is what this list is read for. */}
                     <TableCell className="hidden pl-8 text-right tabular-nums xl:table-cell">
-                      {owed === undefined ? (
-                        <Nil />
-                      ) : (
+                      {owed !== undefined && (
                         <span className="font-medium">
                           {formatMoney(owed, locale)}
                         </span>

@@ -36,9 +36,10 @@ const config = {
         ],
         departure: ["var(--font-departure-mono)"],
       },
-      // Devize type styles. Big means thin: display, title-page and kpi are 300.
+      // Devize type styles. Big means thin: display and title-page are 300.
       // Inside the app a screen's title is title-screen and the total of a
-      // document is hero; a strip's lead is kpi, `figure` the step below.
+      // document is hero; `lead` leads a working page or a phone, `figure` is
+      // every figure beside them.
       fontSize: {
         display: [
           "60px",
@@ -60,15 +61,15 @@ const config = {
             fontWeight: "var(--weight-figure)",
           },
         ],
-        kpi: [
-          "32px",
+        lead: [
+          "28px",
           {
             lineHeight: "36px",
             letterSpacing: "-0.01em",
             fontWeight: "var(--weight-figure)",
           },
         ],
-        // The figures of a strip or a rail: one size wherever they stand.
+        // A strip's lead where a phone's two columns have no room for `lead`.
         stat: [
           "24px",
           { lineHeight: "32px", letterSpacing: "-0.012em", fontWeight: "400" },

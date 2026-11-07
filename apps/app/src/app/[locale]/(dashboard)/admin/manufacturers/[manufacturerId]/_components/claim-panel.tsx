@@ -337,7 +337,7 @@ function Requests({ data }: { data: ClaimData }) {
       {waiting && (
         <Link
           href="/admin/claims"
-          className="w-fit text-body text-ink underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current"
+          className="w-fit text-body text-ink underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current"
         >
           {t("queue")}
         </Link>

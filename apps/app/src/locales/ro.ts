@@ -184,7 +184,8 @@ export default {
     },
     recent: {
       title: "Devize recente",
-      order: "Ultimele modificate",
+      columnEstimate: "Deviz",
+      columnTotal: "Total cu TVA",
       all: "Toate devizele",
       empty: "Încă nu ai niciun deviz. Pornești de la normele din catalog.",
       noClient: "Fără client",
@@ -1996,8 +1997,9 @@ export default {
     parts: {
       producers: "Norme de la producători",
       producersNote: "Neconfirmate încă",
-      producersNoteLong:
-        "din documentele lor publice; producătorii nu le-au verificat încă",
+      producersNoteLong: "din documentele lor publice",
+      producersNoteFull:
+        "Preluate din documentele lor publice; producătorii nu le-au verificat încă.",
       base: "Norme de bază",
     },
     noCost: "Fără preț",
@@ -2269,6 +2271,7 @@ export default {
     columns: {
       name: "Nume",
       contact: "Contact",
+      latest: "Ultimul deviz",
       owed: "De încasat",
     },
     kinds: {

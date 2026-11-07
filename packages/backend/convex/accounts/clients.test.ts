@@ -68,7 +68,14 @@ describe("what a firm has going on with its clients", () => {
     expect(kept).toBeDefined();
     expect(
       await firm.as.query(api.accounts.clients.activity, { organizationId }),
-    ).toEqual([{ clientId, estimates: 1, owed: 0 }]);
+    ).toMatchObject([
+      {
+        clientId,
+        estimates: 1,
+        owed: 0,
+        latest: { estimateId: kept, title: "Baie", status: "draft" },
+      },
+    ]);
   });
 
   test("another firm can't see it", async () => {

@@ -53,6 +53,13 @@ const groups = [
   { key: "closed", statuses: ["norms_received", "declined", "excluded"] },
 ] as const satisfies readonly { key: string; statuses: readonly Status[] }[];
 
+// With a mouse, the boxes wait in the page's margin until a row is pointed at,
+// so the names start on the table's edge, under their group's label. To a thumb
+// they're always there, in a column of their own.
+const BOX_CELL =
+  "md:[@media(hover:hover)]:relative md:[@media(hover:hover)]:w-0 md:[@media(hover:hover)]:p-0";
+const AFTER_BOX = "md:[@media(hover:hover)]:pl-0";
+
 export default function ManufacturersPage() {
   const t = useScopedI18n("admin.manufacturers");
   const tAdmin = useScopedI18n("admin");
@@ -93,7 +100,7 @@ export default function ManufacturersPage() {
     <>
       {adding && <AddManufacturers />}
 
-      <section className="grid min-w-0 gap-3">
+      <section className="grid min-w-0 gap-3 [--card-pad:16px] md:[--card-pad:32px]">
         <ListToolbar>
           <label htmlFor="status_filter" className="sr-only">
             {t("columns.status")}
@@ -156,13 +163,15 @@ export default function ManufacturersPage() {
         ) : rows.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (
-          <Table className="min-w-[52rem]">
+          <Table bleed className="min-w-[52rem]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-8">
+                <TableHead className={cn("w-8", BOX_CELL)}>
                   <span className="sr-only">{t("selectNew")}</span>
                 </TableHead>
-                <TableHead className="w-[30%]">{t("columns.name")}</TableHead>
+                <TableHead className={cn("w-[30%]", AFTER_BOX)}>
+                  {t("columns.name")}
+                </TableHead>
                 {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
                 <TableHead className="w-[20%]">{t("columns.status")}</TableHead>
                 <TableHead className="w-[16%]">{t("columns.norms")}</TableHead>
@@ -201,8 +210,8 @@ export default function ManufacturersPage() {
                   )
                   .map((row) => (
                     <TableRow key={row._id} className="group/row">
-                      <TableCell className="w-8">
-                        <span className="flex">
+                      <TableCell className={cn("w-8", BOX_CELL)}>
+                        <span className="flex md:[@media(hover:hover)]:absolute md:[@media(hover:hover)]:inset-y-0 md:[@media(hover:hover)]:right-full md:[@media(hover:hover)]:w-7 md:[@media(hover:hover)]:items-center">
                           <input
                             type="checkbox"
                             aria-label={row.name}
@@ -210,12 +219,12 @@ export default function ManufacturersPage() {
                             onChange={() => toggle(row._id)}
                             className={cn(
                               selected.size === 0 &&
-                                "transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover/row:opacity-100",
+                                "transition-opacity md:[@media(hover:hover)]:opacity-0 md:[@media(hover:hover)]:focus-visible:opacity-100 md:[@media(hover:hover)]:group-hover/row:opacity-100",
                             )}
                           />
                         </span>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className={AFTER_BOX}>
                         <Link
                           href={`/admin/manufacturers/${row._id}`}
                           className="font-medium text-ink hover:underline"

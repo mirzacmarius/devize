@@ -18,7 +18,6 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { Pencil } from "lucide-react";
-import { Nil } from "@/components/nil";
 import {
   formatCount,
   formatInputNumber,
@@ -74,9 +73,12 @@ export function ShoppingListCard({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {list.rows.map((row) => (
-              <MaterialRow key={row.key} row={row} onEdit={onEdit} />
-            ))}
+            {/* Biggest first, by what's actually paid for the packages. */}
+            {[...list.rows]
+              .sort((a, b) => b.boughtCost - a.boughtCost)
+              .map((row) => (
+                <MaterialRow key={row.key} row={row} onEdit={onEdit} />
+              ))}
           </TableBody>
         </Table>
         {list.omitted > 0 && (
@@ -167,17 +169,15 @@ function MaterialRow({
             : undefined
         }
       >
-        {row.purchase && leftover > 0 ? (
-          formatQuantityRounded(leftover, locale)
-        ) : (
-          <Nil />
-        )}
+        {row.purchase && leftover > 0
+          ? formatQuantityRounded(leftover, locale)
+          : null}
         <span className={UNIT_SLOT}>
           {row.purchase && leftover > 0 ? unit : null}
         </span>
       </TableCell>
       <TableCell className="hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell">
-        {row.leftoverCost > 0 ? formatMoney(row.leftoverCost, locale) : <Nil />}
+        {row.leftoverCost > 0 ? formatMoney(row.leftoverCost, locale) : null}
       </TableCell>
       <TableCell className="whitespace-nowrap text-right align-top tabular-nums max-md:self-start">
         <div className="grid justify-items-end gap-0.5">

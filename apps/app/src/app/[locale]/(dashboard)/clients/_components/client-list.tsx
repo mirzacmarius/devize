@@ -17,13 +17,15 @@ import {
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useDeferredValue, useState } from "react";
+import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { FootAction } from "@/components/foot-action";
 import { ListToolbar } from "@/components/list-toolbar";
 import { Nil } from "@/components/nil";
 import { SearchInput } from "@/components/search-input";
-import { formatMoney } from "@/lib/format";
+import { estimateCode, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ClientSheet } from "./client-sheet";
 
@@ -116,13 +118,16 @@ export function ClientList() {
           <Table stack twoLine>
             <TableHeader>
               <TableRow>
-                <TableHead className="xl:w-[44%]">
+                <TableHead className="xl:w-[30%]">
                   {t("columns.name")}
                 </TableHead>
-                <TableHead className="xl:w-[38%]">
+                <TableHead className="xl:w-[26%]">
                   {t("columns.contact")}
                 </TableHead>
-                <TableHead className="hidden w-32 text-right md:table-cell xl:w-[18%]">
+                <TableHead className="hidden xl:table-cell xl:w-[30%]">
+                  {t("columns.latest")}
+                </TableHead>
+                <TableHead className="hidden w-32 text-right md:table-cell xl:w-[14%]">
                   {t("columns.owed")}
                 </TableHead>
               </TableRow>
@@ -130,14 +135,14 @@ export function ClientList() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
@@ -189,6 +194,32 @@ export function ClientList() {
                         </div>
                       )}
                     </TableCell>
+                    {/* Where the work with them stands, one click from it. */}
+                    <TableCell className="hidden max-w-0 xl:table-cell">
+                      {going?.latest ? (
+                        <Link
+                          href={`/estimates/${going.latest.estimateId}`}
+                          className="group/latest grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <span className="truncate text-meta text-ink-2 group-hover/latest:underline">
+                            {going.latest.title}
+                          </span>
+                          <span className="truncate text-meta tabular-nums text-ink-3">
+                            {estimateCode(
+                              going.latest.number,
+                              going.latest.revision,
+                            )}
+                            {" · "}
+                            <EstimateStatusPill
+                              short
+                              status={going.latest.status}
+                            />
+                          </span>
+                        </Link>
+                      ) : (
+                        <Nil />
+                      )}
+                    </TableCell>
                     <TableCell
                       data-stack="wide"
                       className={cn(
@@ -205,9 +236,7 @@ export function ClientList() {
                           <span className="font-medium">
                             {formatMoney(going.owed, locale)}
                           </span>
-                        ) : (
-                          <Nil />
-                        )}
+                        ) : null}
                       </span>
                     </TableCell>
                   </TableRow>

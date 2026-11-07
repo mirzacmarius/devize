@@ -203,7 +203,7 @@ export function OpenOffer({
             {t("footer")} ·{" "}
             <Link
               href="/confidentialitate"
-              className="underline-offset-2 hover:text-ink-2 hover:underline"
+              className="underline-offset-[4px] hover:text-ink-2 hover:underline"
             >
               {t("privacy")}
             </Link>

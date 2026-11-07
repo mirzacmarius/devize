@@ -282,7 +282,7 @@ export function ExternalLink({
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className="break-all text-ink underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current"
+      className="break-all text-ink underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current"
     >
       {children ?? href}
     </a>

@@ -128,7 +128,7 @@ export function ProducersPage() {
                   <span className="col-span-2 col-start-2 line-clamp-2 min-w-0 text-meta text-ink-3">
                     {producer.categories.join(" · ")}
                   </span>
-                  <span className="col-span-3 mt-3 flex flex-wrap items-baseline justify-between gap-x-3 self-end text-meta tabular-nums text-ink-2">
+                  <span className="col-span-2 col-start-2 mt-3 flex flex-wrap items-baseline justify-between gap-x-3 self-end text-meta tabular-nums text-ink-2">
                     <span>
                       {producer.moreNorms
                         ? t("normCountMore", { count: producer.normCount })

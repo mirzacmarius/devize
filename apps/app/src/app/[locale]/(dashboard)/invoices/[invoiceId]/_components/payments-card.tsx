@@ -50,7 +50,7 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+        <div className="grid min-w-0 gap-1">
           <CardTitle>{t("title")}</CardTitle>
           <span className="text-meta text-ink-3 tabular-nums">
             {remaining > 0

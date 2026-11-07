@@ -184,7 +184,8 @@ export default {
       unreadDays: "for {days} days",
     },
     recent: {
-      order: "Last changed",
+      columnEstimate: "Estimate",
+      columnTotal: "Total with VAT",
       title: "Recent estimates",
       all: "All estimates",
       empty: "No estimates yet. Start from the norms in the catalog.",
@@ -1998,8 +1999,9 @@ export default {
     parts: {
       producers: "Norms from producers",
       producersNote: "Not confirmed yet",
-      producersNoteLong:
-        "from their public documents; the producers haven't checked them yet",
+      producersNoteLong: "from their public documents",
+      producersNoteFull:
+        "Taken from their public documents; the producers haven't checked them yet.",
       base: "Base norms",
     },
     noCost: "No price",
@@ -2268,6 +2270,7 @@ export default {
     columns: {
       name: "Name",
       contact: "Contact",
+      latest: "Latest estimate",
       owed: "To collect",
     },
     kinds: {

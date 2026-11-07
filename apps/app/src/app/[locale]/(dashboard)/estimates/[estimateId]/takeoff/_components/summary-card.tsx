@@ -57,7 +57,7 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
             {measurable > 0 && (
               <a
                 href="#items"
-                className="rounded-xs underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-xs underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {t("unmeasured", { left: formatCount(measurable, locale) })}
               </a>

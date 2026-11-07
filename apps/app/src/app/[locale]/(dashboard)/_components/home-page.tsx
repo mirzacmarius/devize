@@ -228,8 +228,8 @@ function Kpi({
           className={cn(
             "tabular-nums tracking-[-0.01em] [font-weight:var(--weight-figure)]",
             lead
-              ? "text-[28px] leading-9 text-ink sm:text-hero"
-              : "text-base leading-6 text-ink sm:text-stat",
+              ? "text-lead text-ink sm:text-hero"
+              : "text-base leading-6 text-ink sm:text-figure",
           )}
         >
           {/* One figure leads; the others are one tone. */}
@@ -563,11 +563,12 @@ function RecentCard({
             </Button>
           </div>
         ) : (
-          // Under a label like the to-do list's, so the two lists' lines match.
+          // Under heads on the to-do list's label's line, so the two lists' lines match.
           <section className="grid">
-            <h4 className="m-0 pb-1 text-caption font-medium text-ink-2">
-              {t("order")}
-            </h4>
+            <div className="flex justify-between gap-4 pb-1 text-caption font-medium text-ink-2 max-sm:hidden">
+              <h4 className="m-0 [font:inherit]">{t("columnEstimate")}</h4>
+              <span>{t("columnTotal")}</span>
+            </div>
             <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] p-0 sm:grid-cols-[minmax(0,1fr)_auto]">
               {recent === undefined && (
                 <li className="py-2 text-body text-ink-3 sm:col-span-2">

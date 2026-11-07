@@ -136,7 +136,7 @@ export function ChecksCard({
         {/* What they're for, while there's still an offer to make. */}
         <CardTitle>{t("checks.beforeOffer")}</CardTitle>
         {open_.length > 0 ? (
-          <span className="text-meta tabular-nums text-warning">
+          <span className="text-meta tabular-nums text-ink-2">
             {t("checks.toResolve", { count: open_.length })}
           </span>
         ) : (

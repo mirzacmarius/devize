@@ -16,7 +16,7 @@ import { useScopedI18n } from "@/locales/client";
 import type { Norm } from "./types";
 
 const linkClass =
-  "rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
  * The technical data sheet Devize AI drafted the norm from, for the producer

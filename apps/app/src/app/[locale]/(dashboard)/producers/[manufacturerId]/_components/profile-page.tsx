@@ -270,7 +270,7 @@ function ProfileNotices({ profile }: { profile: Profile }) {
 }
 
 const linkClass =
-  "rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
  * What the producer says about itself, and whom to ask technical questions.

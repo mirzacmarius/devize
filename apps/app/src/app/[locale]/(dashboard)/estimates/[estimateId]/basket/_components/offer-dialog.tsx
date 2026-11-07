@@ -165,7 +165,7 @@ function OfferForm({
             href={offer.url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex w-fit items-center gap-1 text-meta text-ink-2 underline-offset-[3px] hover:underline"
+            className="inline-flex w-fit items-center gap-1 text-meta text-ink-2 underline-offset-[4px] hover:underline"
           >
             {t("open", { store: tStores(offer.store) })}
             <ExternalLink className="size-3.5" aria-hidden />

@@ -47,7 +47,7 @@ function InvoiceRef({ target }: { target: NonNullable<Invoice["stornoOf"]> }) {
   return (
     <Link
       href={`/invoices/${target._id}`}
-      className="underline-offset-2 hover:underline"
+      className="underline-offset-[4px] hover:underline"
     >
       {target.code ?? t("draftCode")} ·{" "}
       {formatCalendarDate(target.issueDate, locale)}
@@ -67,7 +67,7 @@ function useReferenceRows(invoice: Invoice) {
       value: (
         <Link
           href={`/estimates/${invoice.estimate._id}`}
-          className="underline-offset-2 hover:underline"
+          className="underline-offset-[4px] hover:underline"
         >
           {invoice.estimate.code} · {invoice.estimate.title}
         </Link>
@@ -79,7 +79,7 @@ function useReferenceRows(invoice: Invoice) {
         value: (
           <Link
             href={`/estimates/${invoice.estimate._id}/progress`}
-            className="underline-offset-2 hover:underline"
+            className="underline-offset-[4px] hover:underline"
           >
             {t("details.statement")}
           </Link>

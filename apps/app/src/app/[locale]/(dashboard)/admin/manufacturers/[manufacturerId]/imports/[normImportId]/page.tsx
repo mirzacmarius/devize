@@ -196,7 +196,7 @@ function Consent({
         </span>
         <button
           type="button"
-          className="text-ink-3 underline underline-offset-2 hover:text-ink"
+          className="text-ink-3 underline underline-offset-[4px] hover:text-ink"
           onClick={() => {
             setNote(consent.note);
             setEditing(true);
@@ -316,7 +316,7 @@ function Publish({
         {!consented && articles.length > 0 && (
           <button
             type="button"
-            className="text-body text-ink-3 underline underline-offset-2 hover:text-ink"
+            className="text-body text-ink-3 underline underline-offset-[4px] hover:text-ink"
             onClick={focusConsent}
           >
             {t("needsConsent")}
@@ -369,7 +369,7 @@ function Article({
             {article.pages.length > 0 && (
               <button
                 type="button"
-                className="underline underline-offset-2 hover:text-ink"
+                className="underline underline-offset-[4px] hover:text-ink"
                 onClick={() => onShowPage(article.pages[0] ?? 1)}
               >
                 {t("pages", { pages: article.pages.join(", ") })}

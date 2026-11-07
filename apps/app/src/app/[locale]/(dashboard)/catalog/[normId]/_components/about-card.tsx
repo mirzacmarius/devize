@@ -35,7 +35,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
     norm.visibility === "public" ? (
       <Link
         href={`/producers/${norm.manufacturerId}`}
-        className="rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {normSource(norm)}
       </Link>
@@ -48,7 +48,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
   const category = baseCategory ? (
     <Link
       href={`/catalog?category=${baseCategory.key}`}
-      className="rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {baseCategory.name}
     </Link>
@@ -77,7 +77,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
             value: (
               <Link
                 href={`/catalog/${norm.copiedFrom._id}`}
-                className="rounded-xs tabular-nums underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-xs tabular-nums underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {norm.copiedFrom.code}
               </Link>

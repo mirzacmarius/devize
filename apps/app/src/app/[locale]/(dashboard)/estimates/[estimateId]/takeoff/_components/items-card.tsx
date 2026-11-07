@@ -112,7 +112,7 @@ export function ItemsCard({
             >
               <span className="col-start-2">{t("columnItem")}</span>
               <span>{t("columnState")}</span>
-              <span className="text-right">{t("columnInEstimate")}</span>
+              <span className="pr-9 text-right">{t("columnInEstimate")}</span>
             </li>
             {rows(groups.loose)}
             {groups.sections.map((group) => (
@@ -207,9 +207,12 @@ function ItemRow({
           <span className="hidden min-w-0 flex-wrap gap-x-2 gap-y-0.5 text-ink-3 md:flex">
             {state}
           </span>
-          <span className="hidden text-right text-body tabular-nums text-ink-2 md:block">
+          <span className="hidden text-right text-body tabular-nums text-ink md:block">
             <span className="sr-only">{t("columnInEstimate")}: </span>
-            {formatQuantity(item.quantity, locale)} {unit}
+            {formatQuantity(item.quantity, locale)}
+            <span className="ml-2 inline-block w-7 text-left text-ink-3">
+              {unit}
+            </span>
           </span>
           <span className="col-start-2 flex flex-wrap items-center gap-2 text-meta text-ink-3">
             <span className="tabular-nums">

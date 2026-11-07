@@ -177,7 +177,7 @@ function StatTile({
   return (
     <Card className="grid content-start gap-1 p-5">
       <p className="m-0 text-meta text-ink-3">{label}</p>
-      <p className="m-0 text-kpi text-ink">{value}</p>
+      <p className="m-0 text-lead text-ink">{value}</p>
       <p className="m-0 text-meta text-ink-3">{hint}</p>
     </Card>
   );

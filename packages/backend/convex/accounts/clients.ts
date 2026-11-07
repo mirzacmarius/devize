@@ -52,17 +52,26 @@ export const list = query({
  * aside, and what they still owe on the invoices issued for them. A client with
  * neither isn't listed.
  */
+type Activity = {
+  estimates: number;
+  owed: number;
+  latest?: Pick<
+    Doc<"estimates">,
+    "number" | "revision" | "title" | "status"
+  > & { estimateId: Id<"estimates"> };
+};
+
 export const activity = query({
   args: { organizationId: v.id("organizations") },
   handler: async (ctx, args) => {
     await requireMember(ctx, args.organizationId);
-    const rows = new Map<Id<"clients">, { estimates: number; owed: number }>();
+    const rows = new Map<Id<"clients">, Activity>();
     const row = (clientId: Id<"clients">) => {
       const found = rows.get(clientId);
       if (found) {
         return found;
       }
-      const added = { estimates: 0, owed: 0 };
+      const added: Activity = { estimates: 0, owed: 0 };
       rows.set(clientId, added);
       return added;
     };
@@ -78,7 +87,16 @@ export const activity = query({
       if (estimate.clientId) {
         clientOf.set(estimate._id, estimate.clientId);
         if (estimate.status !== "archived") {
-          row(estimate.clientId).estimates += 1;
+          const client = row(estimate.clientId);
+          client.estimates += 1;
+          // They come newest first, so the first one seen is the latest.
+          client.latest ??= {
+            estimateId: estimate._id,
+            number: estimate.number,
+            revision: estimate.revision,
+            title: estimate.title,
+            status: estimate.status,
+          };
         }
       }
     }
@@ -99,10 +117,11 @@ export const activity = query({
         row(clientId).owed += invoice.totals.total - invoice.paidAmount;
       }
     }
-    return [...rows].map(([clientId, { estimates: count, owed }]) => ({
+    return [...rows].map(([clientId, { estimates: count, owed, latest }]) => ({
       clientId,
       estimates: count,
       owed: roundLei(owed),
+      latest,
     }));
   },
 });

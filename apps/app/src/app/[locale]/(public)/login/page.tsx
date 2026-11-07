@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   const t = await getScopedI18n("login");
   const links = await legalLinks(
-    "underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current",
+    "underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current",
   );
   // Google sends people back to one fixed address, so on preview deployments,
   // each with its own address and backend, only the emailed code works.
@@ -68,7 +68,7 @@ async function SampleEstimate() {
       <div className="grid">
         <span className="text-meta text-ink-2">{t("total")}</span>
         <span className="flex items-baseline gap-2">
-          <span className="text-kpi tabular-nums text-ink">
+          <span className="text-lead tabular-nums text-ink">
             <Amount value={formatMoney(39916.16, locale)} />
           </span>
           <span className="text-meta text-ink-3">lei</span>

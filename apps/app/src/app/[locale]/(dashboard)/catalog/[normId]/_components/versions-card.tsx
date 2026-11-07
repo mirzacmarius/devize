@@ -42,7 +42,7 @@ export function VersionsCard({ norm }: { norm: Norm }) {
                   ) : (
                     <Link
                       href={`/catalog/${version._id}`}
-                      className="rounded-xs text-body text-ink underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="rounded-xs text-body text-ink underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {name}
                     </Link>
