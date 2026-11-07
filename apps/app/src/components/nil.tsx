@@ -4,7 +4,7 @@
  */
 export function Nil() {
   return (
-    <span aria-hidden className="text-ink-3">
+    <span aria-hidden className="text-ink-3/60">
       –
     </span>
   );

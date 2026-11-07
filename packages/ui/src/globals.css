@@ -23,7 +23,7 @@
   --nav-active: 60 9.4% 87.5%; /* #e2e2dc: the current page in the sidebar */
   --tile: 60 15.4% 94.9%; /* #f4f4f0: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 220 6% 10% / 0.32; /* behind whatever comes forward: a dialog, a sheet */
+  --scrim: 60 4% 12% / 0.28; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
   --border: 60 7.5% 86.9%; /* #e0e0db */
@@ -90,7 +90,7 @@
   --weight-figure: 350;
   --card: 60 1.5% 12.7%; /* #212120 */
   --card-border: 60 1.8% 22.4%; /* #3a3a38 */
-  --sunken: 60 3% 12.9%; /* #222220: a band, one step off the panel */
+  --sunken: 60 2.7% 14.5%; /* #262624: a band, one step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
   --selected: 60 2.7% 22.2%; /* #3a3a37: a segment raised on its rail */
@@ -201,6 +201,7 @@
     appearance: none;
     width: 16px;
     height: 16px;
+    margin-right: -5px;
     cursor: pointer;
     background: hsl(var(--ink-3));
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E")
@@ -410,6 +411,60 @@
       padding-bottom: 20px;
     }
   }
+  /* With room, settings read as a ledger: what a section is on the left, its
+     fields on the right, a hairline between sections. */
+  @media (min-width: 1280px) {
+    .app-main .settings-sections > [data-slot="card"]:not([data-framed]) {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      column-gap: 48px;
+      align-items: start;
+      padding-bottom: 0;
+    }
+    .app-main
+      .settings-sections
+      > [data-slot="card"]:not([data-framed])
+      + [data-slot="card"]:not([data-framed]) {
+      padding-top: 24px;
+      border-top: 1px solid hsl(var(--border));
+    }
+    .settings-sections > [data-slot="card"] > form {
+      display: contents;
+    }
+    .app-main .settings-sections > [data-slot="card"]:not([data-framed]) > [data-slot="card-header"],
+    .app-main
+      .settings-sections
+      > [data-slot="card"]:not([data-framed])
+      > form
+      > [data-slot="card-header"] {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      display: grid;
+      justify-items: stretch;
+      align-content: start;
+      gap: 4px;
+      min-height: 0;
+      padding: 0;
+    }
+    .app-main
+      .settings-sections
+      > [data-slot="card"]:not([data-framed])
+      > :is([data-slot="card-content"], [data-slot="card-footer"]),
+    .app-main
+      .settings-sections
+      > [data-slot="card"]:not([data-framed])
+      > form
+      > :is([data-slot="card-content"], [data-slot="card-footer"]) {
+      grid-column: 2;
+      min-width: 0;
+    }
+    /* A section that is only its action has no line over it. */
+    .app-main .settings-sections > [data-slot="card"] > [data-slot="card-header"] + [data-slot="card-footer"] {
+      margin-top: 0;
+      padding-top: 0;
+      border-top-width: 0;
+    }
+  }
   /* A label over no rows says nothing. */
   .rail-list > [data-rail-label]:is(:last-child, :has(+ [data-rail-label])) {
     display: none;
@@ -442,6 +497,10 @@
   /* A rail's values end on one edge, where a row's chevron starts. */
   .rail-sections:has([data-row-end]) [data-slot="fact"] {
     margin-right: 19px;
+  }
+  /* A summary without rows has only the one edge. */
+  .rail-summary:not(:has([data-row-end])) [data-slot="fact"] {
+    margin-right: 0;
   }
   @media (max-width: 1279.98px) {
     .rail-sections [data-slot="meter"] {

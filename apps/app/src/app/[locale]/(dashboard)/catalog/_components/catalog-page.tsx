@@ -229,8 +229,13 @@ export function CatalogPage() {
                     {t("columns.norm")}
                   </TableHead>
                   {!isOwn && (
-                    <TableHead className="hidden w-[304px] xl:table-cell">
+                    <TableHead className="hidden w-[184px] xl:table-cell">
                       {t("columns.source")}
+                    </TableHead>
+                  )}
+                  {!isOwn && (
+                    <TableHead className="hidden w-[128px] xl:table-cell">
+                      {t("columns.status")}
                     </TableHead>
                   )}
                   {isOwn && <TableHead>{t("columns.status")}</TableHead>}
@@ -301,7 +306,7 @@ export function CatalogPage() {
                         href={`/catalog/${norm._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="text-body font-medium text-ink group-hover:underline">
+                        <span className="text-body text-ink group-hover:underline">
                           {keepUnits(norm.title)}
                         </span>
                         <span
@@ -334,7 +339,7 @@ export function CatalogPage() {
                       <TableCell className="md:max-xl:hidden">
                         <span
                           className={cn(
-                            "block max-md:text-meta xl:flex xl:items-baseline xl:justify-between xl:gap-3",
+                            "block max-md:text-meta",
                             norm.source === "base"
                               ? "text-ink-3"
                               : "text-ink-2 max-md:text-ink-3",
@@ -344,23 +349,23 @@ export function CatalogPage() {
                             {norm.manufacturerName ?? normSource(norm)}
                           </span>
                           {unconfirmed(norm) && (
-                            <>
-                              <span
-                                title={t("unconfirmedHint")}
-                                className="text-ink-3 xl:hidden"
-                              >
-                                {` · ${t("unconfirmed")}`}
-                              </span>
-                              <StatusPill
-                                tone="draft"
-                                title={t("unconfirmedHint")}
-                                className="hidden xl:inline-flex"
-                              >
-                                {t("unconfirmedState")}
-                              </StatusPill>
-                            </>
+                            <span
+                              title={t("unconfirmedHint")}
+                              className="text-ink-3 xl:hidden"
+                            >
+                              {` · ${t("unconfirmed")}`}
+                            </span>
                           )}
                         </span>
+                      </TableCell>
+                    )}
+                    {!isOwn && (
+                      <TableCell className="hidden xl:table-cell">
+                        {unconfirmed(norm) && (
+                          <StatusPill tone="draft" title={t("unconfirmedHint")}>
+                            {t("unconfirmedState")}
+                          </StatusPill>
+                        )}
                       </TableCell>
                     )}
                     {isOwn && (
@@ -381,7 +386,9 @@ export function CatalogPage() {
                         </>
                       ) : (
                         <>
-                          {formatMoney(norm.referenceCost, locale)}
+                          <span className="font-medium">
+                            {formatMoney(norm.referenceCost, locale)}
+                          </span>
                           <span className={COST_UNIT}>
                             lei/{formatUnit(norm.unit, locale)}
                           </span>

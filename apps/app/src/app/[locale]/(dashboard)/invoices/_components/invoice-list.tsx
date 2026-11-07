@@ -133,10 +133,10 @@ export function InvoiceList() {
                 ) : receivable.overdue > 0 ? (
                   formatMoney(receivable.overdue, locale)
                 ) : (
-                  <Nil />
+                  <span className="text-ink-3">0</span>
                 )
               }
-              unit={receivable?.overdue === 0 ? undefined : "lei"}
+              unit="lei"
               note={
                 receivable &&
                 t("receivable.invoices", { count: receivable.overdueCount })
@@ -225,7 +225,7 @@ export function InvoiceList() {
                         href={`/invoices/${row._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="text-body font-medium tabular-nums text-ink group-hover:underline max-md:text-body-lg">
+                        <span className="text-body tabular-nums text-ink group-hover:underline max-md:text-body-lg">
                           {row.code ?? t(`kind.${row.kind}`)}
                         </span>
                         <span className="truncate text-meta tabular-nums text-ink-3">
@@ -263,7 +263,7 @@ export function InvoiceList() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums max-md:text-body-lg max-md:font-medium xl:text-ink-2">
+                    <TableCell className="text-right tabular-nums max-md:text-body-lg max-xl:font-medium xl:text-ink-2">
                       {formatMoney(row.total, locale)}
                       <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
                         lei

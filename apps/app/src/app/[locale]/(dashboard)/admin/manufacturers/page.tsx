@@ -218,7 +218,7 @@ export default function ManufacturersPage() {
                       <TableCell>
                         <Link
                           href={`/admin/manufacturers/${row._id}`}
-                          className="font-medium text-ink hover:underline"
+                          className="text-ink hover:underline"
                         >
                           {row.name}
                         </Link>

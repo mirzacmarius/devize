@@ -33,9 +33,9 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
           "w-full caption-bottom border-collapse text-body",
           stack && "table-stack",
           twoLine === true &&
-            "md:[&>tbody>tr>td]:h-[60px] md:[&>tbody>tr>td]:py-[11px] md:[&>tbody>tr>td]:align-baseline",
+            "md:[&>tbody>tr>td]:h-16 md:[&>tbody>tr>td]:py-[11px] md:[&>tbody>tr>td]:align-baseline",
           twoLine === "below-xl" &&
-            "md:max-xl:[&>tbody>tr>td]:h-[60px] md:max-xl:[&>tbody>tr>td]:py-[11px] md:max-xl:[&>tbody>tr>td]:align-baseline xl:[&>tbody>tr>td]:py-3 xl:[&>tbody>tr>td]:align-baseline",
+            "md:max-xl:[&>tbody>tr>td]:h-16 md:max-xl:[&>tbody>tr>td]:py-[11px] md:max-xl:[&>tbody>tr>td]:align-baseline xl:[&>tbody>tr>td]:py-[11px] xl:[&>tbody>tr>td]:align-baseline",
           className,
         )}
         {...props}

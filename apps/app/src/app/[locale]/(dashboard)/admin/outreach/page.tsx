@@ -264,7 +264,7 @@ function MessageRow({
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/admin/manufacturers/${message.manufacturerId}`}
-            className="font-medium text-ink hover:underline"
+            className="text-ink hover:underline"
           >
             {message.manufacturerName}
           </Link>

@@ -1,15 +1,13 @@
 "use client";
 
 import { Stepper } from "@devize/ui/stepper";
-import { cn } from "@devize/ui/utils";
-import { EstimateStatusPill } from "@/components/estimate-status";
 import { formatDay } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./types";
 
 /**
- * Where a Deviz is in its life: draft, sent, then the client's answer. Once
- * answered, the way there says nothing: only the answer and when.
+ * Where a Deviz is in its life, until the client answers: draft, sent, then
+ * what it waits for. The header says the answer once there is one.
  */
 export function EstimateStepper({
   estimate,
@@ -21,23 +19,10 @@ export function EstimateStepper({
   const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
   const { status, lockedAt } = estimate;
-  if (status === "archived") {
+  if (status !== "draft" && status !== "sent") {
     return null;
   }
-  if (status === "accepted" || status === "rejected") {
-    return (
-      <p
-        className={cn(
-          "m-0 flex items-baseline gap-2 text-meta tabular-nums text-ink-3",
-          className,
-        )}
-      >
-        <EstimateStatusPill status={status} />
-        {formatDay(estimate.updatedAt, locale)}
-      </p>
-    );
-  }
-  const sent = status !== "draft";
+  const sent = status === "sent";
   return (
     <Stepper
       className={className}
@@ -56,21 +41,21 @@ export function EstimateStepper({
           // Only where it's at says when; the Deviz's data has the rest.
           meta: sent ? undefined : formatDay(estimate._creationTime, locale),
           state: sent ? "done" : "current",
+          // The mark a draft has in the lists.
+          mark: (
+            <span className="size-[7px] rounded-full shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]" />
+          ),
         },
         {
           id: "sent",
           title: t("steps.sent"),
-          meta:
-            status === "sent" && lockedAt
-              ? formatDay(lockedAt, locale)
-              : undefined,
-          state: sent ? "done" : "todo",
+          meta: sent && lockedAt ? formatDay(lockedAt, locale) : undefined,
+          state: sent ? "current" : "todo",
         },
         {
           id: "answer",
-          title: t("steps.accepted"),
-          meta: sent ? t("steps.waiting") : undefined,
-          state: sent ? "current" : "todo",
+          title: sent ? t("steps.waiting") : t("steps.accepted"),
+          state: "todo",
         },
       ]}
     />

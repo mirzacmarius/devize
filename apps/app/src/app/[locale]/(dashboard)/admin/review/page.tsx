@@ -58,7 +58,7 @@ export default function ReviewPage() {
                             ? `${norm.code} · v${norm.version}`
                             : norm.code}
                         </span>
-                        <span className="font-medium text-ink group-hover:underline">
+                        <span className="text-ink group-hover:underline">
                           {norm.title}
                         </span>
                       </Link>

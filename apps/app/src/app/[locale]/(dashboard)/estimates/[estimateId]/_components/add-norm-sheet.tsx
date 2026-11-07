@@ -81,6 +81,8 @@ export function AddNormSheet({
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
       <SheetContent
         closeLabel={tc("close")}
+        // Over the +s, which end on the content's edge.
+        closeClassName="right-8"
         className="w-full overflow-hidden sm:w-[calc(100vw-1rem)] sm:max-w-[720px]"
       >
         <SheetHeader>
@@ -278,7 +280,7 @@ function AddNorm({
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-start gap-x-4 gap-y-0.5 rounded-md px-3 py-2.5 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_112px_32px]"
+                    className="group -mx-3 grid min-h-[63px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-start gap-x-4 gap-y-0.5 rounded-md px-3 py-2.5 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_112px_32px]"
                   >
                     <span className="grid min-w-0 gap-0.5">
                       <span className="text-body text-ink [text-wrap:pretty]">
@@ -319,7 +321,7 @@ function AddNorm({
                         "col-start-2 row-span-2 row-start-1 -my-1.5 grid size-8 place-items-center rounded-md border transition-colors sm:col-start-3 sm:row-span-1",
                         inEstimate.has(norm._id)
                           ? "border-transparent bg-success-soft text-success"
-                          : "border-transparent text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
+                          : "border-control text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
                       )}
                     >
                       {inEstimate.has(norm._id) ? (

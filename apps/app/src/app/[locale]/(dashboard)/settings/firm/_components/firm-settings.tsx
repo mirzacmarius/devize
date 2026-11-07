@@ -61,12 +61,12 @@ export function FirmSettings() {
   }
   const canEdit = details.role === "owner" || details.role === "admin";
   return (
-    <div className="grid min-w-0 gap-6">
+    <>
       <LogoCard firm={details} canEdit={canEdit} />
       {/* A new form for another firm. */}
       <DetailsForm key={details._id} firm={details} canEdit={canEdit} />
       <TermsCard terms={details.terms} />
-    </div>
+    </>
   );
 }
 
@@ -150,7 +150,14 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
 
   return (
     <Card>
-      <div className="flex flex-wrap items-center gap-4 p-[var(--card-pad)] sm:p-0">
+      <CardHeader className="grid justify-stretch gap-1">
+        <CardTitle>{t("logoTitle")}</CardTitle>
+        <CardDescription>
+          {t("logoDescription")}
+          {canEdit && ` ${t("logoHint")}`}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-wrap items-center gap-4">
         <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
           {firm.logoUrl ? (
             <img
@@ -166,13 +173,6 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
               {initials(firm.name)}
             </span>
           )}
-        </div>
-        <div className="grid min-w-48 flex-1 gap-0.5">
-          <CardTitle>{t("logoTitle")}</CardTitle>
-          <CardDescription>
-            {t("logoDescription")}
-            {canEdit && ` ${t("logoHint")}`}
-          </CardDescription>
         </div>
         {canEdit && (
           <div className="flex shrink-0 gap-2">
@@ -214,7 +214,7 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
             />
           </div>
         )}
-      </div>
+      </CardContent>
     </Card>
   );
 }
@@ -404,10 +404,7 @@ function DetailsForm({
             </div>
             <div className="flex items-start justify-between gap-4 pt-1">
               <div className="grid gap-0.5">
-                <label
-                  htmlFor="firm-vat"
-                  className="text-body font-medium text-ink"
-                >
+                <label htmlFor="firm-vat" className="text-body text-ink">
                   {tFirm("vatPayer")}
                 </label>
                 <p className="m-0 text-meta text-ink-3">

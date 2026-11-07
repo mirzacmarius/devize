@@ -107,7 +107,7 @@ export function ProductsCard() {
                             href={listing.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="group rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="group rounded-xs text-body text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             {listing.title}
                             <ExternalLink
@@ -116,7 +116,7 @@ export function ProductsCard() {
                             />
                           </a>
                         ) : (
-                          <span className="text-body font-medium text-ink">
+                          <span className="text-body text-ink">
                             {listing.title}
                           </span>
                         )}
@@ -151,7 +151,7 @@ export function ProductsCard() {
                     </TableCell>
                     <TableCell className="text-right align-top">
                       <div className="grid justify-items-end gap-0.5">
-                        <span className="tabular-nums text-ink">
+                        <span className="font-medium tabular-nums text-ink">
                           {money(listing.price)}
                         </span>
                         {row.material && (

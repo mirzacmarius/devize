@@ -2,12 +2,12 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { Lei } from "@/components/amount";
 import { Fact, FactList } from "@/components/fact-list";
-import { FoldRow } from "@/components/fold-card";
+import { FoldCard } from "@/components/fold-card";
 import { InvoiceStatusPill } from "@/components/invoice-status";
 import { RailStat } from "@/components/rail-stat";
 import { formatMoney, todayInput } from "@/lib/format";
@@ -16,9 +16,9 @@ import type { Estimate } from "../_components/types";
 import { useInvoiceActions } from "./use-invoice-actions";
 
 /**
- * The Deviz's Facturi: what is left to bill of what the client accepted, the
- * invoices so far, and the next one to make. Once the work is done that's the
- * header's main action too; while it goes on, only here and in the menu.
+ * What is left to bill of what the client accepted, and the next invoice to
+ * make. Once the work is done that's the header's main action too; while it
+ * goes on, only here and in the menu.
  */
 export function InvoicesCard({ estimate }: { estimate: Estimate }) {
   const t = useScopedI18n("invoices");
@@ -32,20 +32,56 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
   );
   const next = invoicing.actions[0];
   // Nothing to bill until the client accepts.
-  if (
-    billing === undefined ||
-    (billing.accepted === null && billing.invoices.length === 0)
-  ) {
+  if (!billing?.accepted) {
     return null;
   }
-  const { accepted } = billing;
-  const today = todayInput();
+  return (
+    <RailStat
+      id="invoices"
+      label={t("card.remaining")}
+      value={formatMoney(billing.remainingNet ?? 0, locale)}
+      unit="lei"
+    >
+      <FactList className="mt-1">
+        <Fact label={t("card.invoiced")}>
+          <Lei value={formatMoney(billing.invoicedNet, locale)} />
+        </Fact>
+      </FactList>
+      {next && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-3 w-full"
+          disabled={invoicing.busy}
+          onClick={next.run}
+        >
+          <Plus aria-hidden />
+          {next.label}
+        </Button>
+      )}
+    </RailStat>
+  );
+}
 
-  const list = billing.invoices.length > 0 && (
-    <FoldRow
+/** The invoices made from a Deviz, among the other rows of its rail. */
+export function InvoicesRow({ estimate }: { estimate: Estimate }) {
+  const t = useScopedI18n("invoices");
+  const locale = useCurrentLocale();
+  const billing = useQuery(api.invoices.invoices.forEstimate, {
+    estimateId: estimate._id,
+  });
+  if (billing === undefined || billing.invoices.length === 0) {
+    return null;
+  }
+  const today = todayInput();
+  return (
+    <FoldCard
+      // Without an accepted offer there's no sum to bill, only this.
+      id={billing.accepted ? undefined : "invoices"}
       title={t("card.list")}
       lead={billing.invoices.length}
-      attention={accepted === null}
+      attention={billing.accepted === null}
     >
       <ul className="m-0 grid list-none gap-3 p-0">
         {billing.invoices.map((invoice) => (
@@ -81,52 +117,6 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
       <Button variant="link" className="justify-self-start" asChild>
         <Link href="/invoices">{t("card.all")}</Link>
       </Button>
-    </FoldRow>
-  );
-
-  // Without an accepted offer there's no sum to bill, only the invoices made.
-  if (!accepted) {
-    return (
-      <Card id="invoices" className="scroll-mt-4">
-        <CardHeader>
-          <CardTitle>{t("card.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="gap-0">{list}</CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <RailStat
-      id="invoices"
-      label={t("card.remaining")}
-      value={formatMoney(billing.remainingNet ?? 0, locale)}
-      unit="lei"
-    >
-      <FactList className="mt-1">
-        <Fact label={t("card.invoiced")}>
-          {formatMoney(billing.invoicedNet, locale)}{" "}
-          <span className="text-ink-3">
-            {t("card.invoicedOf", {
-              accepted: formatMoney(accepted.net, locale),
-            })}
-          </span>
-        </Fact>
-      </FactList>
-      {list}
-      {next && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="mt-3 w-full"
-          disabled={invoicing.busy}
-          onClick={next.run}
-        >
-          <Plus aria-hidden />
-          {next.label}
-        </Button>
-      )}
-    </RailStat>
+    </FoldCard>
   );
 }

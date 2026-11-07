@@ -135,14 +135,18 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
     <Card>
       <CardHeader>
         <div className="grid gap-1">
-          {/* The tab above already says it. */}
-          <CardTitle className="sr-only">{t("title")}</CardTitle>
+          {/* The tab above already says it, until there's a column for titles. */}
+          <CardTitle className="sr-only xl:not-sr-only">{t("title")}</CardTitle>
           <CardDescription>
             {t("description", { firm: firm.name })}
           </CardDescription>
         </div>
         {isAdmin && (
-          <Button size="sm" onClick={() => setInviting(true)}>
+          <Button
+            size="sm"
+            className="xl:mt-2 xl:justify-self-start"
+            onClick={() => setInviting(true)}
+          >
             <Icons.Assign aria-hidden />
             {t("invite")}
           </Button>
@@ -171,7 +175,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                     <AvatarFallback>{initials(name)}</AvatarFallback>
                   </Avatar>
                   <div className="grid min-w-0">
-                    <span className="truncate text-body font-medium text-ink">
+                    <span className="truncate text-body text-ink">
                       {name}
                       {isMe && (
                         <span className="font-normal text-ink-3">
@@ -307,7 +311,7 @@ function InvitationsCard() {
             >
               <div className="grid min-w-0 gap-1">
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="truncate text-body font-medium text-ink">
+                  <span className="truncate text-body text-ink">
                     {invitation.email}
                   </span>
                   <StatusPill tone={emailTones[invitation.emailStatus]}>
@@ -339,7 +343,7 @@ function InvitationsCard() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-8"
+                      className="-mr-2 size-8"
                       aria-label={tc("actions")}
                     >
                       <Icons.More aria-hidden />

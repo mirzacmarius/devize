@@ -5,13 +5,14 @@ import type { ComponentProps } from "react";
 
 /**
  * A search field with its icon; give it an aria-label or a label. `quiet` when
- * it's in a page's toolbar, where it narrows a list.
+ * it narrows a list; `tall` beside a page's own buttons, as tall as they are.
  */
 export function SearchInput({
   className,
   quiet = false,
+  tall = false,
   ...props
-}: ComponentProps<"input"> & { quiet?: boolean }) {
+}: ComponentProps<"input"> & { quiet?: boolean; tall?: boolean }) {
   return (
     <div className={cn("relative min-w-0", className)}>
       <Search
@@ -20,7 +21,11 @@ export function SearchInput({
       />
       <Input
         type="search"
-        className={cn("pl-9 max-sm:h-10", quiet && toolbarField)}
+        className={cn(
+          "pl-9 max-sm:h-10",
+          quiet && toolbarField,
+          tall && "sm:h-9",
+        )}
         {...props}
       />
     </div>

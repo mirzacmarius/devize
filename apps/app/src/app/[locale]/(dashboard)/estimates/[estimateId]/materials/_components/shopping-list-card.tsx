@@ -67,6 +67,9 @@ export function ShoppingListCard({
               <TableHead className={ROOMY_HEAD}>{t("need")}</TableHead>
               <TableHead className="pl-8">{t("buy")}</TableHead>
               <TableHead className={ROOMY_HEAD}>{t("leftover")}</TableHead>
+              <TableHead className="hidden text-right xl:table-cell">
+                {t("leftoverValue")}
+              </TableHead>
               <TableHead className="text-right">{t("cost")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -151,36 +154,39 @@ function MaterialRow({
       <TableCell className="whitespace-nowrap pl-8 align-top tabular-nums max-md:self-start max-md:whitespace-normal">
         <Packages row={row} />
       </TableCell>
-      <TableCell className={ROOMY_NUMBER}>
+      <TableCell
+        className={ROOMY_NUMBER}
+        title={
+          row.purchase && leftover > 0 && pkg?.source !== "counted"
+            ? t("share", {
+                percent: formatPercent(
+                  Math.round(row.purchase.leftoverShare * 100),
+                  locale,
+                ),
+              })
+            : undefined
+        }
+      >
         {row.purchase && leftover > 0 ? (
-          <div className="grid justify-items-end gap-0.5">
-            <span>
-              {formatQuantityRounded(leftover, locale)}
-              <span className={UNIT_SLOT}>{unit}</span>
-            </span>
-            {pkg?.source !== "counted" && (
-              <span className="pr-[36px] text-meta text-ink-3">
-                {t("share", {
-                  percent: formatPercent(
-                    Math.round(row.purchase.leftoverShare * 100),
-                    locale,
-                  ),
-                })}
-              </span>
-            )}
-          </div>
+          formatQuantityRounded(leftover, locale)
         ) : (
-          <>
-            <Nil />
-            <span className={UNIT_SLOT} />
-          </>
+          <Nil />
         )}
+        <span className={UNIT_SLOT}>
+          {row.purchase && leftover > 0 ? unit : null}
+        </span>
+      </TableCell>
+      <TableCell className="hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell">
+        {row.leftoverCost > 0 ? formatMoney(row.leftoverCost, locale) : <Nil />}
       </TableCell>
       <TableCell className="whitespace-nowrap text-right align-top tabular-nums max-md:self-start">
         <div className="grid justify-items-end gap-0.5">
-          <span>{formatMoney(row.boughtCost, locale)}</span>
+          <span className="font-medium">
+            {formatMoney(row.boughtCost, locale)}
+          </span>
+          {/* Where there's room it has a column. */}
           {row.leftoverCost > 0 && (
-            <span className="text-meta text-ink-3">
+            <span className="text-meta text-ink-3 xl:hidden">
               {t("leftoverCost", {
                 cost: formatMoney(row.leftoverCost, locale),
               })}

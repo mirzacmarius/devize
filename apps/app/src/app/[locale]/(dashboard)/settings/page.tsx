@@ -68,11 +68,11 @@ export default function DashboardSettings() {
   return (
     <>
       <Card>
-        <CardHeader className="items-start">
-          <div className="grid gap-1">
-            <CardTitle>{t("avatar.title")}</CardTitle>
-            <CardDescription>{t("avatar.description")}</CardDescription>
-          </div>
+        <CardHeader className="grid justify-stretch gap-1">
+          <CardTitle>{t("avatar.title")}</CardTitle>
+          <CardDescription>{t("avatar.description")}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center gap-4">
           <label
             htmlFor="avatar_field"
             className="group relative flex shrink-0 cursor-pointer overflow-hidden rounded-full transition active:scale-95"
@@ -98,9 +98,9 @@ export default function DashboardSettings() {
             generateUploadUrl={generateUploadUrl}
             onUploadComplete={handleUpdateUserImage}
           />
-        </CardHeader>
-        <CardFooter className={footer}>
-          <p className="m-0 text-meta text-ink-3">{t("avatar.uploadHint")}</p>
+          <p className="m-0 min-w-0 flex-1 basis-48 text-meta text-ink-3">
+            {t("avatar.uploadHint")}
+          </p>
           {user.avatarUrl && (
             <Button
               type="button"
@@ -113,7 +113,7 @@ export default function DashboardSettings() {
               {t("avatar.reset")}
             </Button>
           )}
-        </CardFooter>
+        </CardContent>
       </Card>
 
       <UsernameForm username={user.username ?? ""} />
@@ -142,11 +142,9 @@ function DeleteAccountCard({
 
   return (
     <Card className="border-danger-border">
-      <CardHeader>
-        <div className="grid gap-1">
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </div>
+      <CardHeader className="grid justify-stretch gap-1">
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       {firms && firms.length > 0 && (
         <CardContent className="gap-3">
@@ -227,19 +225,17 @@ function UsernameForm({ username }: { username: string }) {
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
-      <Card>
-        <CardHeader>
-          <div className="grid gap-1">
-            <CardTitle>{t("username.title")}</CardTitle>
-            <CardDescription>{t("username.description")}</CardDescription>
-          </div>
+    <Card>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
+        }}
+      >
+        <CardHeader className="grid justify-stretch gap-1">
+          <CardTitle>{t("username.title")}</CardTitle>
+          <CardDescription>{t("username.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form.Field name="username">
@@ -276,7 +272,7 @@ function UsernameForm({ username }: { username: string }) {
           <p className="m-0 text-meta text-ink-3">{tUsername("rules")}</p>
           <Button type="submit">{t("username.save")}</Button>
         </CardFooter>
-      </Card>
-    </form>
+      </form>
+    </Card>
   );
 }

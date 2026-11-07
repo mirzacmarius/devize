@@ -65,7 +65,7 @@ export function SidebarContent({
         <Icon aria-hidden />
         {label}
         {count && count.value > 0 && (
-          <Count tone="warning" className="ml-auto" aria-label={count.label}>
+          <Count className="ml-auto" aria-label={count.label}>
             {count.value}
           </Count>
         )}

@@ -2502,7 +2502,7 @@ export default {
       left: "Ai părăsit {firm}.",
       invitationsTitle: "Invitații",
       invitationsDescription:
-        "Un coleg invitat intră în Devize cu adresa la care l-ai invitat și acceptă invitația. Invitațiile expiră după 7 zile.",
+        "Colegul intră în Devize cu adresa invitată și acceptă. Invitațiile expiră după 7 zile.",
       invite: "Invită un coleg",
       invitedBy: "invitat de {name}",
       expires: "expiră pe {date}",
@@ -4280,8 +4280,6 @@ export default {
     efacturaLateNamed: "ANAF: termen depășit",
     efacturaDue: "Până la {date}",
     card: {
-      title: "Facturi",
-      invoicedOf: "din {accepted} lei",
       invoiced: "Facturat",
       remaining: "Rest de facturat, fără TVA",
       list: "Lista facturilor",
@@ -4529,7 +4527,7 @@ export default {
     alerts: {
       title: "Alerte de preț",
       description:
-        "Devizele trimise sau acceptate al căror total s-ar schimba cu cel puțin {percent} la prețurile de azi. Le verificăm în fiecare dimineață.",
+        "Devize trimise sau acceptate al căror total s-ar schimba cu cel puțin {percent}. Verificate zilnic.",
       off: "Alertele sunt oprite. Alege un prag ca să afli când prețurile schimbă un deviz trimis.",
       checkNow: "Verifică acum",
       checking:
@@ -4566,7 +4564,7 @@ export default {
     products: {
       title: "Produse alese",
       description:
-        "Produsele din magazine pe care le cumpără firma, cu prețuri în lei. Cele citite din paginile magazinelor se actualizează zilnic.",
+        "Produsele pe care le cumpără firma. Cele din magazine se actualizează zilnic.",
       product: "Produs",
       price: "Preț cu TVA",
       change: "Schimbare",
@@ -4793,6 +4791,7 @@ export default {
       need: "Necesar",
       buy: "Cumperi",
       leftover: "Rămâne",
+      leftoverValue: "Valoare rest",
       cost: "Cost",
       packageOf: "{count} × {kind} de {size} {unit}",
       pieces: "{count} {unit}",
@@ -4991,7 +4990,7 @@ export default {
     items: {
       title: "Articole",
       description:
-        "Cantitatea din deviz urmează suma măsurătorilor. Una scrisă de mână rămâne până o preiei din nou de aici.",
+        "Cantitatea din deviz urmează măsurătorile; una scrisă de mână rămâne până o preiei de aici.",
       emptyTitle: "Devizul nu are încă articole",
       emptyDescription: "Adaugă articole în deviz, apoi măsoară-le aici.",
       measured: "Măsurat {measured} {unit}",

@@ -294,7 +294,7 @@ export function LineItemsCard({
           <Table bleed className="items-table">
             <TableHeader>
               <TableRow>
-                <TableHead className={cn("w-5 text-right", FROM_MID)}>
+                <TableHead className={cn("w-7 text-right", FROM_MID)}>
                   #
                 </TableHead>
                 <TableHead className={TITLE_CELL}>
@@ -703,7 +703,10 @@ function ItemRows({
           {price}
         </TableCell>
         <TableCell
-          className={cn("align-top text-right tabular-nums text-ink", FROM_MID)}
+          className={cn(
+            "align-top text-right font-medium tabular-nums text-ink",
+            FROM_MID,
+          )}
         >
           {formatMoney(item.totals.total, locale)}
         </TableCell>

@@ -186,8 +186,8 @@ function ItemRow({
         <div className="grid justify-items-end gap-1 text-right max-sm:col-start-3 max-sm:row-start-2">
           <span
             className={cn(
-              "text-body tabular-nums text-ink",
-              !included && "text-ink-3 line-through",
+              "text-body font-medium tabular-nums text-ink",
+              !included && "font-normal text-ink-3 line-through",
             )}
           >
             {formatMoney(item.total, locale)}

@@ -45,14 +45,18 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
         }
         note={
           <>
-            {unmeasured > 0 && (
-              <a
-                href="#items"
-                className="rounded-xs underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {t("unmeasured", { left: formatCount(unmeasured, locale) })}
-              </a>
-            )}
+            {unmeasured > 0 &&
+              (data.estimate.locked ? (
+                // Nothing to measure on a Deviz that has left.
+                t("unmeasured", { left: formatCount(unmeasured, locale) })
+              ) : (
+                <a
+                  href="#items"
+                  className="rounded-xs underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {t("unmeasured", { left: formatCount(unmeasured, locale) })}
+                </a>
+              ))}
             {unmeasured > 0 && differs > 0 && " · "}
             {differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
           </>

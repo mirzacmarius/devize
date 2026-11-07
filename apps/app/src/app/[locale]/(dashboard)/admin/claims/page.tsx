@@ -80,7 +80,7 @@ function Who({
     <div className="flex flex-col gap-1">
       <Link
         href={`/admin/manufacturers/${manufacturerId}`}
-        className="w-fit text-body font-medium text-ink hover:underline"
+        className="w-fit text-body text-ink hover:underline"
       >
         {manufacturerName}
       </Link>

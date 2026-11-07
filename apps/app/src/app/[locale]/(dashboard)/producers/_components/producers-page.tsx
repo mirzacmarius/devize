@@ -69,19 +69,33 @@ export function ProducersPage() {
                 .join(" · ")
             : "\u00a0"
         }
+        actions={
+          producers?.length !== 0 && (
+            <SearchInput
+              quiet
+              tall
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-48 max-sm:hidden md:w-64 xl:w-80"
+            />
+          )
+        }
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <ListToolbar>
+          {/* From a tablet up it stands in the page's head. */}
+          <ListToolbar className="sm:hidden">
             <SearchInput
               quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:ml-auto sm:w-80"
+              className="w-full"
             />
           </ListToolbar>
           <Table stack>
@@ -124,7 +138,7 @@ export function ProducersPage() {
                   // The whole row leads to the profile.
                   <TableRow
                     key={producer._id}
-                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-[62px] xl:[&>td]:py-3 xl:[&>td]:align-baseline"
+                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-16 xl:[&>td]:py-[11px] xl:[&>td]:align-baseline"
                   >
                     <TableCell data-stack="wide">
                       <Link
@@ -132,7 +146,7 @@ export function ProducersPage() {
                         className="grid gap-y-0.5 rounded-xs after:absolute xl:gap-y-0 after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
                       >
                         <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
-                          <span className="min-w-0 truncate text-body font-medium text-ink">
+                          <span className="min-w-0 truncate text-body text-ink">
                             {producer.name}
                           </span>
                           {producer.claimed && (

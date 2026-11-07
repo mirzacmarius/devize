@@ -446,7 +446,7 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 const todoTones = {
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
-  quiet: "text-ink-3",
+  quiet: "bg-sunken text-ink-3",
 };
 
 /**
@@ -481,7 +481,7 @@ function TodoLine({
     >
       <Link
         href={href}
-        className="group -mx-2 grid min-h-[62px] grid-cols-[auto_minmax(0,1fr)_auto] content-center items-baseline gap-x-3 gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group -mx-2 grid min-h-[63px] grid-cols-[auto_minmax(0,1fr)_auto] content-center items-baseline gap-x-3 gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden
@@ -494,7 +494,7 @@ function TodoLine({
         </span>
         <span
           className={cn(
-            "col-start-2 min-w-0 text-body font-medium text-ink",
+            "col-start-2 min-w-0 text-body text-ink",
             !figure && "col-span-2",
           )}
         >
@@ -565,11 +565,11 @@ function RecentCard({
                 <li key={row._id} className="border-t border-border">
                   <Link
                     href={`/estimates/${row._id}`}
-                    className="-mx-2 grid min-h-[62px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="-mx-2 grid min-h-[63px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {/* Each line on its own, so a title gives way only to its sum. */}
                     <span className="flex min-w-0 items-baseline justify-between gap-4">
-                      <span className="min-w-0 text-body font-medium text-ink sm:truncate">
+                      <span className="min-w-0 text-body text-ink sm:truncate">
                         {row.title}
                       </span>
                       <span className="whitespace-nowrap text-body font-medium tabular-nums text-ink max-sm:hidden">

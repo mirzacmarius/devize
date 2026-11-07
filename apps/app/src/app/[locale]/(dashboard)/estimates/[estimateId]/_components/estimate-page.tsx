@@ -31,7 +31,7 @@ import {
   formatPercent,
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
-import { InvoicesCard } from "../_invoices/invoices-card";
+import { InvoicesCard, InvoicesRow } from "../_invoices/invoices-card";
 import { PackagingCard } from "../_materials/packaging-card";
 import { OfferCard } from "../_offer/offer-card";
 import { OfferDialog } from "../_offer/offer-dialog";
@@ -117,6 +117,7 @@ export function EstimatePage() {
   });
   const { status } = estimate;
   const statusPill = <EstimateStatusPill status={status} />;
+  const answered = status === "accepted" || status === "rejected";
 
   // The rail leads with what comes next for where this Deviz is at.
   const rail = {
@@ -189,13 +190,24 @@ export function EstimatePage() {
               </Breadcrumb>
             }
             title={estimate.title}
-            // The stepper says where it stands, and an archived one has none.
-            status={status === "archived" ? statusPill : undefined}
+            // Until it's answered the stepper says where it stands.
+            status={
+              answered ? (
+                <>
+                  {statusPill}
+                  <span className="ml-1.5 text-meta text-ink-3 max-sm:hidden">
+                    {formatDay(estimate.updatedAt, locale)}
+                  </span>
+                </>
+              ) : status === "archived" ? (
+                statusPill
+              ) : undefined
+            }
             description={
               <>
-                {status !== "archived" && (
+                {!answered && status !== "archived" && (
                   <span className="sm:hidden">
-                    <EstimateStatusPill status={status} />
+                    {statusPill}
                     {" · "}
                   </span>
                 )}
@@ -296,6 +308,7 @@ export function EstimatePage() {
                 <RailLabel className="xl:hidden">{t("rail.records")}</RailLabel>
               </>
             )}
+            <InvoicesRow estimate={estimate} />
             {(status === "draft" || status === "accepted") && rail.offer}
             {records}
           </RailList>

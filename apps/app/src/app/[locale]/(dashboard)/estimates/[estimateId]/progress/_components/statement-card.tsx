@@ -576,7 +576,7 @@ function RowsTable({
                     formatQuantity(Math.max(0, row.remainingQuantity), locale),
                   )}
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-right align-top tabular-nums">
+                <TableCell className="whitespace-nowrap text-right align-top font-medium tabular-nums">
                   {ifAny(row.value, formatMoney(row.value, locale))}
                 </TableCell>
               </TableRow>

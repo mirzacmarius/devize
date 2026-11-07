@@ -12,6 +12,8 @@ export interface Step {
   // ("2 probleme · 10:42"), a deadline for a future one ("Termen 30 nov.").
   meta?: React.ReactNode;
   state: StepState;
+  // What marks the step it's at, when that's more than the dot.
+  mark?: React.ReactNode;
 }
 
 export interface StepperProps extends React.OlHTMLAttributes<HTMLOListElement> {
@@ -56,26 +58,27 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
             aria-current={step.state === "current" ? "step" : undefined}
             className="flex min-w-0 items-center gap-1.5"
           >
-            <span
-              aria-hidden
-              className="grid size-3.5 shrink-0 place-items-center"
-            >
-              {step.state === "done" && (
-                <Check className="size-3.5 text-ink-3" />
-              )}
-              {step.state === "success" && (
-                <Check className="size-3.5 text-success" />
-              )}
-              {step.state === "failed" && (
-                <X className="size-3.5 text-danger" />
-              )}
-              {step.state === "current" && (
-                <span className="size-1.5 rounded-full bg-ink" />
-              )}
-              {step.state === "todo" && (
-                <span className="size-1.5 rounded-full shadow-[inset_0_0_0_1px_hsl(var(--neutral-dot))]" />
-              )}
-            </span>
+            {/* What's still to come is only its name. */}
+            {step.state !== "todo" && (
+              <span
+                aria-hidden
+                className="grid size-3.5 shrink-0 place-items-center"
+              >
+                {step.state === "done" && (
+                  <Check className="size-3.5 text-ink-3" />
+                )}
+                {step.state === "success" && (
+                  <Check className="size-3.5 text-success" />
+                )}
+                {step.state === "failed" && (
+                  <X className="size-3.5 text-danger" />
+                )}
+                {step.state === "current" &&
+                  (step.mark ?? (
+                    <span className="size-[7px] rounded-full bg-ink-2" />
+                  ))}
+              </span>
+            )}
             <span className="flex min-w-0 items-baseline gap-1.5 whitespace-nowrap">
               <span className={cn("text-meta", titleClass[step.state])}>
                 {step.title}

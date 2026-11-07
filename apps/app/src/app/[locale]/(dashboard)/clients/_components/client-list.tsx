@@ -67,10 +67,23 @@ export function ClientList() {
             : `${t("count", { count: clients.length })} · ${tc("inLeiLower")}`
         }
         actions={
-          <Button onClick={() => edit(null)}>
-            <Plus aria-hidden />
-            {t("new")}
-          </Button>
+          <>
+            {!isEmpty && (
+              <SearchInput
+                quiet
+                tall
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="w-48 max-sm:hidden md:w-64 xl:w-80"
+              />
+            )}
+            <Button onClick={() => edit(null)}>
+              <Plus aria-hidden />
+              {t("new")}
+            </Button>
+          </>
         }
       />
       {isEmpty ? (
@@ -86,14 +99,15 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <ListToolbar>
+          {/* From a tablet up it stands in the page's head. */}
+          <ListToolbar className="sm:hidden">
             <SearchInput
               quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:ml-auto sm:w-80"
+              className="w-full"
             />
           </ListToolbar>
           <Table stack twoLine>
@@ -137,7 +151,7 @@ export function ClientList() {
                         <button
                           type="button"
                           onClick={() => edit(row)}
-                          className="justify-self-start rounded-xs text-left text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          className="justify-self-start rounded-xs text-left text-body text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                           {row.name}
                         </button>

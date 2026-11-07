@@ -2503,7 +2503,7 @@ export default {
       left: "You left {firm}.",
       invitationsTitle: "Invitations",
       invitationsDescription:
-        "An invited colleague signs in to Devize with the address you invited and accepts the invitation. Invitations expire after 7 days.",
+        "A colleague signs in to Devize with the invited address and accepts. Invitations expire after 7 days.",
       invite: "Invite a colleague",
       invitedBy: "invited by {name}",
       expires: "expires on {date}",
@@ -4283,8 +4283,6 @@ export default {
     efacturaLateNamed: "ANAF: deadline passed",
     efacturaDue: "By {date}",
     card: {
-      title: "Invoices",
-      invoicedOf: "of {accepted} lei",
       invoiced: "Invoiced",
       remaining: "Left to invoice, without VAT",
       list: "Invoice list",
@@ -4532,7 +4530,7 @@ export default {
     alerts: {
       title: "Price alerts",
       description:
-        "Sent or accepted estimates whose total would change by at least {percent} at today's prices. We check them every morning.",
+        "Sent or accepted estimates whose total would change by at least {percent}. Checked daily.",
       off: "Alerts are off. Choose a threshold to learn when prices change a sent estimate.",
       checkNow: "Check now",
       checking:
@@ -4569,7 +4567,7 @@ export default {
     products: {
       title: "Chosen products",
       description:
-        "The store products your firm buys. Prices read from the stores' pages are updated daily.",
+        "The products your firm buys. Those from stores are updated daily.",
       product: "Product",
       price: "Price with VAT",
       change: "Change",
@@ -4802,7 +4800,8 @@ export default {
       pieces: "{count} {unit}",
       bulk: "As much as needed",
       share: "{percent} of a package",
-      leftoverCost: "{cost} lei left over",
+      leftoverValue: "Leftover value",
+      leftoverCost: "{cost} lei left over",
       pooled:
         "Bought for the whole estimate, not per line item. Packages saved: {count}",
       edit: "Packaging of {name}",
@@ -4997,7 +4996,7 @@ export default {
     items: {
       title: "Line items",
       description:
-        "The estimate's quantity follows the sum of the take-offs. One typed by hand stays until you take the measured one again from here.",
+        "The estimate's quantity follows the take-offs; one typed by hand stays until you take it again from here.",
       emptyTitle: "The estimate has no line items yet",
       emptyDescription:
         "Add line items to the estimate, then measure them here.",
