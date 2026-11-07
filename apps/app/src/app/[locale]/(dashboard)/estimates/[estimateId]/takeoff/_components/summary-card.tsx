@@ -42,17 +42,16 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
             </span>
           </>
         }
-        beside={
-          <MeterBar
-            ruled
-            className="ml-2.5 min-w-20 flex-1 self-center max-sm:hidden"
-            value={share}
-            tone="action"
-            label={shareLabel}
-          />
-        }
-        note={
-          <>
+      >
+        <MeterBar
+          ruled
+          className="mt-1.5"
+          value={share}
+          tone="action"
+          label={shareLabel}
+        />
+        {(measurable > 0 || differs > 0) && (
+          <p className="m-0 mt-1">
             {/* Nothing to measure on a Deviz that has left. */}
             {measurable > 0 && (
               <a
@@ -64,16 +63,8 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
             )}
             {measurable > 0 && differs > 0 && " · "}
             {differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
-          </>
-        }
-      >
-        <MeterBar
-          ruled
-          className="mt-1.5 sm:hidden"
-          value={share}
-          tone="action"
-          label={shareLabel}
-        />
+          </p>
+        )}
       </Figure>
       <Figure
         label={t("rooms")}

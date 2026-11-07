@@ -152,7 +152,7 @@ export default {
       acceptanceRate: "Rată de acceptare: {percent}",
       receivable: "De încasat",
       overdue: "Restant: {amount} lei",
-      noneOverdue: "Nimic restant",
+      noneOverdue: "Nicio plată restantă",
     },
     todo: {
       title: "De făcut azi",
@@ -2497,7 +2497,7 @@ export default {
         "Trimiterea direct din Devize cere un certificat calificat înregistrat în SPV și o aplicație ANAF OAuth; odată configurate de administratorul Devize, aici va apărea butonul „Conectează la SPV”.",
     },
     members: {
-      title: "Membri",
+      title: "Membrii firmei",
       description: "Cine lucrează în {firm} și ce poate face fiecare.",
       you: "tu",
       roleOf: "Rolul lui {name}",
@@ -4519,7 +4519,6 @@ export default {
     },
     efactura: {
       title: "e-Factura",
-      details: "Detalii e-Factura",
       deadline: "Termen de trimitere la ANAF: {date}",
       deadlineHint: "5 zile lucrătoare de la emitere (OUG 89/2025).",
       overdue:

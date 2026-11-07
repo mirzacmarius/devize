@@ -409,7 +409,12 @@ function DetailsForm({
                 />
               </Field>
             </div>
-            <div className="flex items-start justify-between gap-4 pt-1">
+            <div className="flex items-start gap-3 pt-1">
+              <Switch
+                id="firm-vat"
+                checked={vatPayer}
+                onCheckedChange={setVatPayer}
+              />
               <div className="grid gap-0.5">
                 <label htmlFor="firm-vat" className="text-body text-ink">
                   {tFirm("vatPayer")}
@@ -418,11 +423,6 @@ function DetailsForm({
                   {tFirm("vatPayerHint")}
                 </p>
               </div>
-              <Switch
-                id="firm-vat"
-                checked={vatPayer}
-                onCheckedChange={setVatPayer}
-              />
             </div>
           </fieldset>
         </CardContent>

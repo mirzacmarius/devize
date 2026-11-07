@@ -98,7 +98,7 @@ export function HomePage() {
         }
       />
       {/* On a phone the next section's hairline closes the figures. */}
-      <Card className="grid grid-cols-3 max-sm:-mb-4 max-sm:!border-t-0 sm:-mt-1 sm:grid-cols-2 xl:grid-cols-[calc((100%_-_48px)*25/81_+_13.33px)_calc((100%_-_48px)*20/81_+_10.67px)_repeat(2,calc((100%_-_48px)*2/9_+_12px))]">
+      <Card className="grid grid-cols-3 max-sm:-mb-4 max-sm:!border-t-0 sm:-mt-1 sm:grid-cols-2 xl:grid-cols-[calc((100%_-_48px)/3_+_12px)_repeat(3,calc((100%_-_48px)*2/9_+_12px))]">
         <Kpi
           lead
           label={t("kpi.receivable")}
@@ -210,7 +210,7 @@ function Kpi({
         "row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0.5 border-border sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(even)]:border-l sm:max-xl:[&:nth-child(n+3)]:border-t sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l",
         lead
           ? "max-sm:col-span-3 max-sm:px-4 max-sm:pb-2.5 max-sm:pt-1"
-          : "max-sm:border-t max-sm:px-3 max-sm:py-1.5 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
+          : "max-sm:border-t max-sm:px-4 max-sm:py-1.5 max-sm:[&:nth-child(n+3)]:border-l",
       )}
     >
       <p className="m-0 truncate text-meta text-ink-2">
@@ -454,8 +454,8 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 const todoTones = {
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
-  // Only what can't wait has colour.
-  quiet: "bg-sunken text-ink-2",
+  // Only what can't wait has a tile and a colour.
+  quiet: "text-ink-3",
 };
 
 /**
@@ -578,7 +578,8 @@ function RecentCard({
               {recent?.map((row) => (
                 <li
                   key={row._id}
-                  className="border-t border-border sm:col-span-2 sm:grid sm:grid-cols-subgrid"
+                  // A phone has no heads for a first rule to close.
+                  className="border-t border-border max-sm:first:border-t-0 sm:col-span-2 sm:grid sm:grid-cols-subgrid"
                 >
                   {/* One column at the end for all the rows: sums and statuses on
                       its right edge. */}

@@ -168,7 +168,7 @@ function CheckRow({
       />
       {/* What's wrong and, at the end of its line, what to do about it. */}
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3">
-        <span className="text-body font-medium text-ink">
+        <span className="text-body text-ink">
           <span className="sr-only">{t(`checks.states.${check.state}`)}: </span>
           {title}
         </span>

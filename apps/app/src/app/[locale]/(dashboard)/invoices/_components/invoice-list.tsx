@@ -27,7 +27,6 @@ import {
   InvoiceStatusPill,
 } from "@/components/invoice-status";
 import { ListToolbar } from "@/components/list-toolbar";
-import { Nil } from "@/components/nil";
 import { SegmentedControl } from "@/components/segmented-control";
 import {
   formatCalendarDay,
@@ -288,7 +287,7 @@ export function InvoiceList() {
                       {formatCalendarDay(row.dueDate, locale)}
                     </TableCell>
                     <TableCell className="hidden pl-8 xl:table-cell">
-                      {live ? (
+                      {live && (
                         <EfacturaPill
                           status={row.efactura.status}
                           late={row.efactura.deadline < today}
@@ -297,8 +296,6 @@ export function InvoiceList() {
                             locale,
                           )}
                         />
-                      ) : (
-                        <Nil />
                       )}
                     </TableCell>
                   </TableRow>

@@ -17,6 +17,7 @@ export function InlineNumber({
   disabled,
   min = 0,
   fixed = false,
+  placeholder,
   className,
 }: {
   value: number;
@@ -28,6 +29,7 @@ export function InlineNumber({
   min?: number;
   // Its width comes from `className`, so a column of them lines up.
   fixed?: boolean;
+  placeholder?: string;
   className?: string;
 }) {
   const locale = useCurrentLocale();
@@ -57,6 +59,7 @@ export function InlineNumber({
       type="text"
       inputMode="decimal"
       aria-label={label}
+      placeholder={placeholder}
       value={shown}
       // As wide as the number, so its column is no wider than its numbers.
       style={

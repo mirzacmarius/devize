@@ -2497,7 +2497,7 @@ export default {
         "Sending straight from Devize needs a qualified certificate registered in SPV and an ANAF OAuth application; once the Devize administrator sets them up, a “Connect to SPV” button appears here.",
     },
     members: {
-      title: "Members",
+      title: "Firm members",
       description: "Who works at {firm} and what each of them can do.",
       you: "you",
       roleOf: "{name}'s role",
@@ -4522,7 +4522,6 @@ export default {
     },
     efactura: {
       title: "e-Factura",
-      details: "e-Factura details",
       deadline: "Deadline to send to ANAF: {date}",
       deadlineHint: "5 working days from issue (OUG 89/2025).",
       overdue:

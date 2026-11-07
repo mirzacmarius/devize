@@ -529,6 +529,12 @@
   .rail-summary:empty {
     display: none;
   }
+  /* No frame for the rows to line up with inside: they run the rail's width. */
+  @media screen and (min-width: 1280px) {
+    .rail-summary:empty + .rail-list {
+      padding-inline: 0;
+    }
+  }
   .app-main .rail-summary > [data-slot="card"] {
     margin-inline: 0;
     border-width: 0;

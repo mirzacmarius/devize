@@ -173,33 +173,32 @@ export function StatementCard({
   return (
     <Card>
       <CardHeader className="grid justify-stretch gap-1 sm:!pb-3">
-        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
-          {/* Its name and what it comes to; under them where it stands and what
-              it covers. */}
-          <div className="grid min-w-0 gap-1">
-            <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
-              {picker}
-              <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
-                <span className="sr-only">{t("thisValue")}</span>
-                <span className="text-figure tabular-nums text-ink">
-                  {formatMoney(statement.period.subtotal, locale)}
-                </span>
-                {t("thisValueUnit")}
-              </p>
-            </div>
-            <p className="m-0 text-meta tabular-nums text-ink-3">
-              <StatusPill tone={statementTone[statement.status]}>
-                {tStatus(statement.status)}
-              </StatusPill>
-              {" · "}
-              {facts.join(" · ")}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
+        {/* Its name and where it stands, what it comes to, what to do with it:
+            on one line where they fit. Short of that, what it comes to follows
+            the name, and where it stands has a line of its own. */}
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <div className="order-1 min-w-0">{picker}</div>
+          <p className="order-3 m-0 basis-full text-meta tabular-nums text-ink-3 sm:order-4 xl:order-2 xl:basis-auto">
+            <StatusPill tone={statementTone[statement.status]}>
+              {tStatus(statement.status)}
+            </StatusPill>
+            {" · "}
+            {facts.join(" · ")}
+          </p>
+          <p className="order-2 m-0 flex items-baseline gap-1.5 text-meta text-ink-3 xl:order-3 xl:ml-auto">
+            <span className="sr-only">{t("thisValue")}</span>
+            <span className="text-figure tabular-nums text-ink">
+              {formatMoney(statement.period.subtotal, locale)}
+            </span>
+            {t("thisValueUnit")}
+          </p>
+          <div className="order-4 flex flex-wrap items-center gap-2 sm:order-3 sm:ml-auto xl:order-4 xl:ml-2">
+            {/* Its label is on the line's baseline, with the words before it. */}
             <Button
               type="button"
               variant="outline"
               size="sm"
+              className="flex-wrap content-center items-baseline [&_svg]:self-center"
               aria-label={t("downloadLabel.pdf")}
               disabled={downloading !== undefined}
               onClick={() => download("pdf")}
@@ -529,7 +528,13 @@ function RowsTable({
                   </Reference>
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.025]">
+                <TableCell
+                  className={cn(
+                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.025]",
+                    // Nothing in it and nothing to put in it: a phone skips the line.
+                    !fillable && row.quantity === 0 && "max-md:hidden",
+                  )}
+                >
                   <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">
@@ -539,12 +544,10 @@ function RowsTable({
                       fixed
                       value={row.quantity}
                       format={(value) =>
-                        value !== 0
-                          ? formatQuantity(value, locale)
-                          : spent || !fillable
-                            ? "–"
-                            : ""
+                        value !== 0 ? formatQuantity(value, locale) : ""
                       }
+                      // A thumb can't point at a blank cell to find the field.
+                      placeholder={spent && fillable ? "–" : undefined}
                       label={t("quantityLabel", { title: row.title })}
                       disabled={!fillable}
                       onCommit={(quantity) =>
@@ -565,12 +568,8 @@ function RowsTable({
                             : "md:max-xl:border-input md:max-xl:border-b-edge md:max-xl:bg-field"),
                         fillable && "hover:bg-field focus:bg-field",
                         row.quantity === 0
-                          ? "text-ink-3"
+                          ? "text-ink-3 placeholder:text-ink-3/60 md:placeholder:text-transparent"
                           : "font-medium text-ink",
-                        // Nothing to fill in: the dash of any empty cell.
-                        row.quantity === 0 &&
-                          (spent || !fillable) &&
-                          "text-ink-3/60",
                         // A thumb needs room, and has nothing to point with.
                         fillable && !spent
                           ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:border-b-edge max-md:bg-field"
@@ -621,7 +620,12 @@ function RowsTable({
                     )}
                   </Reference>
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-right align-top font-medium tabular-nums">
+                <TableCell
+                  className={cn(
+                    "whitespace-nowrap text-right align-top font-medium tabular-nums",
+                    !fillable && row.quantity === 0 && "max-md:hidden",
+                  )}
+                >
                   {ifAny(row.value, formatMoney(row.value, locale))}
                 </TableCell>
               </TableRow>

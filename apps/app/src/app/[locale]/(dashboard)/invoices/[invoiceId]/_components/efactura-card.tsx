@@ -65,7 +65,8 @@ function useEfacturaParts(invoice: Invoice) {
 /**
  * Where an issued invoice stands with ANAF's e-Factura: the deadline to send
  * it, the XML to download and upload in SPV, and what ANAF answered. Once ANAF
- * has accepted it, only that.
+ * has accepted it there's nothing left to do: that's a row under the rail's
+ * frame, not a frame.
  */
 export function EfacturaCard({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.efactura");
@@ -78,48 +79,49 @@ export function EfacturaCard({ invoice }: { invoice: Invoice }) {
   const errors = efactura.errors ?? [];
   const failed = errors.length > 0;
 
+  if (settled && !failed) {
+    return null;
+  }
   return (
     <Card>
-      <CardHeader className={settled && !failed ? "!pb-0" : undefined}>
+      <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
         {live && <EfacturaPill status={efactura.status} late={late} />}
       </CardHeader>
-      {(!settled || failed) && (
-        <CardContent>
-          {!settled && deadline}
-          {late && (
-            <p role="alert" className="m-0 flex gap-2 text-body text-ink">
-              <TriangleAlert
-                aria-hidden
-                className="mt-0.5 size-4 shrink-0 text-warning"
-              />
-              {t("overdue")}
-            </p>
-          )}
-          {live && efactura.status === "not_sent" && (
-            <p className="m-0 text-body text-ink-2">{t("manual")}</p>
-          )}
-          {!settled && identifiers}
-          {failed && (
-            <div className="grid gap-1">
-              <span className="text-meta text-danger">{t("errors")}</span>
-              <ul className="m-0 grid list-disc gap-1 pl-4 text-meta text-ink-2">
-                {errors.map((error) => (
-                  <li key={error} className="[overflow-wrap:anywhere]">
-                    {error}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {!settled && xml}
-        </CardContent>
-      )}
+      <CardContent>
+        {!settled && deadline}
+        {late && (
+          <p role="alert" className="m-0 flex gap-2 text-body text-ink">
+            <TriangleAlert
+              aria-hidden
+              className="mt-0.5 size-4 shrink-0 text-warning"
+            />
+            {t("overdue")}
+          </p>
+        )}
+        {live && efactura.status === "not_sent" && (
+          <p className="m-0 text-body text-ink-2">{t("manual")}</p>
+        )}
+        {!settled && identifiers}
+        {failed && (
+          <div className="grid gap-1">
+            <span className="text-meta text-danger">{t("errors")}</span>
+            <ul className="m-0 grid list-disc gap-1 pl-4 text-meta text-ink-2">
+              {errors.map((error) => (
+                <li key={error} className="[overflow-wrap:anywhere]">
+                  {error}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {!settled && xml}
+      </CardContent>
     </Card>
   );
 }
 
-/** Once ANAF has accepted it, the rest is a row to open now and then. */
+/** Once ANAF has accepted it: the answer, and the rest a row to open now and then. */
 export function EfacturaDetails({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.efactura");
   const { deadline, identifiers, xml } = useEfacturaParts(invoice);
@@ -127,7 +129,10 @@ export function EfacturaDetails({ invoice }: { invoice: Invoice }) {
     return null;
   }
   return (
-    <FoldCard title={t("details")}>
+    <FoldCard
+      title={t("title")}
+      lead={<EfacturaPill status={invoice.efactura.status} />}
+    >
       {deadline}
       {identifiers}
       {xml}

@@ -40,7 +40,6 @@ export function Figure({
   unit,
   note,
   lead = false,
-  beside,
   children,
 }: {
   label: ReactNode;
@@ -48,8 +47,7 @@ export function Figure({
   unit?: ReactNode;
   note?: ReactNode;
   lead?: boolean;
-  /** Beside the figure, to the column's end: what shows it as a share. */
-  beside?: ReactNode;
+  /** Under the figure, to the column's end: what shows it as a share. */
   children?: ReactNode;
 }) {
   return (
@@ -65,7 +63,6 @@ export function Figure({
           {lead && typeof value === "string" ? <Amount value={value} /> : value}
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}
-        {beside}
       </div>
       <div className="min-w-0 text-meta tabular-nums text-ink-3">
         {note}
