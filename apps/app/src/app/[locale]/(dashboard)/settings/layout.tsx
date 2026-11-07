@@ -17,11 +17,10 @@ export default async function Layout({
   return (
     <>
       <PageHeader title={t("title")} />
-      <div className="grid min-w-0 gap-6">
+      {/* One right edge: the tabs and the rules end where the fields do. */}
+      <div className="grid min-w-0 max-w-[640px] gap-6 xl:max-w-[928px]">
         <SettingsTabs />
-        <div className="settings-sections grid min-w-0 max-w-[640px] gap-6 xl:max-w-none">
-          {children}
-        </div>
+        <div className="settings-sections grid min-w-0 gap-6">{children}</div>
       </div>
     </>
   );

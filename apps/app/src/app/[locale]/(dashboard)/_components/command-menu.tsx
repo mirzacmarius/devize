@@ -396,7 +396,7 @@ function CommandSearch({
           .filter(Boolean)
           .join(" · "),
         amount: money(estimate.total),
-        pill: <EstimateStatusPill status={estimate.status} />,
+        pill: <EstimateStatusPill status={estimate.status} dot="end" />,
         href,
         run: go(href),
       };
@@ -420,7 +420,7 @@ function CommandSearch({
         label: t("invoice", { code: invoice.code }),
         meta: invoice.buyerName,
         amount: money(invoice.total),
-        pill: <InvoiceStatusPill status={invoice.status} />,
+        pill: <InvoiceStatusPill status={invoice.status} dot="end" />,
         href,
         run: go(href),
       };
@@ -566,7 +566,7 @@ function CommandSearch({
         aria-busy={!settled}
         hidden={entries.length === 0}
         // The usual list stops on a row's edge; a longer one fades where it's cut.
-        className="max-h-[min(60vh,418px)] overflow-y-auto p-2 [mask-image:linear-gradient(to_top,transparent,#000_6px)]"
+        className="max-h-[min(60vh,418px)] overflow-y-auto p-2 pb-5 [mask-image:linear-gradient(to_top,transparent,#000_16px)]"
       >
         {groups.map(({ group, entries: inGroup }) => (
           // biome-ignore lint/a11y/useSemanticElements: a listbox groups its options with role="group"; a fieldset groups form fields

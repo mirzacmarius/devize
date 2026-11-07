@@ -16,6 +16,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableGroupRow,
   TableHead,
   TableHeader,
   TableRow,
@@ -27,7 +28,7 @@ import type { FunctionReturnType } from "convex/server";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useDeferredValue, useState } from "react";
+import { Fragment, useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
@@ -113,6 +114,9 @@ export function CatalogPage() {
   );
 
   const words = normalizeText(search).split(" ").filter(Boolean);
+  // Browsing everything, the list is in bands: each producer, then each
+  // category of the base norms. What a band says, its rows don't repeat.
+  const banded = !isOwn && !search && !category;
   const rows: NormRow[] | undefined = isOwn
     ? own?.filter((norm) => matches(norm, words))
     : search
@@ -147,6 +151,21 @@ export function CatalogPage() {
       </Button>
     </>
   );
+
+  const bandOf = (norm: NormRow) =>
+    norm.source === "base"
+      ? (norm.category ?? normSource(norm))
+      : (norm.manufacturerName ?? normSource(norm));
+  // A band says "Neconfirmată" only if that holds for all its rows.
+  const unconfirmedBands = new Map<string, boolean>();
+  for (const norm of (banded && rows) || []) {
+    const band = bandOf(norm);
+    unconfirmedBands.set(
+      band,
+      (unconfirmedBands.get(band) ?? true) && unconfirmed(norm),
+    );
+  }
+  let lastBand: string | undefined;
 
   return (
     <>
@@ -198,7 +217,7 @@ export function CatalogPage() {
             />
           </div>
         </div>
-        <div className="grid min-w-0 gap-4">
+        <div className="grid min-w-0 gap-4 sm:[--card-pad:12px]">
           {!isOwn && rows?.some(unconfirmed) && (
             <p className="m-0 text-meta text-ink-3">{t("unconfirmedNote")}</p>
           )}
@@ -214,7 +233,7 @@ export function CatalogPage() {
               }
             />
           ) : (
-            <Table stack twoLine={isOwn ? true : "below-xl"}>
+            <Table stack bleed twoLine={isOwn ? true : "below-xl"}>
               <TableHeader>
                 <TableRow>
                   {/* Where there's room the public list is one line a row. */}
@@ -226,12 +245,12 @@ export function CatalogPage() {
                   <TableHead className="md:max-xl:pl-0">
                     {t("columns.norm")}
                   </TableHead>
-                  {!isOwn && (
+                  {!isOwn && !banded && (
                     <TableHead className="hidden w-[184px] xl:table-cell">
                       {t("columns.source")}
                     </TableHead>
                   )}
-                  {!isOwn && (
+                  {!isOwn && !banded && (
                     <TableHead className="hidden w-[128px] xl:table-cell">
                       {t("columns.status")}
                     </TableHead>
@@ -297,115 +316,175 @@ export function CatalogPage() {
                     </TableCell>
                   </TableRow>
                 )}
-                {rows?.map((norm) => (
-                  <TableRow key={norm._id}>
-                    {!isOwn && (
-                      <TableCell className="hidden whitespace-nowrap xl:table-cell">
-                        <span className="text-meta tabular-nums text-ink-3">
-                          {normCode(norm)}
-                        </span>
-                      </TableCell>
-                    )}
-                    <TableCell data-stack="wide" className="md:max-xl:pl-0">
-                      <Link
-                        href={`/catalog/${norm._id}`}
-                        className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      >
-                        <span className="text-body text-ink group-hover:underline">
-                          {keepUnits(norm.title)}
-                        </span>
-                        <span
-                          className={cn(
-                            "flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3",
-                            !isOwn && "xl:hidden",
-                          )}
-                        >
-                          <span>
-                            <span className="tabular-nums">
+                {rows?.map((norm) => {
+                  const band = banded ? bandOf(norm) : undefined;
+                  const opens = band !== undefined && band !== lastBand;
+                  lastBand = band;
+                  return (
+                    <Fragment key={norm._id}>
+                      {opens && (
+                        <TableGroupRow className="max-md:py-0">
+                          {/* Over the titles, past the codes. */}
+                          <TableCell
+                            colSpan={6}
+                            data-stack="wide"
+                            className="band-start band-end max-md:flex max-md:items-center xl:first:pl-[124px]"
+                          >
+                            <span className="font-medium first-letter:uppercase">
+                              {band}
+                            </span>
+                            {unconfirmedBands.get(band) && (
+                              <StatusPill
+                                tone="draft"
+                                title={t("unconfirmedHint")}
+                                className="ml-3"
+                              >
+                                {t("unconfirmedState")}
+                              </StatusPill>
+                            )}
+                          </TableCell>
+                        </TableGroupRow>
+                      )}
+                      <TableRow>
+                        {!isOwn && (
+                          <TableCell className="hidden whitespace-nowrap xl:table-cell">
+                            <span className="text-meta tabular-nums text-ink-3">
                               {normCode(norm)}
                             </span>
-                            {norm.category && ` · ${norm.category}`}
-                            {/* The public list has a column for this where there's room. */}
-                            <span className={isOwn ? undefined : TABLET_ONLY}>
-                              {norm.source !== "base" &&
-                                ` · ${norm.manufacturerName ?? normSource(norm)}`}
+                          </TableCell>
+                        )}
+                        <TableCell data-stack="wide" className="md:max-xl:pl-0">
+                          <Link
+                            href={`/catalog/${norm._id}`}
+                            className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            <span className="text-body font-[450] text-ink group-hover:underline">
+                              {keepUnits(norm.title)}
+                              {/* The rest of its band has been confirmed. */}
+                              {band !== undefined &&
+                                unconfirmed(norm) &&
+                                !unconfirmedBands.get(band) && (
+                                  <StatusPill
+                                    tone="draft"
+                                    title={t("unconfirmedHint")}
+                                    className="ml-3 font-normal"
+                                  >
+                                    {t("unconfirmedState")}
+                                  </StatusPill>
+                                )}
+                            </span>
+                            <span
+                              className={cn(
+                                "flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3",
+                                !isOwn && "xl:hidden",
+                                banded && "max-md:hidden",
+                              )}
+                            >
+                              <span>
+                                <span className="tabular-nums">
+                                  {normCode(norm)}
+                                </span>
+                                {!banded &&
+                                  norm.category &&
+                                  ` · ${norm.category}`}
+                                {/* The public list has a column for this where there's room. */}
+                                {!banded && (
+                                  <span
+                                    className={isOwn ? undefined : TABLET_ONLY}
+                                  >
+                                    {norm.source !== "base" &&
+                                      ` · ${norm.manufacturerName ?? normSource(norm)}`}
+                                    {unconfirmed(norm) && (
+                                      <span title={t("unconfirmedHint")}>
+                                        {` · ${t("unconfirmed")}`}
+                                      </span>
+                                    )}
+                                  </span>
+                                )}
+                              </span>
+                            </span>
+                          </Link>
+                        </TableCell>
+                        {banded && (
+                          // On a phone it opens the line with the cost.
+                          <TableCell className="text-meta tabular-nums text-ink-3 md:hidden">
+                            {normCode(norm)}
+                          </TableCell>
+                        )}
+                        {!isOwn && !banded && (
+                          // On a phone it opens the line with the cost.
+                          <TableCell className="md:max-xl:hidden">
+                            <span
+                              className={cn(
+                                "block max-md:text-meta",
+                                norm.source === "base"
+                                  ? "text-ink-3"
+                                  : "text-ink-2 max-md:text-ink-3",
+                              )}
+                            >
+                              <span className="inline-block first-letter:uppercase">
+                                {norm.manufacturerName ?? normSource(norm)}
+                              </span>
                               {unconfirmed(norm) && (
-                                <span title={t("unconfirmedHint")}>
+                                <span
+                                  title={t("unconfirmedHint")}
+                                  className="text-ink-3 xl:hidden"
+                                >
                                   {` · ${t("unconfirmed")}`}
                                 </span>
                               )}
                             </span>
-                          </span>
-                        </span>
-                      </Link>
-                    </TableCell>
-                    {!isOwn && (
-                      // On a phone it opens the line with the cost.
-                      <TableCell className="md:max-xl:hidden">
-                        <span
-                          className={cn(
-                            "block max-md:text-meta",
-                            norm.source === "base"
-                              ? "text-ink-3"
-                              : "text-ink-2 max-md:text-ink-3",
+                          </TableCell>
+                        )}
+                        {!isOwn && !banded && (
+                          <TableCell className="hidden xl:table-cell">
+                            {unconfirmed(norm) && (
+                              <StatusPill
+                                tone="draft"
+                                title={t("unconfirmedHint")}
+                              >
+                                {t("unconfirmedState")}
+                              </StatusPill>
+                            )}
+                          </TableCell>
+                        )}
+                        {isOwn && (
+                          <TableCell>
+                            <NormStatusPill status={norm.status} />
+                          </TableCell>
+                        )}
+                        {isOwn && (
+                          <TableCell className="hidden text-ink-3 tabular-nums md:table-cell">
+                            {formatDay(norm.updatedAt, locale)}
+                          </TableCell>
+                        )}
+                        <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top md:pr-0">
+                          {norm.referenceCost === undefined ? (
+                            <StatusPill tone="warning">
+                              {t("noCost")}
+                            </StatusPill>
+                          ) : (
+                            <>
+                              <span className="font-medium">
+                                {formatMoney(norm.referenceCost, locale)}
+                              </span>
+                              <span className="ml-2 text-meta text-ink-3 md:hidden">
+                                lei/{formatUnit(norm.unit, locale)}
+                              </span>
+                            </>
                           )}
-                        >
-                          <span className="inline-block first-letter:uppercase">
-                            {norm.manufacturerName ?? normSource(norm)}
-                          </span>
-                          {unconfirmed(norm) && (
-                            <span
-                              title={t("unconfirmedHint")}
-                              className="text-ink-3 xl:hidden"
-                            >
-                              {` · ${t("unconfirmed")}`}
+                        </TableCell>
+                        <TableCell className="hidden w-px whitespace-nowrap pl-2 md:table-cell">
+                          {norm.referenceCost !== undefined && (
+                            <span className="text-meta text-ink-3">
+                              lei/{formatUnit(norm.unit, locale)}
                             </span>
                           )}
-                        </span>
-                      </TableCell>
-                    )}
-                    {!isOwn && (
-                      <TableCell className="hidden xl:table-cell">
-                        {unconfirmed(norm) && (
-                          <StatusPill tone="draft" title={t("unconfirmedHint")}>
-                            {t("unconfirmedState")}
-                          </StatusPill>
-                        )}
-                      </TableCell>
-                    )}
-                    {isOwn && (
-                      <TableCell>
-                        <NormStatusPill status={norm.status} />
-                      </TableCell>
-                    )}
-                    {isOwn && (
-                      <TableCell className="hidden text-ink-3 tabular-nums md:table-cell">
-                        {formatDay(norm.updatedAt, locale)}
-                      </TableCell>
-                    )}
-                    <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top md:pr-0">
-                      {norm.referenceCost === undefined ? (
-                        <StatusPill tone="warning">{t("noCost")}</StatusPill>
-                      ) : (
-                        <>
-                          <span className="font-medium">
-                            {formatMoney(norm.referenceCost, locale)}
-                          </span>
-                          <span className="ml-2 text-meta text-ink-3 md:hidden">
-                            lei/{formatUnit(norm.unit, locale)}
-                          </span>
-                        </>
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden w-px whitespace-nowrap pl-2 md:table-cell">
-                      {norm.referenceCost !== undefined && (
-                        <span className="text-meta text-ink-3">
-                          lei/{formatUnit(norm.unit, locale)}
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        </TableCell>
+                      </TableRow>
+                    </Fragment>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

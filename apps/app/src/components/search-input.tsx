@@ -22,7 +22,7 @@ export function SearchInput({
       <Input
         type="search"
         className={cn(
-          "pl-9 max-sm:h-10",
+          "pl-9 max-sm:h-11",
           quiet && toolbarField,
           tall && "sm:h-9",
         )}

@@ -146,7 +146,7 @@ export function ProducersPage() {
                         className="grid gap-y-0.5 rounded-xs after:absolute xl:gap-y-0 after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
                       >
                         <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
-                          <span className="min-w-0 truncate text-body text-ink">
+                          <span className="min-w-0 truncate text-body font-[450] text-ink">
                             {producer.name}
                           </span>
                           {producer.claimed && (
@@ -166,12 +166,12 @@ export function ProducersPage() {
                         </span>
                       </Link>
                     </TableCell>
-                    <TableCell className="hidden text-meta text-ink-3 xl:table-cell">
+                    <TableCell className="hidden text-meta text-ink-2 xl:table-cell">
                       <span className="line-clamp-1">
                         {producer.categories.join(" · ")}
                       </span>
                     </TableCell>
-                    <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
+                    <TableCell className="hidden text-right text-meta tabular-nums text-ink-2 md:table-cell">
                       {producer.edition ?? <Nil />}
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums md:table-cell">

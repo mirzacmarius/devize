@@ -86,7 +86,7 @@ export function ChecksCard({
             // In the rail's frame it needs no panel of its own.
             folded
               ? "rounded-lg bg-sunken p-3"
-              : "[&>li+li]:border-t [&>li+li]:border-border [&>li+li]:pt-3",
+              : "gap-4 [&>li+li]:border-t [&>li+li]:border-border [&>li+li]:pt-4",
           )}
         >
           {open_.map(row)}
@@ -425,7 +425,7 @@ function OmissionsFix({
       type="button"
       variant="link"
       className={cn(
-        "mt-2 justify-self-start",
+        "mt-2 justify-self-start text-meta",
         check.status === "none" && "text-ai",
       )}
       disabled={starting}
@@ -530,7 +530,11 @@ function CheckFix({
   }
   if ("href" in fix) {
     return (
-      <Button asChild variant="link" className="mt-2 justify-self-start">
+      <Button
+        asChild
+        variant="link"
+        className="mt-2 justify-self-start text-meta"
+      >
         <Link href={fix.href}>{fix.label}</Link>
       </Button>
     );
@@ -539,7 +543,7 @@ function CheckFix({
     <Button
       type="button"
       variant="link"
-      className="mt-2 justify-self-start"
+      className="mt-2 justify-self-start text-meta"
       disabled={busy}
       onClick={fix.onClick}
     >

@@ -17,10 +17,12 @@ export interface MeterBarProps extends React.HTMLAttributes<HTMLDivElement> {
   tone?: keyof typeof barTones;
   // The value in words, for screen readers: "84% gata"
   label: string;
+  // Tenths marked under it, for a share of a whole job.
+  ruled?: boolean;
 }
 
 const MeterBar = React.forwardRef<HTMLDivElement, MeterBarProps>(
-  ({ value, tone = "action", label, className, ...props }, ref) => {
+  ({ value, tone = "action", label, ruled, className, ...props }, ref) => {
     const percent = Math.max(0, Math.min(100, value));
     return (
       <div
@@ -28,16 +30,19 @@ const MeterBar = React.forwardRef<HTMLDivElement, MeterBarProps>(
         role="img"
         aria-label={label}
         data-slot="meter"
-        className={cn("h-1 overflow-hidden rounded-full bg-tick", className)}
+        className={cn("grid gap-px", className)}
         {...props}
       >
-        <div
-          className="h-full rounded-full"
-          style={{
-            width: `${percent}%`,
-            background: `hsl(var(${barTones[tone]}))`,
-          }}
-        />
+        <div className="h-1 overflow-hidden rounded-full bg-tick">
+          <div
+            className="h-full rounded-full"
+            style={{
+              width: `${percent}%`,
+              background: `hsl(var(${barTones[tone]}))`,
+            }}
+          />
+        </div>
+        {ruled && <div aria-hidden className="meter-ticks h-[3px]" />}
       </div>
     );
   },

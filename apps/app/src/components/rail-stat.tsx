@@ -3,7 +3,6 @@ import { cn } from "@devize/ui/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Amount } from "@/components/amount";
 
 /**
  * What a section of the rail comes down to, ahead of its details: what it is,
@@ -36,7 +35,7 @@ export function RailStat({
               href={href}
               className="group flex items-baseline justify-between gap-3 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <h3 className="m-0 min-w-0 text-body font-normal text-ink underline decoration-ink-3/50 underline-offset-[3px] group-hover:decoration-current">
+              <h3 className="m-0 min-w-0 text-body font-medium text-ink group-hover:underline">
                 {label}
               </h3>
               <span className="text-body font-medium tabular-nums text-ink">
@@ -45,7 +44,7 @@ export function RailStat({
             </Link>
           ) : (
             <div className="flex items-baseline justify-between gap-3">
-              <h3 className="m-0 text-body font-normal text-ink">{label}</h3>
+              <h3 className="m-0 text-body font-medium text-ink">{label}</h3>
               <span className="text-body font-medium tabular-nums text-ink">
                 {value}
               </span>
@@ -58,9 +57,7 @@ export function RailStat({
   }
   const figure = (
     <p className="m-0 flex items-baseline gap-1.5">
-      <span className="text-figure tabular-nums text-ink">
-        <Amount value={value} />
-      </span>
+      <span className="text-figure tabular-nums text-ink">{value}</span>
       {unit && <span className="text-meta text-ink-3">{unit}</span>}
     </p>
   );
@@ -111,7 +108,7 @@ export function Rail({
       className={cn(
         "rail-sections grid min-w-0 gap-6 xl:gap-5",
         sticky &&
-          "xl:sticky xl:top-14 xl:max-h-[calc(100vh-4.5rem)] xl:overflow-y-auto xl:[scrollbar-width:thin]",
+          "xl:sticky xl:top-16 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-y-auto xl:[scrollbar-width:thin]",
       )}
     >
       {children}

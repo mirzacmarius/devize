@@ -85,7 +85,7 @@ export function InvoicePage() {
           .join(" · ")}
         actions={<InvoiceActions invoice={invoice} />}
       />
-      <div className="-mt-1 grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11">
         <div className="grid min-w-0 gap-6">
           <TotalHero
             label={t("page.total")}

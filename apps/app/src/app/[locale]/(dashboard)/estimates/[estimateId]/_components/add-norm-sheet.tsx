@@ -321,7 +321,7 @@ function AddNorm({
                         "col-start-2 row-span-2 row-start-1 -my-1.5 grid size-8 place-items-center rounded-md border transition-colors sm:col-start-3 sm:row-span-1",
                         inEstimate.has(norm._id)
                           ? "border-transparent bg-success-soft text-success"
-                          : "border-transparent text-ink-2 group-hover:bg-primary group-hover:text-primary-foreground",
+                          : "border-border text-ink-2 group-hover:border-transparent group-hover:bg-primary group-hover:text-primary-foreground",
                       )}
                     >
                       {inEstimate.has(norm._id) ? (

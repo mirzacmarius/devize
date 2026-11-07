@@ -5,6 +5,7 @@ import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
+import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
@@ -144,10 +145,13 @@ export function InvoiceList() {
             <Figure
               label={t("receivable.toSend")}
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
-              // In red on the rows it's about; here, how many.
+              // In red here as on the rows it's about.
               note={
-                anaf?.firstLate &&
-                t("receivable.lateCount", { count: anaf.late })
+                anaf?.firstLate && (
+                  <StatusPill tone="danger">
+                    {t("receivable.lateCount", { count: anaf.late })}
+                  </StatusPill>
+                )
               }
             />
           </FigureStrip>
@@ -222,7 +226,7 @@ export function InvoiceList() {
                         href={`/invoices/${row._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="text-body tabular-nums text-ink group-hover:underline max-md:text-body-lg">
+                        <span className="text-body font-[450] tabular-nums text-ink group-hover:underline max-md:text-body-lg">
                           {row.code ?? t(`kind.${row.kind}`)}
                         </span>
                         <span className="truncate text-meta tabular-nums text-ink-3">
@@ -239,7 +243,7 @@ export function InvoiceList() {
                         </span>
                       </Link>
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 md:table-cell">
+                    <TableCell className="hidden text-meta text-ink-2 md:table-cell">
                       <span className="block min-w-[6.75rem]">
                         {row.buyerName}
                       </span>
@@ -282,7 +286,7 @@ export function InvoiceList() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell md:max-xl:pr-0">
+                    <TableCell className="hidden text-right text-meta text-ink-3 tabular-nums md:table-cell md:max-xl:pr-0">
                       {formatCalendarDay(row.dueDate, locale)}
                     </TableCell>
                     <TableCell className="hidden pl-8 xl:table-cell">

@@ -321,7 +321,7 @@ export function MobileAnswerBar({
     .filter(Boolean)
     .join(" · ");
   return (
-    <div className="foot-bar fixed inset-x-0 bottom-0 z-40 bg-card lg:hidden">
+    <div className="foot-bar fixed inset-x-0 bottom-0 z-40 bg-panel lg:hidden">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
         {showTotal && (
           <div className="grid min-w-0">

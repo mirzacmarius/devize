@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@devize/ui/dropdown-menu";
 import { Icons } from "@devize/ui/icons";
-import { Input } from "@devize/ui/input";
+import { Input, toolbarField } from "@devize/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,6 +35,7 @@ import {
 } from "@devize/ui/select";
 import { toast } from "@devize/ui/sonner";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Mail } from "lucide-react";
@@ -199,9 +200,12 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         }
                       >
                         <SelectTrigger
-                          // A value until it's pointed at: a list of bordered
-                          // fields would outweigh the people.
-                          className="h-8 w-auto justify-start gap-2 border-transparent bg-transparent"
+                          // A quiet field: a list of outlined ones would
+                          // outweigh the people.
+                          className={cn(
+                            "h-8 w-auto justify-start gap-2",
+                            toolbarField,
+                          )}
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />
@@ -254,6 +258,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
         {/* The list comes to this: one more person. */}
         {isAdmin && (
           <Button
+            variant="outline"
             size="sm"
             className="justify-self-start"
             onClick={() => setInviting(true)}

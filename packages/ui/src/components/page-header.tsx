@@ -75,7 +75,7 @@ function PageHeader({
         </div>
         {actions && (
           // Level with the title's line, and no taller than it.
-          <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2 max-sm:[&>*]:h-10 max-sm:[&>*]:min-w-10 sm:-my-0.5">
+          <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2 max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 sm:-my-0.5">
             {actions}
           </div>
         )}

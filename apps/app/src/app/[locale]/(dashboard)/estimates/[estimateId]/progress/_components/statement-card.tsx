@@ -29,7 +29,6 @@ import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Download, Paperclip } from "lucide-react";
 import { Fragment, type ReactNode, useState } from "react";
-import { Amount } from "@/components/amount";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
@@ -145,7 +144,9 @@ export function StatementCard({
       start: formatCalendarDate(statement.periodStart, locale),
       end: formatCalendarDate(statement.periodEnd, locale),
     }),
-    t("date", { date: formatCalendarDate(statement.date, locale) }),
+    // Usually the day the period ends: said only when it isn't.
+    statement.date !== statement.periodEnd &&
+      t("date", { date: formatCalendarDate(statement.date, locale) }),
     statement.status === "sent" &&
       statement.sentAt !== undefined &&
       t("sentOn", { date: formatDay(statement.sentAt, locale) }),
@@ -163,12 +164,23 @@ export function StatementCard({
   return (
     <Card>
       <CardHeader className="grid justify-stretch gap-1">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            {picker}
-            <StatusPill tone={statementTone[statement.status]}>
-              {tStatus(statement.status)}
-            </StatusPill>
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          {/* What it comes to and what it covers, on its name's line. */}
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              {picker}
+              <StatusPill tone={statementTone[statement.status]}>
+                {tStatus(statement.status)}
+              </StatusPill>
+            </div>
+            <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
+              <span className="sr-only">{t("thisValue")}</span>
+              <span className="text-figure tabular-nums text-ink">
+                {formatMoney(statement.period.subtotal, locale)}
+              </span>
+              {t("thisValueUnit")}
+            </p>
+            <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button
@@ -259,17 +271,6 @@ export function StatementCard({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
-        {/* What the statement comes to, under its name, as a Deviz's total is. */}
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
-            <span className="sr-only">{t("thisValue")}</span>
-            <span className="text-figure tabular-nums text-ink">
-              <Amount value={formatMoney(statement.period.subtotal, locale)} />
-            </span>
-            {t("thisValueUnit")}
-          </p>
-          <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
         </div>
         {/* Nothing leaves from here: the firm sends it and notes what happened.
             Said once, on the first statement. */}
@@ -391,7 +392,7 @@ function RowsTable({
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] rounded-t-lg bg-sunken/60 pr-[57px] text-right font-medium text-ink">
+          <TableHead className="w-[140px] rounded-t-lg bg-sunken pr-[57px] text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -512,7 +513,7 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken/60 pr-3 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
+                <TableCell className="whitespace-nowrap bg-sunken pr-3 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
                   <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">
@@ -535,10 +536,12 @@ function RowsTable({
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
                         "-my-1.5 w-20",
-                        // A field's lower edge says what's to be filled in; with
-                        // nothing left it reads as the columns beside it, until
-                        // it's pointed at.
-                        fillable && !spent && "border-b-edge",
+                        // What's to be filled in stands out of the column as a
+                        // field does; with nothing left it reads as the columns
+                        // beside it, until it's pointed at.
+                        fillable &&
+                          !spent &&
+                          "border-b-edge bg-field md:rounded-b-none md:hover:rounded-b-sm md:focus:rounded-b-sm",
                         fillable && "placeholder:text-ink-3/60 hover:bg-field",
                         row.quantity === 0
                           ? "text-ink-3"

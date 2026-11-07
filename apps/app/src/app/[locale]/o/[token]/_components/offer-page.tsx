@@ -319,7 +319,7 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
   return (
     <Card>
       {/* On a phone the next section's hairline closes it, at the same distance. */}
-      <CardContent className="gap-2 max-sm:pb-0 max-sm:pt-4">
+      <CardContent className="gap-1 max-sm:pb-0 max-sm:pt-3">
         <span className="text-meta text-ink-3">
           {t("messageFrom", { firm })}
         </span>

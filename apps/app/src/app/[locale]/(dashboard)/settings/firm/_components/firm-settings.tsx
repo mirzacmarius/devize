@@ -434,7 +434,9 @@ function DetailsForm({
         {/* Only unsaved changes need a line, and it stays in sight. */}
         {canEdit ? (
           (changed || saving) && (
-            <CardFooter className={cn(footer, "sticky bottom-0 z-10")}>
+            <CardFooter
+              className={cn(footer, "sticky bottom-0 z-10 lg:bottom-2")}
+            >
               <span aria-hidden className="text-meta text-ink-3">
                 {t("unsaved")}
               </span>

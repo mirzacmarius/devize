@@ -37,7 +37,7 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
             {unmeasured > 0 &&
               (data.estimate.locked ? (
                 // Nothing to measure on a Deviz that has left.
-                t("unmeasured", { left: formatCount(unmeasured, locale) })
+                t("unmeasuredLocked", { left: formatCount(unmeasured, locale) })
               ) : (
                 <a
                   href="#items"

@@ -570,7 +570,7 @@ function ItemRows({
 
   return (
     <>
-      <TableRow className="items-row group/row [&>td]:pb-3 [&>td]:pt-[11px]">
+      <TableRow className="items-row group/row [&>td]:py-[11px] [@container(min-width:38rem)]:[&>td]:h-16">
         <TableCell
           className={cn(
             "text-right align-top tabular-nums text-ink-3",
@@ -618,35 +618,29 @@ function ItemRows({
             <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
               {index}
             </span>
-            {/* The code follows the title on its line: a Deviz is read by its
-                titles, and a short one takes a single row. */}
-            <span className="text-body">
-              <span className="text-ink group-hover:underline">
-                {keepUnits(item.title)}
-              </span>
-              {/* A space, so it goes at the end of a line and a code that wraps
-                  starts on the title's edge. */}
-              <span className="[word-spacing:6px]"> </span>
-              <span className="hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:inline">
-                {[tenderPosition, code, source]
-                  .filter(Boolean)
-                  .map((part, place) => (
-                    <Fragment key={part}>
-                      {place > 0 && " · "}
-                      <span className="whitespace-nowrap">{part}</span>
-                    </Fragment>
-                  ))}
-                <span className={MID_ONLY}>
-                  {"\u00a0·\u00a0"}
-                  <span className="whitespace-nowrap">
-                    {t("items.pricePerUnit", { price, unit })}
-                  </span>
+            <span className="text-body text-ink [text-wrap:pretty] group-hover:underline">
+              {keepUnits(item.title)}
+            </span>
+            {/* Every row the same, so the eye knows where to find it. */}
+            <span className="hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:block">
+              {[tenderPosition, code, source]
+                .filter(Boolean)
+                .map((part, place) => (
+                  <Fragment key={part}>
+                    {place > 0 && " · "}
+                    <span className="whitespace-nowrap">{part}</span>
+                  </Fragment>
+                ))}
+              <span className={MID_ONLY}>
+                {" · "}
+                <span className="whitespace-nowrap">
+                  {t("items.pricePerUnit", { price, unit })}
                 </span>
-                {tags.length > 0 && "\u2002"}
-                {tags.length > 0 && (
-                  <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
-                )}
               </span>
+              {tags.length > 0 && "\u2002"}
+              {tags.length > 0 && (
+                <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
+              )}
             </span>
             <span
               className={cn(

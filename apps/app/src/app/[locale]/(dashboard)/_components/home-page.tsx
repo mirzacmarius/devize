@@ -496,7 +496,7 @@ function TodoLine({
         </span>
         <span
           className={cn(
-            "col-start-2 min-w-0 text-body text-ink",
+            "col-start-2 min-w-0 text-body font-[450] text-ink",
             !figure && "col-span-2",
           )}
         >
@@ -571,7 +571,7 @@ function RecentCard({
                   >
                     {/* Each line on its own, so a title gives way only to its sum. */}
                     <span className="flex min-w-0 items-baseline justify-between gap-4">
-                      <span className="min-w-0 text-body text-ink sm:truncate">
+                      <span className="min-w-0 text-body font-[450] text-ink sm:truncate">
                         {row.title}
                       </span>
                       <span className="whitespace-nowrap text-body font-medium tabular-nums text-ink max-sm:hidden">
@@ -585,7 +585,7 @@ function RecentCard({
                         {row.clientName ?? t("noClient")}
                       </span>
                       <span className="-my-px flex h-[18px] shrink-0 items-center max-sm:hidden">
-                        <EstimateStatusPill status={row.status} />
+                        <EstimateStatusPill status={row.status} dot="end" />
                       </span>
                     </span>
                     {/* On a phone, its own line: where it stands and how much. */}

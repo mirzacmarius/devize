@@ -132,26 +132,29 @@ export function RoomsCard({
           <Table bleed stack>
             <TableHeader>
               <TableRow>
-                <TableHead>{t("columns.room")}</TableHead>
-                <TableHead className="hidden xl:table-cell">
+                {/* The numbers share the width; the words take what they need. */}
+                <TableHead className="xl:w-[22%]">
+                  {t("columns.room")}
+                </TableHead>
+                <TableHead className="hidden xl:table-cell xl:w-[18%]">
                   {t("columns.openings")}
                 </TableHead>
-                <TableHead className="hidden text-right xl:table-cell">
+                <TableHead className="hidden text-right xl:table-cell xl:w-[10%]">
                   {t("columns.length")}
                 </TableHead>
-                <TableHead className="hidden text-right xl:table-cell">
+                <TableHead className="hidden text-right xl:table-cell xl:w-[10%]">
                   {t("columns.width")}
                 </TableHead>
-                <TableHead className="hidden text-right xl:table-cell">
+                <TableHead className="hidden text-right xl:table-cell xl:w-[10%]">
                   {t("columns.height")}
                 </TableHead>
-                <TableHead className="text-right">
+                <TableHead className="text-right xl:w-[10%]">
                   {t("columns.floor")}
                 </TableHead>
-                <TableHead className="text-right">
+                <TableHead className="text-right xl:w-[10%]">
                   {t("columns.walls")}
                 </TableHead>
-                <TableHead className="text-right">
+                <TableHead className="text-right xl:w-[10%]">
                   {t("columns.perimeter")}
                 </TableHead>
                 {!locked && <TableHead className="w-8" />}

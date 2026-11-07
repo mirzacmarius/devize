@@ -247,7 +247,7 @@ export function EstimatePage() {
       </div>
       <div
         data-past-hero={pastHero || undefined}
-        className="-mt-1 grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11"
+        className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11"
       >
         <div className="grid min-w-0 gap-6">
           {/* Level with the rail's top: the two things the page comes down to. */}
@@ -385,7 +385,7 @@ function ScrolledBar({
     <div
       aria-hidden
       className={cn(
-        "fixed inset-x-0 top-0 z-30 border-b border-border bg-panel transition-opacity duration-150 ease-out max-sm:hidden lg:left-sidebar lg:right-2",
+        "fixed inset-x-0 top-0 z-30 border-b border-border bg-panel transition-opacity duration-150 ease-out max-sm:hidden lg:left-sidebar lg:right-2 lg:top-2",
         shown ? "opacity-100" : "pointer-events-none opacity-0",
       )}
     >

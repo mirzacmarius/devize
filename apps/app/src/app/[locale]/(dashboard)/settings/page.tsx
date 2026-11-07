@@ -28,7 +28,7 @@ import { useScopedI18n } from "@/locales/client";
 
 // A settings card's footer: a hint on the left, the card's action on the right.
 const footer =
-  "sticky bottom-0 z-10 justify-between gap-4 border-t bg-card py-3 sm:mt-5";
+  "sticky bottom-0 z-10 justify-between lg:bottom-2 gap-4 border-t bg-card py-3 sm:mt-5";
 
 export default function DashboardSettings() {
   const t = useScopedI18n("settings");

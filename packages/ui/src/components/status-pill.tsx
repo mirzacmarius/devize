@@ -16,7 +16,7 @@ const statusPillVariants = cva(
       tone: {
         // Not out in the world yet: Ciornă. An open dot.
         draft:
-          "text-ink-2 before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
+          "text-ink-3 before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
         // Out and moving, waiting on someone: Trimis clientului, Emisă
         active: "text-ink-2 before:bg-active-dot",
         // Finished or set aside, nothing to do: Decontat, Expirat
@@ -33,6 +33,8 @@ const statusPillVariants = cva(
       dot: {
         true: "",
         false: "before:hidden",
+        // At a row's right end: on the edge, so the dots line up.
+        end: "flex-row-reverse",
       },
     },
     defaultVariants: {

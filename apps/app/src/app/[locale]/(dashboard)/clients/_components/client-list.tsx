@@ -151,7 +151,7 @@ export function ClientList() {
                         <button
                           type="button"
                           onClick={() => edit(row)}
-                          className="justify-self-start rounded-xs text-left text-body text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          className="justify-self-start rounded-xs text-left text-body font-[450] text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                           {row.name}
                         </button>

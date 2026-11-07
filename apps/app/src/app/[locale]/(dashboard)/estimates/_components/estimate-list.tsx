@@ -151,7 +151,7 @@ export function EstimateList() {
               />
               <Button
                 variant="outline"
-                className="h-10 shrink-0 sm:hidden"
+                className="h-11 shrink-0 sm:hidden"
                 onClick={() => setBrowsing(true)}
               >
                 {tt("open")}
@@ -207,7 +207,7 @@ export function EstimateList() {
                       href={`/estimates/${row._id}`}
                       className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className="text-body text-ink group-hover:underline max-md:text-body-lg">
+                      <span className="text-body font-[450] text-ink group-hover:underline max-md:text-body-lg">
                         {row.title}
                       </span>
                       <span className="truncate text-meta tabular-nums text-ink-3 xl:hidden">
@@ -219,7 +219,7 @@ export function EstimateList() {
                       </span>
                     </Link>
                   </TableCell>
-                  <TableCell className="hidden text-ink-2 md:table-cell">
+                  <TableCell className="hidden text-meta text-ink-2 md:table-cell">
                     {row.clientName ?? (
                       <span className="text-ink-3">{t("noClient")}</span>
                     )}
@@ -233,7 +233,7 @@ export function EstimateList() {
                       lei
                     </span>
                   </TableCell>
-                  <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
+                  <TableCell className="hidden text-right text-meta text-ink-3 tabular-nums md:table-cell">
                     {formatDay(row.updatedAt, locale)}
                   </TableCell>
                 </TableRow>

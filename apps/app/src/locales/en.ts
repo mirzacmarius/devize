@@ -4890,6 +4890,7 @@ export default {
       measured: "Measured line items",
       ofItems: "of {items}",
       unmeasured: "{left} to measure",
+      unmeasuredLocked: "{left} not measured",
       differs: "With another quantity in the estimate",
     },
     rooms: {
@@ -5320,7 +5321,6 @@ export default {
       contract: "Contract value",
       executedValue: "Executed",
       approved: "Confirmed by the beneficiary",
-      approvedShare: "{percent} of the contract",
       noApproved: "No statement confirmed yet",
       remaining: "Left to execute",
       withheld: "Guarantee withheld from statements",
@@ -5336,7 +5336,7 @@ export default {
       pick: "Choose the statement",
     },
     statement: {
-      period: "Period {start} – {end}",
+      period: "{start} – {end}",
       date: "Date {date}",
       sentOn: "Sent on {date}",
       approvedOn: "Confirmed on {date}",

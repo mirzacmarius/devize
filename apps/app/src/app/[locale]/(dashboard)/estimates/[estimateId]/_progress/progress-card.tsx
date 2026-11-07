@@ -63,6 +63,7 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
       row
     >
       <MeterBar
+        ruled
         value={percent}
         tone={percent > 100 ? "warning" : "action"}
         label={t("executed", {

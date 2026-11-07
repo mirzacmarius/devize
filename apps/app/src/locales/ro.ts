@@ -4885,6 +4885,7 @@ export default {
       measured: "Articole măsurate",
       ofItems: "din {items}",
       unmeasured: "{left} de măsurat",
+      unmeasuredLocked: "{left} nemăsurate",
       differs: "Cu altă cantitate în deviz",
     },
     rooms: {
@@ -5312,7 +5313,6 @@ export default {
       contract: "Valoarea contractului",
       executedValue: "Executat",
       approved: "Confirmat de beneficiar",
-      approvedShare: "{percent} din contract",
       noApproved: "Nicio situație confirmată încă",
       remaining: "Rest de executat",
       withheld: "Garanție reținută din situații",
@@ -5328,7 +5328,7 @@ export default {
       pick: "Alege situația",
     },
     statement: {
-      period: "Perioada {start} – {end}",
+      period: "{start} – {end}",
       date: "Data {date}",
       sentOn: "Trimisă la {date}",
       approvedOn: "Confirmată la {date}",

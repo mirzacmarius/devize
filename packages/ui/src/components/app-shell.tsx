@@ -48,7 +48,7 @@ const AppMain = React.forwardRef<
   <main
     ref={ref}
     className={cn(
-      "app-main grid min-w-0 grid-cols-[minmax(0,1472px)] content-start justify-center gap-4 bg-panel px-4 pb-10 pt-4 sm:gap-6 md:px-8 lg:m-2 lg:ml-0 lg:rounded-2xl lg:pt-7 lg:shadow-panel",
+      "app-main grid min-w-0 grid-cols-[minmax(0,1472px)] content-start justify-center gap-4 bg-panel px-4 pb-10 pt-4 sm:gap-6 md:px-8 lg:m-2 lg:ml-0 lg:rounded-2xl lg:pt-7",
       className,
     )}
     {...props}
