@@ -98,7 +98,7 @@ export function HomePage() {
         }
       />
       {/* On a phone the next section's hairline closes the figures. */}
-      <Card className="grid grid-cols-3 max-sm:-mb-4 max-sm:!border-t-0 sm:-mt-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.25fr)_repeat(3,minmax(0,1fr))]">
+      <Card className="grid grid-cols-3 max-sm:-mb-4 max-sm:!border-t-0 sm:-mt-1 sm:grid-cols-2 xl:grid-cols-[calc((100%_-_48px)*25/81_+_13.33px)_calc((100%_-_48px)*20/81_+_10.67px)_repeat(2,calc((100%_-_48px)*2/9_+_12px))]">
         <Kpi
           lead
           label={t("kpi.receivable")}
@@ -229,7 +229,7 @@ function Kpi({
             "tabular-nums tracking-[-0.01em] [font-weight:var(--weight-figure)]",
             lead
               ? "text-[28px] leading-9 text-ink sm:text-hero"
-              : "text-base leading-6 text-ink-2 sm:text-stat",
+              : "text-base leading-6 text-ink sm:text-stat",
           )}
         >
           {/* One figure leads; the others are one tone. */}
@@ -596,8 +596,11 @@ function RecentCard({
                       {" · "}
                       {row.clientName ?? t("noClient")}
                     </span>
+                    {/* As wide as the longest word, so the dots stand in a column. */}
                     <span className="flex h-[18px] items-center justify-end max-sm:hidden">
-                      <EstimateStatusPill short status={row.status} />
+                      <span className="flex min-w-[68px]">
+                        <EstimateStatusPill short status={row.status} />
+                      </span>
                     </span>
                     {/* On a phone, its own line: where it stands and how much. */}
                     <span className="flex items-baseline justify-between gap-4 sm:hidden">

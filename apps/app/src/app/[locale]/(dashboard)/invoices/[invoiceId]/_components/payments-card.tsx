@@ -50,12 +50,14 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <span className="text-meta text-ink-3 tabular-nums">
-          {remaining > 0
-            ? `${t("remaining")}: ${formatMoney(remaining, locale)}`
-            : t("settled")}
-        </span>
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+          <CardTitle>{t("title")}</CardTitle>
+          <span className="text-meta text-ink-3 tabular-nums">
+            {remaining > 0
+              ? `${t("remaining")}: ${formatMoney(remaining, locale)}`
+              : t("settled")}
+          </span>
+        </div>
       </CardHeader>
       <CardContent>
         {invoice.payments.length === 0 ? (

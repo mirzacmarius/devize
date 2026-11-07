@@ -195,6 +195,10 @@
   p {
     text-wrap: pretty;
   }
+  td,
+  li {
+    text-wrap-style: pretty;
+  }
   /* Native controls the app draws in its own ink. */
   input[type="checkbox"],
   input[type="radio"] {

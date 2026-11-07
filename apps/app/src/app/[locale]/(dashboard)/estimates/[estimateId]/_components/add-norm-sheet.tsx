@@ -398,7 +398,7 @@ function MatchedWords({
     return (
       <Fragment key={key}>
         {part.slice(0, at)}
-        <span className="font-medium">{word}</span>
+        <span className="rounded-[2px] bg-ink/[0.08]">{word}</span>
         {part.slice(at + word.length)}
       </Fragment>
     );

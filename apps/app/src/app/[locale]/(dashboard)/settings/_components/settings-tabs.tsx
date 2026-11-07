@@ -16,7 +16,7 @@ export function SettingsTabs() {
     { href: "/settings/billing", label: t("tabs.billing") },
   ];
   return (
-    <TabsNav aria-label={t("sections")}>
+    <TabsNav aria-label={t("sections")} className="xl:max-w-[928px]">
       {tabs.map((tab) => (
         <TabsNavLink key={tab.href} asChild active={pathname === tab.href}>
           <Link href={tab.href}>{tab.label}</Link>

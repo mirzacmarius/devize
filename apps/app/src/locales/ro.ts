@@ -1997,9 +1997,8 @@ export default {
       producers: "Norme de la producători",
       producersNote: "Neconfirmate încă",
       producersNoteLong:
-        "Din documentele lor publice; producătorii nu le-au verificat încă.",
+        "din documentele lor publice; producătorii nu le-au verificat încă",
       base: "Norme de bază",
-      baseNote: "pe categorii de lucrări",
     },
     noCost: "Fără preț",
     newNorm: "Normă nouă",
@@ -2257,6 +2256,9 @@ export default {
     "count#one": "Un client",
     "count#few": "{count} clienți",
     "count#other": "{count} de clienți",
+    "estimateCount#one": "un deviz",
+    "estimateCount#few": "{count} devize",
+    "estimateCount#other": "{count} de devize",
     new: "Client nou",
     searchPlaceholder: "Caută un client după nume",
     emptyTitle: "Încă nu ai clienți",
@@ -2267,7 +2269,6 @@ export default {
     columns: {
       name: "Nume",
       contact: "Contact",
-      estimates: "Devize",
       owed: "De încasat",
     },
     kinds: {
@@ -4912,6 +4913,7 @@ export default {
       perimeter: "Perimetru",
       measured: "Articole măsurate",
       ofItems: "din {items}",
+      measuredShare: "{percent} din articole măsurate",
       unmeasured: "{left} de măsurat",
       differs: "Cu altă cantitate în deviz",
     },
@@ -5341,13 +5343,12 @@ export default {
     summary: {
       title: "Stadiul lucrărilor",
       executed: "{percent} executat",
-      contract: "Valoarea contractului",
+      contract: "Contract, fără TVA",
       executedValue: "Executat",
       approved: "Confirmat",
       noApproved: "Nicio situație confirmată încă",
       remaining: "Rest de executat",
       withheld: "Garanție reținută din situații",
-      basis: "lei fără TVA, la prețurile din deviz",
     },
     list: {
       new: "Situație nouă",

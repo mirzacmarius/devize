@@ -200,7 +200,7 @@ export default function ManufacturersPage() {
                     (a, b) => a.wave - b.wave || a.name.localeCompare(b.name),
                   )
                   .map((row) => (
-                    <TableRow key={row._id}>
+                    <TableRow key={row._id} className="group/row">
                       <TableCell className="w-8">
                         <span className="flex">
                           <input
@@ -208,6 +208,10 @@ export default function ManufacturersPage() {
                             aria-label={row.name}
                             checked={selected.has(row._id)}
                             onChange={() => toggle(row._id)}
+                            className={cn(
+                              selected.size === 0 &&
+                                "transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover/row:opacity-100",
+                            )}
                           />
                         </span>
                       </TableCell>

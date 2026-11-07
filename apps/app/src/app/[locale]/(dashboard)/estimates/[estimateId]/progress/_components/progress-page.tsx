@@ -124,7 +124,6 @@ export function ProgressPage() {
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("summary.basis")}
         actions={
           overview.canCreate &&
           selected && (

@@ -62,10 +62,10 @@ export function Figure({
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
         <span
           className={cn(
-            "text-stat tabular-nums",
+            "text-stat tabular-nums text-ink",
             lead
-              ? "text-ink sm:text-hero sm:group-data-[compact]/strip:text-[28px] sm:group-data-[compact]/strip:leading-9"
-              : "text-ink-2 group-data-[compact]/strip:text-figure",
+              ? "sm:text-hero sm:group-data-[compact]/strip:text-[28px] sm:group-data-[compact]/strip:leading-9"
+              : "group-data-[compact]/strip:text-figure",
           )}
         >
           {lead && typeof value === "string" ? <Amount value={value} /> : value}

@@ -54,7 +54,7 @@ export function ContactLinks({
       className={cn(
         "flex shrink-0 flex-wrap justify-center gap-2",
         // A bare icon ends on the page's margin, not its tap area.
-        compact && "max-sm:-mr-3.5",
+        compact && "max-sm:-mr-3",
       )}
     >
       {phone && (

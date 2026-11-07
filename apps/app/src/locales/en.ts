@@ -1999,9 +1999,8 @@ export default {
       producers: "Norms from producers",
       producersNote: "Not confirmed yet",
       producersNoteLong:
-        "From their public documents; the producers haven't checked them yet.",
+        "from their public documents; the producers haven't checked them yet",
       base: "Base norms",
-      baseNote: "by category of work",
     },
     noCost: "No price",
     newNorm: "New norm",
@@ -2256,6 +2255,9 @@ export default {
     "count#one": "One client",
     "count#few": "{count} clients",
     "count#other": "{count} clients",
+    "estimateCount#one": "one estimate",
+    "estimateCount#few": "{count} estimates",
+    "estimateCount#other": "{count} estimates",
     new: "New client",
     searchPlaceholder: "Search clients by name",
     emptyTitle: "No clients yet",
@@ -2266,7 +2268,6 @@ export default {
     columns: {
       name: "Name",
       contact: "Contact",
-      estimates: "Estimates",
       owed: "To collect",
     },
     kinds: {
@@ -4917,6 +4918,7 @@ export default {
       perimeter: "Perimeter",
       measured: "Measured line items",
       ofItems: "of {items}",
+      measuredShare: "{percent} of line items measured",
       unmeasured: "{left} to measure",
       differs: "With another quantity in the estimate",
     },
@@ -5349,13 +5351,12 @@ export default {
     summary: {
       title: "State of the works",
       executed: "{percent} executed",
-      contract: "Contract value",
+      contract: "Contract, without VAT",
       executedValue: "Executed",
       approved: "Confirmed",
       noApproved: "No statement confirmed yet",
       remaining: "Left to execute",
       withheld: "Guarantee withheld from statements",
-      basis: "lei without VAT, at the estimate's prices",
     },
     list: {
       new: "New statement",

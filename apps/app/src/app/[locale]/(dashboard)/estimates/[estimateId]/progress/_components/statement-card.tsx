@@ -406,7 +406,7 @@ function RowsTable({
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.04] xl:pt-2.5">
+          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.025] xl:pt-2.5">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -454,9 +454,9 @@ function RowsTable({
                   </TableCell>
                 </TableGroupRow>
               )}
-              <TableRow className="group/row md:[&>td]:h-16 md:[&>td]:py-[11px]">
+              <TableRow className="group/row md:[&>td]:h-16 md:[&>td]:pb-[9px] md:[&>td]:pt-[13px]">
                 <TableCell data-stack="wide" className="relative align-top">
-                  <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-14 xl:min-w-64">
+                  <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-6 xl:min-w-64">
                     <span className="w-4 text-right tabular-nums text-ink-3">
                       {row.position}
                     </span>
@@ -531,7 +531,7 @@ function RowsTable({
                   </Reference>
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.04]">
+                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.025]">
                   <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">
@@ -556,7 +556,7 @@ function RowsTable({
                       }
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
-                        "-my-1.5 w-20",
+                        "-my-1 h-7 w-20",
                         // What's to be filled in is a field like any other; with
                         // nothing left it's blank, until it's pointed at.
                         fillable &&

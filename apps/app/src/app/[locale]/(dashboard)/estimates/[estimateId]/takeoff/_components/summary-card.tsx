@@ -1,7 +1,8 @@
 "use client";
 
+import { MeterBar } from "@devize/ui/meter";
 import { Figure, FigureStrip } from "@/components/figure-strip";
-import { formatCount, formatQuantity } from "@/lib/format";
+import { formatCount, formatPercent, formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { TakeoffPageData } from "./types";
 
@@ -15,6 +16,13 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
     ) / 100;
   const measured = data.items.filter((item) => item.takeoffs.length > 0);
   const differs = measured.filter((item) => item.differs).length;
+  const share =
+    data.items.length > 0
+      ? Math.round((measured.length / data.items.length) * 100)
+      : 0;
+  const shareLabel = t("measuredShare", {
+    percent: formatPercent(share, locale),
+  });
   const measurable = data.estimate.locked
     ? 0
     : data.items.length - measured.length;
@@ -34,6 +42,15 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
             </span>
           </>
         }
+        beside={
+          <MeterBar
+            ruled
+            className="ml-2.5 min-w-20 flex-1 self-center max-sm:hidden"
+            value={share}
+            tone="action"
+            label={shareLabel}
+          />
+        }
         note={
           <>
             {/* Nothing to measure on a Deviz that has left. */}
@@ -49,7 +66,15 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
             {differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
           </>
         }
-      />
+      >
+        <MeterBar
+          ruled
+          className="mt-1.5 sm:hidden"
+          value={share}
+          tone="action"
+          label={shareLabel}
+        />
+      </Figure>
       <Figure
         label={t("rooms")}
         value={formatCount(data.rooms.length, locale)}

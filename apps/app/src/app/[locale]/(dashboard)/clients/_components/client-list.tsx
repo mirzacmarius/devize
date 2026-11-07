@@ -116,14 +116,11 @@ export function ClientList() {
           <Table stack twoLine>
             <TableHeader>
               <TableRow>
-                <TableHead className="xl:w-[34%]">
+                <TableHead className="xl:w-[44%]">
                   {t("columns.name")}
                 </TableHead>
-                <TableHead className="xl:w-[36%]">
+                <TableHead className="xl:w-[38%]">
                   {t("columns.contact")}
-                </TableHead>
-                <TableHead className="hidden w-20 text-right md:table-cell xl:w-[12%]">
-                  {t("columns.estimates")}
                 </TableHead>
                 <TableHead className="hidden w-32 text-right md:table-cell xl:w-[18%]">
                   {t("columns.owed")}
@@ -133,14 +130,14 @@ export function ClientList() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={3} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={3} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
@@ -161,6 +158,9 @@ export function ClientList() {
                         <span className="text-meta tabular-nums text-ink-3">
                           {t(`kinds.${row.kind}`)}
                           {row.cui && ` · ${row.cui}`}
+                          {going?.estimates
+                            ? ` · ${t("estimateCount", { count: going.estimates })}`
+                            : null}
                         </span>
                       </div>
                     </TableCell>
@@ -188,9 +188,6 @@ export function ClientList() {
                           )}
                         </div>
                       )}
-                    </TableCell>
-                    <TableCell className="hidden text-right tabular-nums md:table-cell">
-                      {going?.estimates ? going.estimates : <Nil />}
                     </TableCell>
                     <TableCell
                       data-stack="wide"

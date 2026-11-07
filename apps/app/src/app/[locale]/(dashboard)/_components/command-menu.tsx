@@ -184,7 +184,7 @@ export function useShortcutLabel() {
   return mac ? "⌘K" : "Ctrl K";
 }
 
-/** The sidebar's search button, which looks like a field and opens the menu. */
+/** The sidebar's search: a row like its links, which opens the menu. */
 export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
   const t = useScopedI18n("commandMenu");
   const open = useOpenCommandMenu();
@@ -197,7 +197,7 @@ export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
         open();
       }}
       aria-keyshortcuts="Control+K Meta+K"
-      className="flex h-8 w-full items-center gap-2.5 rounded-md bg-panel px-2 text-left text-meta text-ink-3 shadow-[inset_0_0_0_1px_hsl(var(--border))] transition-colors hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-8 w-full items-center gap-2.5 rounded-md px-2 text-left text-body text-ink-2 transition-colors hover:bg-nav-active/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Search aria-hidden className="size-4 shrink-0" />
       <span className="min-w-0 flex-1 truncate">{t("button")}</span>
