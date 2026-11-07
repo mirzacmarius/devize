@@ -8,6 +8,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableGroupRow,
   TableHead,
   TableHeader,
   TableRow,
@@ -17,6 +18,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { ListToolbar } from "@/components/list-toolbar";
 import { Nil } from "@/components/nil";
 import { useScopedI18n } from "@/locales/client";
 import {
@@ -43,6 +45,13 @@ const statuses = [
 ] as const;
 
 type Status = (typeof statuses)[number];
+
+// What needs someone first, what waits on others next, what's over last.
+const groups = [
+  { key: "action", statuses: ["new", "review", "replied"] },
+  { key: "waiting", statuses: ["approved", "contacted"] },
+  { key: "closed", statuses: ["norms_received", "declined", "excluded"] },
+] as const satisfies readonly { key: string; statuses: readonly Status[] }[];
 
 export default function ManufacturersPage() {
   const t = useScopedI18n("admin.manufacturers");
@@ -85,7 +94,7 @@ export default function ManufacturersPage() {
       {adding && <AddManufacturers />}
 
       <section className="grid min-w-0 gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <ListToolbar>
           <label htmlFor="status_filter" className="sr-only">
             {t("columns.status")}
           </label>
@@ -107,6 +116,7 @@ export default function ManufacturersPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
+              size="sm"
               onClick={() =>
                 setSelected(
                   new Set(
@@ -120,20 +130,21 @@ export default function ManufacturersPage() {
               {t("selectNew")}
             </Button>
             {selected.size > 0 && (
-              <Button disabled={pending} onClick={research}>
+              <Button size="sm" disabled={pending} onClick={research}>
                 {t("research", { count: selected.size })}
               </Button>
             )}
             {/* One main action at a time: the research, once there's a choice. */}
             <Button
               variant={selected.size > 0 ? "outline" : "default"}
+              size="sm"
               onClick={() => setAdding(!adding)}
             >
               <Plus aria-hidden />
               {tAdd("title")}
             </Button>
           </div>
-        </div>
+        </ListToolbar>
         <ErrorText error={error} />
         {started !== null && (
           <p className="m-0 text-body text-ink-2">
@@ -145,7 +156,7 @@ export default function ManufacturersPage() {
         ) : rows.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (
-          <Table className="min-w-[52rem]">
+          <Table bleed className="min-w-[52rem]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-8">
@@ -153,104 +164,133 @@ export default function ManufacturersPage() {
                 </TableHead>
                 <TableHead>{t("columns.name")}</TableHead>
                 {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
-                <TableHead className="w-56">{t("columns.status")}</TableHead>
-                <TableHead className="w-40">{t("columns.norms")}</TableHead>
-                <TableHead className="w-40">
+                <TableHead className="w-44">{t("columns.status")}</TableHead>
+                <TableHead className="w-32">{t("columns.norms")}</TableHead>
+                <TableHead className="w-32">
                   {t("columns.confidence")}
                 </TableHead>
-                <TableHead className="w-36">{t("columns.email")}</TableHead>
+                <TableHead className="w-28">{t("columns.email")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {[...rows]
-                .sort((a, b) => a.wave - b.wave || a.name.localeCompare(b.name))
-                .map((row) => (
-                  <TableRow key={row._id}>
-                    <TableCell className="w-8">
-                      <span className="flex">
-                        <input
-                          type="checkbox"
-                          aria-label={row.name}
-                          checked={selected.has(row._id)}
-                          onChange={() => toggle(row._id)}
-                        />
+              {(status === "all"
+                ? groups.map((group) => ({
+                    key: group.key as string,
+                    name: t(`groups.${group.key}`),
+                    rows: rows.filter((row) =>
+                      (group.statuses as readonly Status[]).includes(
+                        row.status,
+                      ),
+                    ),
+                  }))
+                : [{ key: status as string, name: undefined, rows }]
+              ).flatMap((group) => [
+                group.name && group.rows.length > 0 && (
+                  <TableGroupRow key={group.key}>
+                    <TableCell className="band-start" />
+                    <TableCell
+                      colSpan={stages > 1 ? 6 : 5}
+                      className="band-end font-medium"
+                    >
+                      {group.name}
+                      <span className="ml-2 font-normal tabular-nums text-ink-3">
+                        {group.rows.length}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/admin/manufacturers/${row._id}`}
-                        className="font-medium text-ink hover:underline"
-                      >
-                        {row.name}
-                      </Link>
-                      {row.hints && (
-                        <p className="m-0 line-clamp-1 max-w-md text-meta text-ink-3">
-                          {row.hints}
-                        </p>
-                      )}
-                    </TableCell>
-                    {stages > 1 && (
-                      <TableCell className="tabular-nums text-ink-2">
-                        {row.wave}
+                  </TableGroupRow>
+                ),
+                ...[...group.rows]
+                  .sort(
+                    (a, b) => a.wave - b.wave || a.name.localeCompare(b.name),
+                  )
+                  .map((row) => (
+                    <TableRow key={row._id}>
+                      <TableCell className="w-8">
+                        <span className="flex">
+                          <input
+                            type="checkbox"
+                            aria-label={row.name}
+                            checked={selected.has(row._id)}
+                            onChange={() => toggle(row._id)}
+                          />
+                        </span>
                       </TableCell>
-                    )}
-                    <TableCell>
-                      {row.activeJob ? (
-                        <Pill tone="active" dot={false}>
-                          <Loader2 className="size-3 animate-spin self-center" />
-                          {t("working")}
-                        </Pill>
-                      ) : (
-                        <Pill tone={manufacturerTone[row.status]}>
-                          {tAdmin(`status.manufacturer.${row.status}`)}
-                        </Pill>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-meta text-ink-3">
-                        {tAdmin(`status.norms.${row.normsStatus}`)}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {row.confidence ? (
-                        <Confidence>
-                          {tAdmin(`confidenceLevel.${row.confidence}`)}
-                        </Confidence>
-                      ) : (
-                        <Nil />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {row.message ? (
-                        <Pill
-                          tone={
-                            row.message.status === "draft"
-                              ? row.message.blocked
-                                ? "danger"
-                                : "draft"
-                              : row.message.status === "rejected"
-                                ? "neutral"
-                                : "active"
-                          }
-                          dot={
-                            row.message.status === "draft" &&
-                            row.message.blocked === true
-                          }
-                          className={
-                            row.message.status === "draft" &&
-                            row.message.blocked
-                              ? undefined
-                              : "text-ink-3"
-                          }
+                      <TableCell>
+                        <Link
+                          href={`/admin/manufacturers/${row._id}`}
+                          className="font-medium text-ink hover:underline"
                         >
-                          {tAdmin(`status.message.${row.message.status}`)}
-                        </Pill>
-                      ) : (
-                        <Nil />
+                          {row.name}
+                        </Link>
+                        {row.hints && (
+                          <p className="m-0 line-clamp-1 max-w-md text-meta text-ink-3">
+                            {row.hints}
+                          </p>
+                        )}
+                      </TableCell>
+                      {stages > 1 && (
+                        <TableCell className="tabular-nums text-ink-2">
+                          {row.wave}
+                        </TableCell>
                       )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      <TableCell>
+                        {row.activeJob ? (
+                          <Pill tone="active" dot={false}>
+                            <Loader2 className="size-3 animate-spin self-center" />
+                            {t("working")}
+                          </Pill>
+                        ) : (
+                          <Pill tone={manufacturerTone[row.status]}>
+                            {tAdmin(`status.manufacturer.${row.status}`)}
+                          </Pill>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-meta text-ink-3">
+                          {tAdmin(`status.norms.${row.normsStatus}`)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {row.confidence ? (
+                          <Confidence>
+                            {tAdmin(`confidenceLevel.${row.confidence}`)}
+                          </Confidence>
+                        ) : (
+                          <Nil />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {row.message ? (
+                          <Pill
+                            tone={
+                              row.message.status === "draft"
+                                ? row.message.blocked
+                                  ? "danger"
+                                  : "draft"
+                                : row.message.status === "rejected"
+                                  ? "neutral"
+                                  : "active"
+                            }
+                            dot={
+                              row.message.status === "draft" &&
+                              row.message.blocked === true
+                            }
+                            className={
+                              row.message.status === "draft" &&
+                              row.message.blocked
+                                ? undefined
+                                : "text-ink-3"
+                            }
+                          >
+                            {tAdmin(`status.message.${row.message.status}`)}
+                          </Pill>
+                        ) : (
+                          <Nil />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )),
+              ])}
             </TableBody>
           </Table>
         )}

@@ -24,7 +24,7 @@ import { TabsNav, TabsNavLink } from "@devize/ui/tabs-nav";
 import { cn } from "@devize/ui/utils";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { CircleDashed, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useState } from "react";
@@ -186,7 +186,7 @@ export function CatalogPage() {
                 allLabel={t("categories.all")}
                 value={category?.key ?? null}
                 onChange={changeCategory}
-                className={cn("w-full sm:w-56 xl:h-8 xl:py-1", toolbarField)}
+                className={cn("w-full sm:w-56", toolbarField)}
               />
             )}
             <SearchInput
@@ -195,7 +195,7 @@ export function CatalogPage() {
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-80 sm:max-xl:w-auto sm:max-xl:flex-1 xl:[&_input]:h-8 xl:[&_input]:py-1"
+              className="w-full sm:w-80 sm:max-xl:w-auto sm:max-xl:flex-1"
             />
           </div>
         </div>
@@ -218,16 +218,7 @@ export function CatalogPage() {
                   <TableHead>{t("columns.norm")}</TableHead>
                   {!isOwn && (
                     <TableHead className="hidden w-64 xl:table-cell">
-                      {/* What the mark beside a producer means, said once. */}
-                      <span className="flex items-center gap-3">
-                        {t("columns.source")}
-                        {rows?.some(unconfirmed) && (
-                          <span className="flex items-center gap-1">
-                            <CircleDashed aria-hidden className="size-3.5" />
-                            {t("unconfirmedLegend")}
-                          </span>
-                        )}
-                      </span>
+                      {t("columns.source")}
                     </TableHead>
                   )}
                   {isOwn && <TableHead>{t("columns.status")}</TableHead>}
@@ -306,18 +297,13 @@ export function CatalogPage() {
                             <span className={isOwn ? undefined : TABLET_ONLY}>
                               {norm.source !== "base" &&
                                 ` · ${norm.manufacturerName ?? normSource(norm)}`}
+                              {unconfirmed(norm) && (
+                                <span title={t("unconfirmedHint")}>
+                                  {` · ${t("unconfirmed")}`}
+                                </span>
+                              )}
                             </span>
                           </span>
-                          {unconfirmed(norm) && (
-                            <span className={isOwn ? undefined : TABLET_ONLY}>
-                              <StatusPill
-                                tone="draft"
-                                title={t("unconfirmedHint")}
-                              >
-                                {t("unconfirmed")}
-                              </StatusPill>
-                            </span>
-                          )}
                         </span>
                       </Link>
                     </TableCell>
@@ -326,38 +312,22 @@ export function CatalogPage() {
                       <TableCell className="md:max-xl:hidden">
                         <span
                           className={cn(
-                            "flex flex-wrap items-baseline gap-x-1.5 max-md:gap-x-2.5 max-md:text-meta",
+                            "block max-md:text-meta",
                             norm.source === "base"
                               ? "text-ink-3"
                               : "text-ink-2 max-md:text-ink-3",
                           )}
                         >
-                          <span className="first-letter:uppercase">
+                          <span className="inline-block first-letter:uppercase">
                             {norm.manufacturerName ?? normSource(norm)}
                           </span>
                           {unconfirmed(norm) && (
-                            <>
-                              <span
-                                title={t("unconfirmedHint")}
-                                className="hidden self-center xl:inline-flex"
-                              >
-                                <CircleDashed
-                                  aria-hidden
-                                  className="size-3.5 text-ink-3"
-                                />
-                                <span className="sr-only">
-                                  {t("unconfirmed")}
-                                </span>
-                              </span>
-                              {/* A phone has no head to explain a mark. */}
-                              <StatusPill
-                                tone="draft"
-                                title={t("unconfirmedHint")}
-                                className="xl:hidden"
-                              >
-                                {t("unconfirmed")}
-                              </StatusPill>
-                            </>
+                            <span
+                              title={t("unconfirmedHint")}
+                              className="text-ink-3"
+                            >
+                              {` · ${t("unconfirmed")}`}
+                            </span>
                           )}
                         </span>
                       </TableCell>

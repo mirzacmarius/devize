@@ -12,6 +12,7 @@ import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Mail, MessageCircle } from "lucide-react";
 import { type ReactNode, useState } from "react";
+import { Lei } from "@/components/amount";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Fact, FactList } from "@/components/fact-list";
 import { FoldCard } from "@/components/fold-card";
@@ -356,7 +357,7 @@ function ChoiceBox({ label, offer }: { label?: string; offer: Offer }) {
               : t("defaultChoice"))}
         </Fact>
         <Fact label={choice.totals.vat !== 0 ? t("total") : t("totalNoVat")}>
-          {total} lei
+          <Lei value={total} />
         </Fact>
       </FactList>
       {choice.excluded.length > 0 && (

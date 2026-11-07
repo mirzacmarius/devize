@@ -56,7 +56,7 @@ const config = {
           "40px",
           {
             lineHeight: "44px",
-            letterSpacing: "-0.015em",
+            letterSpacing: "-0.01em",
             fontWeight: "var(--weight-figure)",
           },
         ],

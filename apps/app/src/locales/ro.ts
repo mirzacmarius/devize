@@ -380,6 +380,10 @@ export default {
     title: "Devize",
     new: "Deviz nou",
     allWithVat: "Sume în lei, cu TVA",
+    allWithVatLower: "sume în lei, cu TVA",
+    "count#one": "Un deviz",
+    "count#few": "{count} devize",
+    "count#other": "{count} de devize",
     emptyTitle: "Încă nu ai niciun deviz",
     emptyDescription:
       "Pornești de la normele din catalog, cu tarifele tale și prețurile magazinelor, iar recapitulația se calculează singură.",
@@ -448,7 +452,7 @@ export default {
       offer: "Ofertă",
       progress: "Executat",
       invoices: "Facturi",
-      toInvoice: "Rest de facturat",
+      toInvoice: "De facturat, fără TVA",
       noStatements: "Fără situații",
       recapValue: "Cote și TVA",
       documents: "Documente",
@@ -1981,8 +1985,7 @@ export default {
     title: "Catalog",
     costNote:
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
-    unconfirmed: "Neconfirmată",
-    unconfirmedLegend: "neconfirmată",
+    unconfirmed: "neconfirmată",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
@@ -2712,6 +2715,11 @@ export default {
         skipped: "Existau deja: {names}.",
       },
       filterAll: "Toate stările",
+      groups: {
+        action: "De rezolvat",
+        waiting: "În așteptare",
+        closed: "Încheiate",
+      },
       selectNew: "Selectează noii",
       research: "Cercetează selecția ({count})",
       researchStarted:
@@ -4271,9 +4279,8 @@ export default {
     efacturaDue: "Până la {date}",
     card: {
       title: "Facturi",
-      invoicedOf: "Facturat {invoiced} din {accepted} lei",
+      invoicedOf: "din {accepted} lei",
       invoiced: "Facturat",
-      invoicedValue: "{invoiced} din {accepted} lei",
       remaining: "Rest de facturat, fără TVA",
       list: "Lista facturilor",
       advance: "Factură de avans {percent}",
@@ -4536,10 +4543,9 @@ export default {
       profitDown: "Profitul scade cu",
       profitUp: "Profitul crește cu",
       profitLeft: "Rămân {left} lei din {was} lei la trimitere",
-      fromTo: "{from} → {to}\u00a0lei",
+      fromTo: "{from} → {to}",
       changes: "Cele mai mari schimbări",
       change: "{from} → {to}\u00a0lei/{unit}",
-      impact: "{impact}\u00a0lei",
       more: "Și încă {count} resurse cu prețul schimbat.",
       checked: "Verificat {date}",
       open: "Deschide devizul",
@@ -4859,7 +4865,7 @@ export default {
     },
     card: {
       title: "Ambalaje și pierderi",
-      lead: "{cost} lei rest",
+      leadUnit: "lei rest",
       hinted:
         "„{title}”: titlul spune „{method}”, dar consumul e cel din normă.",
       stale: "„{title}”: modul de montaj trebuie aplicat din nou.",
@@ -4885,7 +4891,7 @@ export default {
       walls: "Pereți, fără goluri",
       perimeter: "Perimetru",
       measured: "Articole măsurate",
-      ofItems: "{measured} din {items}",
+      ofItems: "din {items}",
       differs: "Cu altă cantitate în deviz",
     },
     rooms: {

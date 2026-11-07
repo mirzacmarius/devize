@@ -13,11 +13,12 @@ import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Lei } from "@/components/amount";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
-import { RailFold, RailLabel } from "@/components/fold-card";
+import { RailLabel } from "@/components/fold-card";
 import { Rail, RailList, RailSummary } from "@/components/rail-stat";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
@@ -243,20 +244,21 @@ export function EstimatePage() {
             className="absolute right-0 top-full mt-0.5 hidden w-max flex-nowrap min-[1400px]:flex"
           />
         </div>
-        <div ref={hero} className="md:col-span-2">
-          <TotalHero
-            label={t("summary.total")}
-            total={total}
-            note={withoutVat}
-          />
-        </div>
-        <SectionLinks estimate={estimate} checks={checks} />
       </div>
       <div
         data-past-hero={pastHero || undefined}
-        className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11"
+        className="-mt-1 grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11"
       >
         <div className="grid min-w-0 gap-6">
+          {/* Level with the rail's top: the two things the page comes down to. */}
+          <div ref={hero}>
+            <TotalHero
+              label={t("summary.total")}
+              total={total}
+              note={withoutVat}
+            />
+          </div>
+          <SectionLinks estimate={estimate} checks={checks} />
           {editable && (
             <ProposalBanner
               estimateId={estimate._id}
@@ -274,29 +276,15 @@ export function EstimatePage() {
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <Rail sticky>
           {railLead}
+          {/* The same two groups whatever it's at; the summary takes what leads. */}
           <RailList>
-            {status === "draft" ? (
-              <>
-                <RailLabel>{t("rail.preparation")}</RailLabel>
-                {preparation}
-                {packaging}
-                <RailLabel>{t("rail.records")}</RailLabel>
-                {rail.offer}
-                {records}
-              </>
-            ) : (
-              // Once it's sent, one list: what to buy first, the preparation,
-              // which has had its day, last.
-              <>
-                {packaging}
-                {status === "accepted" && rail.offer}
-                {records}
-                <RailFold label={t("rail.preparation")}>
-                  {rail.checks}
-                  {preparation}
-                </RailFold>
-              </>
-            )}
+            <RailLabel>{t("rail.preparation")}</RailLabel>
+            {status !== "draft" && rail.checks}
+            {preparation}
+            {packaging}
+            <RailLabel>{t("rail.records")}</RailLabel>
+            {(status === "draft" || status === "accepted") && rail.offer}
+            {records}
           </RailList>
         </Rail>
       </div>
@@ -434,7 +422,7 @@ function SectionLinks({
   // Every cell says the same two things: what it is and where it stands.
   const cells: Record<
     (typeof sections)[number],
-    { label?: string; value?: string }
+    { label?: string; value?: ReactNode }
   > = {
     progress: {
       value:
@@ -444,9 +432,11 @@ function SectionLinks({
     },
     invoices: {
       label: billing?.accepted ? t("jump.toInvoice") : undefined,
-      value: billing?.accepted
-        ? `${formatMoney(billing.remainingNet ?? 0, locale)} lei`
-        : "–",
+      value: billing?.accepted ? (
+        <Lei value={formatMoney(billing.remainingNet ?? 0, locale)} />
+      ) : (
+        "–"
+      ),
     },
     checks: {
       value:
@@ -473,7 +463,7 @@ function SectionLinks({
   return (
     <nav
       aria-label={t("jump.label")}
-      className="order-last grid grid-cols-2 border-t border-border max-sm:-mx-4 max-sm:-mb-4 md:col-span-2 md:grid-cols-4 md:border-b xl:hidden"
+      className="grid grid-cols-2 border-t border-border max-sm:-mx-4 max-sm:-mb-6 max-sm:-mt-3 sm:-mt-1 md:grid-cols-4 md:border-b xl:hidden"
     >
       {sections.map((section) => {
         const cell = cells[section];

@@ -80,7 +80,7 @@ export function AddNormSheet({
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
       <SheetContent
         closeLabel={tc("close")}
-        className="w-full overflow-hidden sm:max-w-xl"
+        className="w-full overflow-hidden sm:w-[calc(100vw-1rem)] sm:max-w-[720px]"
       >
         <SheetHeader>
           <SheetTitle>{t("addNorm.title")}</SheetTitle>
@@ -89,7 +89,7 @@ export function AddNormSheet({
           </SheetDescription>
         </SheetHeader>
         {/* The list scrolls; what's in the Deviz by now, and the way out, stay. */}
-        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-1">
+        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-1 [mask-image:linear-gradient(to_top,transparent,#000_24px)]">
           {open && (
             <AddNorm
               estimate={estimate}
@@ -309,14 +309,14 @@ function AddNorm({
                             unit: formatUnit(norm.unit, locale),
                           })}
                     </span>
-                    {/* Plain to see before the pointer gets there: this adds. */}
+                    {/* Stands back until its row is reached for: then it says this adds. */}
                     <span
                       aria-hidden
                       className={cn(
                         "col-start-2 row-span-2 row-start-1 -my-1.5 grid size-8 place-items-center rounded-md border transition-colors sm:col-start-3 sm:row-span-1",
                         inEstimate.has(norm._id)
                           ? "border-transparent bg-success-soft text-success"
-                          : "border-control text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
+                          : "border-transparent text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
                       )}
                     >
                       {inEstimate.has(norm._id) ? (

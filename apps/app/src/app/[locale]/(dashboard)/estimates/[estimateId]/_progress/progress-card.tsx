@@ -3,6 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
+import { Lei } from "@/components/amount";
 import { Fact, FactList } from "@/components/fact-list";
 import { LinkCard } from "@/components/fold-card";
 import { RailStat } from "@/components/rail-stat";
@@ -71,12 +72,12 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
       <FactList>
         {overview.approved && (
           <Fact label={t("approved")}>
-            {formatMoney(overview.approved.subtotal, locale)} lei
+            <Lei value={formatMoney(overview.approved.subtotal, locale)} />
           </Fact>
         )}
         {guarantee.guarantee && guarantee.outstanding > 0 && (
           <Fact label={t("outstanding")}>
-            {formatMoney(guarantee.outstanding, locale)} lei
+            <Lei value={formatMoney(guarantee.outstanding, locale)} />
           </Fact>
         )}
         {/* A reception says something once the work is done or one is begun. */}

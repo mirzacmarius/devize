@@ -59,13 +59,17 @@ export function EstimateStepper({
         {
           id: "draft",
           title: t("steps.draft"),
-          meta: formatDay(estimate._creationTime, locale),
+          // Only where it's at says when; the Deviz's data has the rest.
+          meta: sent ? undefined : formatDay(estimate._creationTime, locale),
           state: sent ? "done" : "current",
         },
         {
           id: "sent",
           title: t("steps.sent"),
-          meta: lockedAt ? formatDay(lockedAt, locale) : undefined,
+          meta:
+            status === "sent" && lockedAt
+              ? formatDay(lockedAt, locale)
+              : undefined,
           state: sent ? "done" : "todo",
         },
         answer,

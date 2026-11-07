@@ -18,9 +18,9 @@ import {
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
+import { ListToolbar } from "@/components/list-toolbar";
 import { Nil } from "@/components/nil";
 import { SearchInput } from "@/components/search-input";
-import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
 
 /**
@@ -40,17 +40,6 @@ export function ProducersPage() {
     const name = normalizeText(producer.name);
     return words.every((word) => name.includes(word));
   });
-
-  const searchInput = (className: string) => (
-    <SearchInput
-      quiet
-      value={text}
-      onChange={(event) => setText(event.target.value)}
-      placeholder={t("searchPlaceholder")}
-      aria-label={t("searchPlaceholder")}
-      className={className}
-    />
-  );
 
   return (
     <>
@@ -73,15 +62,21 @@ export function ProducersPage() {
                 .join(" · ")
             : "\u00a0"
         }
-        actions={
-          producers?.length ? searchInput("w-80 max-sm:hidden") : undefined
-        }
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {searchInput("w-full sm:hidden")}
+          <ListToolbar>
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:w-80"
+            />
+          </ListToolbar>
           <Table stack>
             <TableHeader>
               <TableRow>
@@ -122,19 +117,13 @@ export function ProducersPage() {
                   // The whole row leads to the profile.
                   <TableRow
                     key={producer._id}
-                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-[62px] xl:[&>td]:h-[52px]"
+                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-[62px] xl:[&>td]:h-[52px] xl:[&>td]:py-4 xl:[&>td]:align-baseline"
                   >
                     <TableCell data-stack="wide">
                       <Link
                         href={`/producers/${producer._id}`}
-                        className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5 rounded-xs after:absolute xl:gap-y-0 after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
+                        className="grid gap-y-0.5 rounded-xs after:absolute xl:gap-y-0 after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
                       >
-                        <span
-                          aria-hidden
-                          className="row-span-2 grid size-8 place-items-center xl:row-span-1 rounded-md border border-border bg-card text-[12px] font-medium leading-4 text-ink-2"
-                        >
-                          {initials(producer.name)}
-                        </span>
                         <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
                           <span className="min-w-0 truncate text-body font-medium text-ink">
                             {producer.name}
@@ -146,7 +135,7 @@ export function ProducersPage() {
                           )}
                         </span>
                         {/* Where there's room they have a column. */}
-                        <span className="col-start-2 truncate text-meta text-ink-3 xl:hidden">
+                        <span className="truncate text-meta text-ink-3 xl:hidden">
                           {producer.categories.join(" · ")}
                           {/* On a phone its columns move here. */}
                           <span className="md:hidden">

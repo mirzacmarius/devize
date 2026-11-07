@@ -19,6 +19,7 @@ import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { ListToolbar } from "@/components/list-toolbar";
 import { Nil } from "@/components/nil";
 import { SearchInput } from "@/components/search-input";
 import { formatMoney } from "@/lib/format";
@@ -55,17 +56,6 @@ export function ClientList() {
   };
 
   const isEmpty = clients !== undefined && clients.length === 0 && !search;
-  const searchInput = (className: string) => (
-    <SearchInput
-      quiet
-      value={text}
-      onChange={(event) => setText(event.target.value)}
-      placeholder={t("searchPlaceholder")}
-      aria-label={t("searchPlaceholder")}
-      className={className}
-    />
-  );
-
   return (
     <>
       <PageHeader
@@ -77,13 +67,10 @@ export function ClientList() {
             : `${t("count", { count: clients.length })} · ${tc("inLeiLower")}`
         }
         actions={
-          <>
-            {!isEmpty && searchInput("w-80 max-sm:hidden")}
-            <Button onClick={() => edit(null)}>
-              <Plus aria-hidden />
-              {t("new")}
-            </Button>
-          </>
+          <Button onClick={() => edit(null)}>
+            <Plus aria-hidden />
+            {t("new")}
+          </Button>
         }
       />
       {isEmpty ? (
@@ -99,7 +86,16 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {searchInput("w-full sm:hidden")}
+          <ListToolbar>
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:w-80"
+            />
+          </ListToolbar>
           <Table stack twoLine>
             <TableHeader>
               <TableRow>

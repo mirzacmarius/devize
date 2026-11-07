@@ -37,6 +37,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { Lei } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { InvoiceStatusPill } from "@/components/invoice-status";
@@ -224,7 +225,7 @@ type Entry = {
   icon: LucideIcon;
   label: string;
   meta?: string;
-  amount?: string;
+  amount?: ReactNode;
   pill?: ReactNode;
   /** A page to open; prefetched while the entry is chosen. */
   href?: string;
@@ -374,7 +375,7 @@ function CommandSearch({
       ),
     );
 
-    const money = (value: number) => `${formatMoney(value, locale)} lei`;
+    const money = (value: number) => <Lei value={formatMoney(value, locale)} />;
     const results = found?.results;
     // Before anything is typed, enough to get back to, and the rest in sight.
     const estimates: Entry[] = (

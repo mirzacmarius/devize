@@ -69,7 +69,7 @@ async function SampleEstimate() {
       <div className="grid">
         <span className="text-meta text-ink-2">{t("total")}</span>
         <span className="flex items-baseline gap-2">
-          <span className="text-kpi proportional-nums text-ink">
+          <span className="text-kpi tabular-nums text-ink">
             <Amount value={formatMoney(39916.16, locale)} />
           </span>
           <span className="text-meta text-ink-3">lei</span>

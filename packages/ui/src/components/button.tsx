@@ -11,7 +11,7 @@ const buttonVariants = cva(
       variant: {
         // The next action on the screen: one per view.
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-ink-3",
+          "bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.12)] hover:bg-primary/90 disabled:bg-muted disabled:text-ink-3 disabled:shadow-none",
         // Actions next to the primary one.
         outline:
           "border border-control bg-card text-ink hover:bg-tile disabled:border-transparent disabled:bg-muted disabled:text-ink-3",

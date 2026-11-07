@@ -70,7 +70,7 @@ function RowTag({
   tone,
   children,
 }: {
-  tone: "danger" | "warning" | "ai" | "neutral";
+  tone: "danger" | "warning" | "ai";
   children: ReactNode;
 }) {
   return <StatusPill tone={tone}>{children}</StatusPill>;
@@ -539,14 +539,14 @@ function ItemRows({
         {t("tags.ai")}
       </RowTag>
     ),
-    // Worth acting on only while it can still change.
-    newPrice && (
-      <RowTag key="price" tone={editable ? "warning" : "neutral"}>
+    // Worth a word only while it can still change.
+    editable && newPrice && (
+      <RowTag key="price" tone="warning">
         {t("tags.oldPrice")}
       </RowTag>
     ),
-    newNorm && (
-      <RowTag key="norm" tone={editable ? "warning" : "neutral"}>
+    editable && newNorm && (
+      <RowTag key="norm" tone="warning">
         {t("tags.newNorm")}
       </RowTag>
     ),

@@ -3,7 +3,6 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
-import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -41,11 +40,6 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
   }
   const { accepted } = billing;
   const today = todayInput();
-
-  const invoiced = t("card.invoicedOf", {
-    invoiced: formatMoney(billing.invoicedNet, locale),
-    accepted: formatMoney(accepted?.net ?? 0, locale),
-  });
 
   const list = billing.invoices.length > 0 && (
     <FoldRow
@@ -109,20 +103,14 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
       value={formatMoney(billing.remainingNet ?? 0, locale)}
       unit="lei"
     >
-      <MeterBar
-        value={
-          accepted.net > 0 ? (billing.invoicedNet / accepted.net) * 100 : 0
-        }
-        tone="action"
-        label={invoiced}
-        className="mb-1 mt-1.5"
-      />
-      <FactList>
+      <FactList className="mt-1">
         <Fact label={t("card.invoiced")}>
-          {t("card.invoicedValue", {
-            invoiced: formatMoney(billing.invoicedNet, locale),
-            accepted: formatMoney(accepted.net, locale),
-          })}
+          {formatMoney(billing.invoicedNet, locale)}{" "}
+          <span className="text-ink-3">
+            {t("card.invoicedOf", {
+              accepted: formatMoney(accepted.net, locale),
+            })}
+          </span>
         </Fact>
       </FactList>
       {list}

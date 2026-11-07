@@ -22,6 +22,7 @@ import {
   EstimateStatusPill,
 } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { ListToolbar } from "@/components/list-toolbar";
 import { SearchInput } from "@/components/search-input";
 import { SegmentedControl } from "@/components/segmented-control";
 import { estimateCode, formatDay, formatMoney } from "@/lib/format";
@@ -87,7 +88,11 @@ export function EstimateList() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("allWithVat")}
+        description={
+          rows && !search && !isEmpty && listed.status === "Exhausted"
+            ? `${t("count", { count: rows.length })} · ${t("allWithVatLower")}`
+            : t("allWithVat")
+        }
         actions={
           <>
             {/* On a phone they wait beside the search: here, the one main action. */}
@@ -121,10 +126,10 @@ export function EstimateList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <ListToolbar>
             <SegmentedControl
               label={t("filterLabel")}
-              className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center"
+              className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center sm:p-0.5"
               value={filter}
               onChange={(value) => {
                 setFilter(value);
@@ -154,7 +159,7 @@ export function EstimateList() {
                 <LayoutTemplate aria-hidden />
               </Button>
             </div>
-          </div>
+          </ListToolbar>
           <Table stack twoLine>
             <TableHeader>
               <TableRow>

@@ -21,3 +21,14 @@ export function Amount({
     </>
   );
 }
+
+/** A sum in a line of text: the figure reads first, its unit a step back. */
+export function Lei({ value }: { value: string }) {
+  return (
+    <>
+      {value}
+      {"\u00a0"}
+      <span className="text-ink-3">lei</span>
+    </>
+  );
+}

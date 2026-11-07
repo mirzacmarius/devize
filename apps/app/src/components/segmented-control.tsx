@@ -26,7 +26,7 @@ export function SegmentedControl<T extends string>({
     <fieldset
       aria-label={label}
       className={cn(
-        "m-0 inline-flex w-fit min-w-0 max-w-full items-center gap-0.5 overflow-x-auto rounded-md border-0 bg-muted [scrollbar-width:none]",
+        "m-0 inline-flex w-fit min-w-0 max-w-full items-center gap-0.5 overflow-x-auto rounded-md border-0 bg-sunken [scrollbar-width:none]",
         compact ? "p-0.5" : "p-1",
         className,
       )}

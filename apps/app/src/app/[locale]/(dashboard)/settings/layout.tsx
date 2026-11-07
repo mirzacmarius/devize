@@ -17,9 +17,9 @@ export default async function Layout({
   return (
     <>
       <PageHeader title={t("title")} />
-      <div className="grid min-w-0 gap-6">
+      <div className="grid min-w-0 max-w-[640px] gap-6">
         <SettingsTabs />
-        <div className="grid min-w-0 max-w-[640px] gap-6">{children}</div>
+        {children}
       </div>
     </>
   );

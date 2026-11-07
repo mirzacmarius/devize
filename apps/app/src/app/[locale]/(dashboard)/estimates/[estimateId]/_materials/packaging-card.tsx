@@ -42,9 +42,12 @@ export function PackagingCard({ estimateId }: { estimateId: Id<"estimates"> }) {
       title={t("title")}
       href={`/estimates/${estimateId}/materials`}
       lead={
-        list === undefined || list.rows.length === 0
-          ? null
-          : t("lead", { cost: formatMoney(list.totals.leftoverCost, locale) })
+        list === undefined || list.rows.length === 0 ? null : (
+          <>
+            {formatMoney(list.totals.leftoverCost, locale)}{" "}
+            <span className="text-ink-3">{t("leadUnit")}</span>
+          </>
+        )
       }
     >
       {notes.length > 0 &&

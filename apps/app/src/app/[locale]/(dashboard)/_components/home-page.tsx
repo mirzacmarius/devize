@@ -96,7 +96,7 @@ export function HomePage() {
         }
       />
       {/* On a phone the next section's hairline closes the figures. */}
-      <Card className="grid grid-cols-3 max-sm:-mb-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.25fr)_repeat(3,minmax(0,1fr))]">
+      <Card className="grid grid-cols-3 max-sm:-mb-4 max-sm:!border-t-0 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.25fr)_repeat(3,minmax(0,1fr))]">
         <Kpi
           lead
           label={t("kpi.receivable")}
@@ -224,7 +224,7 @@ function Kpi({
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
         <span
           className={cn(
-            "proportional-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
+            "tabular-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
             lead
               ? "text-[28px] leading-9 sm:text-hero"
               : "text-base leading-6 max-sm:[&>span]:text-ink sm:text-stat",

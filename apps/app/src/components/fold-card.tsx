@@ -30,8 +30,7 @@ function RowText({
       >
         {title}
       </span>
-      {/* The chevron's glyph ends on the column's edge; a rail's panel moves it
-          into its margin. */}
+      {/* The chevron's glyph ends on the column's edge. */}
       <span
         data-row-end
         className="-mr-[5px] ml-auto flex min-w-0 items-center gap-2"
@@ -122,46 +121,6 @@ export function RailLabel({ children }: { children: ReactNode }) {
     >
       {children}
     </h3>
-  );
-}
-
-/**
- * A group of rows whose time has passed. Beside the main column its name is one
- * row and the rest shows once opened; stacked under it, the rows are just there.
- */
-export function RailFold({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-  const contentId = useId();
-  return (
-    <>
-      <div
-        data-rail-label
-        className="mt-2.5 hidden border-t border-border pt-1.5 xl:block"
-      >
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={contentId}
-          onClick={() => setOpen(!open)}
-          className={ROW}
-        >
-          <RowText title={label} open={open} />
-        </button>
-      </div>
-      <div
-        id={contentId}
-        data-rail-part
-        className={cn("contents", !open && "xl:hidden")}
-      >
-        {children}
-      </div>
-    </>
   );
 }
 

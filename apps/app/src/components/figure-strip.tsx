@@ -54,7 +54,7 @@ export function Figure({
       <p className="m-0 flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
         <span
           className={cn(
-            "text-stat proportional-nums text-ink",
+            "text-stat tabular-nums text-ink",
             lead && "sm:text-hero",
           )}
         >

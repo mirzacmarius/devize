@@ -25,6 +25,7 @@ import {
   type InvoiceStatus,
   InvoiceStatusPill,
 } from "@/components/invoice-status";
+import { ListToolbar } from "@/components/list-toolbar";
 import { Nil } from "@/components/nil";
 import { SegmentedControl } from "@/components/segmented-control";
 import {
@@ -153,10 +154,10 @@ export function InvoiceList() {
               }
             />
           </FigureStrip>
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <ListToolbar>
             <SegmentedControl
               label={t("filterLabel")}
-              className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center"
+              className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center sm:p-0.5"
               value={filter}
               onChange={setFilter}
               options={filters.map((value) => ({
@@ -164,7 +165,7 @@ export function InvoiceList() {
                 label: t(`filters.${value}`),
               }))}
             />
-          </div>
+          </ListToolbar>
           <Table stack twoLine>
             <TableHeader>
               <TableRow>

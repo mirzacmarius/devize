@@ -82,7 +82,7 @@ export function PlanCard({
         <CardContent>
           <div className="grid gap-1">
             <p className="m-0 flex flex-wrap items-baseline gap-x-2">
-              <span className="text-kpi proportional-nums text-ink">
+              <span className="text-kpi tabular-nums text-ink">
                 <Amount value={money(plan.total.total)} />
               </span>
               <span className="text-body text-ink-2">{t("totalUnit")}</span>

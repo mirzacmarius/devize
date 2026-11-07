@@ -14,7 +14,7 @@ import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
-import { Amount } from "@/components/amount";
+import { Amount, Lei } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
@@ -176,7 +176,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
             <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
               <span
                 className={cn(
-                  "text-stat proportional-nums",
+                  "text-stat tabular-nums",
                   profitChange < 0 ? "text-warning" : "text-success",
                 )}
               >
@@ -209,6 +209,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   from: money(alert.sentTotal),
                   to: money(alert.currentTotal),
                 })}
+                <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
@@ -218,6 +219,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   from: money(alert.sentDirect),
                   to: money(alert.currentDirect),
                 })}
+                <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
             </div>
           </dl>
@@ -254,9 +256,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                         {moved}
                       </td>
                       <td className="whitespace-nowrap py-1.5 pr-0 text-right tabular-nums text-ink">
-                        {t("impact", {
-                          impact: signedMoney(change.impact, locale),
-                        })}
+                        <Lei value={signedMoney(change.impact, locale)} />
                       </td>
                     </tr>
                   );

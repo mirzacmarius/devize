@@ -31,10 +31,17 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
       <Figure
         lead
         label={t("measured")}
-        value={t("ofItems", {
-          measured: formatCount(measured.length, locale),
-          items: formatCount(data.items.length, locale),
-        })}
+        value={
+          <>
+            {formatCount(measured.length, locale)}
+            <span className="text-ink-3">
+              {" "}
+              {t("ofItems", {
+                items: formatCount(data.items.length, locale),
+              })}
+            </span>
+          </>
+        }
         note={differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
       />
       <Figure

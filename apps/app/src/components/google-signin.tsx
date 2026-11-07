@@ -41,6 +41,7 @@ export function GoogleSignin({
     <Button
       onClick={() => signIn("google", next ? { redirectTo: next } : undefined)}
       variant="outline"
+      size="lg"
       className="w-full"
     >
       <GoogleMark />

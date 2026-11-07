@@ -23,7 +23,7 @@
   --nav-active: 60 9.4% 87.5%; /* #e2e2dc: the current page in the sidebar */
   --tile: 60 15.4% 94.9%; /* #f4f4f0: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 220 6% 10% / 0.24; /* behind whatever comes forward: a dialog, a sheet */
+  --scrim: 220 6% 10% / 0.32; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
   --border: 60 7.5% 86.9%; /* #e0e0db */
@@ -92,7 +92,7 @@
   --sunken: 60 3% 12.9%; /* #222220: a band, one step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
-  --selected: 60 2.6% 30.6%; /* #50504c: a segment raised on its rail */
+  --selected: 60 2.7% 22.2%; /* #3a3a37: a segment raised on its rail */
   --nav-active: 60 2.3% 17.3%; /* #2d2d2b */
   --tile: 60 2.4% 16.5%; /* #2b2b29 */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
@@ -417,29 +417,23 @@
   }
   /* Stacked, there are no labels: a line starts each group of rows. */
   @media (max-width: 1279.98px) {
-    .app-main .rail-list > [data-rail-label] + [data-fold],
-    .app-main .rail-list > [data-rail-label] + [data-rail-part] > [data-fold]:first-child {
+    .app-main .rail-list > [data-rail-label] + [data-fold] {
       padding-top: 8px;
       border-top: 1px solid hsl(var(--border));
     }
   }
-  /* Beside the main column, every line of the panel has one size. */
+  /* Beside the main column, every line of the rail has one size. */
   @media (min-width: 1280px) {
     .rail-sections [data-slot="fact"] :is(dt, dd) {
       font-size: 13px;
       line-height: 18px;
       font-weight: 430;
     }
-    /* The panel's frame is the first label's rule. */
+    /* The summary's frame is the first label's rule. */
     .rail-list > [data-rail-label]:first-child {
       margin-top: 0;
       padding-top: 4px;
       border-top-width: 0;
-    }
-    /* Values, bars and rules keep the panel's edge; chevrons stand in its margin. */
-    .rail-sections [data-row-end] {
-      margin-right: -16px;
-      gap: 0;
     }
   }
   /* Stacked, values end on one edge, where a row's chevron starts. */
@@ -482,13 +476,13 @@
     padding: 0;
   }
   /* A row is taller than its words: ending on one, the frame comes as close. */
-  .rail-summary > [data-slot="card"]:last-child > [data-slot="card-content"] > [data-row]:last-child {
+  .rail-summary > [data-slot="card"]:last-child > [data-slot="card-content"] > [data-row]:last-child,
+  .rail-summary > [data-slot="card"]:last-child > [data-slot="card-content"] > div:last-child > [data-row]:last-child {
     margin-bottom: -8px;
   }
   /* Stacked on a narrower screen, rows that are only rows stay together. */
   @media (max-width: 1279.98px) {
-    .rail-sections [data-fold] + [data-fold],
-    .rail-list > [data-rail-part] + [data-fold] {
+    .rail-sections [data-fold] + [data-fold] {
       margin-top: -24px;
     }
   }
