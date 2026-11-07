@@ -57,6 +57,7 @@ export function ClientList() {
   const isEmpty = clients !== undefined && clients.length === 0 && !search;
   const searchInput = (className: string) => (
     <SearchInput
+      quiet
       value={text}
       onChange={(event) => setText(event.target.value)}
       placeholder={t("searchPlaceholder")}

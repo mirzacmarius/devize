@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { InvoiceStatusPill } from "@/components/invoice-status";
-import { Rail, RailSummary } from "@/components/rail-stat";
+import { Rail, RailList, RailSummary } from "@/components/rail-stat";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { formatMoney, todayInput } from "@/lib/format";
@@ -94,7 +94,7 @@ export function InvoicePage() {
           })}
         />
       </div>
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11">
         <div className="grid min-w-0 gap-6">
           <LinesCard invoice={invoice} />
           {!draft && <PaymentsCard invoice={invoice} />}
@@ -104,8 +104,10 @@ export function InvoicePage() {
             {draft && <ChecksCard invoice={invoice} />}
             {live && <EfacturaCard invoice={invoice} />}
           </RailSummary>
-          <BuyerCard invoice={invoice} />
-          <DetailsCard invoice={invoice} />
+          <RailList>
+            <BuyerCard invoice={invoice} />
+            <DetailsCard invoice={invoice} />
+          </RailList>
         </Rail>
       </div>
     </>

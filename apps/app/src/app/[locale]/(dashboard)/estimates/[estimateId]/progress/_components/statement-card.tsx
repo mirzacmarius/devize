@@ -29,7 +29,6 @@ import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Download, Paperclip } from "lucide-react";
 import { Fragment, type ReactNode, useState } from "react";
-import { Amount } from "@/components/amount";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
@@ -260,21 +259,7 @@ export function StatementCard({
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
-          {/* What it comes to; the recap under the table says how. */}
-          {statement.period.subtotal !== 0 && (
-            <p className="m-0 flex items-baseline gap-1.5 whitespace-nowrap">
-              <span className="text-meta text-ink-3">{t("headTotal")}</span>
-              <span className="text-figure tabular-nums text-ink">
-                <Amount
-                  value={formatMoney(statement.period.subtotal, locale)}
-                />
-              </span>
-              <span className="text-meta text-ink-3">lei</span>
-            </p>
-          )}
-        </div>
+        <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
         {/* Nothing leaves from here: the firm sends it and notes what happened.
             Said once, on the first statement. */}
         {number === 1 && statement.status !== "approved" && (
@@ -373,6 +358,11 @@ function RowsTable({
   const fillable = editable && !busy;
   let group: string | undefined;
   let periodValue = 0;
+  // What a group's Articole come to in the period, for its band.
+  const groupValues = new Map<StatementRow["group"], number>();
+  for (const row of statement.rows) {
+    groupValues.set(row.group, (groupValues.get(row.group) ?? 0) + row.value);
+  }
 
   // What's not there is a dash, so the period's figures stand out.
   const ifAny = (value: number, shown: string) =>
@@ -409,17 +399,26 @@ function RowsTable({
                 <TableGroupRow className="max-md:py-0">
                   {/* A span can't follow which columns show. */}
                   <TableCell
-                    colSpan={7}
-                    className="band-start band-end hidden font-medium first:pl-7 xl:table-cell"
+                    colSpan={6}
+                    className="band-start hidden font-medium first:pl-7 xl:table-cell"
                   >
                     {heading}
                   </TableCell>
                   <TableCell
-                    colSpan={3}
-                    data-stack="wide"
-                    className="band-start band-end font-medium !pl-7 max-md:flex max-md:items-center xl:hidden"
+                    colSpan={2}
+                    className="band-start font-medium !pl-7 max-md:flex max-md:items-center xl:hidden"
                   >
                     {heading}
+                  </TableCell>
+                  <TableCell className="band-end whitespace-nowrap text-right font-medium tabular-nums max-md:flex max-md:items-center">
+                    {ifAny(
+                      groupValues.get(row.group) ?? 0,
+                      formatMoney(
+                        Math.round((groupValues.get(row.group) ?? 0) * 100) /
+                          100,
+                        locale,
+                      ),
+                    )}
                   </TableCell>
                 </TableGroupRow>
               )}
@@ -523,15 +522,15 @@ function RowsTable({
                         // its row, in a column that already says what it's for.
                         fillable &&
                           row.quantity !== 0 &&
-                          "border-input bg-field",
+                          "border-input border-b-edge bg-field",
                         fillable &&
-                          "group-hover/row:border-input [@media(hover:none)]:border-input",
+                          "group-hover/row:border-input group-hover/row:border-b-edge [@media(hover:none)]:border-input [@media(hover:none)]:border-b-edge",
                         row.quantity === 0
                           ? "text-ink-3"
                           : "font-medium text-ink",
                         // A thumb needs a field that looks like one, and room.
                         fillable
-                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:bg-field"
+                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:border-b-edge max-md:bg-field"
                           : "max-md:my-0 max-md:h-auto max-md:w-auto",
                       )}
                     />

@@ -42,13 +42,11 @@ type Status = Doc<"estimates">["status"];
 export function EstimateActions({
   estimate,
   failedChecks,
-  openChecks,
   open,
   fill = false,
 }: {
   estimate: Estimate;
   failedChecks: number;
-  openChecks: number;
   open: OpenPanel;
   // On a phone the main action takes the bar, while nothing else is beside it.
   fill?: boolean;
@@ -203,21 +201,6 @@ export function EstimateActions({
           disabled={busy}
         >
           {t("actions.markRejected")}
-        </Button>
-      )}
-      {status === "draft" && !empty && openChecks > 0 && (
-        <Button
-          variant="ghost"
-          className="text-warning hover:text-warning max-xl:hidden"
-          asChild
-        >
-          <a href="#checks">
-            <span
-              aria-hidden
-              className="size-1.5 shrink-0 rounded-full bg-warning-dot"
-            />
-            {t("actions.openChecks", { count: openChecks })}
-          </a>
         </Button>
       )}
       {primary}

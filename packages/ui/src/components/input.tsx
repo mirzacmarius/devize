@@ -11,7 +11,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-field px-3 py-2 text-body text-ink transition-[border-color,box-shadow] hover:border-ink/25 file:border-0 file:bg-transparent file:text-body file:font-medium placeholder:text-ink-3 focus-visible:border-ink/60 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-muted disabled:text-ink-3 disabled:hover:border-transparent",
+          "flex h-9 w-full rounded-md border border-input border-b-edge bg-field px-3 py-2 text-body text-ink transition-[border-color,box-shadow] hover:border-edge file:border-0 file:bg-transparent file:text-body file:font-medium placeholder:text-ink-3 focus-visible:border-ink/60 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-muted disabled:text-ink-3 disabled:hover:border-transparent",
           className,
         )}
         ref={ref}
@@ -22,4 +22,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-export { Input };
+// A field that narrows a list rather than asks for anything: it stands back in
+// its toolbar until it's reached for.
+const toolbarField =
+  "border-border bg-sunken hover:border-input focus-visible:bg-field";
+
+export { Input, toolbarField };

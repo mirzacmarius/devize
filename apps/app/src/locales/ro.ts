@@ -448,7 +448,7 @@ export default {
       offer: "Ofertă",
       progress: "Executat",
       invoices: "Facturi",
-      toInvoice: "De facturat, fără TVA",
+      toInvoice: "Rest de facturat",
       noStatements: "Fără situații",
       recapValue: "Cote și TVA",
       documents: "Documente",
@@ -497,7 +497,6 @@ export default {
     actions: {
       openProgress: "Deschide situațiile",
       createOffer: "Creează oferta",
-      openChecks: "Verificări rămase: {count}",
       details: "Date deviz",
       markSent: "Marchează ca trimis",
       markAccepted: "Acceptat de client",
@@ -1983,6 +1982,7 @@ export default {
     costNote:
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "Neconfirmată",
+    unconfirmedLegend: "neconfirmată",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
@@ -3239,6 +3239,7 @@ export default {
     moreNorms: "{count}+",
     columns: {
       name: "Producător",
+      categories: "Categorii",
       edition: "Ediție",
       norms: "Norme",
     },
@@ -4273,7 +4274,7 @@ export default {
       invoicedOf: "Facturat {invoiced} din {accepted} lei",
       invoiced: "Facturat",
       invoicedValue: "{invoiced} din {accepted} lei",
-      remaining: "De facturat, fără TVA",
+      remaining: "Rest de facturat, fără TVA",
       list: "Lista facturilor",
       advance: "Factură de avans {percent}",
       final: "Factură finală",
@@ -5311,7 +5312,7 @@ export default {
       executed: "{percent} executat",
       contract: "Valoarea contractului",
       executedValue: "Executat",
-      withOpen: "cu situația deschisă",
+      withOpen: "deschis: {value} lei",
       approved: "Confirmat de beneficiar",
       approvedShare: "{percent} din contract",
       noApproved: "Nicio situație confirmată încă",
@@ -5329,7 +5330,6 @@ export default {
       pick: "Alege situația",
     },
     statement: {
-      headTotal: "Total fără TVA",
       period: "Perioada {start} – {end}",
       date: "Data {date}",
       sentOn: "Trimisă la {date}",

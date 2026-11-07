@@ -15,28 +15,27 @@ function RowText({
   title,
   lead,
   open,
-  quiet = false,
 }: {
   title: ReactNode;
   lead?: ReactNode;
   open?: boolean;
-  quiet?: boolean;
 }) {
   return (
     <>
       <span
         className={cn(
-          "transition-colors",
-          quiet
-            ? "text-caption text-ink-3 group-hover:text-ink-2"
-            : "text-body font-normal text-ink-2 group-hover:text-ink xl:text-meta",
+          "text-body font-normal text-ink-2 transition-colors group-hover:text-ink xl:text-meta",
           lead !== undefined ? "shrink-0" : "min-w-0",
         )}
       >
         {title}
       </span>
-      {/* The chevron's glyph ends on the column's edge, where the rail's edge is. */}
-      <span className="-mr-[5px] ml-auto flex min-w-0 items-center gap-2">
+      {/* The chevron's glyph ends on the column's edge; a rail's panel moves it
+          into its margin. */}
+      <span
+        data-row-end
+        className="-mr-[5px] ml-auto flex min-w-0 items-center gap-2"
+      >
         {lead !== undefined && (
           <span className="truncate text-body font-normal tabular-nums text-ink xl:text-meta">
             {lead}
@@ -71,7 +70,7 @@ export function LinkRow({
   href: string;
 }) {
   return (
-    <Link href={href} className={ROW}>
+    <Link href={href} data-row className={ROW}>
       <RowText title={title} lead={lead} />
     </Link>
   );
@@ -91,7 +90,7 @@ export function FoldRow({
 }) {
   const { open, toggle, contentId } = useFold(attention);
   return (
-    <div>
+    <div data-row>
       <button
         type="button"
         aria-expanded={open}
@@ -119,7 +118,7 @@ export function RailLabel({ children }: { children: ReactNode }) {
   return (
     <h3
       data-rail-label
-      className="m-0 mb-0.5 mt-4 hidden border-t border-border pt-3 text-caption text-ink-3 xl:block"
+      className="m-0 mb-0.5 mt-2.5 hidden border-t border-border pt-3.5 text-caption text-ink-3 xl:block"
     >
       {children}
     </h3>
@@ -143,7 +142,7 @@ export function RailFold({
     <>
       <div
         data-rail-label
-        className="mt-4 hidden border-t border-border pt-2 xl:block"
+        className="mt-2.5 hidden border-t border-border pt-1.5 xl:block"
       >
         <button
           type="button"
@@ -152,7 +151,7 @@ export function RailFold({
           onClick={() => setOpen(!open)}
           className={ROW}
         >
-          <RowText title={label} open={open} quiet />
+          <RowText title={label} open={open} />
         </button>
       </div>
       <div

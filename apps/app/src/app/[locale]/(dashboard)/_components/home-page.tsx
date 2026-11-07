@@ -224,7 +224,7 @@ function Kpi({
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
         <span
           className={cn(
-            "tabular-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
+            "proportional-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
             lead
               ? "text-[28px] leading-9 sm:text-hero"
               : "text-base leading-6 max-sm:[&>span]:text-ink sm:text-stat",

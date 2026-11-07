@@ -3,6 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
+import { toolbarField } from "@devize/ui/input";
 import {
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
@@ -89,7 +91,7 @@ export default function ManufacturersPage() {
           </label>
           <NativeSelect
             id="status_filter"
-            className="w-full sm:w-48"
+            className={cn("w-full sm:w-48", toolbarField)}
             value={status}
             onChange={(event) =>
               setStatus(event.target.value as Status | "all")
@@ -103,10 +105,6 @@ export default function ManufacturersPage() {
             ))}
           </NativeSelect>
           <div className="flex flex-wrap items-center gap-2">
-            <Button onClick={() => setAdding(!adding)}>
-              <Plus aria-hidden />
-              {tAdd("title")}
-            </Button>
             <Button
               variant="outline"
               onClick={() =>
@@ -126,6 +124,14 @@ export default function ManufacturersPage() {
                 {t("research", { count: selected.size })}
               </Button>
             )}
+            {/* One main action at a time: the research, once there's a choice. */}
+            <Button
+              variant={selected.size > 0 ? "outline" : "default"}
+              onClick={() => setAdding(!adding)}
+            >
+              <Plus aria-hidden />
+              {tAdd("title")}
+            </Button>
           </div>
         </div>
         <ErrorText error={error} />

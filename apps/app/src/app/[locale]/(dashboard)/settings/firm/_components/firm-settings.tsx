@@ -299,7 +299,14 @@ function DetailsForm({
     <Card>
       <form onSubmit={submit} noValidate>
         <CardHeader className="grid justify-stretch gap-1">
-          <CardTitle>{t("detailsTitle")}</CardTitle>
+          <div className="flex items-baseline justify-between gap-4">
+            <CardTitle>{t("detailsTitle")}</CardTitle>
+            {canEdit && !changed && !saving && (
+              <span aria-hidden className="text-meta text-ink-3">
+                {t("allSaved")}
+              </span>
+            )}
+          </div>
           <CardDescription>{t("detailsDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -415,33 +422,31 @@ function DetailsForm({
             </div>
           </fieldset>
         </CardContent>
-        {/* Says where the form stands; only unsaved changes stay in sight, and
-            with them the button, on a line that keeps its height without it. */}
-        <CardFooter
-          className={cn(
-            footer,
-            "min-h-[61px]",
-            (changed || saving) && "sticky bottom-0 z-10",
-          )}
-        >
-          {canEdit ? (
-            <>
-              <span className="text-meta text-ink-3" aria-live="polite">
-                {changed || saving ? t("unsaved") : t("allSaved")}
+        {canEdit && (
+          <span className="sr-only" aria-live="polite">
+            {changed || saving ? t("unsaved") : t("allSaved")}
+          </span>
+        )}
+        {/* Only unsaved changes need a line, and it stays in sight. */}
+        {canEdit ? (
+          (changed || saving) && (
+            <CardFooter className={cn(footer, "sticky bottom-0 z-10")}>
+              <span aria-hidden className="text-meta text-ink-3">
+                {t("unsaved")}
               </span>
-              {(changed || saving) && (
-                <Button type="submit" disabled={saving}>
-                  {saving && (
-                    <Icons.Loader className="animate-spin" aria-hidden />
-                  )}
-                  {tc("save")}
-                </Button>
-              )}
-            </>
-          ) : (
+              <Button type="submit" disabled={saving}>
+                {saving && (
+                  <Icons.Loader className="animate-spin" aria-hidden />
+                )}
+                {tc("save")}
+              </Button>
+            </CardFooter>
+          )
+        ) : (
+          <CardFooter className={footer}>
             <p className="m-0 text-meta text-ink-3">{t("readOnly")}</p>
-          )}
-        </CardFooter>
+          </CardFooter>
+        )}
       </form>
     </Card>
   );

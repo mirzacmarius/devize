@@ -73,7 +73,13 @@ export function InvoiceList() {
     <>
       <PageHeader
         title={t("title")}
-        description={isEmpty ? undefined : tc("inLei")}
+        description={
+          isEmpty
+            ? undefined
+            : rows && listed.status === "Exhausted"
+              ? `${t("receivable.invoices", { count: rows.length })} · ${tc("inLeiLower")}`
+              : tc("inLei")
+        }
         actions={
           isEmpty ? undefined : (
             <>
@@ -140,7 +146,7 @@ export function InvoiceList() {
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
               note={
                 anaf?.firstLate && (
-                  <StatusPill tone="danger" className="text-ink-2">
+                  <StatusPill tone="danger">
                     {t("receivable.lateCount", { count: anaf.late })}
                   </StatusPill>
                 )

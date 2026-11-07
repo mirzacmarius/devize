@@ -104,7 +104,7 @@ export const levelTone: Record<string, Tone> = {
 };
 
 const fieldClass =
-  "w-full rounded-md border border-input bg-field px-3 py-2 text-body text-ink transition-[border-color,box-shadow] hover:border-ink/25 placeholder:text-ink-3 focus-visible:border-ink/60 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-muted disabled:text-ink-3";
+  "w-full rounded-md border border-input border-b-edge bg-field px-3 py-2 text-body text-ink transition-[border-color,box-shadow] hover:border-edge placeholder:text-ink-3 focus-visible:border-ink/60 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-muted disabled:text-ink-3";
 
 export function Textarea({
   className,

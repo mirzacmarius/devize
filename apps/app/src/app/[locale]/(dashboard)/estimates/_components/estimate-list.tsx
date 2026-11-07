@@ -137,6 +137,7 @@ export function EstimateList() {
             />
             <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1 sm:justify-end">
               <SearchInput
+                quiet
                 value={text}
                 onChange={(event) => setText(event.target.value)}
                 placeholder={t("searchPlaceholder")}

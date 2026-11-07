@@ -15,7 +15,7 @@
   --shell: 60 12.5% 93.7%; /* #f1f1ed */
   --panel: 60 25% 98.4%; /* #fcfcfa */
   --card: 0 0% 100%; /* #ffffff */
-  --card-border: 60 7.7% 87.3%; /* #e1e1dc: a card's edge, the rule under a table's heads */
+  --card-border: 60 6.7% 85.3%; /* #dcdcd7: a card's edge, the rule under a table's heads */
   --sunken: 60 17.2% 94.3%; /* #f3f3ee: a band inside a card, a quiet box */
   --muted: 60 10.5% 92.5%; /* #eeeeea */
   --field: 0 0% 100%; /* #ffffff: editable looks open; disabled looks `muted` */
@@ -26,9 +26,9 @@
   --scrim: 220 6% 10% / 0.24; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
-  --border: 60 8.5% 88.4%; /* #e4e4df */
-  --border-control: 60 4.3% 72.9%; /* #bdbdb7: outlined buttons, between a hairline and a field */
-  --border-field: 60 3.1% 55.9%; /* #92928b: a field's edge, 3:1 on the panel */
+  --border: 60 7.5% 86.9%; /* #e0e0db */
+  --border-control: 60 4.3% 72.9%; /* #bdbdb7: outlined buttons and the sides of a field */
+  --border-field: 60 3.1% 55.9%; /* #92928b: a field's lower edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
   --tick-major: 60 4.3% 77.5%; /* #c8c8c3 */
   --meter: 60 2.3% 42.2%; /* #6e6e69: how far along, quieter than a button */
@@ -88,7 +88,7 @@
   --panel: 60 4.2% 9.4%; /* #191917 */
   --weight-figure: 350;
   --card: 60 1.5% 12.7%; /* #212120 */
-  --card-border: 60 2% 20%; /* #343432 */
+  --card-border: 60 1.8% 22.4%; /* #3a3a38 */
   --sunken: 60 3% 12.9%; /* #222220: a band, one step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
@@ -98,7 +98,7 @@
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.6;
 
-  --border: 60 2% 19.6%; /* #333331 */
+  --border: 60 1.8% 22%; /* #393937 */
   --border-control: 60 2.4% 32.5%; /* #555551 */
   --tick-major: 60 2.6% 37.5%; /* #62625d */
   --border-field: 60 2.5% 39%; /* #666661 */
@@ -109,7 +109,7 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.2% 57.5%; /* #96968f: 6.9:1 on the panel */
 
-  --action: 60 7.9% 85.1%; /* #dcdcd6: the one bright thing on the page */
+  --action: 60 11.5% 89.8%; /* #e8e8e2: the one bright thing on the page */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
@@ -161,7 +161,7 @@
   --accent-foreground: var(--ink);
   --destructive: var(--danger);
   --destructive-foreground: var(--on-action);
-  --input: var(--border-field);
+  --input: var(--border-control);
   --ring: var(--ink);
 }
 
@@ -409,13 +409,16 @@
     }
   }
   /* A label over no rows says nothing. */
-  .rail-sections > [data-rail-label]:is(:first-child, :last-child, :has(+ [data-rail-label])) {
+  .rail-list > [data-rail-label]:is(:last-child, :has(+ [data-rail-label])) {
+    display: none;
+  }
+  .rail-list:empty {
     display: none;
   }
   /* Stacked, there are no labels: a line starts each group of rows. */
   @media (max-width: 1279.98px) {
-    .app-main .rail-sections > [data-rail-label] + [data-fold],
-    .app-main .rail-sections > [data-rail-label] + [data-rail-part] > [data-fold]:first-child {
+    .app-main .rail-list > [data-rail-label] + [data-fold],
+    .app-main .rail-list > [data-rail-label] + [data-rail-part] > [data-fold]:first-child {
       padding-top: 8px;
       border-top: 1px solid hsl(var(--border));
     }
@@ -427,11 +430,27 @@
       line-height: 18px;
       font-weight: 430;
     }
+    /* The panel's frame is the first label's rule. */
+    .rail-list > [data-rail-label]:first-child {
+      margin-top: 0;
+      padding-top: 4px;
+      border-top-width: 0;
+    }
+    /* Values, bars and rules keep the panel's edge; chevrons stand in its margin. */
+    .rail-sections [data-row-end] {
+      margin-right: -16px;
+      gap: 0;
+    }
   }
-  /* In a rail, values end on one edge, where a row's chevron starts. */
-  .rail-sections [data-slot="fact"],
-  .rail-sections [data-slot="meter"] {
-    margin-right: 19px;
+  /* Stacked, values end on one edge, where a row's chevron starts. */
+  @media (max-width: 1279.98px) {
+    .rail-sections [data-slot="fact"],
+    .rail-sections [data-slot="meter"] {
+      margin-right: 19px;
+    }
+    .rail-summary [data-slot="meter"] {
+      margin-right: 0;
+    }
   }
   /* What a rail opens with: one frame, its parts a hairline apart. */
   .rail-summary:empty {
@@ -462,27 +481,14 @@
   .app-main .rail-summary > [data-slot="card"] > [data-slot="card-content"] {
     padding: 0;
   }
-  /* Beside the main column the rail's own frame holds it: the parts that come
-     after what it opens with start a hairline below. */
-  @media (min-width: 1280px) {
-    .app-main .rail-sections > .rail-summary:not(:empty) + [data-fold] {
-      margin-top: 20px;
-      padding-top: 8px;
-      border-top: 1px solid hsl(var(--border));
-    }
-    .app-main .rail-sections > .rail-summary:empty + [data-rail-label] {
-      margin-top: 0;
-      padding-top: 0;
-      border-top-width: 0;
-    }
-  }
-  .rail-summary [data-slot="meter"] {
-    margin-right: 0;
+  /* A row is taller than its words: ending on one, the frame comes as close. */
+  .rail-summary > [data-slot="card"]:last-child > [data-slot="card-content"] > [data-row]:last-child {
+    margin-bottom: -8px;
   }
   /* Stacked on a narrower screen, rows that are only rows stay together. */
   @media (max-width: 1279.98px) {
     .rail-sections [data-fold] + [data-fold],
-    .rail-sections > [data-rail-part] + [data-fold] {
+    .rail-list > [data-rail-part] + [data-fold] {
       margin-top: -24px;
     }
   }

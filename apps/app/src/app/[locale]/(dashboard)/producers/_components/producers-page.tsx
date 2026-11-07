@@ -43,6 +43,7 @@ export function ProducersPage() {
 
   const searchInput = (className: string) => (
     <SearchInput
+      quiet
       value={text}
       onChange={(event) => setText(event.target.value)}
       placeholder={t("searchPlaceholder")}
@@ -52,8 +53,7 @@ export function ProducersPage() {
   );
 
   return (
-    // A short list of names: it keeps its figures near them.
-    <div className="grid min-w-0 gap-4 sm:gap-6 xl:max-w-[960px]">
+    <>
       <PageHeader
         breadcrumb={
           <Breadcrumb aria-label={t("breadcrumb")}>
@@ -85,7 +85,12 @@ export function ProducersPage() {
           <Table stack>
             <TableHeader>
               <TableRow>
-                <TableHead>{t("columns.name")}</TableHead>
+                <TableHead className="xl:w-[38%]">
+                  {t("columns.name")}
+                </TableHead>
+                <TableHead className="hidden xl:table-cell">
+                  {t("columns.categories")}
+                </TableHead>
                 <TableHead className="hidden w-24 text-right md:table-cell">
                   {t("columns.edition")}
                 </TableHead>
@@ -97,14 +102,14 @@ export function ProducersPage() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
@@ -117,16 +122,16 @@ export function ProducersPage() {
                   // The whole row leads to the profile.
                   <TableRow
                     key={producer._id}
-                    className="group/row relative transition-colors hover:bg-tile md:[&>td]:h-[60px]"
+                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-[62px] xl:[&>td]:h-[52px]"
                   >
                     <TableCell data-stack="wide">
                       <Link
                         href={`/producers/${producer._id}`}
-                        className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5 rounded-xs after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
+                        className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5 rounded-xs after:absolute xl:gap-y-0 after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
                       >
                         <span
                           aria-hidden
-                          className="row-span-2 grid size-8 place-items-center rounded-md border border-border bg-card text-[12px] font-medium leading-4 text-ink-2"
+                          className="row-span-2 grid size-8 place-items-center xl:row-span-1 rounded-md border border-border bg-card text-[12px] font-medium leading-4 text-ink-2"
                         >
                           {initials(producer.name)}
                         </span>
@@ -140,7 +145,8 @@ export function ProducersPage() {
                             </StatusPill>
                           )}
                         </span>
-                        <span className="col-start-2 truncate text-meta text-ink-3">
+                        {/* Where there's room they have a column. */}
+                        <span className="col-start-2 truncate text-meta text-ink-3 xl:hidden">
                           {producer.categories.join(" · ")}
                           {/* On a phone its columns move here. */}
                           <span className="md:hidden">
@@ -149,6 +155,11 @@ export function ProducersPage() {
                           </span>
                         </span>
                       </Link>
+                    </TableCell>
+                    <TableCell className="hidden text-meta text-ink-3 xl:table-cell">
+                      <span className="line-clamp-1">
+                        {producer.categories.join(" · ")}
+                      </span>
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
                       {producer.edition ?? <Nil />}
@@ -163,6 +174,6 @@ export function ProducersPage() {
           </Table>
         </section>
       )}
-    </div>
+    </>
   );
 }

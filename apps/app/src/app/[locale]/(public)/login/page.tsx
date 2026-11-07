@@ -33,7 +33,7 @@ export default async function Page() {
           <SampleEstimate />
         </div>
       </aside>
-      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:m-2 xl:ml-0 xl:justify-start xl:rounded-2xl xl:pt-[max(3rem,calc(50vh-273px))] xl:shadow-panel">
+      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:m-2 xl:ml-0 xl:justify-start xl:rounded-2xl xl:pb-8 xl:pt-[max(3rem,calc(50vh-273px))] xl:shadow-panel">
         <div className="grid w-full max-w-[400px] gap-6">
           <Wordmark className="text-xl xl:hidden" />
           <div className="grid gap-1.5">
@@ -41,10 +41,11 @@ export default async function Page() {
             <p className="m-0 text-body text-ink-2">{t("description")}</p>
           </div>
           <SignInOptions withGoogle={withGoogle} />
-          <p className="m-0 text-meta text-ink-3">
-            {t("legal", { terms: links.terms, privacy: links.privacy })}
-          </p>
         </div>
+        {/* Where there's room it closes the panel, as a page's foot does. */}
+        <p className="m-0 mt-6 w-full max-w-[400px] text-meta text-ink-3 xl:mt-auto xl:pt-6">
+          {t("legal", { terms: links.terms, privacy: links.privacy })}
+        </p>
       </main>
     </div>
   );
@@ -68,7 +69,7 @@ async function SampleEstimate() {
       <div className="grid">
         <span className="text-meta text-ink-2">{t("total")}</span>
         <span className="flex items-baseline gap-2">
-          <span className="text-kpi tabular-nums text-ink">
+          <span className="text-kpi proportional-nums text-ink">
             <Amount value={formatMoney(39916.16, locale)} />
           </span>
           <span className="text-meta text-ink-3">lei</span>

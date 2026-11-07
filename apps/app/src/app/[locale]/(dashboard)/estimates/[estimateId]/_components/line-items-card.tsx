@@ -681,7 +681,7 @@ function ItemRows({
               label={t("quantityOf", { title: item.title })}
               disabled={!editable}
               // Up by the field's padding, level with the item's first line.
-              className="-my-1.5 group-hover/row:border-input"
+              className="-my-1.5 group-hover/row:border-input group-hover/row:border-b-edge"
               onCommit={(quantity) =>
                 run(() => update({ lineItemId: item._id, quantity }))
               }

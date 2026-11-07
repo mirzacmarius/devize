@@ -26,7 +26,7 @@ export function RailStat({
 }) {
   const figure = (
     <p className="m-0 flex items-baseline gap-1.5">
-      <span className="text-stat tabular-nums text-ink">
+      <span className="text-stat proportional-nums text-ink">
         <Amount value={value} />
       </span>
       {unit && <span className="text-meta text-ink-3">{unit}</span>}
@@ -44,9 +44,10 @@ export function RailStat({
               <h3 className="m-0 text-meta text-ink-2 transition-colors group-hover:text-ink">
                 {label}
               </h3>
-              {/* The chevron's glyph ends on the column's edge, like a row's. */}
+              {/* Where a row's chevron is. */}
               <ChevronRight
                 aria-hidden
+                data-row-end
                 className="-mr-[5px] size-4 shrink-0 text-ink-3"
               />
             </div>
@@ -65,10 +66,8 @@ export function RailStat({
 }
 
 /**
- * A page's rail. Beside the main column it's one panel, with one edge for its
- * text and one for its chevrons, and its sections a hairline apart; stacked
- * under the main column, a list of sections. `sticky` keeps it in sight beside
- * a long page.
+ * A page's rail: a RailSummary, then a RailList. `sticky` keeps it in sight
+ * beside a long page.
  */
 export function Rail({
   sticky = false,
@@ -80,7 +79,7 @@ export function Rail({
   return (
     <div
       className={cn(
-        "rail-sections grid min-w-0 gap-6 xl:gap-0 xl:rounded-lg xl:border xl:border-card-border xl:px-4 xl:pb-2.5 xl:pt-4",
+        "rail-sections grid min-w-0 gap-6 xl:gap-3",
         sticky &&
           "xl:sticky xl:top-14 xl:max-h-[calc(100vh-4.5rem)] xl:overflow-y-auto xl:[scrollbar-width:thin]",
       )}
@@ -91,12 +90,25 @@ export function Rail({
 }
 
 /**
- * What a rail opens with, whatever the Deviz is at, its parts a hairline apart.
- * Stacked it has its own frame; nothing to show, no frame.
+ * What a rail opens with, whatever the Deviz is at: a frame of its own, its
+ * parts a hairline apart. Nothing to show, no frame.
  */
 export function RailSummary({ children }: { children: ReactNode }) {
   return (
-    <div className="rail-summary grid min-w-0 rounded-lg border border-card-border p-4 xl:rounded-none xl:border-0 xl:p-0">
+    <div className="rail-summary grid min-w-0 rounded-lg border border-card-border p-4">
+      {children}
+    </div>
+  );
+}
+
+/**
+ * The rows of a rail that are looked at now and then. Beside the main column
+ * they're one quiet panel, with their chevrons in its margin so that values,
+ * bars and rules keep one edge; stacked under it, a list.
+ */
+export function RailList({ children }: { children: ReactNode }) {
+  return (
+    <div className="rail-list contents xl:block xl:rounded-lg xl:border xl:border-card-border xl:px-4 xl:py-2">
       {children}
     </div>
   );

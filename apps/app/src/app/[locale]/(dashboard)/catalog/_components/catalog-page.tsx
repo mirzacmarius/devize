@@ -9,6 +9,7 @@ import { normalizeText } from "@devize/backend/convex/lib/text";
 import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
+import { toolbarField } from "@devize/ui/input";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
 import {
@@ -23,7 +24,7 @@ import { TabsNav, TabsNavLink } from "@devize/ui/tabs-nav";
 import { cn } from "@devize/ui/utils";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { Plus } from "lucide-react";
+import { CircleDashed, Plus } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useState } from "react";
@@ -178,22 +179,23 @@ export function CatalogPage() {
             </TabsNavLink>
           </TabsNav>
           {/* On the tabs' line, their words and the controls' on one middle. */}
-          <div className="flex min-w-0 flex-wrap items-center gap-2 xl:col-start-2 xl:row-start-1 xl:mt-1 xl:self-start">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 xl:col-start-2 xl:row-start-1 xl:mt-1.5 xl:self-start">
             {!isOwn && (
               <NormCategorySelect
                 label={t("categories.label")}
                 allLabel={t("categories.all")}
                 value={category?.key ?? null}
                 onChange={changeCategory}
-                className="w-full sm:w-56"
+                className={cn("w-full sm:w-56 xl:h-8 xl:py-1", toolbarField)}
               />
             )}
             <SearchInput
+              quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-80 sm:max-xl:w-auto sm:max-xl:flex-1"
+              className="w-full sm:w-80 sm:max-xl:w-auto sm:max-xl:flex-1 xl:[&_input]:h-8 xl:[&_input]:py-1"
             />
           </div>
         </div>
@@ -216,7 +218,16 @@ export function CatalogPage() {
                   <TableHead>{t("columns.norm")}</TableHead>
                   {!isOwn && (
                     <TableHead className="hidden w-64 xl:table-cell">
-                      {t("columns.source")}
+                      {/* What the mark beside a producer means, said once. */}
+                      <span className="flex items-center gap-3">
+                        {t("columns.source")}
+                        {rows?.some(unconfirmed) && (
+                          <span className="flex items-center gap-1">
+                            <CircleDashed aria-hidden className="size-3.5" />
+                            {t("unconfirmedLegend")}
+                          </span>
+                        )}
+                      </span>
                     </TableHead>
                   )}
                   {isOwn && <TableHead>{t("columns.status")}</TableHead>}
@@ -315,8 +326,7 @@ export function CatalogPage() {
                       <TableCell className="md:max-xl:hidden">
                         <span
                           className={cn(
-                            // Two lines, as the title beside it has; a phone keeps one.
-                            "grid justify-items-start gap-0.5 max-md:flex max-md:flex-wrap max-md:items-baseline max-md:gap-x-2.5 max-md:text-meta",
+                            "flex flex-wrap items-baseline gap-x-1.5 max-md:gap-x-2.5 max-md:text-meta",
                             norm.source === "base"
                               ? "text-ink-3"
                               : "text-ink-2 max-md:text-ink-3",
@@ -326,12 +336,28 @@ export function CatalogPage() {
                             {norm.manufacturerName ?? normSource(norm)}
                           </span>
                           {unconfirmed(norm) && (
-                            <StatusPill
-                              tone="draft"
-                              title={t("unconfirmedHint")}
-                            >
-                              {t("unconfirmed")}
-                            </StatusPill>
+                            <>
+                              <span
+                                title={t("unconfirmedHint")}
+                                className="hidden self-center xl:inline-flex"
+                              >
+                                <CircleDashed
+                                  aria-hidden
+                                  className="size-3.5 text-ink-3"
+                                />
+                                <span className="sr-only">
+                                  {t("unconfirmed")}
+                                </span>
+                              </span>
+                              {/* A phone has no head to explain a mark. */}
+                              <StatusPill
+                                tone="draft"
+                                title={t("unconfirmedHint")}
+                                className="xl:hidden"
+                              >
+                                {t("unconfirmed")}
+                              </StatusPill>
+                            </>
                           )}
                         </span>
                       </TableCell>

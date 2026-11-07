@@ -82,13 +82,21 @@ export function RoomsCard({
     Math.round(rooms.reduce((total, room) => total + pick(room), 0) * 100) /
     100;
   const groups = byLevel(rooms);
-  const grouped = groups.some((group) => group.level !== undefined);
+  // One level is no grouping: it's said once, by the section's name.
+  const onlyLevel = groups.length === 1 ? groups[0]?.level : undefined;
+  const grouped =
+    groups.length > 1 && groups.some((group) => group.level !== undefined);
 
   return (
     <Card>
       <CardHeader className="flex-wrap">
         <div className="grid gap-1">
-          <CardTitle>{t("title")}</CardTitle>
+          <CardTitle>
+            {t("title")}
+            {onlyLevel && (
+              <span className="font-normal text-ink-3"> · {onlyLevel}</span>
+            )}
+          </CardTitle>
           <CardDescription className="m-0">{t("description")}</CardDescription>
         </div>
         {!locked && rooms.length > 0 && (

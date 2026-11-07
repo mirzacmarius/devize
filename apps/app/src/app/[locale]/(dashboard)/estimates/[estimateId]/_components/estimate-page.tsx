@@ -18,7 +18,7 @@ import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { RailFold, RailLabel } from "@/components/fold-card";
-import { Rail, RailSummary } from "@/components/rail-stat";
+import { Rail, RailList, RailSummary } from "@/components/rail-stat";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { useScrolledPast } from "@/components/use-scrolled-past";
@@ -154,7 +154,7 @@ export function EstimatePage() {
       <RevisionsCard estimate={estimate} />
     </>
   );
-  // What the Deviz is at first; the rest in one quiet list of rows.
+  // What the Deviz is at first; the rest in a quiet list of rows.
   const railLead = (
     <RailSummary>
       {status === "accepted"
@@ -234,9 +234,6 @@ export function EstimatePage() {
             failedChecks={
               checks.filter((check) => check.state === "failed").length
             }
-            openChecks={
-              checks.filter((check) => check.state !== "passed").length
-            }
             open={setPanel}
             fill={!pastHero}
           />
@@ -257,7 +254,7 @@ export function EstimatePage() {
       </div>
       <div
         data-past-hero={pastHero || undefined}
-        className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8"
+        className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11"
       >
         <div className="grid min-w-0 gap-6">
           {editable && (
@@ -277,28 +274,30 @@ export function EstimatePage() {
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <Rail sticky>
           {railLead}
-          {status === "draft" ? (
-            <>
-              <RailLabel>{t("rail.preparation")}</RailLabel>
-              {preparation}
-              {packaging}
-              <RailLabel>{t("rail.records")}</RailLabel>
-              {rail.offer}
-              {records}
-            </>
-          ) : (
-            // Once it's sent, one list: what to buy first, the preparation,
-            // which has had its day, last.
-            <>
-              {packaging}
-              {status === "accepted" && rail.offer}
-              {records}
-              <RailFold label={t("rail.preparation")}>
-                {rail.checks}
+          <RailList>
+            {status === "draft" ? (
+              <>
+                <RailLabel>{t("rail.preparation")}</RailLabel>
                 {preparation}
-              </RailFold>
-            </>
-          )}
+                {packaging}
+                <RailLabel>{t("rail.records")}</RailLabel>
+                {rail.offer}
+                {records}
+              </>
+            ) : (
+              // Once it's sent, one list: what to buy first, the preparation,
+              // which has had its day, last.
+              <>
+                {packaging}
+                {status === "accepted" && rail.offer}
+                {records}
+                <RailFold label={t("rail.preparation")}>
+                  {rail.checks}
+                  {preparation}
+                </RailFold>
+              </>
+            )}
+          </RailList>
         </Rail>
       </div>
 
