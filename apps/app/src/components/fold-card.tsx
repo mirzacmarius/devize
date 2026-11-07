@@ -124,11 +124,12 @@ export function RailLabel({
     <h3
       data-rail-label
       className={cn(
-        "m-0 mb-0.5 mt-2.5 hidden border-t border-border pt-3.5 text-caption text-ink-3 xl:block",
+        "m-0 mb-1.5 mt-2.5 hidden border-t border-border xl:block",
         className,
       )}
     >
-      {children}
+      {/* The rows say what they are: what's seen is a hairline between groups. */}
+      <span className="sr-only">{children}</span>
     </h3>
   );
 }

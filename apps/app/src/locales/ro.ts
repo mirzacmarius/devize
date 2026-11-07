@@ -1876,7 +1876,6 @@ export default {
       accept: "Accept oferta",
       decline: "Nu accept",
       download: "Descarcă PDF",
-      pdf: "PDF",
       downloadFailed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
     },
     accept: {
@@ -1988,6 +1987,8 @@ export default {
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "neconfirmată",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
+    unconfirmedNote:
+      "Neconfirmată: norma vine din documentele publice ale producătorului, iar el n-a verificat-o încă.",
     unconfirmedState: "Neconfirmată",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
@@ -5364,6 +5365,7 @@ export default {
       completedNone: "Toate articolele erau deja la cantitatea din contract.",
       send: "Marchează trimisă",
       thisValue: "Valoarea acestei situații",
+      thisValueUnit: "lei fără TVA",
       downloadPdf: "Descarcă PDF",
       nextDraft:
         "Completează „În perioadă”, descarcă situația și trimite-o beneficiarului, apoi marcheaz-o aici.",

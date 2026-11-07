@@ -34,12 +34,13 @@ const titleClass: Record<StepState, string> = {
   done: "text-ink-2",
   success: "font-medium text-ink",
   failed: "font-medium text-danger",
-  current: "font-medium text-ink",
+  current: "text-ink-2",
   todo: "text-ink-3",
 };
 
-// The lifecycle of a deviz, from draft to settlement, as one quiet line. It
-// shows state; it is not navigation, so the steps are not clickable. At most 7.
+// The lifecycle of a deviz, from draft to settlement, as one quiet line that
+// takes the size of the line it stands in, and its baseline. It shows state; it
+// is not navigation, so the steps are not clickable. At most 7.
 const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
   ({ steps, stateLabels, className, ...props }, ref) => {
     const labels = { ...defaultStateLabels, ...stateLabels };
@@ -47,7 +48,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
       <ol
         ref={ref}
         className={cn(
-          "m-0 flex min-w-0 list-none flex-wrap items-center gap-x-2.5 gap-y-1 p-0",
+          "m-0 inline-flex min-w-0 list-none flex-wrap items-baseline gap-x-2.5 gap-y-1 p-0",
           className,
         )}
         {...props}
@@ -56,13 +57,17 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
           <li
             key={step.id}
             aria-current={step.state === "current" ? "step" : undefined}
-            className="flex min-w-0 items-center gap-1.5"
+            className="flex min-w-0 items-baseline gap-1.5"
           >
             {/* What's still to come is only its name. */}
             {step.state !== "todo" && (
               <span
                 aria-hidden
-                className="grid size-3.5 shrink-0 place-items-center"
+                // Where it's at, the mark a status has in the lists.
+                className={cn(
+                  "grid shrink-0 place-items-center self-center",
+                  step.state === "current" ? "size-[7px]" : "size-3.5",
+                )}
               >
                 {step.state === "done" && (
                   <Check className="size-3.5 text-ink-3" />
@@ -75,23 +80,21 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                 )}
                 {step.state === "current" &&
                   (step.mark ?? (
-                    <span className="size-[7px] rounded-full bg-ink-2" />
+                    <span className="size-[7px] rounded-full bg-active-dot" />
                   ))}
               </span>
             )}
             <span className="flex min-w-0 items-baseline gap-1.5 whitespace-nowrap">
-              <span className={cn("text-meta", titleClass[step.state])}>
+              <span className={titleClass[step.state]}>
                 {step.title}
                 <span className="sr-only">, {labels[step.state]}</span>
               </span>
               {step.meta && (
-                <span className="text-meta tabular-nums text-ink-3">
-                  {step.meta}
-                </span>
+                <span className="tabular-nums text-ink-2">{step.meta}</span>
               )}
             </span>
             {index < steps.length - 1 && (
-              <span aria-hidden className="ml-1 h-px w-3 bg-tick" />
+              <span aria-hidden className="ml-1 h-px w-3 self-center bg-tick" />
             )}
           </li>
         ))}

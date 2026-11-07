@@ -60,6 +60,7 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
       label={t("executedLabel")}
       value={formatPercent(percent, locale)}
       href={progress}
+      row
     >
       <MeterBar
         value={percent}

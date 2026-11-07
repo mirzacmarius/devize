@@ -53,9 +53,9 @@ const config = {
           { lineHeight: "32px", letterSpacing: "-0.016em", fontWeight: "400" },
         ],
         hero: [
-          "40px",
+          "36px",
           {
-            lineHeight: "44px",
+            lineHeight: "40px",
             letterSpacing: "-0.01em",
             fontWeight: "var(--weight-figure)",
           },
@@ -171,6 +171,7 @@ const config = {
           border: "hsl(var(--danger-border))",
         },
         "neutral-dot": "hsl(var(--neutral-dot))",
+        "active-dot": "hsl(var(--active-dot))",
         ai: {
           DEFAULT: "hsl(var(--ai))",
           soft: "hsl(var(--ai-soft))",

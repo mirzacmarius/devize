@@ -34,21 +34,25 @@ export function EstimateStepper({
         current: t("steps.states.current"),
         todo: t("steps.states.todo"),
       }}
+      // Where it's at, then what's still to come: what's behind it needs no saying.
       steps={[
-        {
-          id: "draft",
-          title: t("steps.draft"),
-          // Only where it's at says when; the Deviz's data has the rest.
-          meta: sent ? undefined : formatDay(estimate._creationTime, locale),
-          state: sent ? "done" : "current",
-          // The mark a draft has in the lists.
-          mark: (
-            <span className="size-[7px] rounded-full shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]" />
-          ),
-        },
+        ...(sent
+          ? []
+          : [
+              {
+                id: "draft",
+                title: t("steps.draft"),
+                state: "current" as const,
+                // The mark a draft has in the lists.
+                mark: (
+                  <span className="size-[7px] rounded-full shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]" />
+                ),
+              },
+            ]),
         {
           id: "sent",
           title: t("steps.sent"),
+          // Only where it's at says when; the Deviz's data has the rest.
           meta: sent && lockedAt ? formatDay(lockedAt, locale) : undefined,
           state: sent ? "current" : "todo",
         },

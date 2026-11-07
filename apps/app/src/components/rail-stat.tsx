@@ -15,6 +15,7 @@ export function RailStat({
   value,
   unit,
   href,
+  row = false,
   children,
 }: {
   id?: string;
@@ -22,8 +23,43 @@ export function RailStat({
   value: string;
   unit?: ReactNode;
   href?: string;
+  /** Not what the summary comes down to: a line beside its value, no figure. */
+  row?: boolean;
   children?: ReactNode;
 }) {
+  if (row) {
+    return (
+      <Card id={id} data-stat className="scroll-mt-4">
+        <CardContent className="gap-0">
+          {href ? (
+            <Link
+              href={href}
+              className="group flex items-baseline justify-between gap-3 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <div className="flex min-w-0 items-center gap-1">
+                <h3 className="m-0 text-body font-normal text-ink">{label}</h3>
+                <ChevronRight
+                  aria-hidden
+                  className="size-4 shrink-0 text-ink-3 transition-transform group-hover:translate-x-0.5"
+                />
+              </div>
+              <span className="text-body font-medium tabular-nums text-ink">
+                {value}
+              </span>
+            </Link>
+          ) : (
+            <div className="flex items-baseline justify-between gap-3">
+              <h3 className="m-0 text-body font-normal text-ink">{label}</h3>
+              <span className="text-body font-medium tabular-nums text-ink">
+                {value}
+              </span>
+            </div>
+          )}
+          {children}
+        </CardContent>
+      </Card>
+    );
+  }
   const figure = (
     <p className="m-0 flex items-baseline gap-1.5">
       <span className="text-figure tabular-nums text-ink">

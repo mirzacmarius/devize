@@ -1878,7 +1878,6 @@ export default {
       accept: "Accept the offer",
       decline: "Decline",
       download: "Download PDF",
-      pdf: "PDF",
       downloadFailed: "The PDF couldn't be made. Try again.",
     },
     accept: {
@@ -1990,6 +1989,8 @@ export default {
     costNote: "Direct cost at reference prices; an estimate uses your prices.",
     unconfirmed: "not confirmed",
     unconfirmedHint: "The manufacturer hasn't checked it yet.",
+    unconfirmedNote:
+      "Unconfirmed: the norm comes from the producer's public documents and the producer hasn't checked it yet.",
     unconfirmedState: "Not confirmed",
     noCost: "No price",
     newNorm: "New norm",
@@ -5372,6 +5373,7 @@ export default {
       completedNone: "Every item was already at its contract quantity.",
       send: "Mark as sent",
       thisValue: "This statement's value",
+      thisValueUnit: "lei excl. VAT",
       downloadPdf: "Download PDF",
       nextDraft:
         "Fill in “This period”, download the statement and send it to the beneficiary, then mark it here.",

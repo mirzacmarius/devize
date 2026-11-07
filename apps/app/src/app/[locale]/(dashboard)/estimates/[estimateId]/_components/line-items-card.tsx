@@ -567,7 +567,7 @@ function ItemRows({
 
   return (
     <>
-      <TableRow className="items-row group/row [&>td]:py-[11px]">
+      <TableRow className="items-row group/row [&>td]:py-[11px] [@container(min-width:38rem)]:[&>td]:h-16">
         <TableCell
           className={cn(
             "text-right align-top tabular-nums text-ink-3",

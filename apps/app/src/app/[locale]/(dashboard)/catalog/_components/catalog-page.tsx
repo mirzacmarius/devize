@@ -204,6 +204,9 @@ export function CatalogPage() {
           </div>
         </div>
         <div className="grid min-w-0 gap-4">
+          {!isOwn && rows?.some(unconfirmed) && (
+            <p className="m-0 text-meta text-ink-3">{t("unconfirmedNote")}</p>
+          )}
           {isOwn && !search && own?.length === 0 ? (
             <EmptyState
               icon={<Icons.Catalog />}

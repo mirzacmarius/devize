@@ -166,7 +166,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
               return (
                 <li
                   key={member.userId}
-                  className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+                  className="grid min-h-16 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
                 >
                   <Avatar className="size-9">
                     {member.avatarUrl && (
@@ -307,7 +307,7 @@ function InvitationsCard() {
           {invitations.map((invitation) => (
             <li
               key={invitation._id}
-              className="grid items-center gap-x-4 gap-y-2 rounded-lg bg-sunken p-4 sm:-mx-[var(--card-pad)] sm:grid-cols-[minmax(0,1fr)_auto] sm:px-[var(--card-pad)]"
+              className="grid items-center gap-x-4 gap-y-2 rounded-lg border border-card-border p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
             >
               <div className="grid min-w-0 gap-1">
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-1">

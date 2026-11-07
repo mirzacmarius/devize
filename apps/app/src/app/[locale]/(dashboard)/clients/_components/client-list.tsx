@@ -113,10 +113,10 @@ export function ClientList() {
           <Table stack twoLine>
             <TableHeader>
               <TableRow>
-                <TableHead className="xl:w-[38%]">
+                <TableHead className="xl:w-[34%]">
                   {t("columns.name")}
                 </TableHead>
-                <TableHead className="xl:w-[32%]">
+                <TableHead className="xl:w-[36%]">
                   {t("columns.contact")}
                 </TableHead>
                 <TableHead className="hidden w-20 text-right md:table-cell xl:w-[12%]">

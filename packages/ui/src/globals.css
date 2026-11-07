@@ -54,13 +54,14 @@
   --success-dot: 149.7 47.9% 42.9%; /* #39a26d */
   --warning: 39.1 100% 27.1%; /* #8a5a00 */
   --warning-soft: 37.5 88.9% 92.9%; /* #fdf1dd */
-  --warning-dot: 35.5 79.6% 55.9%; /* #e89f35 */
+  --warning-dot: 38 76.1% 42.7%; /* #c0831a */
   --danger: 2.7 64.4% 40.8%; /* #ab2b25 */
   --danger-soft: 10 75% 95.3%; /* #fcedea */
   --danger-solid: 3 73% 56.5%; /* #e1473f */
   --on-danger-solid: 0 0% 100%; /* #ffffff */
   --danger-border: 8.2 63% 84.1%; /* #f0c4bd */
   --neutral-dot: 70 3.2% 63.1%; /* #a3a49e */
+  --active-dot: 60 3% 54.3%; /* #8e8e87 */
 
   /* AI: everything the assistant produces, nothing else */
   --ai: 224.3 58.6% 43.5%; /* #2e50b0 */
@@ -111,7 +112,7 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.2% 57.5%; /* #96968f: 6.9:1 on the panel */
 
-  --action: 60 11.5% 89.8%; /* #e8e8e2: the one bright thing on the page */
+  --action: 60 7.1% 83.5%; /* #d8d8d2: the one bright thing on the page */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
@@ -129,6 +130,7 @@
   --on-danger-solid: 2.9 53.8% 7.6%; /* #1e0a09 */
   --danger-border: 7.3 28.7% 28%; /* #5c3833 */
   --neutral-dot: 60 2% 49%; /* #7f7f7a */
+  --active-dot: 60 3.2% 57.5%; /* #96968f */
 
   --ai: 219.3 84.9% 79.2%; /* #9dbcf7 */
   --ai-soft: 220 34.7% 18.6%; /* #1f2a40 */
@@ -416,7 +418,7 @@
   @media (min-width: 1280px) {
     .app-main .settings-sections > [data-slot="card"]:not([data-framed]) {
       display: grid;
-      grid-template-columns: 240px minmax(0, 1fr);
+      grid-template-columns: 240px minmax(0, 640px);
       column-gap: 48px;
       align-items: start;
       padding-bottom: 0;
@@ -439,6 +441,8 @@
       > [data-slot="card-header"] {
       grid-column: 1;
       grid-row: 1 / span 2;
+      /* A section's title on the baseline of what stands first beside it. */
+      margin-top: -2px;
       display: grid;
       justify-items: stretch;
       align-content: start;
@@ -489,8 +493,7 @@
     }
     /* The summary's frame is the first label's rule. */
     .rail-list > [data-rail-label]:first-child {
-      margin-top: 0;
-      padding-top: 4px;
+      margin-block: 0;
       border-top-width: 0;
     }
   }

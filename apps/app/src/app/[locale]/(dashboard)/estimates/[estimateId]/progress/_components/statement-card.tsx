@@ -260,15 +260,16 @@ export function StatementCard({
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
-          <p className="m-0 flex items-baseline gap-2 text-meta text-ink-3">
-            {t("thisValue")}
-            <span className="text-figure tabular-nums text-ink">
+        {/* What the statement comes to, under its name, as a Deviz's total is. */}
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
+            <span className="sr-only">{t("thisValue")}</span>
+            <span className="text-stat tabular-nums text-ink">
               <Amount value={formatMoney(statement.period.subtotal, locale)} />
             </span>
-            lei
+            {t("thisValueUnit")}
           </p>
+          <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
         </div>
         {/* Nothing leaves from here: the firm sends it and notes what happened.
             Said once, on the first statement. */}
@@ -382,8 +383,11 @@ function RowsTable({
     <Table bleed stack className="xl:min-w-[50rem]">
       <TableHeader>
         <TableRow>
-          {/* Over the titles, past their positions. */}
-          <TableHead className="first:pl-7">{t("article")}</TableHead>
+          {/* Over the positions and the titles. */}
+          <TableHead>
+            <span className="inline-block w-4 text-right">#</span>
+            <span className="ml-3">{t("article")}</span>
+          </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           <TableHead className="w-[110px] rounded-t-lg bg-sunken/60 pr-6 text-right font-medium text-ink">
@@ -432,7 +436,7 @@ function RowsTable({
                   </TableCell>
                 </TableGroupRow>
               )}
-              <TableRow className="group/row md:[&>td]:py-[11px]">
+              <TableRow className="group/row md:[&>td]:h-16 md:[&>td]:py-[11px]">
                 <TableCell data-stack="wide" className="relative align-top">
                   <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-14 xl:min-w-64">
                     <span className="w-4 text-right tabular-nums text-ink-3">
@@ -527,21 +531,16 @@ function RowsTable({
                       }
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
-                        "-my-1 h-7 w-20",
-                        // What was typed keeps the field's lower edge; the whole
-                        // field comes with its row, in a column that already says
-                        // what it's for.
+                        "-my-1.5 w-20",
+                        // What's to be filled in looks like it, on every row.
                         fillable &&
-                          row.quantity !== 0 &&
-                          "rounded-none border-b-edge",
-                        fillable &&
-                          "focus:rounded-sm group-hover/row:rounded-sm group-hover/row:border-input group-hover/row:border-b-edge group-hover/row:bg-field [@media(hover:none)]:rounded-sm [@media(hover:none)]:border-input [@media(hover:none)]:border-b-edge",
+                          "border-input border-b-edge bg-field hover:border-edge",
                         row.quantity === 0
                           ? "text-ink-3"
                           : "font-medium text-ink",
-                        // A thumb needs a field that looks like one, and room.
+                        // A thumb needs room.
                         fillable
-                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:rounded-sm max-md:border-input max-md:border-b-edge max-md:bg-field"
+                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24"
                           : "max-md:my-0 max-md:h-auto max-md:w-auto",
                       )}
                     />

@@ -6,7 +6,7 @@ export interface PageHeaderProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "title"> {
   // The identifier (DVZ-0142) or the name, never a sentence.
   title: React.ReactNode;
-  // A StatusPill, where the line under the title starts.
+  // A StatusPill or the steps, where the line under the title starts.
   status?: React.ReactNode;
   // The line under the title: 3–4 facts joined by " · " on a detail page
   // ("Renovare baie · Maria Ionescu · 39.916,16 lei cu TVA"), one sentence
@@ -60,11 +60,17 @@ function PageHeader({
             {title}
           </h1>
           {(status || description) && (
-            <p className="m-0 max-w-[72ch] text-body tabular-nums text-ink-2 [text-wrap:pretty]">
+            // Facts after a status are a line, not a sentence: it has no measure.
+            <div
+              className={cn(
+                "m-0 text-body tabular-nums text-ink-2 [text-wrap:pretty] [&_[data-slot=status-pill]]:text-body",
+                !status && "max-w-[72ch]",
+              )}
+            >
               {status}
               {status && description && " · "}
               {description}
-            </p>
+            </div>
           )}
         </div>
         {actions && (

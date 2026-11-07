@@ -177,60 +177,59 @@ export function EstimatePage() {
         total={total}
       />
       <div className="grid min-w-0 gap-x-4 gap-y-3 sm:gap-y-5 md:grid-cols-[minmax(0,1fr)_auto]">
-        {/* Who it's for and where it stands, one under the other; the total on its own. */}
-        <div className="grid min-w-0 gap-2.5">
-          <PageHeader
-            breadcrumb={
-              <Breadcrumb aria-label={t("breadcrumb")}>
-                <BreadcrumbLink asChild>
-                  <Link href="/estimates">{t("breadcrumbList")}</Link>
-                </BreadcrumbLink>
-                <BreadcrumbSeparator />
-                <BreadcrumbPage>{code}</BreadcrumbPage>
-              </Breadcrumb>
-            }
-            title={estimate.title}
-            // Until it's answered the stepper says where it stands.
-            status={
-              answered ? (
-                <>
-                  {statusPill}
-                  <span className="ml-1.5 text-meta text-ink-3 max-sm:hidden">
-                    {formatDay(estimate.updatedAt, locale)}
-                  </span>
-                </>
-              ) : status === "archived" ? (
-                statusPill
-              ) : undefined
-            }
-            description={
+        <PageHeader
+          breadcrumb={
+            <Breadcrumb aria-label={t("breadcrumb")}>
+              <BreadcrumbLink asChild>
+                <Link href="/estimates">{t("breadcrumbList")}</Link>
+              </BreadcrumbLink>
+              <BreadcrumbSeparator />
+              <BreadcrumbPage>{code}</BreadcrumbPage>
+            </Breadcrumb>
+          }
+          title={estimate.title}
+          // The line opens with where it stands, whatever that is: the way
+          // there until it's answered, the answer and its day after.
+          status={
+            status === "draft" || status === "sent" ? (
               <>
-                {!answered && status !== "archived" && (
-                  <span className="sm:hidden">
-                    {statusPill}
-                    {" · "}
-                  </span>
-                )}
-                {estimate.client?.name ?? t("noClient")}
-                {/* A phone keeps the line to one row; the Deviz's data has the date. */}
+                {/* A phone gets to the work sooner. */}
+                <span className="sm:hidden">{statusPill}</span>
+                <EstimateStepper
+                  estimate={estimate}
+                  className="max-sm:hidden"
+                />
+              </>
+            ) : answered ? (
+              <>
+                {statusPill}
                 <span className="max-sm:hidden">
-                  {" · "}
+                  {" "}
+                  {formatDay(estimate.updatedAt, locale)}
+                </span>
+              </>
+            ) : (
+              statusPill
+            )
+          }
+          description={
+            <>
+              {estimate.client?.name ?? t("noClient")}
+              {/* A phone keeps the line to one row; the Deviz's data has the date. */}
+              <span className="max-sm:hidden">
+                {" · "}
+                <span className="whitespace-nowrap">
                   {t("pricesOf", {
                     date: formatCalendarDate(estimate.priceDate, locale),
                   })}
                 </span>
-              </>
-            }
-          />
-          {/* The status pill says where it stands; a phone gets to the work sooner. */}
-          <EstimateStepper
-            estimate={estimate}
-            className="max-sm:hidden min-[1400px]:hidden"
-          />
-        </div>
+              </span>
+            </>
+          }
+        />
         {/* Beside the title; on a phone, in a bar at the screen's foot, with the
             total once the one above has scrolled away. */}
-        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7 min-[1400px]:relative">
+        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
           {pastHero && (
             <div className="min-w-0 flex-1 max-sm:!h-auto sm:hidden">
               <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
@@ -249,11 +248,6 @@ export function EstimatePage() {
             }
             open={setPanel}
             fill={!pastHero}
-          />
-          {/* Where there's room it stands under the actions, on the client's line. */}
-          <EstimateStepper
-            estimate={estimate}
-            className="absolute right-0 top-full mt-0.5 hidden w-max flex-nowrap min-[1400px]:flex"
           />
         </div>
       </div>

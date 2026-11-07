@@ -18,7 +18,7 @@ const statusPillVariants = cva(
         draft:
           "text-ink-2 before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
         // Out and moving, waiting on someone: Trimis clientului, Emisă
-        active: "text-ink-2 before:bg-ink-2",
+        active: "text-ink-2 before:bg-active-dot",
         // Finished or set aside, nothing to do: Decontat, Expirat
         neutral: "text-ink-2 before:bg-neutral-dot",
         // A good result just reached: Acceptat de client, Sincronizat
@@ -50,6 +50,7 @@ const StatusPill = React.forwardRef<HTMLSpanElement, StatusPillProps>(
   ({ className, tone, dot, ...props }, ref) => (
     <span
       ref={ref}
+      data-slot="status-pill"
       className={cn(statusPillVariants({ tone, dot }), className)}
       {...props}
     />

@@ -101,10 +101,10 @@ export function ProducersPage() {
           <Table stack>
             <TableHeader>
               <TableRow>
-                <TableHead className="xl:w-[32%]">
+                <TableHead className="xl:w-[42%]">
                   {t("columns.name")}
                 </TableHead>
-                <TableHead className="hidden xl:table-cell xl:w-[40%]">
+                <TableHead className="hidden xl:table-cell xl:w-[30%]">
                   {t("columns.categories")}
                 </TableHead>
                 <TableHead className="hidden w-24 text-right md:table-cell xl:w-[14%]">

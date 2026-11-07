@@ -31,7 +31,7 @@ import {
 } from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { Plus } from "lucide-react";
+import { Lock, Plus } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Nil } from "@/components/nil";
@@ -77,6 +77,7 @@ export function RoomsCard({
   onEdit: (room: Room) => void;
 }) {
   const t = useScopedI18n("takeoff.rooms");
+  const tTakeoff = useScopedI18n("takeoff");
   const locale = useCurrentLocale();
   const sum = (pick: (room: Room) => number) =>
     Math.round(rooms.reduce((total, room) => total + pick(room), 0) * 100) /
@@ -104,6 +105,12 @@ export function RoomsCard({
             <Plus aria-hidden />
             {t("add")}
           </Button>
+        )}
+        {locked && (
+          <span className="flex items-center gap-1.5 self-start pt-[3px] text-meta text-ink-3">
+            <Lock className="size-3.5 shrink-0" aria-hidden />
+            {tTakeoff("locked")}
+          </span>
         )}
       </CardHeader>
       <CardContent>

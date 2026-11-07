@@ -299,18 +299,24 @@ function DetailsForm({
     <Card>
       <form onSubmit={submit} noValidate>
         <CardHeader className="grid justify-stretch gap-1">
-          <div className="flex items-baseline justify-between gap-4">
-            <CardTitle>{t("detailsTitle")}</CardTitle>
-            {canEdit && !changed && !saving && (
-              <span aria-hidden className="text-meta text-ink-3">
-                {t("allSaved")}
-              </span>
-            )}
-          </div>
+          <CardTitle>{t("detailsTitle")}</CardTitle>
           <CardDescription>{t("detailsDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <fieldset disabled={!canEdit} className="m-0 grid gap-5 border-0 p-0">
+          <fieldset
+            disabled={!canEdit}
+            className="relative m-0 grid gap-5 border-0 p-0"
+          >
+            {/* Over the fields it's about, on the first one's line. */}
+            {canEdit && !changed && !saving && (
+              <span
+                aria-hidden
+                className="absolute right-0 top-px flex items-center gap-1 text-meta text-ink-3"
+              >
+                <Icons.Check className="size-3.5" />
+                {t("allSaved")}
+              </span>
+            )}
             <Field
               label={tFirm("name")}
               htmlFor="firm-name"

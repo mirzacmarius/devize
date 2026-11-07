@@ -249,7 +249,7 @@ export function AnswerCard({
     <Card data-framed>
       <CardContent className="gap-5 pt-5">
         <TotalBlock offer={offer} updating={updating} />
-        <div className="grid gap-1">
+        <div className="grid gap-2">
           <Button
             type="button"
             size="lg"
@@ -259,16 +259,17 @@ export function AnswerCard({
             <Icons.Check aria-hidden />
             {t("decide.accept")}
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            disabled={offer.preview}
+            onClick={onDecline}
+          >
+            {t("decide.decline")}
+          </Button>
           {/* A step back from the answer the page is asking for. */}
-          <div className="-mx-2 flex items-center justify-between [&>button]:px-2 [&>button]:text-ink-2">
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={offer.preview}
-              onClick={onDecline}
-            >
-              {t("decide.decline")}
-            </Button>
+          <div className="-mx-2 flex items-center justify-center [&>button]:px-2 [&>button]:text-ink-2">
             {download("ghost")}
           </div>
         </div>
@@ -349,8 +350,8 @@ export function MobileAnswerBar({
           <>
             <Button
               type="button"
-              variant="ghost"
-              className="h-11 shrink-0 px-3"
+              variant="outline"
+              className="h-11 shrink-0 px-4"
               disabled={offer.preview}
               onClick={onDecline}
             >
@@ -358,8 +359,9 @@ export function MobileAnswerBar({
             </Button>
             <Button
               type="button"
-              variant="outline"
-              className="h-11 shrink-0 px-3"
+              variant="ghost"
+              size="icon"
+              className="-mr-2 size-11 shrink-0"
               aria-label={t("decide.download")}
               disabled={downloading}
               onClick={onDownload}
@@ -369,7 +371,6 @@ export function MobileAnswerBar({
               ) : (
                 <Download aria-hidden />
               )}
-              {t("decide.pdf")}
             </Button>
           </>
         )}

@@ -14,7 +14,7 @@ const buttonVariants = cva(
           "bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.12)] hover:bg-primary/90 disabled:bg-muted disabled:text-ink-3 disabled:shadow-none",
         // Actions next to the primary one.
         outline:
-          "border border-control bg-card text-ink hover:bg-tile disabled:border-transparent disabled:bg-muted disabled:text-ink-3",
+          "border border-control bg-card text-ink hover:bg-tile disabled:border-transparent disabled:bg-muted disabled:text-ink-3 dark:bg-sunken dark:hover:bg-tile",
         // Tonal: filled secondary action inside a card ("Adaugă articol").
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/70 disabled:bg-muted disabled:text-ink-3",

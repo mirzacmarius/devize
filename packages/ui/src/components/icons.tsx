@@ -19,7 +19,7 @@ import {
   List,
   Loader2,
   LogOut,
-  PanelLeft,
+  Menu,
   ReceiptText,
   RefreshCw,
   Ruler,
@@ -71,6 +71,6 @@ export const Icons = {
   Rates: Coins,
   Settings,
   Admin: ShieldCheck,
-  Menu: PanelLeft,
+  Menu,
   More: Ellipsis,
 };

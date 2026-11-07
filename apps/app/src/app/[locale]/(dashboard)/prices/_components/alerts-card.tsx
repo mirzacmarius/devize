@@ -12,6 +12,7 @@ import {
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Lei } from "@/components/amount";
@@ -93,7 +94,7 @@ export function AlertsCard({ alerts }: { alerts: AlertList | undefined }) {
         ) : (
           on &&
           (alerts.alerts.length === 0 ? (
-            <div className="grid gap-1 rounded-md bg-tile px-4 py-3">
+            <div className="grid gap-1 rounded-lg border border-card-border p-4 sm:p-5">
               <p className="m-0 text-body font-medium text-ink">
                 {t("noneTitle")}
               </p>
@@ -131,23 +132,37 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
   return (
     <section
       aria-label={`${code} ${estimate.title}`}
-      className="grid gap-5 rounded-lg bg-sunken p-4 sm:-mx-[var(--card-pad)] sm:px-[var(--card-pad)] sm:py-5"
+      className="grid gap-5 rounded-lg border border-card-border p-4 sm:p-5"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="grid min-w-0 flex-1 basis-80 gap-0.5">
-          <h4 className="m-0 text-body-lg font-medium text-ink">
-            {estimate.title}
-          </h4>
-          <p className="m-0 flex flex-wrap items-center gap-x-2 text-meta tabular-nums text-ink-3">
-            {[
-              code,
-              estimate.clientName,
-              t("checked", { date: formatDay(alert.checkedAt, locale) }),
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-            <EstimateStatusPill status={estimate.status} />
-          </p>
+        <div className="flex min-w-0 flex-1 basis-80 items-start gap-3">
+          {/* The mark this alert has on Acasă. */}
+          <span
+            aria-hidden
+            className={cn(
+              "mt-0.5 grid size-7 shrink-0 place-items-center rounded-md [&_svg]:size-4",
+              profitChange < 0
+                ? "bg-warning-soft text-warning"
+                : "bg-success-soft text-success",
+            )}
+          >
+            {profitChange < 0 ? <TrendingDown /> : <TrendingUp />}
+          </span>
+          <div className="grid min-w-0 gap-0.5">
+            <h4 className="m-0 text-body-lg font-medium text-ink">
+              {estimate.title}
+            </h4>
+            <p className="m-0 flex flex-wrap items-center gap-x-2 text-meta tabular-nums text-ink-3">
+              {[
+                code,
+                estimate.clientName,
+                t("checked", { date: formatDay(alert.checkedAt, locale) }),
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+              <EstimateStatusPill status={estimate.status} />
+            </p>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button
