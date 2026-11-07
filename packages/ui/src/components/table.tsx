@@ -94,8 +94,8 @@ TableRow.displayName = "TableRow";
 
 // A group's heading row. One with a sum is the sunken band: in a `bleed` table
 // its first and last cells take `band-start` and `band-end`, and the band runs
-// to the card's edges. One with nothing to sum is `ruled`: a label on a rule,
-// from the first column, like the labels over Home's lists.
+// to the card's edges. One with nothing to sum is `ruled`: a label on a hairline
+// with air above it, from the first column, like the labels over Home's lists.
 const TableGroupRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement> & { ruled?: boolean }
@@ -106,7 +106,7 @@ const TableGroupRow = React.forwardRef<
     data-band={ruled ? undefined : true}
     className={cn(
       ruled
-        ? "border-b border-b-rule [&>td]:font-medium max-md:pb-1.5 max-md:pt-4 md:[&>td]:h-10 md:[&>td]:pb-1.5 md:[&>td]:pt-3 md:[&>td]:align-bottom"
+        ? "border-b [&>td]:font-medium max-md:pb-1.5 max-md:pt-6 max-md:first:pt-3 md:[&>td]:h-10 md:[&>td]:pb-1.5 md:[&>td]:pt-6 md:first:[&>td]:pt-3 md:[&>td]:align-bottom"
         : "bg-sunken [&>td]:h-9 [&>td]:py-1",
       className,
     )}

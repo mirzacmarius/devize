@@ -17,8 +17,8 @@ export default async function Layout({
   return (
     <>
       <PageHeader title={t("title")} />
-      {/* One right edge: the tabs and the rules end where the fields do. */}
-      <div className="grid min-w-0 max-w-[640px] gap-6 xl:max-w-[928px]">
+      {/* The tabs and the rules run to the page's margin, as a list's do. */}
+      <div className="grid min-w-0 gap-6">
         <SettingsTabs />
         <div className="settings-sections grid min-w-0 gap-6">{children}</div>
       </div>

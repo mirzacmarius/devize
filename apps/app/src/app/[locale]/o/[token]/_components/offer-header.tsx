@@ -63,7 +63,7 @@ export function ContactLinks({
           size="sm"
           className={
             compact
-              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0"
+              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0 max-sm:[&_svg]:size-[22px]"
               : undefined
           }
           asChild
@@ -82,7 +82,7 @@ export function ContactLinks({
           size="sm"
           className={
             compact
-              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0"
+              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0 max-sm:[&_svg]:size-[22px]"
               : undefined
           }
           asChild

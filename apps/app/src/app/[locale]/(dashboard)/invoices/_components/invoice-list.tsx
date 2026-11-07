@@ -14,11 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
 import { Figure, FigureStrip } from "@/components/figure-strip";
 import { useFirm } from "@/components/firm-provider";
+import { FootAction } from "@/components/foot-action";
 import { InvoiceArchiveButton } from "@/components/invoice-archive";
 import {
   EfacturaPill,
@@ -91,11 +93,13 @@ export function InvoiceList() {
                 className="max-sm:[&>svg]:hidden"
               />
               {anaf?.firstLate && (
-                <Button asChild>
-                  <Link href={`/invoices/${anaf.firstLate}`}>
-                    {t("lateAction")}
-                  </Link>
-                </Button>
+                <FootAction>
+                  <Button asChild>
+                    <Link href={`/invoices/${anaf.firstLate}`}>
+                      {t("lateAction")}
+                    </Link>
+                  </Button>
+                </FootAction>
               )}
             </>
           )
@@ -114,7 +118,7 @@ export function InvoiceList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <FigureStrip className="mb-3">
+          <FigureStrip className="mb-3 xl:grid-cols-[minmax(0,1fr)]">
             <Figure
               lead
               label={t("receivable.total")}
@@ -226,15 +230,17 @@ export function InvoiceList() {
                         href={`/invoices/${row._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="text-body font-medium tabular-nums text-ink group-hover:underline max-md:text-body-lg">
-                          {row.code ?? t(`kind.${row.kind}`)}
+                        {/* A draft gets its number when it's issued. */}
+                        <span
+                          className={cn(
+                            "text-body tabular-nums group-hover:underline max-md:text-body-lg",
+                            row.code ? "font-medium text-ink" : "text-ink-3",
+                          )}
+                        >
+                          {row.code ?? t("noNumber")}
                         </span>
                         <span className="truncate text-meta tabular-nums text-ink-3">
-                          {[
-                            row.code ? t(`kind.${row.kind}`) : null,
-                            row.estimate?.code ??
-                              (row.code ? null : t("draftCode")),
-                          ]
+                          {[t(`kind.${row.kind}`), row.estimate?.code]
                             .filter(Boolean)
                             .join(" · ")}
                           <span className="md:hidden">
@@ -287,7 +293,7 @@ export function InvoiceList() {
                       {formatCalendarDay(row.dueDate, locale)}
                     </TableCell>
                     <TableCell className="hidden pl-8 xl:table-cell">
-                      {live && (
+                      {live ? (
                         <EfacturaPill
                           status={row.efactura.status}
                           late={row.efactura.deadline < today}
@@ -296,6 +302,8 @@ export function InvoiceList() {
                             locale,
                           )}
                         />
+                      ) : (
+                        <Nil />
                       )}
                     </TableCell>
                   </TableRow>

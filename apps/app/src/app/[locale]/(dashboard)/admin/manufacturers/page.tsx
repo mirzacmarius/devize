@@ -19,6 +19,7 @@ import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { ListToolbar } from "@/components/list-toolbar";
+import { Nil } from "@/components/nil";
 import { useScopedI18n } from "@/locales/client";
 import {
   Confidence,
@@ -246,33 +247,26 @@ export default function ManufacturersPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        {row.confidence && (
+                        {row.confidence ? (
                           <Confidence>
                             {tAdmin(`confidenceLevel.${row.confidence}`)}
                           </Confidence>
+                        ) : (
+                          <Nil />
                         )}
                       </TableCell>
                       <TableCell>
-                        {row.message && (
-                          <Pill
-                            tone={
-                              row.message.status === "draft"
-                                ? row.message.blocked
-                                  ? "danger"
-                                  : "draft"
-                                : row.message.status === "rejected"
-                                  ? "neutral"
-                                  : "active"
-                            }
-                            className={
-                              row.message.status === "draft" &&
-                              row.message.blocked
-                                ? undefined
-                                : "text-ink-3"
-                            }
-                          >
+                        {!row.message ? (
+                          <Nil />
+                        ) : row.message.status === "draft" &&
+                          row.message.blocked ? (
+                          <Pill tone="danger">
                             {tAdmin(`status.message.${row.message.status}`)}
                           </Pill>
+                        ) : (
+                          <span className="text-meta text-ink-3">
+                            {tAdmin(`status.message.${row.message.status}`)}
+                          </span>
                         )}
                       </TableCell>
                     </TableRow>

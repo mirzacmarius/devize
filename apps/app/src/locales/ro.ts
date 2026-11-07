@@ -505,6 +505,7 @@ export default {
       reopened: "Devizul e din nou ciornă și se poate modifica.",
       archivedDone: "Devizul e arhivat.",
       revisionCreated: "Revizia nouă e gata de modificat.",
+      createRevision: "Creează o revizie",
       copyCreated: "Copia e gata.",
       deleted: "{code} a fost șters.",
       pricesRefreshed: "Articole cu prețuri noi: {count}.",
@@ -532,7 +533,7 @@ export default {
       addCustom: "Articol propriu",
       addSection: "Capitol sau obiect",
       addMore: "Alte feluri de a adăuga",
-      locked: "Blocat · pentru schimbări, creează o revizie",
+      locked: "Blocat",
       emptyTitle: "Niciun articol încă",
       emptyDescription:
         "Caută norme în catalog după cod sau după lucrare. Prețurile vin din tarifele firmei și din magazine.",
@@ -617,6 +618,7 @@ export default {
     },
     checks: {
       title: "Verificări",
+      beforeOffer: "Înainte de ofertă",
       score: "{passed} din {total} trecute",
       left: "{left} din {total} rămase",
       leftOne: "1 din {total} rămasă",
@@ -635,13 +637,14 @@ export default {
         title: "Are articole",
         passed: "Articole în deviz: {count}",
         failedTitle: "Niciun articol",
-        failed: "Adaugă articole din catalog sau articole proprii.",
+        failed: "Din catalog sau articole proprii",
         fix: "Adaugă din catalog",
+        fixShort: "Adaugă",
       },
       omissions: {
         title: "Fără lucrări uitate",
         noneTitle: "Omisiuni neverificate",
-        none: "Devize AI caută lucrările care lipsesc din deviz.",
+        none: "Lucrări care lipsesc din deviz",
         workingTitle: "Se caută omisiuni",
         working: "Devize AI citește devizul…",
         failedTitle: "Căutarea omisiunilor nu a mers",
@@ -655,8 +658,10 @@ export default {
         applied: "Lucrări adăugate din propunerile Devize AI: {count}",
         reviewed: "Ai văzut propunerile Devize AI.",
         start: "Caută omisiuni",
+        startShort: "Caută",
         open: "Vezi propunerile",
         view: "Vezi verificarea",
+        viewShort: "Vezi",
       },
       prices: {
         title: "Toate resursele au preț",
@@ -669,52 +674,58 @@ export default {
         title: "Prețuri la zi",
         passed: "Prețurile din deviz sunt cele de azi.",
         warningTitle: "Prețuri schimbate",
-        warning:
+        warning: "{difference} lei la total",
+        warningLong:
           "Resurse cu alt preț azi: {count}. Totalul cu TVA s-ar schimba cu {difference} lei.",
         fix: "Actualizează prețurile",
+        fixShort: "Actualizează",
       },
       norms: {
         title: "Norme la zi",
         passed: "Articolele folosesc ultima versiune a normelor.",
         warningTitle: "Norme cu versiune nouă",
-        warning: "Articole cu o normă mai nouă în catalog: {count}",
+        warning: "Articole cu normă mai nouă: {count}",
         fix: "Treci la normele noi",
+        fixShort: "Actualizează",
         done: "Articole trecute la norma nouă: {count}",
       },
       ai: {
         title: "Articole AI confirmate",
         passed: "Niciun articol propus de AI nu așteaptă confirmarea.",
         warningTitle: "Articole AI de confirmat",
-        warning:
-          "Propuse de AI și neconfirmate: {count}. Le confirmi din meniul fiecărui articol.",
+        warning: "De confirmat din meniul articolului: {count}",
       },
       labor: {
         title: "Manoperă peste minimul legal",
         passed:
           "Fiecare oră de manoperă e cel puțin {floor} lei, minimul legal în construcții.",
         warningTitle: "Manoperă sub minimul legal",
-        warning:
-          "Sub {floor} lei pe oră, cât înseamnă salariul minim în construcții de {monthly} lei brut pe lună, înainte de CAM: {names}.",
-        warningMore:
-          "Sub {floor} lei pe oră, cât înseamnă salariul minim în construcții de {monthly} lei brut pe lună, înainte de CAM: {names} și încă {count}.",
+        warning: "Sub {floor} lei pe oră: {names}",
+        warningMore: "Sub {floor} lei pe oră: {names} și încă {count}",
+        explanation:
+          "{floor} lei pe oră înseamnă salariul minim în construcții de {monthly} lei brut pe lună, înainte de CAM.",
         fix: "Vezi tarifele",
+        fixShort: "Tarife",
       },
       client: {
         title: "Client ales",
         warningTitle: "Fără client",
-        warning: "Alege clientul înainte să trimiți devizul.",
+        warning: "Înainte să trimiți devizul",
         fix: "Alege clientul",
+        fixShort: "Alege",
       },
       vat: {
         title: "TVA corect",
         passedPayer: "{vat} pe total; firma e plătitoare de TVA.",
         passedNotPayer: "Fără TVA; firma nu e plătitoare.",
         warningTitle: "TVA 0%",
-        warning:
+        warning: "0% doar la scutiri sau taxare inversă",
+        warningLong:
           "Firma e plătitoare de TVA, iar lucrările de construcții din țară se facturează cu TVA. 0% e corect doar la operațiuni scutite sau cu taxare inversă, cum sunt livrările intracomunitare.",
         failedTitle: "TVA în plus",
         failed: "Firma nu e plătitoare de TVA, dar devizul adaugă {vat}.",
         fix: "Modifică cotele",
+        fixShort: "Modifică",
       },
     },
     recap: {
@@ -1796,7 +1807,9 @@ export default {
     messageFrom: "Mesaj de la {firm}",
     total: "Total cu TVA",
     totalNoVat: "Total",
-    deposit: "Avans la acceptare: {percent}, adică {amount} lei",
+    depositLabel: "Avans la acceptare, {percent}",
+    depositInCard: "Avans, {percent}",
+    validLabel: "Valabilă până pe",
     withVat: "cu TVA",
     depositShort: "avans {amount} lei",
     payment: {
@@ -1976,12 +1989,16 @@ export default {
     costNote:
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "neconfirmată",
-    unconfirmedBand: "norme neconfirmate",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
     unconfirmedNote:
       "Neconfirmată: norma vine din documentele publice ale producătorului, iar el n-a verificat-o încă.",
     unconfirmedState: "Neconfirmată",
-    producerBand: "producător",
+    parts: {
+      producers: "Norme de la producători",
+      producersNote: "neconfirmate încă: vin din documentele lor publice",
+      base: "Norme de bază",
+      baseNote: "pe categorii de lucrări",
+    },
     noCost: "Fără preț",
     newNorm: "Normă nouă",
     views: {
@@ -1994,7 +2011,8 @@ export default {
       code: "Cod",
       norm: "Normă",
       source: "Sursă",
-      cost: "Cost ref.",
+      unit: "U.M.",
+      cost: "Cost ref., lei",
       status: "Stare",
       updated: "Modificată",
     },
@@ -2502,7 +2520,7 @@ export default {
       emailStatus: {
         sending: "Se trimite emailul",
         sent: "Email trimis",
-        not_sent: "Email netrimis",
+        not_sent: "Email netrimis · trimite tu linkul",
       },
       copyLink: "Copiază linkul",
       linkCopied: "Linkul invitației a fost copiat.",
@@ -3240,12 +3258,6 @@ export default {
     claimed: "Revendicat",
     unclaimed: "Nerevendicat",
     moreNorms: "{count}+",
-    columns: {
-      name: "Producător",
-      categories: "Categorii",
-      edition: "Ediție",
-      norms: "Norme",
-    },
     searchPlaceholder: "Caută un producător",
     noResults: "Niciun producător nu se potrivește cu „{text}”.",
     breadcrumb: "Unde ești",
@@ -4235,6 +4247,7 @@ export default {
       efactura: "e-Factura",
     },
     draftCode: "Ciornă",
+    noNumber: "Fără număr",
     overdue: "Restantă",
     owedPart: "de încasat {owed}",
     lateAction: "Transmite la ANAF",
@@ -4772,8 +4785,7 @@ export default {
       title: "De cumpărat",
       packages: "Ambalaje întregi",
       bought: "Cumpărăturile, fără TVA",
-      leftover: "Din care resturi",
-      leftoverShare: "{percent} din cumpărături",
+      leftover: "Din care resturi, {percent}",
       inEstimate: "Materialele din deviz",
     },
     table: {
@@ -4869,7 +4881,7 @@ export default {
   },
   takeoff: {
     title: "Antemăsurătoare",
-    locked: "Blocată · pentru schimbări, creează o revizie",
+    locked: "Blocată",
     download: { pdf: "Anexa în PDF", xlsx: "Anexa în Excel" },
     card: {
       title: "Antemăsurătoare",
@@ -4888,7 +4900,6 @@ export default {
       measured: "Articole măsurate",
       ofItems: "din {items}",
       unmeasured: "{left} de măsurat",
-      unmeasuredLocked: "{left} nemăsurate",
       differs: "Cu altă cantitate în deviz",
     },
     rooms: {
@@ -5315,7 +5326,7 @@ export default {
       executed: "{percent} executat",
       contract: "Valoarea contractului",
       executedValue: "Executat",
-      approved: "Confirmat de beneficiar",
+      approved: "Confirmat",
       noApproved: "Nicio situație confirmată încă",
       remaining: "Rest de executat",
       withheld: "Garanție reținută din situații",
@@ -5611,7 +5622,7 @@ export default {
       title: "Execuție",
       executed: "{percent} executat",
       executedLabel: "Executat",
-      approved: "Confirmat, fără TVA",
+      approved: "Confirmat",
       noStatements: "Nicio situație de lucrări încă.",
       outstanding: "Garanție de recuperat",
     },

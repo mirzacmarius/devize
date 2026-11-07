@@ -29,7 +29,7 @@ import {
 } from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { ChevronDown, ChevronRight, Lock, Plus } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { Fragment, type ReactNode, useState } from "react";
 import { InlineNumber } from "@/components/inline-number";
 import { useNormSource } from "@/components/norm-source";
@@ -42,6 +42,7 @@ import {
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { groupLines, type NumberedItem, type SectionGroup } from "./groups";
+import { LockedNote } from "./locked-note";
 import { ResourceTable } from "./resource-table";
 import { orderedSections } from "./section-select";
 import type { Estimate, LineItem, OpenPanel, Section, Updates } from "./types";
@@ -253,10 +254,11 @@ export function LineItemsCard({
           </div>
         )}
         {!editable && (
-          <p className="m-0 flex items-center gap-1.5 text-meta text-ink-2 max-sm:hidden">
-            <Lock className="size-3.5 shrink-0" aria-hidden />
-            {t("items.locked")}
-          </p>
+          <LockedNote
+            estimateId={estimate._id}
+            label={t("items.locked")}
+            className="max-sm:hidden"
+          />
         )}
       </CardHeader>
       <CardContent className="[container-type:inline-size]">
@@ -615,7 +617,12 @@ function ItemRows({
                 expanded && "rotate-90 opacity-100",
               )}
             />
-            <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
+            <span
+              className={cn(
+                "w-4 text-right tabular-nums text-ink-3",
+                NARROW_ONLY,
+              )}
+            >
               {index}
             </span>
             <span className="text-body text-ink [text-wrap:pretty] group-hover:underline">

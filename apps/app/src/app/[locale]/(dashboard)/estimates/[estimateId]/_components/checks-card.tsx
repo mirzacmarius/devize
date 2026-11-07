@@ -133,7 +133,8 @@ export function ChecksCard({
   return (
     <Card id="checks" className="scroll-mt-4">
       <CardHeader>
-        <CardTitle>{t("checks.title")}</CardTitle>
+        {/* What they're for, while there's still an offer to make. */}
+        <CardTitle>{t("checks.beforeOffer")}</CardTitle>
         <span className="text-meta tabular-nums text-ink-2">{lead}</span>
       </CardHeader>
       <CardContent className="gap-3">{body}</CardContent>
@@ -155,17 +156,20 @@ function CheckRow({
   open: OpenPanel;
 }) {
   const t = useScopedI18n("estimate");
-  const { title, detail } = useCheckText()(check);
+  const { title, detail, explanation } = useCheckText()(check);
   const { icon: Icon, className } = stateIcon[check.state];
   return (
-    <li className="grid grid-cols-[16px_minmax(0,1fr)] items-start gap-2.5">
+    <li
+      title={explanation}
+      className="grid grid-cols-[16px_minmax(0,1fr)] items-start gap-2.5"
+    >
       <Icon className={cn("mt-0.5 size-4", className)} aria-hidden />
-      <div className="grid min-w-0 justify-items-start">
+      {/* What's wrong and, at the end of its line, what to do about it. */}
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3">
         <span className="text-body font-medium text-ink">
           <span className="sr-only">{t(`checks.states.${check.state}`)}: </span>
           {title}
         </span>
-        <span className="text-meta text-ink-2">{detail}</span>
         {editable &&
           (check.id === "omissions" ? (
             <OmissionsFix estimate={estimate} check={check} open={open} />
@@ -177,12 +181,16 @@ function CheckRow({
               open={open}
             />
           ))}
+        <span className="col-span-2 text-meta text-ink-3">{detail}</span>
       </div>
     </li>
   );
 }
 
-/** What a check found, as a short title and the exact numbers under it. */
+/**
+ * What a check found: a short title, the exact numbers under it, and for whoever
+ * points at it, what those numbers rest on.
+ */
 function useCheckText() {
   const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
@@ -248,7 +256,9 @@ function useCheckText() {
         };
     }
   };
-  return (check: CheckResult): { title: string; detail: ReactNode } => {
+  return (
+    check: CheckResult,
+  ): { title: string; detail: ReactNode; explanation?: string } => {
     if (check.id === "omissions") {
       return omissions(check);
     }
@@ -303,11 +313,11 @@ function useCheckText() {
             more > 0
               ? t("checks.labor.warningMore", {
                   floor,
-                  monthly,
                   names: named,
                   count: more,
                 })
-              : t("checks.labor.warning", { floor, monthly, names: named }),
+              : t("checks.labor.warning", { floor, names: named }),
+          explanation: t("checks.labor.explanation", { floor, monthly }),
         };
       }
       case "current": {
@@ -318,20 +328,25 @@ function useCheckText() {
           };
         }
         const amount = formatMoney(Math.abs(check.difference), locale);
+        const difference =
+          check.difference > 0
+            ? `+${amount}`
+            : check.difference < 0
+              ? `−${amount}`
+              : amount;
         return {
           title: t("checks.current.warningTitle"),
           detail: t("checks.current.warning", {
-            count: check.count,
-            // The figure to weigh, in a sentence that explains it.
+            // The figure to weigh.
             difference: (
               <span className="font-medium tabular-nums text-ink">
-                {check.difference > 0
-                  ? `+${amount}`
-                  : check.difference < 0
-                    ? `−${amount}`
-                    : amount}
+                {difference}
               </span>
             ),
+          }),
+          explanation: t("checks.current.warningLong", {
+            count: check.count,
+            difference,
           }),
         };
       }
@@ -376,6 +391,7 @@ function useCheckText() {
           ? {
               title: t("checks.vat.warningTitle"),
               detail: t("checks.vat.warning"),
+              explanation: t("checks.vat.warningLong"),
             }
           : {
               title: t("checks.vat.failedTitle"),
@@ -388,10 +404,13 @@ function useCheckText() {
 
 type OmissionsCheck = Extract<CheckResult, { id: "omissions" }>;
 
-/** A check's one-click fix: an action here, or the page where it is fixed. */
+/**
+ * A check's one-click fix: an action here, or the page where it is fixed. Its
+ * `short` is what fits at the end of the check's line; `label` says it in full.
+ */
 type Fix =
-  | { label: string; onClick: () => void }
-  | { label: string; href: string };
+  | { label: string; short: string; onClick: () => void }
+  | { label: string; short: string; href: string };
 
 /**
  * The omissions check's button, whatever its state: one click starts a check
@@ -424,8 +443,9 @@ function OmissionsFix({
     <Button
       type="button"
       variant="link"
+      aria-label={label}
       className={cn(
-        "mt-2 justify-self-start text-meta",
+        "items-baseline text-meta [&_svg]:self-center",
         check.status === "none" && "text-ai",
       )}
       disabled={starting}
@@ -436,7 +456,9 @@ function OmissionsFix({
       }}
     >
       {check.status === "none" && <Icons.AI aria-hidden />}
-      {label}
+      {check.status === "none"
+        ? t("checks.omissions.startShort")
+        : t("checks.omissions.viewShort")}
     </Button>
   );
 }
@@ -475,14 +497,20 @@ function CheckFix({
       case "items":
         return {
           label: t("checks.items.fix"),
+          short: t("checks.items.fixShort"),
           onClick: () => open({ kind: "addNorm" }),
         };
       case "labor":
         // The firm's Tarife are where an hour of labour gets its price.
-        return { label: t("checks.labor.fix"), href: "/rates" };
+        return {
+          label: t("checks.labor.fix"),
+          short: t("checks.labor.fixShort"),
+          href: "/rates",
+        };
       case "current":
         return {
           label: t("checks.current.fix"),
+          short: t("checks.current.fixShort"),
           onClick: () =>
             action(async () => {
               const result = await run(() => refreshPrices({ estimateId }));
@@ -494,6 +522,7 @@ function CheckFix({
       case "norms":
         return {
           label: t("checks.norms.fix"),
+          short: t("checks.norms.fixShort"),
           onClick: () =>
             action(async () => {
               // One item at a time, so a failure says which one stopped.
@@ -513,11 +542,13 @@ function CheckFix({
       case "client":
         return {
           label: t("checks.client.fix"),
+          short: t("checks.client.fixShort"),
           onClick: () => open({ kind: "details" }),
         };
       case "vat":
         return {
           label: t("checks.vat.fix"),
+          short: t("checks.vat.fixShort"),
           onClick: () => open({ kind: "markups" }),
         };
       default:
@@ -530,12 +561,10 @@ function CheckFix({
   }
   if ("href" in fix) {
     return (
-      <Button
-        asChild
-        variant="link"
-        className="mt-2 justify-self-start text-meta"
-      >
-        <Link href={fix.href}>{fix.label}</Link>
+      <Button asChild variant="link" className="text-meta">
+        <Link href={fix.href} aria-label={fix.label}>
+          {fix.short}
+        </Link>
       </Button>
     );
   }
@@ -543,11 +572,12 @@ function CheckFix({
     <Button
       type="button"
       variant="link"
-      className="mt-2 justify-self-start text-meta"
+      aria-label={fix.label}
+      className="text-meta"
       disabled={busy}
       onClick={fix.onClick}
     >
-      {fix.label}
+      {fix.short}
     </Button>
   );
 }

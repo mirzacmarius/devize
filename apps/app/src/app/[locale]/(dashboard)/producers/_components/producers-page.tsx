@@ -7,14 +7,6 @@ import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@devize/ui/table";
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
@@ -23,8 +15,9 @@ import { SearchInput } from "@/components/search-input";
 import { useScopedI18n } from "@/locales/client";
 
 /**
- * The Producători whose norms are in the catalog, each opening its profile:
- * the norms and products it publishes and whether it runs the profile itself.
+ * The Producători whose norms are in the catalog, as a directory: each entry
+ * says what it covers and opens its profile, with the norms and products it
+ * publishes and whether it runs the profile itself.
  */
 export function ProducersPage() {
   const t = useScopedI18n("producers");
@@ -59,7 +52,7 @@ export function ProducersPage() {
               ]
                 .filter(Boolean)
                 .join(" · ")
-            : "\u00a0"
+            : " "
         }
         actions={
           producers?.length !== 0 && (
@@ -90,90 +83,46 @@ export function ProducersPage() {
               className="w-full"
             />
           </ListToolbar>
-          <Table stack>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="xl:w-[42%]">
-                  {t("columns.name")}
-                </TableHead>
-                <TableHead className="hidden xl:table-cell xl:w-[30%]">
-                  {t("columns.categories")}
-                </TableHead>
-                <TableHead className="hidden w-24 text-right md:table-cell xl:w-[14%]">
-                  {t("columns.edition")}
-                </TableHead>
-                <TableHead className="hidden w-20 text-right md:table-cell xl:w-[14%]">
-                  {t("columns.norms")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows === undefined && (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
-                    {tc("loading")}
-                  </TableCell>
-                </TableRow>
-              )}
-              {rows?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
-                    {t("noResults", { text: search })}
-                  </TableCell>
-                </TableRow>
-              )}
-              {rows?.map((producer) => {
-                const norms = producer.moreNorms
-                  ? t("moreNorms", { count: producer.normCount })
-                  : producer.normCount;
-                return (
-                  // The whole row leads to the profile.
-                  <TableRow
-                    key={producer._id}
-                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-16 xl:[&>td]:py-[11px] xl:[&>td]:align-baseline"
-                  >
-                    <TableCell data-stack="wide">
-                      <Link
-                        href={`/producers/${producer._id}`}
-                        className="grid gap-y-0.5 rounded-xs after:absolute xl:gap-y-0 after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
-                      >
-                        <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
-                          <span className="min-w-0 truncate text-body font-medium text-ink">
-                            {producer.name}
-                          </span>
-                          {producer.claimed && (
-                            <StatusPill tone="success">
-                              {t("managed")}
-                            </StatusPill>
-                          )}
-                        </span>
-                        {/* Where there's room they have a column. */}
-                        <span className="truncate text-meta text-ink-3 xl:hidden">
-                          {producer.categories.join(" · ")}
-                          {/* On a phone its columns move here. */}
-                          <span className="md:hidden">
-                            {producer.categories.length > 0 && " · "}
-                            {t("normCount", { count: norms })}
-                          </span>
-                        </span>
-                      </Link>
-                    </TableCell>
-                    <TableCell className="hidden text-meta text-ink-2 xl:table-cell">
-                      <span className="line-clamp-1">
-                        {producer.categories.join(" · ")}
-                      </span>
-                    </TableCell>
-                    <TableCell className="hidden text-right text-meta tabular-nums text-ink-2 md:table-cell">
-                      {producer.edition}
-                    </TableCell>
-                    <TableCell className="hidden text-right tabular-nums md:table-cell">
-                      {norms}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+          {rows === undefined && (
+            <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
+          )}
+          {rows?.length === 0 && (
+            <p className="m-0 text-body text-ink-3">
+              {t("noResults", { text: search })}
+            </p>
+          )}
+          <ul className="m-0 grid list-none gap-x-8 p-0 md:grid-cols-2 xl:grid-cols-3">
+            {rows?.map((producer) => (
+              <li key={producer._id} className="border-t border-border">
+                <Link
+                  href={`/producers/${producer._id}`}
+                  className="group -mx-2 grid h-full content-start gap-y-0.5 rounded-md px-2 pb-5 pt-3 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <span className="flex min-w-0 items-baseline justify-between gap-4">
+                    <span className="min-w-0 truncate text-body font-medium text-ink max-md:text-body-lg">
+                      {producer.name}
+                    </span>
+                    <span className="shrink-0 whitespace-nowrap text-meta tabular-nums text-ink-2">
+                      {t("normCount", {
+                        count: producer.moreNorms
+                          ? t("moreNorms", { count: producer.normCount })
+                          : producer.normCount,
+                      })}
+                    </span>
+                  </span>
+                  <span className="line-clamp-2 text-meta text-ink-3">
+                    {producer.categories.join(" · ")}
+                  </span>
+                  <span className="flex flex-wrap items-baseline gap-x-2 text-meta tabular-nums text-ink-3">
+                    {t("edition", { edition: producer.edition })}
+                    {producer.claimed && (
+                      <StatusPill tone="success">{t("managed")}</StatusPill>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </>

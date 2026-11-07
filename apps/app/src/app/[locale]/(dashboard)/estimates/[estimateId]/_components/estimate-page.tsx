@@ -456,6 +456,7 @@ function SectionLinks({
       ),
     },
     checks: {
+      label: estimate.status === "draft" ? t("checks.beforeOffer") : undefined,
       value:
         passed < checks.length
           ? checks.length - passed === 1

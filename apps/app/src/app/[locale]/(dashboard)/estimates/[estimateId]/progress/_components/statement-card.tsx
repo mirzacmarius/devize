@@ -55,7 +55,7 @@ import { useDownloadProgress } from "./use-download-progress";
 // Articol says them on a line of its own, and the quantity to fill in stays.
 const ROOMY_HEAD = "hidden text-right xl:table-cell";
 const ROOMY_CELL =
-  "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell";
+  "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-3 xl:table-cell";
 
 // A quantity for reference, quieter than what's being filled in and what it
 // comes to, on the row's baseline.
@@ -174,20 +174,18 @@ export function StatementCard({
   return (
     <Card>
       <CardHeader className="grid justify-stretch gap-1 sm:!pb-4">
-        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
-          <div className="grid min-w-0 gap-1">
-            {/* What it comes to, on its name's line. */}
-            <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
-              {picker}
-              <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
-                <span className="sr-only">{t("thisValue")}</span>
-                <span className="text-figure tabular-nums text-ink">
-                  {formatMoney(statement.period.subtotal, locale)}
-                </span>
-                {t("thisValueUnit")}
-              </p>
-            </div>
-            {/* Where it stands and what it covers, as under a page's title. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          {/* Its name, what it comes to, where it stands and what it covers: one
+              line where there's room, so the rows start as high as they can. */}
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
+            {picker}
+            <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
+              <span className="sr-only">{t("thisValue")}</span>
+              <span className="text-figure tabular-nums text-ink">
+                {formatMoney(statement.period.subtotal, locale)}
+              </span>
+              {t("thisValueUnit")}
+            </p>
             <p className="m-0 text-meta tabular-nums text-ink-3">
               <StatusPill tone={statementTone[statement.status]}>
                 {tStatus(statement.status)}
@@ -541,7 +539,11 @@ function RowsTable({
                       fixed
                       value={row.quantity}
                       format={(value) =>
-                        value !== 0 ? formatQuantity(value, locale) : ""
+                        value !== 0
+                          ? formatQuantity(value, locale)
+                          : spent || !fillable
+                            ? "–"
+                            : ""
                       }
                       label={t("quantityLabel", { title: row.title })}
                       disabled={!fillable}
@@ -562,17 +564,23 @@ function RowsTable({
                         row.quantity === 0
                           ? "text-ink-3"
                           : "font-medium text-ink",
+                        // Nothing to fill in: the dash of any empty cell.
+                        row.quantity === 0 &&
+                          (spent || !fillable) &&
+                          "text-ink-3/60",
                         // A thumb needs room, and has nothing to point with.
-                        fillable
+                        fillable && !spent
                           ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:border-b-edge max-md:bg-field"
-                          : "max-md:my-0 max-md:h-auto max-md:w-auto",
+                          : fillable
+                            ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-12 max-md:px-0 max-md:text-left"
+                            : "max-md:my-0 max-md:h-auto max-md:w-auto",
                       )}
                     />
                     {/* What's being typed in, as on the Deviz. */}
                     <span
                       className={cn(
                         "text-meta text-ink-3 md:ml-[17px] md:w-7 md:text-left md:text-body",
-                        spent && "md:invisible",
+                        spent && "invisible",
                       )}
                     >
                       {unit}

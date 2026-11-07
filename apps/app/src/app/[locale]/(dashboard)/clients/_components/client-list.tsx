@@ -19,6 +19,7 @@ import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { FootAction } from "@/components/foot-action";
 import { ListToolbar } from "@/components/list-toolbar";
 import { Nil } from "@/components/nil";
 import { SearchInput } from "@/components/search-input";
@@ -79,10 +80,12 @@ export function ClientList() {
                 className="w-48 max-sm:hidden md:w-64 xl:w-80"
               />
             )}
-            <Button onClick={() => edit(null)}>
-              <Plus aria-hidden />
-              {t("new")}
-            </Button>
+            <FootAction>
+              <Button onClick={() => edit(null)}>
+                <Plus aria-hidden />
+                {t("new")}
+              </Button>
+            </FootAction>
           </>
         }
       />

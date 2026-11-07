@@ -15,6 +15,7 @@ export function RailStat({
   unit,
   href,
   row = false,
+  before,
   children,
 }: {
   id?: string;
@@ -24,6 +25,8 @@ export function RailStat({
   href?: string;
   /** Not what the summary comes down to: a line beside its value, no figure. */
   row?: boolean;
+  /** What the figure follows from, above it. */
+  before?: ReactNode;
   children?: ReactNode;
 }) {
   if (row) {
@@ -64,6 +67,7 @@ export function RailStat({
   return (
     <Card id={id} data-stat className="scroll-mt-4">
       <CardContent className="gap-0">
+        {before}
         {href ? (
           <Link
             href={href}

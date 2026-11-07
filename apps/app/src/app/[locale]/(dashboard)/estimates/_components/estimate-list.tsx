@@ -22,6 +22,7 @@ import {
   EstimateStatusPill,
 } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { FootAction } from "@/components/foot-action";
 import { ListToolbar } from "@/components/list-toolbar";
 import { SearchInput } from "@/components/search-input";
 import { SegmentedControl } from "@/components/segmented-control";
@@ -106,10 +107,12 @@ export function EstimateList() {
                 {tt("open")}
               </Button>
             )}
-            <Button onClick={startBlank}>
-              <Plus aria-hidden />
-              {t("new")}
-            </Button>
+            <FootAction>
+              <Button onClick={startBlank}>
+                <Plus aria-hidden />
+                {t("new")}
+              </Button>
+            </FootAction>
           </>
         }
       />

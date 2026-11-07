@@ -507,6 +507,7 @@ export default {
       reopened: "The estimate is a draft again and can be changed.",
       archivedDone: "The estimate is archived.",
       revisionCreated: "The new revision is ready to change.",
+      createRevision: "Create a revision",
       copyCreated: "The copy is ready.",
       deleted: "{code} was deleted.",
       pricesRefreshed: "Line items with new prices: {count}.",
@@ -534,7 +535,7 @@ export default {
       addCustom: "Own line item",
       addSection: "Chapter or object",
       addMore: "Other ways to add",
-      locked: "Locked · to change it, create a revision",
+      locked: "Locked",
       emptyTitle: "No line items yet",
       emptyDescription:
         "Search the catalog's norms by code or by job. Prices come from the company's rates and from stores.",
@@ -619,6 +620,7 @@ export default {
     },
     checks: {
       title: "Checks",
+      beforeOffer: "Before the offer",
       score: "{passed} of {total} passed",
       left: "{left} of {total} left",
       leftOne: "1 of {total} left",
@@ -637,13 +639,14 @@ export default {
         title: "Has line items",
         passed: "Line items in the estimate: {count}",
         failedTitle: "No line items",
-        failed: "Add line items from the catalog or your own.",
+        failed: "From the catalog or your own",
         fix: "Add from catalog",
+        fixShort: "Add",
       },
       omissions: {
         title: "No forgotten works",
         noneTitle: "Omissions not checked",
-        none: "Devize AI looks for the works missing from the estimate.",
+        none: "Works missing from the estimate",
         workingTitle: "Looking for omissions",
         working: "Devize AI is reading the estimate…",
         failedTitle: "The omissions check didn't work",
@@ -657,8 +660,10 @@ export default {
         applied: "Works added from Devize AI's proposals: {count}",
         reviewed: "You've seen Devize AI's proposals.",
         start: "Find omissions",
+        startShort: "Find",
         open: "See the proposals",
         view: "See the check",
+        viewShort: "View",
       },
       prices: {
         title: "Every resource has a price",
@@ -671,53 +676,59 @@ export default {
         title: "Prices up to date",
         passed: "The estimate's prices are today's.",
         warningTitle: "Prices changed",
-        warning:
+        warning: "{difference} lei on the total",
+        warningLong:
           "Resources with another price today: {count}. The total incl. VAT would change by {difference} lei.",
         fix: "Refresh prices",
+        fixShort: "Refresh",
       },
       norms: {
         title: "Norms up to date",
         passed: "Line items use the latest version of their norms.",
         warningTitle: "Norms with a new version",
-        warning: "Line items with a newer norm in the catalog: {count}",
+        warning: "Line items with a newer norm: {count}",
         fix: "Switch to the new norms",
+        fixShort: "Switch",
         done: "Line items switched to the new norm: {count}",
       },
       ai: {
         title: "AI line items confirmed",
         passed: "No line item proposed by AI is waiting for confirmation.",
         warningTitle: "AI line items to confirm",
-        warning:
-          "Proposed by AI and not confirmed: {count}. Confirm each from its menu.",
+        warning: "To confirm from each line item's menu: {count}",
       },
       labor: {
         title: "Labour above the legal minimum",
         passed:
           "Every hour of labour is at least {floor} lei, the legal minimum in construction.",
         warningTitle: "Labour below the legal minimum",
-        warning:
-          "Under {floor} lei an hour, what the construction minimum wage of {monthly} lei gross a month comes to, before CAM: {names}.",
-        warningMore:
-          "Under {floor} lei an hour, what the construction minimum wage of {monthly} lei gross a month comes to, before CAM: {names} and {count} more.",
+        warning: "Under {floor} lei an hour: {names}",
+        warningMore: "Under {floor} lei an hour: {names} and {count} more",
+        explanation:
+          "{floor} lei an hour is what the construction minimum wage of {monthly} lei gross a month comes to, before CAM.",
         fix: "See the rates",
+        fixShort: "Rates",
       },
       client: {
         title: "Client chosen",
         warningTitle: "No client",
-        warning: "Choose the client before you send the estimate.",
+        warning: "Before you send the estimate",
         fix: "Choose the client",
+        fixShort: "Choose",
       },
       vat: {
         title: "VAT is right",
         passedPayer: "{vat} on the total; the company is VAT registered.",
         passedNotPayer: "No VAT; the company isn't VAT registered.",
         warningTitle: "VAT 0%",
-        warning:
+        warning: "0% only for exempt or reverse-charge work",
+        warningLong:
           "The company is VAT registered, and construction works in Romania are invoiced with VAT. 0% is only right for exempt operations or reverse-charge supplies, such as intra-community deliveries.",
         failedTitle: "VAT added",
         failed:
           "The company isn't VAT registered, but the estimate adds {vat}.",
         fix: "Change markups",
+        fixShort: "Change",
       },
     },
     recap: {
@@ -1798,7 +1809,9 @@ export default {
     messageFrom: "Message from {firm}",
     total: "Total incl. VAT",
     totalNoVat: "Total",
-    deposit: "Deposit on acceptance: {percent}, that is {amount} lei",
+    depositLabel: "Deposit on acceptance, {percent}",
+    depositInCard: "Deposit, {percent}",
+    validLabel: "Valid until",
     withVat: "with VAT",
     depositShort: "deposit {amount} lei",
     payment: {
@@ -1978,12 +1991,16 @@ export default {
     title: "Catalog",
     costNote: "Direct cost at reference prices; an estimate uses your prices.",
     unconfirmed: "not confirmed",
-    unconfirmedBand: "norms not confirmed",
     unconfirmedHint: "The manufacturer hasn't checked it yet.",
     unconfirmedNote:
       "Unconfirmed: the norm comes from the producer's public documents and the producer hasn't checked it yet.",
     unconfirmedState: "Not confirmed",
-    producerBand: "manufacturer",
+    parts: {
+      producers: "Norms from producers",
+      producersNote: "not confirmed yet: they come from their public documents",
+      base: "Base norms",
+      baseNote: "by category of work",
+    },
     noCost: "No price",
     newNorm: "New norm",
     views: {
@@ -1996,7 +2013,8 @@ export default {
       code: "Code",
       norm: "Norm",
       source: "Source",
-      cost: "Ref. cost",
+      unit: "Unit",
+      cost: "Ref. cost, lei",
       status: "Status",
       updated: "Changed",
     },
@@ -2503,7 +2521,7 @@ export default {
       emailStatus: {
         sending: "Sending email",
         sent: "Email sent",
-        not_sent: "Email not sent",
+        not_sent: "Email not sent · send the link yourself",
       },
       copyLink: "Copy link",
       linkCopied: "The invitation link was copied.",
@@ -3242,12 +3260,6 @@ export default {
     claimed: "Claimed",
     unclaimed: "Unclaimed",
     moreNorms: "{count}+",
-    columns: {
-      name: "Manufacturer",
-      categories: "Categories",
-      edition: "Edition",
-      norms: "Norms",
-    },
     searchPlaceholder: "Search manufacturers",
     noResults: "No manufacturer matches “{text}”.",
     breadcrumb: "You are here",
@@ -4238,6 +4250,7 @@ export default {
       efactura: "e-Factura",
     },
     draftCode: "Draft",
+    noNumber: "No number yet",
     overdue: "Overdue",
     owedPart: "to collect {owed}",
     lateAction: "Send to ANAF",
@@ -4776,8 +4789,7 @@ export default {
       title: "To buy",
       packages: "Whole packages",
       bought: "Purchases, without VAT",
-      leftover: "Of which left over",
-      leftoverShare: "{percent} of the purchases",
+      leftover: "Of which left over, {percent}",
       inEstimate: "Materials in the estimate",
     },
     table: {
@@ -4873,7 +4885,7 @@ export default {
   },
   takeoff: {
     title: "Quantity take-off",
-    locked: "Locked · to change it, create a revision",
+    locked: "Locked",
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
       title: "Quantity take-off",
@@ -4893,7 +4905,6 @@ export default {
       measured: "Measured line items",
       ofItems: "of {items}",
       unmeasured: "{left} to measure",
-      unmeasuredLocked: "{left} not measured",
       differs: "With another quantity in the estimate",
     },
     rooms: {
@@ -5323,7 +5334,7 @@ export default {
       executed: "{percent} executed",
       contract: "Contract value",
       executedValue: "Executed",
-      approved: "Confirmed by the beneficiary",
+      approved: "Confirmed",
       noApproved: "No statement confirmed yet",
       remaining: "Left to execute",
       withheld: "Guarantee withheld from statements",
@@ -5618,7 +5629,7 @@ export default {
       title: "Execution",
       executed: "{percent} executed",
       executedLabel: "Executed",
-      approved: "Confirmed, without VAT",
+      approved: "Confirmed",
       noStatements: "No progress statement yet.",
       outstanding: "Guarantee to recover",
     },

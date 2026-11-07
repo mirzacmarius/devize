@@ -7,7 +7,8 @@ import { Icons } from "@devize/ui/icons";
 import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { Download } from "lucide-react";
-import { Amount } from "@/components/amount";
+import { Amount, Lei } from "@/components/amount";
+import { Fact, FactList } from "@/components/fact-list";
 import { SignatureImage } from "@/components/signature/signature-image";
 import {
   formatDay,
@@ -70,9 +71,13 @@ export function ChoiceSummary({
 export function TotalBlock({
   offer,
   updating,
+  inCard = false,
 }: {
   offer: OpenOfferView;
   updating: boolean;
+  // Narrow, and the one place to say how long it's valid: a phone says that
+  // under the title.
+  inCard?: boolean;
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
@@ -93,14 +98,27 @@ export function TotalBlock({
         <Amount value={formatMoney(total, locale)} />{" "}
         <span className="text-meta text-ink-3">lei</span>
       </span>
-      {deposit !== undefined && (
-        <span className="text-balance text-meta text-ink-2">
-          {t("deposit", {
-            percent: formatPercent(deposit, locale),
-            amount: formatMoney(roundLei((total * deposit) / 100), locale),
-          })}
-        </span>
-      )}
+      <FactList className="empty:hidden">
+        {deposit !== undefined && (
+          <Fact
+            label={t(inCard ? "depositInCard" : "depositLabel", {
+              percent: formatPercent(deposit, locale),
+            })}
+            title={t("depositLabel", {
+              percent: formatPercent(deposit, locale),
+            })}
+          >
+            <Lei
+              value={formatMoney(roundLei((total * deposit) / 100), locale)}
+            />
+          </Fact>
+        )}
+        {inCard && offer.expiresAt !== undefined && (
+          <Fact label={t("validLabel")}>
+            {formatDay(offer.expiresAt, locale)}
+          </Fact>
+        )}
+      </FactList>
     </div>
   );
 }
@@ -248,14 +266,7 @@ export function AnswerCard({
   return (
     <Card data-framed>
       <CardContent className="gap-5 pt-5">
-        <div className="grid gap-1">
-          <TotalBlock offer={offer} updating={updating} />
-          {offer.expiresAt !== undefined && (
-            <p className="m-0 text-meta text-ink-2">
-              {t("validUntil", { date: formatDay(offer.expiresAt, locale) })}
-            </p>
-          )}
-        </div>
+        <TotalBlock offer={offer} updating={updating} inCard />
         <div className="grid gap-2">
           <Button
             type="button"

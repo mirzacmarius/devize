@@ -41,12 +41,14 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
       label={t("card.remaining")}
       value={formatMoney(billing.remainingNet ?? 0, locale)}
       unit="lei"
+      before={
+        <FactList className="mb-1">
+          <Fact label={t("card.invoiced")}>
+            <Lei value={formatMoney(billing.invoicedNet, locale)} />
+          </Fact>
+        </FactList>
+      }
     >
-      <FactList className="mt-1">
-        <Fact label={t("card.invoiced")}>
-          <Lei value={formatMoney(billing.invoicedNet, locale)} />
-        </Fact>
-      </FactList>
       {next && (
         <Button
           type="button"

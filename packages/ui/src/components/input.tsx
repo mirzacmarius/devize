@@ -22,8 +22,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-// A field that narrows a list rather than asks for anything: it stands back in
-// its toolbar until it's reached for, a size under a page's own controls.
-const toolbarField = "bg-sunken focus-visible:bg-field sm:h-8 sm:py-1";
+// A field that narrows a list rather than asks for anything: a field like any
+// other, a size under a page's own controls.
+const toolbarField = "sm:h-8 sm:py-1";
 
 export { Input, toolbarField };

@@ -31,13 +31,14 @@ import {
 } from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { Lock, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import { formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { LockedNote } from "../../_components/locked-note";
 import type { Room } from "./types";
 
 const numberClass = "whitespace-nowrap text-right tabular-nums";
@@ -107,10 +108,11 @@ export function RoomsCard({
           </Button>
         )}
         {locked && (
-          <span className="flex items-center gap-1.5 self-start pt-[3px] text-meta text-ink-3">
-            <Lock className="size-3.5 shrink-0" aria-hidden />
-            {tTakeoff("locked")}
-          </span>
+          <LockedNote
+            estimateId={estimateId}
+            label={tTakeoff("locked")}
+            className="self-start pt-[3px]"
+          />
         )}
       </CardHeader>
       <CardContent>

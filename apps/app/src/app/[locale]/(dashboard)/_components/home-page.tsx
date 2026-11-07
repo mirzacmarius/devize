@@ -31,6 +31,7 @@ import { type ReactNode, useState } from "react";
 import { Amount } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { FootAction } from "@/components/foot-action";
 import {
   estimateCode,
   formatCalendarDay,
@@ -88,10 +89,12 @@ export function HomePage() {
           ),
         })}
         actions={
-          <Button onClick={() => setCreating(true)}>
-            <Plus aria-hidden />
-            {t("newEstimate")}
-          </Button>
+          <FootAction>
+            <Button onClick={() => setCreating(true)}>
+              <Plus aria-hidden />
+              {t("newEstimate")}
+            </Button>
+          </FootAction>
         }
       />
       {/* On a phone the next section's hairline closes the figures. */}
@@ -447,8 +450,8 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 const todoTones = {
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
-  // Only what can't wait has a tile.
-  quiet: "text-ink-3",
+  // Only what can't wait has colour.
+  quiet: "bg-sunken text-ink-2",
 };
 
 /**
@@ -559,34 +562,36 @@ function RecentCard({
           // Under a label like the to-do list's, so the two lists' lines match.
           <section className="grid">
             <h4 className="m-0 pb-1 text-caption text-ink-3">{t("order")}</h4>
-            <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] p-0">
+            <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] p-0 sm:grid-cols-[minmax(0,1fr)_auto]">
               {recent === undefined && (
-                <li className="py-2 text-body text-ink-3">{tc("loading")}</li>
+                <li className="py-2 text-body text-ink-3 sm:col-span-2">
+                  {tc("loading")}
+                </li>
               )}
               {recent?.map((row) => (
-                <li key={row._id} className="border-t border-border">
+                <li
+                  key={row._id}
+                  className="border-t border-border sm:col-span-2 sm:grid sm:grid-cols-subgrid"
+                >
+                  {/* One column at the end for all the rows: sums on its right
+                      edge, status dots down its left. */}
                   <Link
                     href={`/estimates/${row._id}`}
-                    className="-mx-2 grid min-h-[63px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="-mx-2 grid min-h-[63px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:col-span-2 sm:grid-cols-subgrid sm:gap-x-4"
                   >
-                    {/* Each line on its own, so a title gives way only to its sum. */}
-                    <span className="flex min-w-0 items-baseline justify-between gap-4">
-                      <span className="min-w-0 text-body font-medium text-ink max-sm:text-body-lg sm:truncate">
-                        {row.title}
-                      </span>
-                      <span className="whitespace-nowrap text-body font-medium tabular-nums text-ink max-sm:hidden">
-                        {formatMoney(row.total, locale)}
-                      </span>
+                    <span className="min-w-0 text-body font-medium text-ink max-sm:text-body-lg sm:truncate">
+                      {row.title}
                     </span>
-                    <span className="flex min-w-0 items-baseline justify-between gap-4">
-                      <span className="min-w-0 truncate text-meta text-ink-3">
-                        {estimateCode(row.number, row.revision)}
-                        {" · "}
-                        {row.clientName ?? t("noClient")}
-                      </span>
-                      <span className="-my-px flex h-[18px] shrink-0 items-center max-sm:hidden">
-                        <EstimateStatusPill status={row.status} />
-                      </span>
+                    <span className="whitespace-nowrap text-right text-body font-medium tabular-nums text-ink max-sm:hidden">
+                      {formatMoney(row.total, locale)}
+                    </span>
+                    <span className="min-w-0 truncate text-meta text-ink-3">
+                      {estimateCode(row.number, row.revision)}
+                      {" · "}
+                      {row.clientName ?? t("noClient")}
+                    </span>
+                    <span className="-my-px flex h-[18px] items-center max-sm:hidden">
+                      <EstimateStatusPill status={row.status} />
                     </span>
                     {/* On a phone, its own line: where it stands and how much. */}
                     <span className="flex items-baseline justify-between gap-4 sm:hidden">

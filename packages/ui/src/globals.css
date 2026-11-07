@@ -31,6 +31,7 @@
   --border-field: 60 3.1% 55.9%; /* #92928b: a field's lower edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
   --tick-major: 60 4.3% 77.5%; /* #c8c8c3 */
+  --ruler: 60 4.3% 72.7%; /* #bdbdb7: the ticks on the login and the offer */
   --rule: 60 4.3% 77.5%; /* #c8c8c3, a table's head and its totals */
   --meter: 60 2.3% 42.2%; /* #6e6e69: how far along, quieter than a button */
 
@@ -100,9 +101,10 @@
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.6;
 
-  --border: 60 2% 20%; /* #343432 */
+  --border: 60 1.8% 22.4%; /* #3a3a38, the same as a card's edge */
   --border-control: 60 2.4% 32.5%; /* #555551 */
   --tick-major: 60 2.6% 37.5%; /* #62625d */
+  --ruler: 60 2.6% 37.5%; /* #62625d */
   --border-field: 60 2.5% 39%; /* #666661 */
   --tick: 60 2.1% 28.4%; /* #4a4a47 */
   --rule: 60 2.1% 28.4%; /* #4a4a47 */
@@ -413,12 +415,18 @@
       padding-bottom: 20px;
     }
   }
+  /* Stacked, a section's fields keep the width a form reads at. */
+  @media (max-width: 1279.98px) {
+    .settings-sections > [data-slot="card"] {
+      max-width: 640px;
+    }
+  }
   /* With room, settings read as a ledger: what a section is on the left, its
      fields on the right, a hairline between sections. */
   @media (min-width: 1280px) {
     .app-main .settings-sections > [data-slot="card"]:not([data-framed]) {
       display: grid;
-      grid-template-columns: 240px minmax(0, 640px);
+      grid-template-columns: 240px minmax(0, 824px);
       column-gap: 48px;
       align-items: start;
       padding-bottom: 0;
@@ -565,6 +573,29 @@
     height: 16px;
     background: linear-gradient(to top, hsl(var(--panel)), hsl(var(--panel) / 0));
     pointer-events: none;
+  }
+  /* A page's main action stands among its buttons; on a phone it's in a bar at
+     the screen's foot, under the thumb, and the page scrolls out from under it. */
+  .foot-action {
+    display: contents;
+  }
+  @media (max-width: 639.98px) {
+    .foot-action {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 40;
+      display: grid;
+      height: auto !important;
+      padding: 12px 16px max(0.75rem, env(safe-area-inset-bottom));
+      background: hsl(var(--panel));
+    }
+    .foot-action > * {
+      height: 44px;
+    }
+    .app-main:has(.foot-action) {
+      padding-bottom: 6rem;
+    }
   }
   /* A heading starts a group: the row before it needs no rule of its own, and
      heads right above a filled band need none either. */
@@ -773,13 +804,13 @@
     background:
       repeating-linear-gradient(
           90deg,
-          hsl(var(--tick-major)) 0 1px,
+          hsl(var(--ruler)) 0 1px,
           transparent 1px 40px
         )
         left bottom / 100% 8px no-repeat,
       repeating-linear-gradient(
           90deg,
-          hsl(var(--tick)) 0 1px,
+          hsl(var(--ruler)) 0 1px,
           transparent 1px 8px
         )
         left bottom / 100% 4px no-repeat;
@@ -791,6 +822,6 @@
     bottom: 0;
     width: 1px;
     height: 8px;
-    background: hsl(var(--tick-major));
+    background: hsl(var(--ruler));
   }
 }
