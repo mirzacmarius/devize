@@ -135,7 +135,13 @@ export function ChecksCard({
       <CardHeader>
         {/* What they're for, while there's still an offer to make. */}
         <CardTitle>{t("checks.beforeOffer")}</CardTitle>
-        <span className="text-meta tabular-nums text-ink-2">{lead}</span>
+        {open_.length > 0 ? (
+          <span className="text-meta tabular-nums text-warning">
+            {t("checks.toResolve", { count: open_.length })}
+          </span>
+        ) : (
+          <span className="text-meta tabular-nums text-ink-2">{lead}</span>
+        )}
       </CardHeader>
       <CardContent className="gap-3">{body}</CardContent>
     </Card>

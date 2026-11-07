@@ -300,7 +300,9 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
             "max-sm:hidden",
         )}
       >
-        <h4 className="m-0 pb-1 text-caption text-ink-3">{title}</h4>
+        <h4 className="m-0 pb-1 text-caption font-medium text-ink-2">
+          {title}
+        </h4>
         <ul className="m-0 grid list-none p-0">
           {first}
           {items.map((item) => (
@@ -563,7 +565,9 @@ function RecentCard({
         ) : (
           // Under a label like the to-do list's, so the two lists' lines match.
           <section className="grid">
-            <h4 className="m-0 pb-1 text-caption text-ink-3">{t("order")}</h4>
+            <h4 className="m-0 pb-1 text-caption font-medium text-ink-2">
+              {t("order")}
+            </h4>
             <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] p-0 sm:grid-cols-[minmax(0,1fr)_auto]">
               {recent === undefined && (
                 <li className="py-2 text-body text-ink-3 sm:col-span-2">

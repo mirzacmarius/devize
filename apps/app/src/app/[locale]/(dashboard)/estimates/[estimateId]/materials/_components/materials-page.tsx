@@ -54,13 +54,16 @@ export function MaterialsPage() {
               <Link href="/estimates">{tEstimate("breadcrumbList")}</Link>
             </BreadcrumbLink>
             <BreadcrumbSeparator />
-            <BreadcrumbLink asChild>
-              <Link href={`/estimates/${estimate._id}`}>{code}</Link>
+            <BreadcrumbLink asChild className="min-w-0">
+              <Link href={`/estimates/${estimate._id}`}>
+                <span className="truncate">
+                  {code} · {estimate.title}
+                </span>
+              </Link>
             </BreadcrumbLink>
           </Breadcrumb>
         }
         title={t("title")}
-        description={estimate.title}
         actions={
           list.rows.length > 0 && (
             <Button variant="outline" asChild>

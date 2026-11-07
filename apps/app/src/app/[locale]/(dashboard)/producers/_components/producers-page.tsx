@@ -26,7 +26,7 @@ function ProducerMark({ name }: { name: string }) {
   return (
     <span
       aria-hidden
-      className="row-span-2 grid size-10 place-items-center self-center rounded-md bg-card text-body font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+      className="row-span-2 grid size-9 place-items-center self-center rounded-md bg-muted text-meta font-medium text-ink-2"
     >
       {initials}
     </span>

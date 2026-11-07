@@ -199,7 +199,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         }
                       >
                         <SelectTrigger
-                          className="h-8 w-[148px] border-transparent bg-transparent text-ink-2 hover:text-ink data-[state=open]:border-edge max-sm:-ml-3"
+                          className="h-8 w-auto gap-1.5 border-transparent bg-transparent px-2 text-ink-2 hover:text-ink data-[state=open]:border-edge max-sm:-ml-2"
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />
@@ -318,10 +318,17 @@ function InvitationsCard() {
                 <Mail className="size-4" />
               </span>
               <div className="grid min-w-0">
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="truncate text-body text-ink">
-                    {invitation.email}
-                  </span>
+                <span className="truncate text-body text-ink">
+                  {invitation.email}
+                </span>
+                <span
+                  className="text-meta text-ink-3"
+                  title={
+                    invitation.invitedByName
+                      ? t("invitedBy", { name: invitation.invitedByName })
+                      : undefined
+                  }
+                >
                   <StatusPill
                     tone={emailTones[invitation.emailStatus]}
                     title={
@@ -332,12 +339,10 @@ function InvitationsCard() {
                   >
                     {t(`emailStatus.${invitation.emailStatus}`)}
                   </StatusPill>
-                </span>
-                <span className="text-meta text-ink-3">
+                  {" · "}
                   {[
+                    invitation.emailStatus === "not_sent" && t("sendLinkHint"),
                     tFirm(`roles.${invitation.role}`),
-                    invitation.invitedByName &&
-                      t("invitedBy", { name: invitation.invitedByName }),
                     t("expires", {
                       date: formatDay(invitation.expiresAt, locale),
                     }),
@@ -348,14 +353,7 @@ function InvitationsCard() {
               </div>
               {/* In the column the members' menus are in. */}
               <div className="col-start-2 flex items-center justify-between gap-1 sm:col-start-3 sm:justify-end">
-                <CopyLinkButton
-                  token={invitation.token}
-                  label={
-                    invitation.emailStatus === "not_sent"
-                      ? t("copyLinkToSend")
-                      : undefined
-                  }
-                />
+                <CopyLinkButton token={invitation.token} />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -392,11 +390,9 @@ function InvitationsCard() {
 
 function CopyLinkButton({
   token,
-  label,
   variant = "outline",
 }: {
   token: string;
-  label?: string;
   variant?: "outline" | "default";
 }) {
   const t = useScopedI18n("settings.members");
@@ -412,7 +408,7 @@ function CopyLinkButton({
   return (
     <Button type="button" size="sm" variant={variant} onClick={copy}>
       <Icons.Copy aria-hidden />
-      {label ?? t("copyLink")}
+      {t("copyLink")}
     </Button>
   );
 }

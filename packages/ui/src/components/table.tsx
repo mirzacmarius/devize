@@ -106,7 +106,7 @@ const TableGroupRow = React.forwardRef<
     data-band={ruled ? undefined : true}
     className={cn(
       ruled
-        ? "border-b [&>td]:font-medium max-md:pb-1.5 max-md:pt-6 max-md:first:pt-3 md:[&>td]:h-10 md:[&>td]:pb-1.5 md:[&>td]:pt-6 md:first:[&>td]:pt-3 md:[&>td]:align-bottom"
+        ? "border-b [&>td]:text-caption [&>td]:font-medium [&>td]:text-ink-2 max-md:pb-1.5 max-md:pt-6 max-md:first:pt-3 md:[&>td]:h-10 md:[&>td]:pb-1.5 md:[&>td]:pt-6 md:first:[&>td]:pt-3 md:[&>td]:align-bottom"
         : "bg-sunken [&>td]:h-9 [&>td]:py-1",
       className,
     )}
@@ -122,7 +122,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "whitespace-nowrap px-3 pb-2.5 text-left align-bottom text-head text-ink-2 first:pl-0 last:pr-0",
+      "whitespace-nowrap px-3 pb-2.5 text-left align-bottom text-head text-ink-3 first:pl-0 last:pr-0",
       className,
     )}
     {...props}

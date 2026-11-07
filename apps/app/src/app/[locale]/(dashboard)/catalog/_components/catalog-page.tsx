@@ -7,7 +7,6 @@ import {
 } from "@devize/backend/convex/catalog/baseCategories";
 import { normalizeText } from "@devize/backend/convex/lib/text";
 import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { toolbarField } from "@devize/ui/input";
@@ -32,7 +31,6 @@ import { useSearchParams } from "next/navigation";
 import { Fragment, type ReactNode, useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { FootAction } from "@/components/foot-action";
-import { ListToolbar } from "@/components/list-toolbar";
 import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
@@ -46,7 +44,7 @@ type NormRow = FunctionReturnType<
   typeof api.catalog.norms.listForOrganization
 >[number];
 
-// Browsing everything, the list comes in two parts, each with its own heading.
+// Browsing everything, the list comes in two parts under one head.
 type Part = "producers" | "base";
 
 /** A producer's norm its producer hasn't vouched for yet. */
@@ -173,45 +171,49 @@ export function CatalogPage() {
 
   return (
     <>
-      <PageHeader
-        title={t("title")}
-        description={t("costNote")}
-        actions={actions}
-      />
+      <PageHeader title={t("title")} actions={actions} />
       <section className="grid min-w-0 gap-3">
-        <TabsNav aria-label={t("views.label")}>
-          <TabsNavLink asChild active={!isOwn}>
-            <Link replace href="/catalog" onClick={() => setText("")}>
-              {t("views.catalog")}
-            </Link>
-          </TabsNavLink>
-          <TabsNavLink asChild active={isOwn}>
-            <Link replace href="/catalog?view=own" onClick={() => setText("")}>
-              {t("views.own")}
-            </Link>
-          </TabsNavLink>
-        </TabsNav>
-        <ListToolbar>
-          {!isOwn && (
-            <NormCategorySelect
-              label={t("categories.label")}
-              allLabel={t("categories.all")}
-              value={category?.key ?? null}
-              onChange={changeCategory}
-              className={cn("w-full sm:w-56", toolbarField)}
-            />
-          )}
-          <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1 sm:justify-end">
+        {/* From a tablet up, what narrows the list stands on the tabs' line. */}
+        <div className="grid min-w-0 gap-3 md:flex md:min-h-11 md:items-center md:justify-between md:gap-6 md:border-b md:border-border">
+          <TabsNav
+            aria-label={t("views.label")}
+            className="md:shrink-0 md:border-b-0"
+          >
+            <TabsNavLink asChild active={!isOwn}>
+              <Link replace href="/catalog" onClick={() => setText("")}>
+                {t("views.catalog")}
+              </Link>
+            </TabsNavLink>
+            <TabsNavLink asChild active={isOwn}>
+              <Link
+                replace
+                href="/catalog?view=own"
+                onClick={() => setText("")}
+              >
+                {t("views.own")}
+              </Link>
+            </TabsNavLink>
+          </TabsNav>
+          <div className="grid min-w-0 gap-2 sm:flex sm:items-center sm:gap-3 md:justify-end">
+            {!isOwn && (
+              <NormCategorySelect
+                label={t("categories.label")}
+                allLabel={t("categories.all")}
+                value={category?.key ?? null}
+                onChange={changeCategory}
+                className={cn("w-full sm:w-56 md:w-48 xl:w-56", toolbarField)}
+              />
+            )}
             <SearchInput
               quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:max-w-xs"
+              className="w-full md:w-60 xl:w-80"
             />
           </div>
-        </ListToolbar>
+        </div>
         <div className="grid min-w-0 gap-6">
           {isOwn && !search && own?.length === 0 ? (
             <EmptyState
@@ -225,39 +227,14 @@ export function CatalogPage() {
               }
             />
           ) : parts ? (
-            parts.map((entry) => (
-              <Card key={entry.part}>
-                <CardHeader>
-                  <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
-                    <CardTitle>{t(`parts.${entry.part}`)}</CardTitle>
-                    {entry.part === "base" ? (
-                      <span className="text-meta text-ink-3">
-                        {t("parts.baseNote")}
-                      </span>
-                    ) : (
-                      allUnconfirmed(entry.rows) && (
-                        <StatusPill
-                          tone="draft"
-                          title={t("parts.producersNoteLong")}
-                        >
-                          {t("parts.producersNote")}
-                        </StatusPill>
-                      )
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <NormsTable
-                    rows={entry.rows}
-                    isOwn={false}
-                    part={entry.part}
-                    allUnconfirmed={
-                      entry.part === "producers" && allUnconfirmed(entry.rows)
-                    }
-                  />
-                </CardContent>
-              </Card>
-            ))
+            <NormsTable
+              rows={parts.flatMap((entry) => entry.rows)}
+              isOwn={false}
+              parted
+              allUnconfirmed={
+                producerNorms !== undefined && allUnconfirmed(producerNorms)
+              }
+            />
           ) : (
             <NormsTable
               rows={rows}
@@ -310,20 +287,63 @@ export function CatalogPage() {
   );
 }
 
+/** Where a part of the list starts, under the one head the parts share. */
+function PartRow({
+  part,
+  allUnconfirmed,
+}: {
+  part: Part;
+  allUnconfirmed: boolean;
+}) {
+  const t = useScopedI18n("catalog");
+  return (
+    <TableRow
+      data-group
+      data-part
+      className="hover:bg-transparent max-md:pb-2 max-md:pt-8 max-md:first:pt-2 md:[&>td]:h-auto md:[&>td]:pb-2 md:[&>td]:pt-8 md:first:[&>td]:pt-4"
+    >
+      <TableCell colSpan={7} data-stack="wide">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+            <h2 className="m-0 text-title-card text-ink">
+              {t(`parts.${part}`)}
+            </h2>
+            {part === "base" ? (
+              <span className="text-meta text-ink-3">
+                {t("parts.baseNote")}
+              </span>
+            ) : (
+              allUnconfirmed && (
+                <StatusPill tone="draft">{t("parts.producersNote")}</StatusPill>
+              )
+            )}
+          </div>
+          {part === "producers" && allUnconfirmed && (
+            <p className="m-0 text-meta text-ink-3">
+              {t("parts.producersNoteLong")}
+            </p>
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 /**
- * A list of norms. The producers' part names each norm's producer; the base part
- * is grouped by category of work, whose name its rows don't repeat.
+ * A list of norms. `parted`, the producers' norms come first, each naming its
+ * producer, then the base ones by category of work, whose name their rows don't
+ * repeat: a base norm's title runs on over its producer's columns.
  */
 function NormsTable({
   rows,
   isOwn,
-  part,
+  parted = false,
   allUnconfirmed = false,
   empty,
 }: {
   rows: NormRow[] | undefined;
   isOwn: boolean;
-  part?: Part;
+  parted?: boolean;
   // The heading above says it, so the rows don't.
   allUnconfirmed?: boolean;
   empty?: ReactNode;
@@ -332,12 +352,14 @@ function NormsTable({
   const tc = useScopedI18n("common");
   const locale = useCurrentLocale();
   const normSource = useNormSource();
-  const showSource = !isOwn && part !== "base";
+  const showSource = !isOwn;
   const showState = showSource && !allUnconfirmed;
+  const titleSpan = 1 + (showSource ? 1 : 0) + (showState ? 1 : 0);
+  let lastPart: Part | undefined;
   let lastCategory: string | undefined;
 
   return (
-    <Table stack twoLine={isOwn ? true : "below-xl"}>
+    <Table stack twoLine={isOwn ? true : "below-xl"} className="sticky-head">
       <TableHeader>
         <TableRow>
           {/* Where there's room the public list is one line a row. */}
@@ -366,7 +388,9 @@ function NormsTable({
           <TableHead className="hidden w-14 md:table-cell">
             {t("columns.unit")}
           </TableHead>
-          <TableHead className="w-32 text-right">{t("columns.cost")}</TableHead>
+          <TableHead className="w-32 text-right" title={t("costNote")}>
+            {t("columns.cost")}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -385,12 +409,57 @@ function NormsTable({
           </TableRow>
         )}
         {rows?.map((norm) => {
+          const part: Part | undefined = parted
+            ? norm.source === "base"
+              ? "base"
+              : "producers"
+            : undefined;
+          const opensPart = part !== undefined && part !== lastPart;
+          lastPart = part;
           const group =
             part === "base" ? (norm.category ?? normSource(norm)) : undefined;
           const opens = group !== undefined && group !== lastCategory;
           lastCategory = group;
+          const title = (
+            <Link
+              href={`/catalog/${norm._id}`}
+              className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span className="text-body font-[450] text-ink group-hover:underline">
+                {keepUnits(norm.title)}
+              </span>
+              <span
+                className={cn(
+                  "flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3",
+                  !isOwn && "xl:hidden",
+                  // On a phone it opens the line with the cost.
+                  part && "max-md:hidden",
+                )}
+              >
+                <span>
+                  <span className="tabular-nums">{normCode(norm)}</span>
+                  {!part && norm.category && ` · ${norm.category}`}
+                  {/* The public list has a column for this where there's room. */}
+                  {part !== "base" && (
+                    <span className={isOwn ? undefined : TABLET_ONLY}>
+                      {norm.source !== "base" &&
+                        ` · ${norm.manufacturerName ?? normSource(norm)}`}
+                      {unconfirmed(norm) && !allUnconfirmed && (
+                        <span title={t("unconfirmedHint")}>
+                          {` · ${t("unconfirmed")}`}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </span>
+              </span>
+            </Link>
+          );
           return (
             <Fragment key={norm._id}>
+              {opensPart && (
+                <PartRow part={part} allUnconfirmed={allUnconfirmed} />
+              )}
               {opens && (
                 <TableGroupRow ruled>
                   <TableCell colSpan={7} data-stack="wide">
@@ -408,48 +477,33 @@ function NormsTable({
                     </span>
                   </TableCell>
                 )}
-                <TableCell data-stack="wide" className="md:max-xl:pl-0">
-                  <Link
-                    href={`/catalog/${norm._id}`}
-                    className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <span className="text-body font-[450] text-ink group-hover:underline">
-                      {keepUnits(norm.title)}
-                    </span>
-                    <span
-                      className={cn(
-                        "flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3",
-                        !isOwn && "xl:hidden",
-                        // On a phone it opens the line with the cost.
-                        part && "max-md:hidden",
-                      )}
+                {part === "base" ? (
+                  <>
+                    <TableCell
+                      colSpan={titleSpan}
+                      className="hidden xl:table-cell"
                     >
-                      <span>
-                        <span className="tabular-nums">{normCode(norm)}</span>
-                        {!part && norm.category && ` · ${norm.category}`}
-                        {/* The public list has a column for this where there's room. */}
-                        {part !== "base" && (
-                          <span className={isOwn ? undefined : TABLET_ONLY}>
-                            {norm.source !== "base" &&
-                              ` · ${norm.manufacturerName ?? normSource(norm)}`}
-                            {unconfirmed(norm) && !allUnconfirmed && (
-                              <span title={t("unconfirmedHint")}>
-                                {` · ${t("unconfirmed")}`}
-                              </span>
-                            )}
-                          </span>
-                        )}
-                      </span>
-                    </span>
-                  </Link>
-                </TableCell>
+                      {title}
+                    </TableCell>
+                    <TableCell
+                      data-stack="wide"
+                      className="md:max-xl:pl-0 xl:hidden"
+                    >
+                      {title}
+                    </TableCell>
+                  </>
+                ) : (
+                  <TableCell data-stack="wide" className="md:max-xl:pl-0">
+                    {title}
+                  </TableCell>
+                )}
                 {part === "base" && (
                   // On a phone it opens the line with the cost.
                   <TableCell className="text-meta tabular-nums text-ink-3 md:hidden">
                     {normCode(norm)}
                   </TableCell>
                 )}
-                {showSource && (
+                {showSource && part !== "base" && (
                   // On a phone it opens the line with the cost.
                   <TableCell className="md:max-xl:hidden">
                     <span
@@ -489,7 +543,7 @@ function NormsTable({
                     </span>
                   </TableCell>
                 )}
-                {showState && (
+                {showState && part !== "base" && (
                   <TableCell className="hidden xl:table-cell">
                     {unconfirmed(norm) && (
                       <StatusPill tone="draft" title={t("unconfirmedHint")}>

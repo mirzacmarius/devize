@@ -173,19 +173,21 @@ export function StatementCard({
 
   return (
     <Card>
-      <CardHeader className="grid justify-stretch gap-1 sm:!pb-4">
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-          {/* Its name, what it comes to, where it stands and what it covers: one
-              line where there's room, so the rows start as high as they can. */}
-          <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
-            {picker}
-            <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
-              <span className="sr-only">{t("thisValue")}</span>
-              <span className="text-figure tabular-nums text-ink">
-                {formatMoney(statement.period.subtotal, locale)}
-              </span>
-              {t("thisValueUnit")}
-            </p>
+      <CardHeader className="grid justify-stretch gap-1 sm:!pb-3">
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+          {/* Its name and what it comes to; under them where it stands and what
+              it covers. */}
+          <div className="grid min-w-0 gap-1">
+            <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
+              {picker}
+              <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
+                <span className="sr-only">{t("thisValue")}</span>
+                <span className="text-figure tabular-nums text-ink">
+                  {formatMoney(statement.period.subtotal, locale)}
+                </span>
+                {t("thisValueUnit")}
+              </p>
+            </div>
             <p className="m-0 text-meta tabular-nums text-ink-3">
               <StatusPill tone={statementTone[statement.status]}>
                 {tStatus(statement.status)}
@@ -404,7 +406,7 @@ function RowsTable({
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.025]">
+          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.04] xl:pt-2.5">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -529,7 +531,7 @@ function RowsTable({
                   </Reference>
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.025]">
+                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.04]">
                   <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">

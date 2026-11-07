@@ -69,13 +69,16 @@ export function TakeoffPage() {
               <Link href="/estimates">{tEstimate("breadcrumbList")}</Link>
             </BreadcrumbLink>
             <BreadcrumbSeparator />
-            <BreadcrumbLink asChild>
-              <Link href={`/estimates/${estimateId}`}>{code}</Link>
+            <BreadcrumbLink asChild className="min-w-0">
+              <Link href={`/estimates/${estimateId}`}>
+                <span className="truncate">
+                  {code} · {data.estimate.title}
+                </span>
+              </Link>
             </BreadcrumbLink>
           </Breadcrumb>
         }
         title={t("title")}
-        description={data.estimate.title}
         actions={
           estimate && measured && <AppendixButtons estimate={estimate} />
         }

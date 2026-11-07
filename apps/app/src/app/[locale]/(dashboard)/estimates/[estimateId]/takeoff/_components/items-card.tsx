@@ -102,6 +102,18 @@ export function ItemsCard({
           />
         ) : (
           <ul className="m-0 grid list-none p-0">
+            <li
+              aria-hidden
+              className={cn(
+                "hidden pb-2.5 text-head text-ink-3 md:grid",
+                COLUMNS,
+                groups.loose.length > 0 && "border-b border-rule",
+              )}
+            >
+              <span className="col-start-2">{t("columnItem")}</span>
+              <span>{t("columnState")}</span>
+              <span className="text-right">{t("columnInEstimate")}</span>
+            </li>
             {rows(groups.loose)}
             {groups.sections.map((group) => (
               <Fragment key={group.section._id}>
@@ -134,6 +146,9 @@ export function ItemsCard({
   );
 }
 
+/** From a tablet up: a row's number, title, state and quantity in the Deviz. */
+const COLUMNS = "md:grid-cols-[1.75rem_minmax(0,1fr)_11rem_7rem]";
+
 function ItemRow({
   item,
   index,
@@ -158,41 +173,60 @@ function ItemRow({
   const measured = item.takeoffs.length > 0;
   const unchecked = item.takeoffs.some((takeoff) => takeoff.unchecked);
   const canMeasureRooms = item.measures.length > 0;
+  const state = (
+    <>
+      {measured ? (
+        <StatusPill tone={item.differs ? "warning" : "success"}>
+          {item.differs
+            ? t("differs")
+            : t("measured", {
+                measured: formatQuantity(item.measured, locale),
+                unit,
+              })}
+        </StatusPill>
+      ) : (
+        <StatusPill tone="draft">{t("unmeasured")}</StatusPill>
+      )}
+      {unchecked && <StatusPill tone="ai">{t("unchecked")}</StatusPill>}
+    </>
+  );
 
   return (
     <li className="grid gap-1.5 border-b border-border py-3 last:border-0">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <div className="grid min-w-0 flex-1 basis-64 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5">
+        <div
+          className={cn(
+            "grid min-w-0 flex-1 basis-64 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 md:basis-full md:items-baseline md:gap-x-0",
+            COLUMNS,
+          )}
+        >
           <span className="w-4 text-right text-body tabular-nums text-ink-3">
             {index}
           </span>
-          <span className="text-body text-ink">{item.title}</span>
+          <span className="text-body text-ink md:pr-4">{item.title}</span>
+          <span className="hidden min-w-0 flex-wrap gap-x-2 gap-y-0.5 text-ink-3 md:flex">
+            {state}
+          </span>
+          <span className="hidden text-right text-body tabular-nums text-ink-2 md:block">
+            <span className="sr-only">{t("columnInEstimate")}: </span>
+            {formatQuantity(item.quantity, locale)} {unit}
+          </span>
           <span className="col-start-2 flex flex-wrap items-center gap-2 text-meta text-ink-3">
             <span className="tabular-nums">
               {item.code}
-              {" · "}
-              {t("inEstimate", {
-                quantity: formatQuantity(item.quantity, locale),
-                unit,
-              })}
+              <span className="md:hidden">
+                {" · "}
+                {t("inEstimate", {
+                  quantity: formatQuantity(item.quantity, locale),
+                  unit,
+                })}
+              </span>
             </span>
-            {measured ? (
-              <StatusPill tone={item.differs ? "warning" : "success"}>
-                {item.differs
-                  ? t("differs")
-                  : t("measured", {
-                      measured: formatQuantity(item.measured, locale),
-                      unit,
-                    })}
-              </StatusPill>
-            ) : (
-              <StatusPill tone="draft">{t("unmeasured")}</StatusPill>
-            )}
-            {unchecked && <StatusPill tone="ai">{t("unchecked")}</StatusPill>}
+            <span className="contents md:hidden">{state}</span>
           </span>
         </div>
         {!locked && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 md:pl-7">
             {item.differs && (
               <Button
                 variant="secondary"

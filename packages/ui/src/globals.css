@@ -114,7 +114,7 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.2% 57.5%; /* #96968f: 6.9:1 on the panel */
 
-  --action: 60 5.2% 77.3%; /* #c8c8c2: the one bright thing on the page */
+  --action: 60 5.2% 87%; /* #e0e0dc: the one bright thing on the page */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
@@ -428,6 +428,7 @@
       display: grid;
       grid-template-columns: 240px minmax(0, 640px);
       column-gap: 48px;
+      max-width: 928px;
       align-items: start;
       padding-bottom: 0;
     }
@@ -555,26 +556,6 @@
   .rail-summary > [data-slot="card"]:last-child > [data-slot="card-content"] > div:last-child > [data-row]:last-child {
     margin-bottom: -8px;
   }
-  /* Rows in the frame: a hairline starts them, and they stay together. */
-  .app-main .rail-summary > :not([data-fold]) + [data-fold] {
-    padding-top: 8px;
-  }
-  .app-main .rail-summary > [data-fold] + [data-fold] {
-    margin-top: 0;
-    padding-top: 0;
-    border-top-width: 0;
-  }
-  .app-main .rail-summary > [data-fold] > [data-slot="card-header"] {
-    padding: 0;
-  }
-  .rail-summary > [data-fold]:last-child {
-    margin-bottom: -13px;
-  }
-  @media (min-width: 1280px) {
-    .rail-summary > [data-fold]:last-child {
-      margin-bottom: -7px;
-    }
-  }
   /* Stacked on a narrower screen, rows that are only rows stay together. */
   @media (max-width: 1279.98px) {
     .rail-sections [data-fold] + [data-fold] {
@@ -590,7 +571,7 @@
     position: absolute;
     inset-inline: 0;
     bottom: calc(100% + 1px);
-    height: 16px;
+    height: 8px;
     background: linear-gradient(to top, hsl(var(--panel)), hsl(var(--panel) / 0));
     pointer-events: none;
   }
@@ -624,6 +605,39 @@
   }
   table:has(> tbody > tr[data-band]:first-child) > thead > tr {
     border-bottom-color: transparent;
+  }
+  /* A long list's heads stay in sight; their room above isn't a gap at rest. */
+  @media (min-width: 768px) {
+    div:has(> .sticky-head) {
+      overflow: visible;
+    }
+    .sticky-head {
+      margin-top: -8px;
+    }
+    .sticky-head > thead > tr {
+      border-bottom-width: 0;
+    }
+    .sticky-head > thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding-top: 8px;
+      background: hsl(var(--card));
+      box-shadow: inset 0 -1px 0 hsl(var(--rule));
+    }
+  }
+  @media (min-width: 1024px) {
+    .sticky-head > thead th {
+      top: 8px;
+    }
+  }
+  /* A category right under its part's heading needs no air of its own. */
+  tr[data-part] + tr[data-group] {
+    padding-top: 0;
+  }
+  tr[data-part] + tr[data-group] > td {
+    height: auto;
+    padding-top: 4px;
   }
   /* The Articole's heads stay in sight under the bar that keeps the total. */
   @media (min-width: 768px) {

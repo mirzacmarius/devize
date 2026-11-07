@@ -242,7 +242,16 @@ export default function ManufacturersPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className="text-meta text-ink-3">
+                        <span
+                          className={cn(
+                            "text-meta",
+                            row.normsStatus === "received"
+                              ? "text-ink"
+                              : row.normsStatus === "existing"
+                                ? "text-ink-2"
+                                : "text-ink-3",
+                          )}
+                        >
                           {tAdmin(`status.norms.${row.normsStatus}`)}
                         </span>
                       </TableCell>
@@ -264,9 +273,15 @@ export default function ManufacturersPage() {
                             {tAdmin(`status.message.${row.message.status}`)}
                           </Pill>
                         ) : (
-                          <span className="text-meta text-ink-3">
+                          <Pill
+                            tone={
+                              row.message.status === "draft"
+                                ? "draft"
+                                : "neutral"
+                            }
+                          >
                             {tAdmin(`status.message.${row.message.status}`)}
-                          </span>
+                          </Pill>
                         )}
                       </TableCell>
                     </TableRow>

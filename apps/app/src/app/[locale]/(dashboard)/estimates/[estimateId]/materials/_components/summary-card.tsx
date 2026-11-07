@@ -13,7 +13,7 @@ export function SummaryCard({ list }: { list: ShoppingList }) {
   const share =
     totals.boughtCost > 0 ? (totals.leftoverCost / totals.boughtCost) * 100 : 0;
   return (
-    <FigureStrip>
+    <FigureStrip compact>
       <Figure
         lead
         label={t("bought")}

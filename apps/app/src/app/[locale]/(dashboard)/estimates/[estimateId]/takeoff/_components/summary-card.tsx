@@ -19,7 +19,7 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
     ? 0
     : data.items.length - measured.length;
   return (
-    <FigureStrip>
+    <FigureStrip compact>
       <Figure
         lead
         label={t("measured")}

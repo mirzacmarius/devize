@@ -5,8 +5,6 @@ import { Button } from "@devize/ui/button";
 import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { Lei } from "@/components/amount";
-import { Fact, FactList } from "@/components/fact-list";
 import { FoldCard } from "@/components/fold-card";
 import { InvoiceStatusPill } from "@/components/invoice-status";
 import { RailStat } from "@/components/rail-stat";
@@ -42,11 +40,17 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
       value={formatMoney(billing.remainingNet ?? 0, locale)}
       unit="lei"
       before={
-        <FactList className="mb-1">
-          <Fact label={t("card.invoiced")}>
-            <Lei value={formatMoney(billing.invoicedNet, locale)} />
-          </Fact>
-        </FactList>
+        <div className="mb-2 flex items-baseline justify-between gap-3">
+          <h3 className="m-0 text-body font-medium text-ink">
+            {t("card.invoiced")}
+          </h3>
+          <span className="flex items-baseline gap-1.5">
+            <span className="text-body font-medium tabular-nums text-ink">
+              {formatMoney(billing.invoicedNet, locale)}
+            </span>
+            <span className="text-meta text-ink-3">lei</span>
+          </span>
+        </div>
       }
     >
       {next && (

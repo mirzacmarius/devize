@@ -89,11 +89,11 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
           <TableHeader>
             <TableRow>
               <TableHead>{t("columns.description")}</TableHead>
-              <TableHead className="hidden sm:table-cell">
-                {t("columns.unit")}
-              </TableHead>
-              <TableHead className="text-right">
+              <TableHead className="text-right sm:pr-1.5">
                 {t("columns.quantity")}
+              </TableHead>
+              <TableHead className="hidden pl-0 sm:table-cell">
+                <span className="sr-only">{t("columns.unit")}</span>
               </TableHead>
               <TableHead className="hidden text-right md:table-cell">
                 {t("columns.unitPrice")}
@@ -110,11 +110,11 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
                 <TableCell className="align-top text-ink">
                   {line.description}
                 </TableCell>
-                <TableCell className="hidden align-top text-ink-2 sm:table-cell">
-                  {formatUnit(line.unit, locale)}
-                </TableCell>
-                <TableCell className="text-right align-top tabular-nums">
+                <TableCell className="text-right align-top tabular-nums sm:pr-1.5">
                   {formatQuantity(line.quantity, locale)}
+                </TableCell>
+                <TableCell className="hidden pl-0 align-top text-ink-3 sm:table-cell">
+                  {formatUnit(line.unit, locale)}
                 </TableCell>
                 <TableCell className="hidden text-right align-top tabular-nums md:table-cell">
                   {formatMoney(line.unitPrice, locale)}

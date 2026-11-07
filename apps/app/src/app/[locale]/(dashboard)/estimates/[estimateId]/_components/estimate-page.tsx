@@ -164,17 +164,11 @@ export function EstimatePage() {
   // What the Deviz is at first; the rest in a quiet list of rows.
   const railLead = (
     <RailSummary>
-      {status === "accepted" ? (
-        rail.progress
-      ) : status === "draft" ? (
-        <>
-          {rail.checks}
-          {preparation}
-          {packaging}
-        </>
-      ) : (
-        rail.offer
-      )}
+      {status === "accepted"
+        ? rail.progress
+        : status === "draft"
+          ? rail.checks
+          : rail.offer}
       {rail.invoices}
     </RailSummary>
   );
@@ -282,11 +276,16 @@ export function EstimatePage() {
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <Rail sticky>
           {railLead}
-          {/* While it's a draft, its preparation is the work, in the summary's
-              frame; once it has left, one row. */}
+          {/* While it's a draft, its preparation is the work; once it has left,
+              one row. */}
           <RailList>
             {status === "draft" ? (
-              <RailLabel>{t("rail.records")}</RailLabel>
+              <>
+                <RailLabel>{t("rail.preparation")}</RailLabel>
+                {preparation}
+                {packaging}
+                <RailLabel>{t("rail.records")}</RailLabel>
+              </>
             ) : (
               <>
                 <RailGroup title={t("rail.preparation")}>

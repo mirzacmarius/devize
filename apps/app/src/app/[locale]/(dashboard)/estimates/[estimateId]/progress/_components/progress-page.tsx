@@ -114,13 +114,17 @@ export function ProgressPage() {
               <Link href="/estimates">{tEstimate("breadcrumbList")}</Link>
             </BreadcrumbLink>
             <BreadcrumbSeparator />
-            <BreadcrumbLink asChild>
-              <Link href={`/estimates/${estimate._id}`}>{code}</Link>
+            <BreadcrumbLink asChild className="min-w-0">
+              <Link href={`/estimates/${estimate._id}`}>
+                <span className="truncate">
+                  {code} · {estimate.title}
+                </span>
+              </Link>
             </BreadcrumbLink>
           </Breadcrumb>
         }
         title={t("title")}
-        description={[estimate.title, t("summary.basis")].join(" · ")}
+        description={t("summary.basis")}
         actions={
           overview.canCreate &&
           selected && (
