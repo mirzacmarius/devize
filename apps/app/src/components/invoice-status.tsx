@@ -51,16 +51,23 @@ export function EfacturaPill({
   status,
   late = false,
   deadline,
+  named = false,
 }: {
   status: EfacturaStatus;
   late?: boolean;
   deadline?: string;
+  // Away from a column that says it's about ANAF.
+  named?: boolean;
 }) {
   const t = useScopedI18n("invoices");
   if (status === "not_sent" && late) {
     return (
       <StatusPill tone="danger">
-        {deadline ? t("efacturaLateOn", { date: deadline }) : t("efacturaLate")}
+        {named
+          ? t("efacturaLateNamed")
+          : deadline
+            ? t("efacturaLateOn", { date: deadline })
+            : t("efacturaLate")}
       </StatusPill>
     );
   }

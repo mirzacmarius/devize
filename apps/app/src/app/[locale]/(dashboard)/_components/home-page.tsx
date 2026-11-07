@@ -99,7 +99,7 @@ export function HomePage() {
       {/* Where there's room the last figure starts on the column under it. */}
       <Card
         className={cn(
-          "grid grid-cols-3 max-sm:-mb-6 sm:grid-cols-2 xl:grid-cols-4",
+          "grid grid-cols-3 max-sm:-mb-4 sm:grid-cols-2 xl:grid-cols-4",
           !showSetup &&
             "min-[1400px]:grid-cols-[repeat(3,minmax(0,1fr))_calc((100%-3rem)*0.4+1.5rem)]",
         )}
@@ -158,7 +158,7 @@ export function HomePage() {
         className={cn(
           "grid items-start gap-6",
           showSetup &&
-            "lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] lg:gap-x-8",
+            "xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8",
         )}
       >
         <div
@@ -215,7 +215,7 @@ function Kpi({
         "row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0.5 border-border sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(even)]:border-l sm:max-xl:[&:nth-child(n+3)]:border-t sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l",
         lead
           ? "max-sm:col-span-3 max-sm:px-4 max-sm:pb-3 max-sm:pt-2.5"
-          : "max-sm:border-t max-sm:px-3 max-sm:py-2 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
+          : "max-sm:px-3 max-sm:py-2 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
       )}
     >
       <p className="m-0 truncate text-meta text-ink-2">
@@ -584,7 +584,7 @@ function RecentCard({
                         {" · "}
                         {formatDay(row.updatedAt, locale)}
                       </span>
-                      <span className="shrink-0 leading-[18px] max-sm:hidden [&>*]:leading-[18px]">
+                      <span className="-my-px flex h-[18px] shrink-0 items-center max-sm:hidden">
                         <EstimateStatusPill status={row.status} />
                       </span>
                     </span>

@@ -281,7 +281,7 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
           </Button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" asChild>
           <a href={whatsapp} target="_blank" rel="noreferrer">
             <MessageCircle aria-hidden />
@@ -294,7 +294,7 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
             {t("email")}
           </a>
         </Button>
-        <Button variant="link" className="ml-1 text-meta" asChild>
+        <Button variant="link" className="text-meta" asChild>
           <a href={`/o/${offer.token}`} target="_blank" rel="noreferrer">
             {t("openAsClient")}
           </a>

@@ -30,7 +30,7 @@ const defaultStateLabels: Record<StepState, string> = {
 
 const titleClass: Record<StepState, string> = {
   done: "text-ink-2",
-  success: "font-medium text-success",
+  success: "font-medium text-ink",
   failed: "font-medium text-danger",
   current: "font-medium text-ink",
   todo: "text-ink-3",

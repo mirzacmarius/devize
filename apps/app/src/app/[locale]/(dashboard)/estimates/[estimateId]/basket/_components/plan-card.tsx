@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
+import { Amount } from "@/components/amount";
 import { formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { withoutVat } from "./basket-view";
@@ -82,7 +83,7 @@ export function PlanCard({
           <div className="grid gap-1">
             <p className="m-0 flex flex-wrap items-baseline gap-x-2">
               <span className="text-kpi tabular-nums text-ink">
-                {money(plan.total.total)}
+                <Amount value={money(plan.total.total)} />
               </span>
               <span className="text-body text-ink-2">{t("totalUnit")}</span>
             </p>

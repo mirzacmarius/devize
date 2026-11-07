@@ -190,6 +190,19 @@ export const get = query({
  * The producers whose profiles show in the app, by name, with whether they
  * claimed them, how many norms they publish and the edition of those norms.
  */
+/** What a producer's norms are for, those it has the most of first. */
+function categoriesOf(norms: Doc<"norms">[]) {
+  const counts = new Map<string, number>();
+  for (const { category } of norms) {
+    if (category) {
+      counts.set(category, (counts.get(category) ?? 0) + 1);
+    }
+  }
+  return [...counts]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ro"))
+    .map(([category]) => category);
+}
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
@@ -215,6 +228,7 @@ export const list = query({
           name: displayName(manufacturer),
           claimed: manufacturer.claimStatus === "claimed",
           edition: norm.edition,
+          categories: categoriesOf(norms),
           normCount: Math.min(norms.length, MAX_COUNTED_NORMS),
           moreNorms: norms.length > MAX_COUNTED_NORMS,
         });

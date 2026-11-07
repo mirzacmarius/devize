@@ -34,7 +34,7 @@ type Grouped = Item & { totals: { total: number } };
 
 // A group's heading: the band a table's group row has, up to the card's edges.
 const bandClass =
-  "-mx-[var(--card-pad)] flex h-9 items-center bg-sunken px-[var(--card-pad)] text-body font-medium text-ink sm:rounded-md";
+  "-mx-[var(--card-pad)] flex h-9 items-center bg-sunken pl-[calc(var(--card-pad)+1.75rem)] pr-[var(--card-pad)] text-body font-medium text-ink sm:rounded-md";
 
 /**
  * The Articole of a Deviz with their Antemăsurători: each measured from the
@@ -103,7 +103,7 @@ export function ItemsCard({
                     <li
                       className={cn(
                         bandClass,
-                        "pl-[calc(var(--card-pad)+12px)]",
+                        "pl-[calc(var(--card-pad)+1.75rem+12px)]",
                       )}
                     >
                       {sectionName(chapter.section)}

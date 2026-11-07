@@ -163,7 +163,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
       </div>
 
       {/* What it does to the profit first: it's what the firm stands to lose. */}
-      <div className="grid gap-x-12 gap-y-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="grid gap-x-12 gap-y-5 xl:grid-cols-2">
         <div className="grid content-start gap-3">
           <div className="grid gap-1">
             <p className="m-0 text-meta text-ink-2">

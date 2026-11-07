@@ -147,12 +147,12 @@ export default function ManufacturersPage() {
                 </TableHead>
                 <TableHead>{t("columns.name")}</TableHead>
                 {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
-                <TableHead className="w-44">{t("columns.status")}</TableHead>
-                <TableHead className="w-28">{t("columns.norms")}</TableHead>
-                <TableHead className="w-28">
+                <TableHead className="w-56">{t("columns.status")}</TableHead>
+                <TableHead className="w-40">{t("columns.norms")}</TableHead>
+                <TableHead className="w-40">
                   {t("columns.confidence")}
                 </TableHead>
-                <TableHead className="w-28">{t("columns.email")}</TableHead>
+                <TableHead className="w-36">{t("columns.email")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

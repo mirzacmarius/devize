@@ -77,7 +77,8 @@ export function WorksCard({
           : "-mx-[var(--card-pad)] bg-sunken px-[var(--card-pad)] sm:rounded-md",
       )}
     >
-      <h3 className={cn("m-0 min-w-0 text-body font-medium text-ink")}>
+      {/* Over the titles, past the numbers. */}
+      <h3 className="m-0 min-w-0 pl-7 text-body font-medium text-ink sm:pl-10">
         {sectionName(section)}
       </h3>
       <span className="shrink-0 text-body font-medium tabular-nums text-ink">

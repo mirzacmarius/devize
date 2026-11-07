@@ -62,8 +62,8 @@ const MID_ONLY =
 const ITEM_CELL = "pl-0";
 const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-4";
 // Past the chevron, so heads and section names start where the titles do.
-const TITLE_CELL = "pl-0 [@container(min-width:38rem)]:pl-6";
-const NESTED_TITLE_CELL = "pl-3 [@container(min-width:38rem)]:pl-10";
+const TITLE_CELL = "pl-7 [@container(min-width:38rem)]:pl-6";
+const NESTED_TITLE_CELL = "pl-10";
 
 /** A property of a row, on its quietest line: a dot and a word. */
 function RowTag({
@@ -250,7 +250,7 @@ export function LineItemsCard({
           </div>
         )}
         {!editable && (
-          <p className="m-0 flex items-center gap-1.5 text-meta text-ink-3 max-sm:hidden">
+          <p className="m-0 flex items-center gap-1.5 text-meta text-ink-2 max-sm:hidden">
             <Lock className="size-3.5 shrink-0" aria-hidden />
             {t("items.locked")}
           </p>
@@ -565,7 +565,7 @@ function ItemRows({
 
   return (
     <>
-      <TableRow className="items-row group/row [&>td]:py-2.5">
+      <TableRow className="items-row group/row [&>td]:py-[11px]">
         <TableCell
           className={cn("align-top tabular-nums text-ink-3", FROM_MID)}
         >

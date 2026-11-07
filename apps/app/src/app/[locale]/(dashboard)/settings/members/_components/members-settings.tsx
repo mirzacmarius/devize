@@ -135,7 +135,8 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
     <Card>
       <CardHeader>
         <div className="grid gap-1">
-          <CardTitle>{t("title")}</CardTitle>
+          {/* The tab above already says it. */}
+          <CardTitle className="sr-only">{t("title")}</CardTitle>
           <CardDescription>
             {t("description", { firm: firm.name })}
           </CardDescription>
@@ -203,7 +204,9 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         }
                       >
                         <SelectTrigger
-                          className="h-8 w-36"
+                          // A value until it's pointed at: a list of bordered
+                          // fields would outweigh the people.
+                          className="h-8 w-36 border-transparent bg-transparent"
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />

@@ -16,7 +16,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import { formatAmount, formatMoney, formatPercent } from "@/lib/format";
@@ -80,7 +80,15 @@ export function ChecksCard({
   const body = (
     <>
       {open_.length > 0 && (
-        <ul className="m-0 grid list-none gap-3 rounded-lg bg-sunken p-3">
+        <ul
+          className={cn(
+            "m-0 grid list-none gap-3 p-0",
+            // In the rail's frame it needs no panel of its own.
+            folded
+              ? "rounded-lg bg-sunken p-3"
+              : "[&>li+li]:border-t [&>li+li]:border-border [&>li+li]:pt-3",
+          )}
+        >
           {open_.map(row)}
         </ul>
       )}
@@ -240,7 +248,7 @@ function useCheckText() {
         };
     }
   };
-  return (check: CheckResult): { title: string; detail: string } => {
+  return (check: CheckResult): { title: string; detail: ReactNode } => {
     if (check.id === "omissions") {
       return omissions(check);
     }
@@ -314,12 +322,16 @@ function useCheckText() {
           title: t("checks.current.warningTitle"),
           detail: t("checks.current.warning", {
             count: check.count,
-            difference:
-              check.difference > 0
-                ? `+${amount}`
-                : check.difference < 0
-                  ? `−${amount}`
-                  : amount,
+            // The figure to weigh, in a sentence that explains it.
+            difference: (
+              <span className="font-medium tabular-nums text-ink">
+                {check.difference > 0
+                  ? `+${amount}`
+                  : check.difference < 0
+                    ? `−${amount}`
+                    : amount}
+              </span>
+            ),
           }),
         };
       }
@@ -412,10 +424,7 @@ function OmissionsFix({
     <Button
       type="button"
       variant="link"
-      className={cn(
-        "mt-1",
-        check.status === "none" && "text-ai no-underline hover:underline",
-      )}
+      className={cn("mt-1", check.status === "none" && "text-ai")}
       disabled={starting}
       onClick={async () => {
         if (check.status !== "none" || (await start())) {

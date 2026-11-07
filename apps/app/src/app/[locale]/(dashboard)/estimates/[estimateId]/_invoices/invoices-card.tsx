@@ -131,7 +131,7 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
           type="button"
           variant="outline"
           size="sm"
-          className="mt-2 justify-self-start"
+          className="mt-3 w-full"
           disabled={invoicing.busy}
           onClick={next.run}
         >

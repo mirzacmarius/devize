@@ -4,8 +4,8 @@ import * as React from "react";
 import { cn } from "../utils";
 
 // The app frame: the sidebar on `shell`, the page on a `panel` inset by 12px.
-// Under 768px the sidebar leaves the frame; show its content in a Sheet
-// opened from the page instead.
+// Under 1024px the sidebar leaves the frame, so a tablet's page has the whole
+// width; show its content in a Sheet opened from the page instead.
 const AppShell = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -13,7 +13,7 @@ const AppShell = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "grid min-h-screen bg-shell text-ink md:grid-cols-[theme(spacing.sidebar)_minmax(0,1fr)]",
+      "grid min-h-screen bg-shell text-ink lg:grid-cols-[theme(spacing.sidebar)_minmax(0,1fr)]",
       className,
     )}
     {...props}
@@ -30,7 +30,7 @@ const AppSidebar = React.forwardRef<
   <aside
     ref={ref}
     className={cn(
-      "sticky top-0 hidden h-screen flex-col gap-2 overflow-y-auto px-3 py-3 md:flex",
+      "sticky top-0 hidden h-screen flex-col gap-2 overflow-y-auto px-3 py-3 lg:flex",
       className,
     )}
     {...props}
@@ -40,7 +40,7 @@ AppSidebar.displayName = "AppSidebar";
 
 // The page itself. Its children stack 24px apart: PageHeader, then sections.
 // On a very wide window the content stops growing and stays centred. Under
-// 768px there is no sidebar to set it apart from, so it fills the screen.
+// 1024px there is no sidebar to set it apart from, so it fills the screen.
 const AppMain = React.forwardRef<
   HTMLElement,
   React.HTMLAttributes<HTMLElement>
@@ -48,7 +48,7 @@ const AppMain = React.forwardRef<
   <main
     ref={ref}
     className={cn(
-      "app-main grid min-w-0 grid-cols-[minmax(0,1472px)] content-start justify-center gap-6 bg-panel px-4 pb-10 pt-4 md:m-2 md:ml-0 md:rounded-2xl md:px-8 md:pt-7 md:shadow-panel",
+      "app-main grid min-w-0 grid-cols-[minmax(0,1472px)] content-start justify-center gap-4 bg-panel px-4 pb-10 pt-4 sm:gap-6 md:px-8 lg:m-2 lg:ml-0 lg:rounded-2xl lg:pt-7 lg:shadow-panel",
       className,
     )}
     {...props}

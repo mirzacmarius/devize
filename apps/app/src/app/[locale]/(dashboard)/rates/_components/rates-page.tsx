@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Fragment, useState } from "react";
@@ -61,14 +62,14 @@ export function RatesPage() {
           )
         }
       />
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] lg:gap-x-8">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
         <Card>
           <CardHeader className="grid justify-stretch gap-1">
             <CardTitle>{t("ratesTitle")}</CardTitle>
             <CardDescription>{t("ratesDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table stack>
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("columns.rate")}</TableHead>
@@ -95,18 +96,25 @@ export function RatesPage() {
                     );
                   return (
                     <Fragment key={kind}>
-                      <TableRow className="border-0 hover:bg-transparent">
+                      <TableRow
+                        className={cn(
+                          "border-0 hover:bg-transparent",
+                          kind === "labor" && "max-md:pb-0",
+                        )}
+                      >
                         <TableCell
                           colSpan={canEdit ? 4 : 3}
+                          data-stack="wide"
                           className="h-auto pb-1 pt-5 text-body font-medium text-ink"
                         >
                           {t(`kinds.${kind}`)}
                         </TableCell>
                       </TableRow>
                       {kind === "labor" && (
-                        <TableRow className="hover:bg-transparent">
+                        <TableRow className="hover:bg-transparent max-md:pt-1">
                           <TableCell
                             colSpan={canEdit ? 4 : 3}
+                            data-stack="wide"
                             className="h-auto pb-2 pt-0 text-meta text-ink-3"
                           >
                             {t("laborFloor", {
@@ -123,6 +131,7 @@ export function RatesPage() {
                         <TableRow className="hover:bg-transparent">
                           <TableCell
                             colSpan={canEdit ? 4 : 3}
+                            data-stack="wide"
                             className="text-ink-3"
                           >
                             {t("noRates")}
@@ -131,7 +140,7 @@ export function RatesPage() {
                       )}
                       {ofKind.map((rate) => (
                         <TableRow key={rate._id}>
-                          <TableCell>
+                          <TableCell data-stack="wide">
                             <div className="grid gap-0.5">
                               <span className="text-body text-ink">
                                 {rate.name}
@@ -159,9 +168,14 @@ export function RatesPage() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>{formatUnit(rate.unit, locale)}</TableCell>
-                          <TableCell className="text-right tabular-nums">
+                          <TableCell className="hidden md:table-cell">
+                            {formatUnit(rate.unit, locale)}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums max-md:text-left">
                             {formatMoney(rate.price, locale)}
+                            <span className="ml-1 text-meta text-ink-3 md:hidden">
+                              lei/{formatUnit(rate.unit, locale)}
+                            </span>
                           </TableCell>
                           {canEdit && (
                             <TableCell>

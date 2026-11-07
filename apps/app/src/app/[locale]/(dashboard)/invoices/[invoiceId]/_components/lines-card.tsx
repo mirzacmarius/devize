@@ -77,12 +77,14 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-center gap-2">
           <CardTitle>{t("title")}</CardTitle>
-          <span className="text-meta text-ink-3">{tLei("inLei")}</span>
+          <span className="ml-1 text-meta text-ink-3">
+            {tLei("inLeiLower")}
+          </span>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="gap-0">
         <Table>
           <TableHeader>
             <TableRow>

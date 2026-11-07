@@ -3,6 +3,7 @@ import type { Dictionary } from "./types";
 export default {
   common: {
     inLei: "Amounts in lei",
+    inLeiLower: "amounts in lei",
     appName: "Devize",
     appDescription:
       "Construction estimates with manufacturers' norms and up-to-date store prices.",
@@ -446,7 +447,7 @@ export default {
       recap: "Summary",
       checks: "Checks",
       offer: "Offer",
-      progress: "Execution",
+      progress: "Executed",
       invoices: "Invoices",
       toInvoice: "To invoice, without VAT",
       noStatements: "No statements",
@@ -792,7 +793,7 @@ export default {
       inEstimate: "In the estimate",
       title: "Add from catalog",
       description:
-        "Search by code or job. The cost listed is a reference; an estimate uses your prices.",
+        "The cost listed is a reference; an estimate uses your prices.",
       searchPlaceholder: "Code or job, e.g. stone wool",
       hint: "Type the norm's code or a few words about the job, or pick a category. The company's own norms come first.",
       searching: "Searching…",
@@ -1979,7 +1980,7 @@ export default {
   catalog: {
     title: "Catalog",
     costNote: "Direct cost at reference prices; an estimate uses your prices.",
-    unconfirmed: "Not confirmed by the manufacturer",
+    unconfirmed: "Not confirmed",
     unconfirmedHint: "The manufacturer hasn't checked it yet.",
     noCost: "No price",
     newNorm: "New norm",
@@ -2244,6 +2245,8 @@ export default {
       name: "Name",
       contact: "Contact",
       address: "Address",
+      estimates: "Estimates",
+      owed: "To collect",
     },
     kinds: {
       person: "Individual",
@@ -2387,6 +2390,8 @@ export default {
       detailsDescription:
         "They're shown on estimates, offers and the official tender forms.",
       readOnly: "Only owners and admins change the company's details.",
+      allSaved: "All saved",
+      unsaved: "Unsaved changes",
       tradeRegister: "Trade Register no.",
       tradeRegisterPlaceholder: "e.g. J40/1234/2020",
       address: "Registered address",
@@ -3232,6 +3237,12 @@ export default {
     claimed: "Claimed",
     unclaimed: "Unclaimed",
     moreNorms: "{count}+",
+    columns: {
+      name: "Manufacturer",
+      status: "Profile",
+      edition: "Edition",
+      norms: "Norms",
+    },
     searchPlaceholder: "Search manufacturers",
     noResults: "No manufacturer matches “{text}”.",
     breadcrumb: "You are here",
@@ -4257,6 +4268,7 @@ export default {
     },
     efacturaLate: "Deadline passed",
     efacturaLateOn: "Deadline passed: {date}",
+    efacturaLateNamed: "ANAF: deadline passed",
     efacturaDue: "By {date}",
     card: {
       title: "Invoices",
@@ -4550,7 +4562,8 @@ export default {
       price: "Price with VAT",
       change: "Change",
       checked: "Checked",
-      forMaterial: "{store} · for {material}",
+      store: "Store",
+      forMaterial: "for {material}",
       unknownMaterial: "a deleted material",
       perUnit: "{price}\u00a0lei/{unit} without VAT",
       typed: "Price typed by the firm",
@@ -4904,6 +4917,13 @@ export default {
         others: "{count} openings",
       },
       measuredSides: "measured area and perimeter",
+      sides: {
+        length: "L {value}",
+        width: "W {value}",
+        height: "H {value}",
+      },
+      measures:
+        "Floor {floor} sqm · Walls {walls} sqm · Perimeter {perimeter} m",
       total: "All rooms",
       actions: "Actions for {name}",
       edit: "Edit",

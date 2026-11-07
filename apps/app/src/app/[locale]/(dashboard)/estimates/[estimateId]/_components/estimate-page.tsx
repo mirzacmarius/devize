@@ -18,6 +18,7 @@ import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { RailLabel } from "@/components/fold-card";
+import { RailSummary } from "@/components/rail-stat";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { useScrolledPast } from "@/components/use-scrolled-past";
@@ -139,13 +140,21 @@ export function EstimatePage() {
     progress: <ProgressCard key="progress" estimate={estimate} />,
     invoices: <InvoicesCard key="invoices" estimate={estimate} />,
   };
-  // What the Deviz is at first; the rest in one quiet list of rows.
+  // What the Deviz is at first, in one frame; the rest in one quiet list of rows.
   const railLead =
-    status === "accepted"
-      ? [rail.progress, rail.invoices]
-      : status === "draft"
-        ? [rail.checks, rail.invoices]
-        : [rail.offer, rail.invoices];
+    status === "accepted" ? (
+      <RailSummary>
+        {rail.progress}
+        {rail.invoices}
+      </RailSummary>
+    ) : (
+      <>
+        <RailSummary>
+          {status === "draft" ? rail.checks : rail.offer}
+        </RailSummary>
+        {rail.invoices}
+      </>
+    );
 
   return (
     <>
@@ -172,16 +181,19 @@ export function EstimatePage() {
           description={
             <>
               {status !== "archived" && (
-                <span className="block sm:hidden">
+                <span className="sm:hidden">
                   <EstimateStatusPill status={status} />
+                  {" · "}
                 </span>
               )}
-              {[
-                estimate.client?.name ?? t("noClient"),
-                t("pricesOf", {
+              {estimate.client?.name ?? t("noClient")}
+              {/* A phone keeps the line to one row; the Deviz's data has the date. */}
+              <span className="max-sm:hidden">
+                {" · "}
+                {t("pricesOf", {
                   date: formatCalendarDate(estimate.priceDate, locale),
-                }),
-              ].join(" · ")}
+                })}
+              </span>
             </>
           }
         />
@@ -213,7 +225,7 @@ export function EstimatePage() {
         </div>
         <div
           ref={hero}
-          className="grid gap-x-10 gap-y-3 md:col-span-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:[align-items:last_baseline]"
+          className="grid gap-x-10 gap-y-3 md:col-span-2 xl:grid-cols-[auto_minmax(0,1fr)] xl:[align-items:last_baseline]"
         >
           <TotalHero
             label={t("summary.total")}
@@ -342,7 +354,7 @@ function ScrolledBar({
     <div
       aria-hidden
       className={cn(
-        "fixed inset-x-0 top-0 z-30 border-b border-border bg-panel transition-opacity duration-150 ease-out max-sm:hidden md:left-sidebar md:right-2",
+        "fixed inset-x-0 top-0 z-30 border-b border-border bg-panel transition-opacity duration-150 ease-out max-sm:hidden lg:left-sidebar lg:right-2",
         shown ? "opacity-100" : "pointer-events-none opacity-0",
       )}
     >
@@ -435,7 +447,7 @@ function SectionLinks({
   return (
     <nav
       aria-label={t("jump.label")}
-      className="order-last grid grid-cols-2 border-t border-border max-sm:-mx-4 max-sm:-mb-6 md:col-span-2 md:grid-cols-4 md:border-b xl:hidden"
+      className="order-last grid grid-cols-2 border-t border-border max-sm:-mx-4 max-sm:-mb-4 md:col-span-2 md:grid-cols-4 md:border-b xl:hidden"
     >
       {sections.map((section) => {
         const cell = cells[section];
@@ -443,7 +455,7 @@ function SectionLinks({
           <a
             key={section}
             href={`#${section}`}
-            className="flex min-h-14 min-w-0 items-center justify-between gap-2 border-border px-4 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring max-md:[&:nth-child(n+3)]:border-t sm:[&:nth-child(odd)]:pl-0 md:[&:nth-child(3)]:pl-4 max-md:[&:nth-child(even)]:border-l md:[&:not(:first-child)]:border-l"
+            className="flex min-h-14 min-w-0 items-center justify-between gap-2 border-border px-4 py-2 transition-colors max-sm:min-h-[52px] max-sm:py-1.5 hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring max-md:[&:nth-child(even)]:border-l max-md:[&:nth-child(n+3)]:border-t sm:max-md:[&:nth-child(even)]:pr-0 sm:max-md:[&:nth-child(odd)]:pl-0 md:gap-1 md:px-3 md:first:pl-0 md:last:pr-0 md:[&:not(:first-child)]:border-l"
           >
             <span className="grid min-w-0">
               <span className="truncate text-meta text-ink-3">

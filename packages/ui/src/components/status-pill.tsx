@@ -22,7 +22,7 @@ const statusPillVariants = cva(
         // Finished or set aside, nothing to do: Decontat, Expirat
         neutral: "text-ink-2 before:bg-neutral-dot",
         // A good result just reached: Acceptat de client, Sincronizat
-        success: "text-success before:bg-success-dot",
+        success: "text-ink-2 before:bg-success-dot",
         // Needs attention soon: Prețuri de actualizat
         warning: "text-warning before:bg-warning-dot",
         // Blocks the next step: Verificare eșuată, Respins

@@ -59,7 +59,7 @@ export function OfferQuestions({
   return (
     <div
       className={cn(
-        "grid gap-2.5 rounded-md border border-border px-3 py-2.5",
+        "grid gap-2.5 rounded-md bg-sunken px-3 py-2.5",
         // What's asked of you comes before the link, which is already out.
         waiting > 0 && "order-first",
       )}

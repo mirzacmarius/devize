@@ -23,6 +23,7 @@ import {
 } from "@devize/ui/select";
 import { toast } from "@devize/ui/sonner";
 import { Switch } from "@devize/ui/switch";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { type ChangeEvent, type FormEvent, useState } from "react";
@@ -43,8 +44,7 @@ const LOGO_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_LOGO_BYTES = 5 * 1024 * 1024;
 
 // A settings card's footer: a hint on the left, the card's action on the right.
-const footer =
-  "sticky bottom-0 z-10 justify-between gap-4 border-t bg-card py-3 sm:mt-5";
+const footer = "justify-between gap-4 border-t bg-card py-3 sm:mt-5";
 
 /**
  * The Firmă's logo and the details its devize, offers and official forms
@@ -86,7 +86,7 @@ function TermsCard({ terms }: { terms: FirmDetails["terms"] }) {
           })}
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-2 text-body text-ink-2">
+      <CardContent className="grid gap-2 text-meta text-ink-3">
         {terms ? (
           <p className="m-0">
             {terms.acceptedBy
@@ -340,17 +340,17 @@ function DetailsForm({
                 />
               </Field>
             </div>
-            <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_200px]">
-              <Field label={t("address")} htmlFor="firm-address">
-                <Input
-                  id="firm-address"
-                  value={address}
-                  onChange={(event) => setAddress(event.target.value)}
-                  placeholder={t("addressPlaceholder")}
-                  autoComplete="street-address"
-                  maxLength={500}
-                />
-              </Field>
+            <Field label={t("address")} htmlFor="firm-address">
+              <Input
+                id="firm-address"
+                value={address}
+                onChange={(event) => setAddress(event.target.value)}
+                placeholder={t("addressPlaceholder")}
+                autoComplete="street-address"
+                maxLength={500}
+              />
+            </Field>
+            <div className="grid gap-5 sm:grid-cols-2">
               <Field label={tFirm("county")} htmlFor="firm-county">
                 <Select value={county} onValueChange={setCounty}>
                   <SelectTrigger id="firm-county">
@@ -365,24 +365,6 @@ function DetailsForm({
                   </SelectContent>
                 </Select>
               </Field>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field
-                label={t("email")}
-                htmlFor="firm-email"
-                error={errors.email}
-              >
-                <Input
-                  id="firm-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder={t("emailPlaceholder")}
-                  autoComplete="email"
-                  maxLength={200}
-                  aria-invalid={errors.email !== undefined}
-                />
-              </Field>
               <Field label={t("phone")} htmlFor="firm-phone">
                 <Input
                   id="firm-phone"
@@ -395,6 +377,18 @@ function DetailsForm({
                 />
               </Field>
             </div>
+            <Field label={t("email")} htmlFor="firm-email" error={errors.email}>
+              <Input
+                id="firm-email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder={t("emailPlaceholder")}
+                autoComplete="email"
+                maxLength={200}
+                aria-invalid={errors.email !== undefined}
+              />
+            </Field>
             <div className="flex items-start justify-between gap-4 border-t border-border pt-4">
               <div className="grid gap-0.5">
                 <label
@@ -415,24 +409,26 @@ function DetailsForm({
             </div>
           </fieldset>
         </CardContent>
-        {/* Save shows up when there's something to save. */}
-        {(!canEdit || changed || saving) && (
-          <CardFooter className={footer}>
-            {canEdit ? (
-              <>
-                <span />
-                <Button type="submit" disabled={saving}>
-                  {saving && (
-                    <Icons.Loader className="animate-spin" aria-hidden />
-                  )}
-                  {tc("save")}
-                </Button>
-              </>
-            ) : (
-              <p className="m-0 text-meta text-ink-3">{t("readOnly")}</p>
-            )}
-          </CardFooter>
-        )}
+        {/* Says where the form stands; only unsaved changes stay in sight. */}
+        <CardFooter
+          className={cn(footer, (changed || saving) && "sticky bottom-0 z-10")}
+        >
+          {canEdit ? (
+            <>
+              <span className="text-meta text-ink-3" aria-live="polite">
+                {changed || saving ? t("unsaved") : t("allSaved")}
+              </span>
+              <Button type="submit" disabled={saving || !changed}>
+                {saving && (
+                  <Icons.Loader className="animate-spin" aria-hidden />
+                )}
+                {tc("save")}
+              </Button>
+            </>
+          ) : (
+            <p className="m-0 text-meta text-ink-3">{t("readOnly")}</p>
+          )}
+        </CardFooter>
       </form>
     </Card>
   );

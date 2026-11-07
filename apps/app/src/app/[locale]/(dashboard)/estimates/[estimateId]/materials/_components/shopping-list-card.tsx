@@ -26,14 +26,18 @@ import {
   formatPercent,
   formatQuantityRounded,
   formatUnit,
+  keepUnits,
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { ListRow, ShoppingList } from "./types";
 
 // Over the number, not over the unit in its own slot after it.
-const UNIT_SLOT = "ml-1.5 inline-block w-7 text-left text-ink-3";
-const HEAD_OVER_NUMBER = "pr-[46px] text-right";
-const numberClass = "whitespace-nowrap text-right align-top tabular-nums";
+const UNIT_SLOT = "ml-2 inline-block w-7 text-left text-ink-3";
+// What's needed and what's left have columns from a tablet up, and a line under
+// the material on a phone.
+const ROOMY_HEAD = "hidden pr-[48px] text-right md:table-cell";
+const ROOMY_NUMBER =
+  "hidden whitespace-nowrap text-right align-top tabular-nums md:table-cell";
 
 /**
  * The Lista de cumpărături: each material of the whole Deviz, in the whole
@@ -56,15 +60,13 @@ export function ShoppingListCard({
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Table bleed twoLine className="min-w-[44rem]">
+        <Table stack twoLine>
           <TableHeader>
             <TableRow>
               <TableHead>{t("material")}</TableHead>
-              <TableHead className={HEAD_OVER_NUMBER}>{t("need")}</TableHead>
+              <TableHead className={ROOMY_HEAD}>{t("need")}</TableHead>
               <TableHead className="pl-8">{t("buy")}</TableHead>
-              <TableHead className={HEAD_OVER_NUMBER}>
-                {t("leftover")}
-              </TableHead>
+              <TableHead className={ROOMY_HEAD}>{t("leftover")}</TableHead>
               <TableHead className="text-right">{t("cost")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -108,9 +110,9 @@ function MaterialRow({
 
   return (
     <TableRow className="group/row">
-      <TableCell className="align-top">
+      <TableCell data-stack="wide" className="align-top">
         <div className="grid justify-items-start gap-0.5">
-          <span className="text-ink">{row.name}</span>
+          <span className="text-ink">{keepUnits(row.name)}</span>
           <span className="flex min-h-[18px] items-center gap-1 text-meta">
             <span className="text-ink-3" title={pkg?.label}>
               {source ?? tSources("none")}
@@ -134,16 +136,22 @@ function MaterialRow({
               {t("pooled", { count: row.pooled.packages })}
             </span>
           )}
+          <span className="text-meta tabular-nums text-ink-3 md:hidden">
+            {t("need")} {formatQuantityRounded(row.need, locale)} {unit}
+            {row.purchase &&
+              leftover > 0 &&
+              ` · ${t("leftover")} ${formatQuantityRounded(leftover, locale)} ${unit}`}
+          </span>
         </div>
       </TableCell>
-      <TableCell className={numberClass}>
+      <TableCell className={ROOMY_NUMBER}>
         {formatQuantityRounded(row.need, locale)}
         <span className={UNIT_SLOT}>{unit}</span>
       </TableCell>
-      <TableCell className="whitespace-nowrap pl-8 align-top tabular-nums">
+      <TableCell className="whitespace-nowrap pl-8 align-top tabular-nums max-md:self-start max-md:whitespace-normal">
         <Packages row={row} />
       </TableCell>
-      <TableCell className={numberClass}>
+      <TableCell className={ROOMY_NUMBER}>
         {row.purchase && leftover > 0 ? (
           <div className="grid justify-items-end gap-0.5">
             <span>
@@ -151,7 +159,7 @@ function MaterialRow({
               <span className={UNIT_SLOT}>{unit}</span>
             </span>
             {pkg?.source !== "counted" && (
-              <span className="pr-[34px] text-meta text-ink-3">
+              <span className="pr-[36px] text-meta text-ink-3">
                 {t("share", {
                   percent: formatPercent(
                     Math.round(row.purchase.leftoverShare * 100),
@@ -168,7 +176,7 @@ function MaterialRow({
           </>
         )}
       </TableCell>
-      <TableCell className={numberClass}>
+      <TableCell className="whitespace-nowrap text-right align-top tabular-nums max-md:self-start">
         <div className="grid justify-items-end gap-0.5">
           <span>{formatMoney(row.boughtCost, locale)}</span>
           {row.leftoverCost > 0 && (

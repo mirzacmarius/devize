@@ -24,7 +24,7 @@ function RowText({
     <>
       <span
         className={cn(
-          "text-body font-normal text-ink-2 transition-colors group-hover:text-ink",
+          "text-body font-normal text-ink-2 transition-colors group-hover:text-ink xl:text-meta",
           lead !== undefined ? "shrink-0" : "min-w-0",
         )}
       >
@@ -33,7 +33,7 @@ function RowText({
       {/* The chevron's glyph ends on the column's edge, where the rail's edge is. */}
       <span className="-mr-[5px] ml-auto flex min-w-0 items-center gap-2">
         {lead !== undefined && (
-          <span className="truncate text-body font-normal tabular-nums text-ink">
+          <span className="truncate text-body font-normal tabular-nums text-ink xl:text-meta">
             {lead}
           </span>
         )}
@@ -114,7 +114,7 @@ export function RailLabel({ children }: { children: ReactNode }) {
   return (
     <h3
       data-rail-label
-      className="m-0 mb-0.5 mt-6 hidden border-b border-border pb-1 text-caption text-ink-3 xl:block"
+      className="m-0 mb-0.5 mt-6 hidden text-caption text-ink-3 xl:block"
     >
       {children}
     </h3>

@@ -7,9 +7,19 @@ import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
 import { useQuery } from "convex/react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
+import { Nil } from "@/components/nil";
 import { SearchInput } from "@/components/search-input";
 import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
@@ -32,6 +42,16 @@ export function ProducersPage() {
     return words.every((word) => name.includes(word));
   });
 
+  const searchInput = (className: string) => (
+    <SearchInput
+      value={text}
+      onChange={(event) => setText(event.target.value)}
+      placeholder={t("searchPlaceholder")}
+      aria-label={t("searchPlaceholder")}
+      className={className}
+    />
+  );
+
   return (
     <>
       <PageHeader
@@ -53,73 +73,106 @@ export function ProducersPage() {
                 .join(" · ")
             : "\u00a0"
         }
+        actions={
+          producers?.length ? searchInput("w-72 max-sm:hidden") : undefined
+        }
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <div className="flex justify-end">
-            <SearchInput
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-80"
-            />
-          </div>
-          {rows === undefined && (
-            <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
-          )}
-          {rows?.length === 0 && (
-            <p className="m-0 text-body text-ink-3">
-              {t("noResults", { text: search })}
-            </p>
-          )}
-          {rows !== undefined && rows.length > 0 && (
-            <ul className="m-0 grid list-none gap-x-8 p-0 sm:grid-cols-2 xl:grid-cols-3">
-              {rows.map((producer) => {
+          {searchInput("w-full sm:hidden")}
+          <Table stack twoLine>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("columns.name")}</TableHead>
+                <TableHead className="hidden w-44 md:table-cell">
+                  {t("columns.status")}
+                </TableHead>
+                <TableHead className="hidden w-28 md:table-cell">
+                  {t("columns.edition")}
+                </TableHead>
+                <TableHead className="hidden w-20 text-right md:table-cell">
+                  {t("columns.norms")}
+                </TableHead>
+                <TableHead className="hidden w-10 md:table-cell" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows === undefined && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-ink-3">
+                    {tc("loading")}
+                  </TableCell>
+                </TableRow>
+              )}
+              {rows?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-ink-3">
+                    {t("noResults", { text: search })}
+                  </TableCell>
+                </TableRow>
+              )}
+              {rows?.map((producer) => {
                 const norms = producer.moreNorms
                   ? t("moreNorms", { count: producer.normCount })
                   : producer.normCount;
                 return (
-                  <li key={producer._id} className="border-t border-border">
-                    <Link
-                      href={`/producers/${producer._id}`}
-                      className="-mx-2 flex min-h-[72px] items-center gap-3 rounded-md px-2 py-3 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <span
-                        aria-hidden
-                        className="grid size-10 shrink-0 place-items-center rounded-lg border border-border bg-card text-caption font-medium text-ink-2"
+                  // The whole row leads to the profile.
+                  <TableRow
+                    key={producer._id}
+                    className="group/row relative transition-colors hover:bg-tile"
+                  >
+                    <TableCell data-stack="wide">
+                      <Link
+                        href={`/producers/${producer._id}`}
+                        className="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 gap-y-0.5 rounded-xs after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
                       >
-                        {initials(producer.name)}
-                      </span>
-                      <span className="grid min-w-0 flex-1 gap-0.5">
-                        <span className="flex min-w-0 items-baseline justify-between gap-3">
-                          <span className="truncate text-body font-medium text-ink">
-                            {producer.name}
+                        <span
+                          aria-hidden
+                          className="row-span-2 grid size-10 place-items-center rounded-lg border border-border bg-card text-caption font-medium text-ink-2"
+                        >
+                          {initials(producer.name)}
+                        </span>
+                        <span className="self-baseline truncate text-body font-medium text-ink">
+                          {producer.name}
+                        </span>
+                        <span className="col-start-2 truncate text-meta text-ink-3">
+                          {producer.categories.join(" · ")}
+                          {/* On a phone its columns move here. */}
+                          <span className="md:hidden">
+                            {producer.categories.length > 0 && " · "}
+                            {t("normCount", { count: norms })}
                           </span>
-                          {producer.claimed && (
-                            <StatusPill
-                              tone="success"
-                              title={t("managed")}
-                              className="shrink-0"
-                            >
-                              {t("managedShort")}
-                            </StatusPill>
-                          )}
                         </span>
-                        <span className="truncate text-meta tabular-nums text-ink-3">
-                          {t("normCount", { count: norms })}
-                          {producer.edition &&
-                            ` · ${t("edition", { edition: producer.edition })}`}
-                        </span>
-                      </span>
-                    </Link>
-                  </li>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {producer.claimed ? (
+                        <StatusPill tone="success" title={t("managed")}>
+                          {t("managedShort")}
+                        </StatusPill>
+                      ) : (
+                        <Nil />
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden tabular-nums text-ink-2 md:table-cell">
+                      {producer.edition ?? <Nil />}
+                    </TableCell>
+                    <TableCell className="hidden text-right tabular-nums md:table-cell">
+                      {norms}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell md:!align-middle">
+                      <ChevronRight
+                        aria-hidden
+                        className="-mr-[5px] ml-auto size-4 text-ink-3"
+                      />
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </ul>
-          )}
+            </TableBody>
+          </Table>
         </section>
       )}
     </>

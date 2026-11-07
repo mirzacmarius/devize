@@ -158,17 +158,17 @@ export function InvoiceList() {
                 <TableHead className="hidden md:table-cell">
                   {t("columns.client")}
                 </TableHead>
-                <TableHead className="md:pr-8">{t("columns.status")}</TableHead>
+                <TableHead className="xl:pr-8">{t("columns.status")}</TableHead>
                 <TableHead className="text-right">
                   {t("columns.total")}
                 </TableHead>
                 <TableHead className="hidden pl-8 text-right xl:table-cell">
                   {t("columns.owed")}
                 </TableHead>
-                <TableHead className="hidden text-right md:table-cell">
+                <TableHead className="hidden text-right md:table-cell md:max-xl:pr-0">
                   {t("columns.due")}
                 </TableHead>
-                <TableHead className="hidden pl-8 lg:table-cell">
+                <TableHead className="hidden pl-8 xl:table-cell">
                   {t("columns.efactura")}
                 </TableHead>
               </TableRow>
@@ -197,6 +197,12 @@ export function InvoiceList() {
                   !row.reversed
                     ? row.total - row.paidAmount
                     : undefined;
+                const anafAsks =
+                  live &&
+                  (row.efactura.status === "rejected" ||
+                    row.efactura.status === "failed" ||
+                    (row.efactura.status === "not_sent" &&
+                      row.efactura.deadline < today));
                 return (
                   <TableRow key={row._id}>
                     <TableCell data-stack="wide">
@@ -222,13 +228,25 @@ export function InvoiceList() {
                       </Link>
                     </TableCell>
                     <TableCell className="hidden text-ink-2 md:table-cell">
-                      {row.buyerName}
+                      <span className="block min-w-[6.75rem]">
+                        {row.buyerName}
+                      </span>
                     </TableCell>
-                    <TableCell className="md:pr-8">
+                    <TableCell className="xl:pr-8">
                       <InvoiceStatusPill
                         status={row.status}
                         overdue={row.dueDate < today}
                       />
+                      {/* Below this the column's gone, so what needs doing says it here. */}
+                      {anafAsks && (
+                        <span className="mt-0.5 block xl:hidden">
+                          <EfacturaPill
+                            status={row.efactura.status}
+                            late
+                            named
+                          />
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell className="text-right tabular-nums max-md:text-body-lg max-md:font-medium xl:text-ink-2">
                       {formatMoney(row.total, locale)}
@@ -237,7 +255,7 @@ export function InvoiceList() {
                       </span>
                       {/* Below this the column's gone, so a part-paid one says it here. */}
                       {owed !== undefined && row.paidAmount > 0 && (
-                        <span className="block text-meta font-normal text-ink-3 xl:hidden">
+                        <span className="block whitespace-nowrap text-meta font-normal text-ink-3 xl:hidden">
                           {t("owedPart", { owed: formatMoney(owed, locale) })}
                         </span>
                       )}
@@ -252,10 +270,10 @@ export function InvoiceList() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell">
+                    <TableCell className="hidden text-right text-ink-3 tabular-nums md:table-cell md:max-xl:pr-0">
                       {formatCalendarDay(row.dueDate, locale)}
                     </TableCell>
-                    <TableCell className="hidden pl-8 lg:table-cell">
+                    <TableCell className="hidden pl-8 xl:table-cell">
                       {live ? (
                         <EfacturaPill
                           status={row.efactura.status}

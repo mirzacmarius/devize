@@ -51,6 +51,12 @@ import { statementTone } from "./statement-status";
 import type { Statement, StatementRow, Works } from "./types";
 import { useDownloadProgress } from "./use-download-progress";
 
+// Where there's room the table has all its columns. Where there isn't, an
+// Articol says them on a line of its own, and the quantity to fill in stays.
+const ROOMY_HEAD = "hidden text-right xl:table-cell";
+const ROOMY_CELL =
+  "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell";
+
 /**
  * One Situație de lucrări: every Articol of the contract with what was
  * executed before, in this period and in all, the period's Recapitulație,
@@ -358,17 +364,17 @@ function RowsTable({
     value === 0 ? <Nil /> : shown;
 
   return (
-    <Table bleed className="min-w-[50rem]">
+    <Table bleed stack className="xl:min-w-[50rem]">
       <TableHeader>
         <TableRow>
           <TableHead>{t("article")}</TableHead>
-          <TableHead className="text-right">{t("contract")}</TableHead>
-          <TableHead className="text-right">{t("previous")}</TableHead>
-          <TableHead className="bg-sunken pr-[21px] text-right font-medium text-ink">
+          <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
+          <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
+          <TableHead className="w-[110px] rounded-t-lg bg-sunken/50 pr-6 text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
-          <TableHead className="text-right">{t("cumulative")}</TableHead>
-          <TableHead className="text-right">{t("remaining")}</TableHead>
+          <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
+          <TableHead className={ROOMY_HEAD}>{t("remaining")}</TableHead>
           <TableHead className="text-right">{t("value")}</TableHead>
         </TableRow>
       </TableHeader>
@@ -384,18 +390,26 @@ function RowsTable({
           return (
             <Fragment key={row._id}>
               {heading && (
-                <TableGroupRow>
+                <TableGroupRow className="max-md:py-0">
+                  {/* A span can't follow which columns show. */}
                   <TableCell
                     colSpan={7}
-                    className="band-start band-end font-medium"
+                    className="band-start band-end hidden font-medium first:pl-7 xl:table-cell"
+                  >
+                    {heading}
+                  </TableCell>
+                  <TableCell
+                    colSpan={3}
+                    data-stack="wide"
+                    className="band-start band-end font-medium !pl-7 max-md:flex max-md:items-center xl:hidden"
                   >
                     {heading}
                   </TableCell>
                 </TableGroupRow>
               )}
-              <TableRow className="group/row [&>td]:py-3">
-                <TableCell className="relative align-top">
-                  <div className="grid min-w-64 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-14">
+              <TableRow className="group/row md:[&>td]:py-[11px]">
+                <TableCell data-stack="wide" className="relative align-top">
+                  <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-14 xl:min-w-64">
                     <span className="tabular-nums text-ink-3">
                       {row.position}
                     </span>
@@ -407,6 +421,20 @@ function RowsTable({
                         price: formatMoney(row.unitPrice, locale),
                         unit,
                       })}
+                    </span>
+                    <span className="col-start-2 text-meta tabular-nums text-ink-3 xl:hidden">
+                      {t("contract")}{" "}
+                      {formatQuantity(row.contractQuantity, locale)} {unit}
+                      {row.previousQuantity !== 0 &&
+                        ` · ${t("previous")} ${formatQuantity(row.previousQuantity, locale)}`}
+                      {row.remainingQuantity > 0 &&
+                        ` · ${t("remaining")} ${formatQuantity(row.remainingQuantity, locale)}`}
+                      {row.over && (
+                        <span className="text-warning">
+                          {" · "}
+                          {t("over")}
+                        </span>
+                      )}
                     </span>
                   </div>
                   <div className="absolute right-1 top-1">
@@ -442,44 +470,61 @@ function RowsTable({
                     </Button>
                   </div>
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                <TableCell className={ROOMY_CELL}>
                   {formatQuantity(row.contractQuantity, locale)}
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                <TableCell className={ROOMY_CELL}>
                   {ifAny(
                     row.previousQuantity,
                     formatQuantity(row.previousQuantity, locale),
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken pr-[21px] text-right align-top">
-                  <InlineNumber
-                    fixed
-                    placeholder="–"
-                    value={row.quantity}
-                    format={(value) =>
-                      value !== 0 ? formatQuantity(value, locale) : ""
-                    }
-                    label={t("quantityLabel", { title: row.title })}
-                    disabled={!fillable}
-                    onCommit={(quantity) =>
-                      void run(() => setQuantity({ rowId: row._id, quantity }))
-                    }
-                    className={cn(
-                      // Up by the field's padding, level with the row's first line.
-                      "-my-1.5 h-8 w-20",
-                      // What was typed looks like it; an empty one opens with
-                      // its row, in a column that already says what it's for.
-                      fillable && row.quantity !== 0 && "border-input bg-field",
-                      fillable &&
-                        "group-hover/row:border-input [@media(hover:none)]:border-input",
-                      row.quantity === 0
-                        ? "text-ink-3"
-                        : "font-medium text-ink",
-                    )}
-                  />
+                <TableCell className="whitespace-nowrap bg-sunken/50 pr-6 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
+                  <div className="max-md:flex max-md:items-center max-md:gap-2">
+                    {/* On a phone its head is gone, so it says what it is. */}
+                    <span className="text-meta text-ink-3 md:hidden">
+                      {t("quantity")}
+                    </span>
+                    <InlineNumber
+                      fixed
+                      placeholder="–"
+                      value={row.quantity}
+                      format={(value) =>
+                        value !== 0 ? formatQuantity(value, locale) : ""
+                      }
+                      label={t("quantityLabel", { title: row.title })}
+                      disabled={!fillable}
+                      onCommit={(quantity) =>
+                        void run(() =>
+                          setQuantity({ rowId: row._id, quantity }),
+                        )
+                      }
+                      className={cn(
+                        // Up by the field's padding, level with the row's first line.
+                        "-my-1.5 h-8 w-20",
+                        // What was typed looks like it; an empty one opens with
+                        // its row, in a column that already says what it's for.
+                        fillable &&
+                          row.quantity !== 0 &&
+                          "border-input bg-field",
+                        fillable &&
+                          "group-hover/row:border-input [@media(hover:none)]:border-input",
+                        row.quantity === 0
+                          ? "text-ink-3"
+                          : "font-medium text-ink",
+                        // A thumb needs a field that looks like one, and room.
+                        fillable
+                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:bg-field"
+                          : "max-md:my-0 max-md:h-auto max-md:w-auto",
+                      )}
+                    />
+                    <span className="text-meta text-ink-3 md:hidden">
+                      {unit}
+                    </span>
+                  </div>
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                <TableCell className={ROOMY_CELL}>
                   <div className="grid justify-items-end gap-0.5">
                     {ifAny(
                       row.cumulativeQuantity,
@@ -499,7 +544,7 @@ function RowsTable({
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
+                <TableCell className={ROOMY_CELL}>
                   {ifAny(
                     Math.max(0, row.remainingQuantity),
                     formatQuantity(Math.max(0, row.remainingQuantity), locale),
@@ -513,7 +558,17 @@ function RowsTable({
           );
         })}
         <TableRow className="hover:bg-transparent">
-          <TableCell colSpan={6} className="text-right font-medium">
+          {/* A span can't follow which columns show. */}
+          <TableCell
+            colSpan={6}
+            className="hidden text-right font-medium xl:table-cell"
+          >
+            {t("direct")}
+          </TableCell>
+          <TableCell
+            colSpan={2}
+            className="text-right font-medium max-md:text-left xl:hidden"
+          >
             {t("direct")}
           </TableCell>
           <TableCell className="whitespace-nowrap text-right font-medium tabular-nums">

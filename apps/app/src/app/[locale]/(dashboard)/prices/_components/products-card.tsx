@@ -71,6 +71,9 @@ export function ProductsCard() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t("product")}</TableHead>
+                <TableHead className="hidden w-36 lg:table-cell">
+                  {t("store")}
+                </TableHead>
                 <TableHead className="text-right">{t("price")}</TableHead>
                 {anyMoved && (
                   <TableHead className="hidden text-right sm:table-cell">
@@ -85,7 +88,7 @@ export function ProductsCard() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={5} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
@@ -118,8 +121,11 @@ export function ProductsCard() {
                           </span>
                         )}
                         <span className="text-meta text-ink-3">
+                          <span className="lg:hidden">
+                            {tStores(row.store)}
+                            {" · "}
+                          </span>
                           {t("forMaterial", {
-                            store: tStores(row.store),
                             material:
                               row.material?.name ?? t("unknownMaterial"),
                           })}
@@ -139,6 +145,9 @@ export function ProductsCard() {
                           </span>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell className="hidden text-ink-2 lg:table-cell">
+                      {tStores(row.store)}
                     </TableCell>
                     <TableCell className="text-right align-top">
                       <div className="grid justify-items-end gap-0.5">

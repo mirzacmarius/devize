@@ -1,6 +1,7 @@
 export default {
   common: {
     inLei: "Sume în lei",
+    inLeiLower: "sume în lei",
     appName: "Devize",
     appDescription:
       "Devize de construcții cu norme de la producători și prețuri la zi din magazine.",
@@ -445,7 +446,7 @@ export default {
       recap: "Recapitulație",
       checks: "Verificări",
       offer: "Ofertă",
-      progress: "Execuție",
+      progress: "Executat",
       invoices: "Facturi",
       toInvoice: "De facturat, fără TVA",
       noStatements: "Fără situații",
@@ -789,7 +790,7 @@ export default {
       inEstimate: "În deviz",
       title: "Adaugă din catalog",
       description:
-        "Caută după cod sau lucrare. Costul din listă e de referință; în deviz se folosesc prețurile tale.",
+        "Costul din listă e de referință; în deviz se folosesc prețurile tale.",
       searchPlaceholder: "Cod sau lucrare, ex. vată bazaltică",
       hint: "Scrie codul normei sau câteva cuvinte despre lucrare, sau alege o categorie. Normele firmei apar primele.",
       searching: "Se caută…",
@@ -1977,7 +1978,7 @@ export default {
     title: "Catalog",
     costNote:
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
-    unconfirmed: "Neconfirmată de producător",
+    unconfirmed: "Neconfirmată",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
@@ -2245,6 +2246,8 @@ export default {
       name: "Nume",
       contact: "Contact",
       address: "Adresă",
+      estimates: "Devize",
+      owed: "De încasat",
     },
     kinds: {
       person: "Persoană fizică",
@@ -2385,6 +2388,8 @@ export default {
       detailsDescription:
         "Apar pe devize, oferte și formularele oficiale de licitație.",
       readOnly: "Doar proprietarii și administratorii modifică datele firmei.",
+      allSaved: "Totul e salvat",
+      unsaved: "Modificări nesalvate",
       tradeRegister: "Nr. Reg. Com.",
       tradeRegisterPlaceholder: "ex. J40/1234/2020",
       address: "Adresa sediului",
@@ -3230,6 +3235,12 @@ export default {
     claimed: "Revendicat",
     unclaimed: "Nerevendicat",
     moreNorms: "{count}+",
+    columns: {
+      name: "Producător",
+      status: "Profil",
+      edition: "Ediție",
+      norms: "Norme",
+    },
     searchPlaceholder: "Caută un producător",
     noResults: "Niciun producător nu se potrivește cu „{text}”.",
     breadcrumb: "Unde ești",
@@ -4254,6 +4265,7 @@ export default {
     },
     efacturaLate: "Termen depășit",
     efacturaLateOn: "Termen depășit: {date}",
+    efacturaLateNamed: "ANAF: termen depășit",
     efacturaDue: "Până la {date}",
     card: {
       title: "Facturi",
@@ -4547,7 +4559,8 @@ export default {
       price: "Preț cu TVA",
       change: "Schimbare",
       checked: "Verificat",
-      forMaterial: "{store} · pentru {material}",
+      store: "Magazin",
+      forMaterial: "pentru {material}",
       unknownMaterial: "un material șters",
       perUnit: "{price}\u00a0lei/{unit} fără TVA",
       typed: "Preț introdus de firmă",
@@ -4899,6 +4912,13 @@ export default {
         others: "{count} goluri",
       },
       measuredSides: "suprafață și perimetru măsurate",
+      sides: {
+        length: "L {value}",
+        width: "l {value}",
+        height: "h {value}",
+      },
+      measures:
+        "Pardoseală {floor} mp · Pereți {walls} mp · Perimetru {perimeter} m",
       total: "Total camere",
       actions: "Acțiuni pentru {name}",
       edit: "Modifică",

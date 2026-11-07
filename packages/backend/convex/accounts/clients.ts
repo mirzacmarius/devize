@@ -1,11 +1,17 @@
 import { v } from "convex/values";
-import type { Doc } from "../_generated/dataModel";
+import type { Doc, Id } from "../_generated/dataModel";
 import { mutation, query } from "../_generated/server";
+import { roundLei } from "../estimates/recap";
 import { requireFirmDoc, requireMember } from "../lib/access";
 import { appError, invalid } from "../lib/errors";
 import { normalizeText } from "../lib/text";
 import { cleanCui, optionalText } from "./identifiers";
 import { clientKind } from "./validators";
+
+// How much of a firm's work the clients' list adds up: the latest devize, and
+// the invoices still open.
+const MAX_COUNTED_ESTIMATES = 1000;
+const MAX_COUNTED_INVOICES = 1000;
 
 function cleanName(name: string) {
   const result = name.trim();
@@ -38,6 +44,66 @@ export const list = query({
         q.eq("organizationId", args.organizationId),
       )
       .take(500);
+  },
+});
+
+/**
+ * What the firm has going on with its clients: each one's devize, archived ones
+ * aside, and what they still owe on the invoices issued for them. A client with
+ * neither isn't listed.
+ */
+export const activity = query({
+  args: { organizationId: v.id("organizations") },
+  handler: async (ctx, args) => {
+    await requireMember(ctx, args.organizationId);
+    const rows = new Map<Id<"clients">, { estimates: number; owed: number }>();
+    const row = (clientId: Id<"clients">) => {
+      const found = rows.get(clientId);
+      if (found) {
+        return found;
+      }
+      const added = { estimates: 0, owed: 0 };
+      rows.set(clientId, added);
+      return added;
+    };
+    const clientOf = new Map<Id<"estimates">, Id<"clients">>();
+    const estimates = await ctx.db
+      .query("estimates")
+      .withIndex("by_organizationId_and_updatedAt", (q) =>
+        q.eq("organizationId", args.organizationId),
+      )
+      .order("desc")
+      .take(MAX_COUNTED_ESTIMATES);
+    for (const estimate of estimates) {
+      if (estimate.clientId) {
+        clientOf.set(estimate._id, estimate.clientId);
+        if (estimate.status !== "archived") {
+          row(estimate.clientId).estimates += 1;
+        }
+      }
+    }
+    const open = await ctx.db
+      .query("invoices")
+      .withIndex("by_organizationId_and_status_and_updatedAt", (q) =>
+        q.eq("organizationId", args.organizationId).eq("status", "issued"),
+      )
+      .take(MAX_COUNTED_INVOICES);
+    for (const invoice of open) {
+      if (invoice.kind === "storno" || invoice.stornoedBy !== undefined) {
+        continue;
+      }
+      const clientId =
+        clientOf.get(invoice.estimateId) ??
+        (await ctx.db.get("estimates", invoice.estimateId))?.clientId;
+      if (clientId) {
+        row(clientId).owed += invoice.totals.total - invoice.paidAmount;
+      }
+    }
+    return [...rows].map(([clientId, { estimates: count, owed }]) => ({
+      clientId,
+      estimates: count,
+      owed: roundLei(owed),
+    }));
   },
 });
 

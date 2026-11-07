@@ -206,8 +206,7 @@ export function EstimateActions({
         </Button>
       )}
       {status === "draft" && !empty && openChecks > 0 && (
-        // Beside the rail the checks say so themselves.
-        <Button variant="ghost" className="max-md:hidden xl:hidden" asChild>
+        <Button variant="ghost" className="max-xl:hidden" asChild>
           <a href="#checks">
             <span
               aria-hidden

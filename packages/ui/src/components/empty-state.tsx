@@ -25,7 +25,7 @@ function EmptyState({
   return (
     <div
       className={cn(
-        "grid justify-items-center gap-4 rounded-lg border border-dashed border-input px-6 py-14 text-center",
+        "grid justify-items-center gap-4 rounded-lg border border-dashed border-control px-6 py-14 text-center",
         className,
       )}
       {...props}

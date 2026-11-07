@@ -13,6 +13,7 @@ const TabsNav = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <nav
     ref={ref}
+    data-slot="tabs-nav"
     className={cn(
       "flex gap-6 overflow-x-auto border-b [scrollbar-width:none]",
       className,
@@ -40,7 +41,7 @@ const TabsNavLink = React.forwardRef<HTMLAnchorElement, TabsNavLinkProps>(
         aria-current={active ? "page" : undefined}
         className={cn(
           "-mb-px inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-t-xs border-b-2 border-transparent text-body text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring [&>svg]:size-[18px] [&>svg]:shrink-0",
-          active && "border-primary font-medium text-ink",
+          active && "border-primary text-ink",
           className,
         )}
         {...props}
