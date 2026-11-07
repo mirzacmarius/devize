@@ -15,17 +15,9 @@ const tones: Record<NormStatus, StatusPillProps["tone"]> = {
 };
 
 /** Where a norm version stands: Ciornă, În verificare, Publicată… */
-export function NormStatusPill({
-  status,
-  filled,
-}: {
-  status: NormStatus;
-  filled?: boolean;
-}) {
+export function NormStatusPill({ status }: { status: NormStatus }) {
   const t = useScopedI18n("norms");
   return (
-    <StatusPill tone={tones[status]} filled={filled}>
-      {t(`statuses.${status}`)}
-    </StatusPill>
+    <StatusPill tone={tones[status]}>{t(`statuses.${status}`)}</StatusPill>
   );
 }

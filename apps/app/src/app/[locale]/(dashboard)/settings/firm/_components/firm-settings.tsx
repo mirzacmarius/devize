@@ -61,12 +61,12 @@ export function FirmSettings() {
   }
   const canEdit = details.role === "owner" || details.role === "admin";
   return (
-    <>
+    <div className="grid min-w-0 max-w-[640px] gap-6">
       <LogoCard firm={details} canEdit={canEdit} />
       {/* A new form for another firm. */}
       <DetailsForm key={details._id} firm={details} canEdit={canEdit} />
       <TermsCard terms={details.terms} />
-    </>
+    </div>
   );
 }
 

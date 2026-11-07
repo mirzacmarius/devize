@@ -433,6 +433,7 @@ describe("invoices", () => {
 
     expect(await receivable(advance.dueDate)).toEqual({
       total: advance.totals.total,
+      openCount: 1,
       overdue: 0,
       overdueCount: 0,
     });
@@ -446,6 +447,7 @@ describe("invoices", () => {
     const owed = roundLei(advance.totals.total - 100);
     expect(await receivable(later)).toEqual({
       total: owed,
+      openCount: 1,
       overdue: owed,
       overdueCount: 1,
     });
@@ -459,6 +461,7 @@ describe("invoices", () => {
     });
     expect(await receivable(later)).toEqual({
       total: 0,
+      openCount: 0,
       overdue: 0,
       overdueCount: 0,
     });

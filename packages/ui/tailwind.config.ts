@@ -60,6 +60,11 @@ const config = {
             fontWeight: "var(--weight-figure)",
           },
         ],
+        // The figures of a strip or a rail: one size wherever they stand.
+        stat: [
+          "24px",
+          { lineHeight: "32px", letterSpacing: "-0.012em", fontWeight: "400" },
+        ],
         figure: [
           "20px",
           { lineHeight: "26px", letterSpacing: "-0.01em", fontWeight: "400" },
@@ -124,7 +129,6 @@ const config = {
         selected: "hsl(var(--selected))",
         "nav-active": "hsl(var(--nav-active))",
         scrim: "hsl(var(--scrim))",
-        "scrim-soft": "hsl(var(--scrim-soft))",
         tile: "hsl(var(--tile))",
         backdrop: "hsl(var(--backdrop))",
         tick: "hsl(var(--tick))",

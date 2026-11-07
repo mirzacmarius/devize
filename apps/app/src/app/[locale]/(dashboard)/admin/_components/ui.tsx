@@ -57,31 +57,10 @@ export type Tone = NonNullable<StatusPillProps["tone"]>;
 
 export const Pill = StatusPill;
 
-const confidenceDot: Record<string, string> = {
-  high: "bg-success-dot",
-  medium: "bg-warning-dot",
-  low: "bg-neutral-dot",
-};
-
 /** How much research trusts a finding: worth a glance, never an alarm. */
-export function Confidence({
-  level,
-  children,
-}: {
-  level: string;
-  children: ReactNode;
-}) {
+export function Confidence({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap text-meta text-ink-2">
-      <span
-        aria-hidden
-        className={cn(
-          "size-1.5 self-center rounded-full",
-          confidenceDot[level],
-        )}
-      />
-      {children}
-    </span>
+    <span className="whitespace-nowrap text-meta text-ink-2">{children}</span>
   );
 }
 

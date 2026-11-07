@@ -21,7 +21,6 @@ import {
   ErrorText,
   Field,
   manufacturerTone,
-  messageTone,
   NativeSelect,
   Panel,
   Pill,
@@ -202,29 +201,23 @@ export default function ManufacturersPage() {
                       {tAdmin(`status.norms.${row.normsStatus}`)}
                     </TableCell>
                     <TableCell className="text-ink-2">
-                      {row.confidence ? (
-                        <Confidence level={row.confidence}>
+                      {row.confidence && (
+                        <Confidence>
                           {tAdmin(`confidenceLevel.${row.confidence}`)}
                         </Confidence>
-                      ) : (
-                        "–"
                       )}
                     </TableCell>
                     <TableCell className="text-ink-2">
-                      {row.message ? (
-                        <Pill
-                          tone={
-                            row.message.blocked &&
-                            row.message.status === "draft"
-                              ? "danger"
-                              : messageTone[row.message.status]
-                          }
-                        >
-                          {tAdmin(`status.message.${row.message.status}`)}
-                        </Pill>
-                      ) : (
-                        "–"
-                      )}
+                      {/* A word, unless something stops it from going out. */}
+                      {row.message &&
+                        (row.message.blocked &&
+                        row.message.status === "draft" ? (
+                          <Pill tone="danger">
+                            {tAdmin(`status.message.${row.message.status}`)}
+                          </Pill>
+                        ) : (
+                          tAdmin(`status.message.${row.message.status}`)
+                        ))}
                     </TableCell>
                   </TableRow>
                 ))}

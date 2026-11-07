@@ -74,9 +74,7 @@ export function InvoicePage() {
           </Breadcrumb>
         }
         title={title}
-        status={
-          <InvoiceStatusPill status={invoice.status} overdue={overdue} filled />
-        }
+        status={<InvoiceStatusPill status={invoice.status} overdue={overdue} />}
         description={[
           t(`kind.${invoice.kind}`),
           invoice.buyer.name || tc("notSet"),

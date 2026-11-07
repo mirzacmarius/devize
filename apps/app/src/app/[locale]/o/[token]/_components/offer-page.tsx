@@ -318,7 +318,8 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
   const t = useScopedI18n("offerPage");
   return (
     <Card>
-      <CardContent className="gap-2 max-sm:py-4">
+      {/* On a phone the next section's hairline closes it, at the same distance. */}
+      <CardContent className="gap-2 max-sm:pb-0 max-sm:pt-4">
         <span className="text-meta text-ink-3">
           {t("messageFrom", { firm })}
         </span>

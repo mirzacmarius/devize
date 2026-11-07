@@ -7,12 +7,18 @@ import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
 import { useQuery } from "convex/react";
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { SearchInput } from "@/components/search-input";
-import { initials } from "@/lib/initials";
 import { useScopedI18n } from "@/locales/client";
 
 /**
@@ -49,18 +55,13 @@ export function ProducersPage() {
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="m-0 text-meta tabular-nums text-ink-3">
-              {rows !== undefined && t("count", { count: rows.length })}
-            </p>
-            <SearchInput
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-full sm:max-w-xs"
-            />
-          </div>
+          <SearchInput
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            placeholder={t("searchPlaceholder")}
+            aria-label={t("searchPlaceholder")}
+            className="w-full sm:max-w-xs"
+          />
           {rows === undefined && (
             <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
           )}
@@ -69,46 +70,62 @@ export function ProducersPage() {
               {t("noResults", { text: search })}
             </p>
           )}
-          <ul className="m-0 grid list-none p-0 sm:grid-cols-2 sm:gap-x-12">
-            {rows?.map((producer) => (
-              <li key={producer._id} className="border-t border-border">
-                <Link
-                  href={`/producers/${producer._id}`}
-                  className="group -mx-2 grid min-h-16 grid-cols-[40px_minmax(0,1fr)_auto_16px] items-center gap-x-3 rounded-md px-2 py-3 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <span
-                    aria-hidden
-                    className="grid size-10 place-items-center rounded-md bg-muted text-[13px] font-medium tracking-[0.02em] text-ink-2"
-                  >
-                    {initials(producer.name)}
-                  </span>
-                  <span className="grid min-w-0 gap-0.5">
-                    <span className="truncate text-body font-medium text-ink">
-                      {producer.name}
-                    </span>
-                    {producer.edition && (
-                      <span className="truncate text-meta tabular-nums text-ink-3">
-                        {t("edition", { edition: producer.edition })}
-                      </span>
-                    )}
-                  </span>
-                  <span className="grid justify-items-end gap-0.5">
-                    <span className="text-body tabular-nums text-ink">
-                      {t("normCount", {
-                        count: producer.moreNorms
-                          ? t("moreNorms", { count: producer.normCount })
-                          : producer.normCount,
-                      })}
-                    </span>
-                    <StatusPill tone={producer.claimed ? "success" : "draft"}>
-                      {producer.claimed ? t("claimed") : t("unclaimed")}
-                    </StatusPill>
-                  </span>
-                  <ChevronRight aria-hidden className="size-4 text-ink-3" />
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {rows !== undefined && rows.length > 0 && (
+            <Table stack>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("columns.name")}</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    {t("columns.edition")}
+                  </TableHead>
+                  <TableHead>{t("columns.status")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("columns.norms")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((producer) => {
+                  const norms = producer.moreNorms
+                    ? t("moreNorms", { count: producer.normCount })
+                    : producer.normCount;
+                  return (
+                    <TableRow key={producer._id}>
+                      <TableCell data-stack="wide">
+                        <Link
+                          href={`/producers/${producer._id}`}
+                          className="rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          {producer.name}
+                        </Link>
+                        {producer.edition && (
+                          <span className="block text-meta tabular-nums text-ink-3 md:hidden">
+                            {t("edition", { edition: producer.edition })}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="hidden tabular-nums text-ink-2 md:table-cell">
+                        {producer.edition}
+                      </TableCell>
+                      <TableCell>
+                        <StatusPill
+                          tone={producer.claimed ? "success" : "draft"}
+                        >
+                          {producer.claimed ? t("claimed") : t("unclaimed")}
+                        </StatusPill>
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-ink">
+                        <span className="md:hidden">
+                          {t("normCount", { count: norms })}
+                        </span>
+                        <span className="max-md:hidden">{norms}</span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
         </section>
       )}
     </>

@@ -72,11 +72,14 @@ export function OfferQuestions({
           </StatusPill>
         )}
       </div>
-      <span className="text-meta text-ink-2">
-        {questions.length === 0
-          ? t("none")
-          : t("count", { count: questions.length })}
-      </span>
+      {/* When all of them are waiting, the line above has said how many. */}
+      {waiting < questions.length || questions.length === 0 ? (
+        <span className="text-meta text-ink-2">
+          {questions.length === 0
+            ? t("none")
+            : t("count", { count: questions.length })}
+        </span>
+      ) : null}
       {questions.length > 0 && (
         <Button
           type="button"

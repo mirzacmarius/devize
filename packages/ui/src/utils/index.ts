@@ -27,6 +27,7 @@ const twMerge = extendTailwindMerge({
             "title-page",
             "title-screen",
             "kpi",
+            "stat",
             "figure",
             "title-card",
             "body-lg",

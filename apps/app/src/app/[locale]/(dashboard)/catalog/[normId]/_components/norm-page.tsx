@@ -65,7 +65,7 @@ export function NormPage() {
           // Every norm in the public catalog is published; say so only of
           // the firm's own, and of the versions that are not.
           (own || norm.status !== "published") && (
-            <NormStatusPill status={norm.status} filled />
+            <NormStatusPill status={norm.status} />
           )
         }
         description={[

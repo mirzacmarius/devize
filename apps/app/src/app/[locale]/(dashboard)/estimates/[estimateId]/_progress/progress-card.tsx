@@ -1,11 +1,11 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
 import { Fact, FactList } from "@/components/fact-list";
-import { LinkRow } from "@/components/fold-card";
+import { LinkCard } from "@/components/fold-card";
+import { RailStat } from "@/components/rail-stat";
 import { formatCalendarDate, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
@@ -47,52 +47,47 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
       : tReceptions("draft");
   };
 
+  if (overview.statements.length === 0) {
+    return (
+      <LinkCard title={t("title")} lead={t("noStatements")} href={progress} />
+    );
+  }
+
   return (
-    <Card id="progress" className="scroll-mt-4">
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent className="gap-0">
-        {overview.statements.length === 0 ? (
-          <LinkRow title={t("noStatements")} href={progress} />
-        ) : (
-          <>
-            <LinkRow
-              title={t("executedLabel")}
-              lead={formatPercent(percent, locale)}
-              href={progress}
-            />
-            <MeterBar
-              value={percent}
-              tone={percent > 100 ? "warning" : "action"}
-              label={t("executed", {
-                percent: formatPercent(percent, locale),
-              })}
-              className="mb-1.5 mt-1"
-            />
-          </>
+    <RailStat
+      id="progress"
+      label={t("executedLabel")}
+      value={formatPercent(percent, locale)}
+      href={progress}
+    >
+      <MeterBar
+        value={percent}
+        tone={percent > 100 ? "warning" : "action"}
+        label={t("executed", {
+          percent: formatPercent(percent, locale),
+        })}
+        className="mb-1 mt-1.5"
+      />
+      <FactList>
+        {overview.approved && (
+          <Fact label={t("approved")}>
+            {formatMoney(overview.approved.subtotal, locale)} lei
+          </Fact>
         )}
-        <FactList>
-          {overview.approved && (
-            <Fact label={t("approved")}>
-              {formatMoney(overview.approved.subtotal, locale)} lei
+        {guarantee.guarantee && guarantee.outstanding > 0 && (
+          <Fact label={t("outstanding")}>
+            {formatMoney(guarantee.outstanding, locale)} lei
+          </Fact>
+        )}
+        {/* A reception says something once the work is done or one is begun. */}
+        {(["completion", "final"] as const)
+          .filter((kind) => percent >= 100 || guarantee.receptions[kind])
+          .map((kind) => (
+            <Fact key={kind} label={tStages(kind)}>
+              {receptionState(kind)}
             </Fact>
-          )}
-          {guarantee.guarantee && guarantee.outstanding > 0 && (
-            <Fact label={t("outstanding")}>
-              {formatMoney(guarantee.outstanding, locale)} lei
-            </Fact>
-          )}
-          {/* A reception says something once the work is done or one is begun. */}
-          {(["completion", "final"] as const)
-            .filter((kind) => percent >= 100 || guarantee.receptions[kind])
-            .map((kind) => (
-              <Fact key={kind} label={tStages(kind)}>
-                {receptionState(kind)}
-              </Fact>
-            ))}
-        </FactList>
-      </CardContent>
-    </Card>
+          ))}
+      </FactList>
+    </RailStat>
   );
 }

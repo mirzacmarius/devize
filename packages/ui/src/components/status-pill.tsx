@@ -6,7 +6,7 @@ import { cn } from "../utils";
 // The state of an object (deviz, price, invoice, sync): a dot and a word, the
 // same form in every list, with colour only for a state that means something
 // (good, needs attention, blocks, AI). The word carries the meaning; the dot is
-// decorative. `filled` is for the one status beside a page's title.
+// decorative.
 const statusPillVariants = cva(
   // An empty ::before would set the baseline of the row it stands in, so the
   // dot is centred on its own and the text keeps the line it shares.
@@ -18,7 +18,7 @@ const statusPillVariants = cva(
         draft:
           "text-ink-2 before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
         // Out and moving, waiting on someone: Trimis clientului, Emisă
-        active: "text-ink before:bg-ink-2",
+        active: "text-ink-2 before:bg-ink-2",
         // Finished or set aside, nothing to do: Decontat, Expirat
         neutral: "text-ink-2 before:bg-neutral-dot",
         // A good result just reached: Acceptat de client, Sincronizat
@@ -34,25 +34,10 @@ const statusPillVariants = cva(
         true: "",
         false: "before:hidden",
       },
-      filled: {
-        true: "h-[22px] items-center rounded-full pl-2 pr-2.5 text-pill",
-        false: "",
-      },
     },
-    compoundVariants: [
-      { filled: true, tone: "draft", className: "bg-muted" },
-      { filled: true, tone: "active", className: "bg-muted" },
-      { filled: true, tone: "neutral", className: "bg-muted" },
-      { filled: true, tone: "success", className: "bg-success-soft" },
-      { filled: true, tone: "warning", className: "bg-warning-soft" },
-      { filled: true, tone: "danger", className: "bg-danger-soft" },
-      { filled: true, tone: "ai", className: "bg-ai-soft" },
-      { filled: true, dot: false, className: "pl-2.5" },
-    ],
     defaultVariants: {
       tone: "neutral",
       dot: true,
-      filled: false,
     },
   },
 );
@@ -62,10 +47,10 @@ export interface StatusPillProps
     VariantProps<typeof statusPillVariants> {}
 
 const StatusPill = React.forwardRef<HTMLSpanElement, StatusPillProps>(
-  ({ className, tone, dot, filled, ...props }, ref) => (
+  ({ className, tone, dot, ...props }, ref) => (
     <span
       ref={ref}
-      className={cn(statusPillVariants({ tone, dot, filled }), className)}
+      className={cn(statusPillVariants({ tone, dot }), className)}
       {...props}
     />
   ),

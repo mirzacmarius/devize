@@ -23,9 +23,9 @@ export default async function Page() {
   const withGoogle = env.VERCEL_ENV !== "preview";
   return (
     <div className="grid min-h-screen w-full bg-shell xl:grid-cols-[minmax(0,1fr)_minmax(0,620px)]">
-      <aside className="hidden min-w-0 flex-col gap-10 px-12 py-10 xl:flex">
-        <Wordmark className="self-start text-xl" />
-        <div className="my-auto grid max-w-[480px] gap-8">
+      <aside className="hidden min-w-0 grid-rows-[1fr_auto_1fr] gap-10 px-12 py-10 xl:grid">
+        <Wordmark className="self-start justify-self-start text-xl" />
+        <div className="grid max-w-[480px] gap-8">
           <p className="m-0 text-display text-ink [text-wrap:balance]">
             {t("brand.headline")}
           </p>

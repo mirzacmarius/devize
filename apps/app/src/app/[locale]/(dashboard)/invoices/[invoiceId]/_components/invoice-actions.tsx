@@ -143,7 +143,13 @@ export function InvoiceActions({ invoice }: { invoice: Invoice }) {
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={tc("actions")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            // The dots end on the page's edge, not the button's.
+            className="sm:-mr-2.5"
+            aria-label={tc("actions")}
+          >
             <Icons.More aria-hidden />
           </Button>
         </DropdownMenuTrigger>

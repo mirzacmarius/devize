@@ -65,22 +65,17 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
             {invoice.payments.map((payment, index) => (
               <li
                 key={keys[index]}
-                className="group/row flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
+                className="group/row flex min-h-11 items-center gap-3 border-b border-border py-1.5 last:border-0"
               >
-                <div className="grid min-w-0 gap-0.5">
-                  <span className="text-body font-medium text-ink tabular-nums">
-                    {formatMoney(payment.amount, locale)} lei
-                  </span>
-                  <span className="text-meta text-ink-3">
-                    {[
-                      formatCalendarDate(payment.date, locale),
-                      t(`methods.${payment.method}`),
-                      payment.note,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </span>
-                </div>
+                <span className="min-w-0 flex-1 text-body text-ink-2">
+                  {[
+                    formatCalendarDate(payment.date, locale),
+                    t(`methods.${payment.method}`),
+                    payment.note,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
                 {open && (
                   <Button
                     type="button"
@@ -98,6 +93,10 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
                     <Trash2 aria-hidden />
                   </Button>
                 )}
+                {/* On the edge where the lines above end their amounts. */}
+                <span className="shrink-0 text-body font-medium tabular-nums text-ink">
+                  {formatMoney(payment.amount, locale)}
+                </span>
               </li>
             ))}
           </ul>

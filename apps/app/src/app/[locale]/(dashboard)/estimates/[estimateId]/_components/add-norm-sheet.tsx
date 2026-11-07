@@ -257,7 +257,7 @@ function AddNorm({
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-center gap-x-4 gap-y-0.5 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_auto_32px]"
                   >
                     <span className="grid min-w-0 gap-0.5">
                       <span className="text-body text-ink [text-wrap:pretty]">
@@ -266,30 +266,28 @@ function AddNorm({
                           words={words}
                         />
                       </span>
-                      <span className="flex items-baseline justify-between gap-3 text-meta text-ink-3">
-                        <span className="min-w-0 truncate">
-                          <span className="tabular-nums">{norm.code}</span>
-                          {norm.category && ` · ${norm.category}`}
-                          {norm.source !== "base" && ` · ${normSource(norm)}`}
-                        </span>
-                        <span className="shrink-0 whitespace-nowrap tabular-nums">
-                          {norm.referenceCost === undefined
-                            ? formatUnit(norm.unit, locale)
-                            : t("items.pricePerUnit", {
-                                price: (
-                                  <span className="text-body font-medium text-ink">
-                                    {formatMoney(norm.referenceCost, locale)}
-                                  </span>
-                                ),
-                                unit: formatUnit(norm.unit, locale),
-                              })}
-                        </span>
+                      <span className="truncate text-meta text-ink-3">
+                        <span className="tabular-nums">{norm.code}</span>
+                        {norm.category && ` · ${norm.category}`}
+                        {norm.source !== "base" && ` · ${normSource(norm)}`}
                       </span>
+                    </span>
+                    <span className="col-start-1 row-start-2 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
+                      {norm.referenceCost === undefined
+                        ? formatUnit(norm.unit, locale)
+                        : t("items.pricePerUnit", {
+                            price: (
+                              <span className="text-body text-ink">
+                                {formatMoney(norm.referenceCost, locale)}
+                              </span>
+                            ),
+                            unit: formatUnit(norm.unit, locale),
+                          })}
                     </span>
                     {/* Plain to see before the pointer gets there: this adds. */}
                     <span
                       aria-hidden
-                      className="grid size-7 place-items-center rounded-md border border-input text-ink-2 transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground"
+                      className="col-start-2 row-span-2 row-start-1 grid size-8 place-items-center rounded-md border border-input text-ink-2 transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground sm:col-start-3 sm:row-span-1"
                     >
                       <Plus className="size-4" />
                     </span>
@@ -361,7 +359,9 @@ function MatchedWords({
     return (
       <Fragment key={key}>
         {part.slice(0, at)}
-        <span className="font-semibold">{word}</span>
+        <span className="rounded-[3px] bg-muted [box-decoration-break:clone]">
+          {word}
+        </span>
         {part.slice(at + word.length)}
       </Fragment>
     );

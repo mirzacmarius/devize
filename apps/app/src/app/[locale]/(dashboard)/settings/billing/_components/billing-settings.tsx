@@ -391,7 +391,7 @@ function SeriesCard({ settings }: { settings: Settings }) {
           <form
             onSubmit={add}
             noValidate
-            className="grid w-full gap-3 sm:grid-cols-[160px_160px_auto] sm:justify-start"
+            className="grid w-full gap-3 sm:grid-cols-[minmax(0,160px)_minmax(0,160px)_auto] sm:justify-start"
           >
             <Field label={t("code")} htmlFor="series-code" hint={t("codeHint")}>
               <Input

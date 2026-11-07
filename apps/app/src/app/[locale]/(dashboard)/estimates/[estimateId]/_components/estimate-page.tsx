@@ -13,7 +13,7 @@ import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
@@ -23,6 +23,7 @@ import { useScrolledPast } from "@/components/use-scrolled-past";
 import {
   estimateCode,
   formatCalendarDate,
+  formatDay,
   formatMoney,
   formatPercent,
 } from "@/lib/format";
@@ -112,7 +113,7 @@ export function EstimatePage() {
     total: formatMoney(estimate.totals.subtotal, locale),
   });
   const { status } = estimate;
-  const statusPill = <EstimateStatusPill status={status} filled />;
+  const statusPill = <EstimateStatusPill status={status} />;
 
   // The rail leads with what comes next for where this Deviz is at.
   const rail = {
@@ -137,7 +138,7 @@ export function EstimatePage() {
     progress: <ProgressCard key="progress" estimate={estimate} />,
     invoices: <InvoicesCard key="invoices" estimate={estimate} />,
   };
-  // What the Deviz is at first; the rest in two groups of rows.
+  // What the Deviz is at first; the rest in one quiet list of rows.
   const railLead =
     status === "accepted"
       ? [rail.progress, rail.invoices]
@@ -185,7 +186,7 @@ export function EstimatePage() {
         />
         {/* Beside the title; on a phone, in a bar at the screen's foot, with the
             total once the one above has scrolled away. */}
-        <div className="flex flex-wrap items-center gap-2 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:border-t max-sm:border-border max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
+        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:border-t max-sm:border-border max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
           {pastHero && (
             <div className="min-w-0 flex-1 max-sm:!h-auto sm:hidden">
               <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
@@ -241,12 +242,10 @@ export function EstimatePage() {
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <div className="rail-sections grid min-w-0 gap-6 xl:sticky xl:top-14 xl:-mx-1 xl:max-h-[calc(100vh-4.5rem)] xl:gap-0 xl:overflow-y-auto xl:px-1 xl:[scrollbar-width:thin]">
           {railLead}
-          <RailGroup>{t("rail.preparation")}</RailGroup>
           {status !== "draft" && rail.checks}
           <CompatibilityCard estimate={estimate} editable={editable} />
           <TakeoffCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />
-          <RailGroup>{t("rail.forClient")}</RailGroup>
           {(status === "accepted" || status === "draft") && rail.offer}
           <DocumentsCard estimate={estimate} />
           <DetailsCard
@@ -318,15 +317,6 @@ export function EstimatePage() {
   );
 }
 
-/** The heading of a group of the rail's rows, once they sit beside the Articole. */
-function RailGroup({ children }: { children: ReactNode }) {
-  return (
-    <h3 className="m-0 mb-1 mt-7 hidden text-title-card text-ink xl:block">
-      {children}
-    </h3>
-  );
-}
-
 /**
  * Once the total has scrolled away, the line that keeps it in sight: a long
  * Deviz is read a long way below its header. A phone has its bar at the foot.
@@ -376,8 +366,12 @@ function SectionLinks({
   checks: Check[];
 }) {
   const t = useScopedI18n("estimate");
+  const tOffer = useScopedI18n("offer");
   const locale = useCurrentLocale();
   const accepted = estimate.status === "accepted";
+  const offer = useQuery(api.offers.offers.forEstimate, {
+    estimateId: estimate._id,
+  });
   const work = useQuery(
     api.progress.statements.forEstimate,
     accepted ? { estimateId: estimate._id } : "skip",
@@ -392,22 +386,24 @@ function SectionLinks({
       ? (["checks", "recap", "offer", "documents"] as const)
       : (["offer", "recap", "checks", "documents"] as const);
   const passed = checks.filter((check) => check.state === "passed").length;
-  const invoiced = billing && billing.invoicedNet > 0;
-  const tiles: Partial<
-    Record<(typeof sections)[number], { label?: string; value?: string }>
+  const signedAt = offer?.signature?.signedAt ?? offer?.decidedAt;
+  // Every cell says the same two things: what it is and where it stands.
+  const cells: Record<
+    (typeof sections)[number],
+    { label?: string; value?: string }
   > = {
     progress: {
       value:
         work && work.statements.length > 0
           ? formatPercent(Math.round(work.executed.percent * 10) / 10, locale)
-          : undefined,
+          : t("jump.noStatements"),
     },
-    invoices: invoiced
-      ? {
-          label: t("jump.invoiced"),
-          value: `${formatMoney(billing.invoicedNet, locale)} lei`,
-        }
-      : {},
+    invoices: {
+      label: billing?.accepted ? t("jump.toInvoice") : undefined,
+      value: billing?.accepted
+        ? `${formatMoney(billing.remainingNet ?? 0, locale)} lei`
+        : "–",
+    },
     checks: {
       value:
         passed < checks.length
@@ -417,34 +413,37 @@ function SectionLinks({
             })
           : t("checks.score", { passed, total: checks.length }),
     },
+    recap: { value: t("jump.recapValue") },
+    offer: {
+      value:
+        offer === null || offer === undefined
+          ? tOffer("notCreated")
+          : offer.status === "accepted" && signedAt !== undefined
+            ? tOffer("acceptedLead", { date: formatDay(signedAt, locale) })
+            : tOffer(`status.${offer.status}`),
+    },
+    documents: { value: t("jump.documentsValue") },
   };
   return (
     <nav
       aria-label={t("jump.label")}
-      className="order-last grid auto-rows-fr grid-cols-2 gap-2 md:col-span-2 md:grid-cols-4 xl:hidden"
+      className="order-last grid grid-cols-2 border-t border-border max-sm:-mx-4 max-sm:-mb-6 md:col-span-2 md:grid-cols-4 md:border-b xl:hidden"
     >
       {sections.map((section) => {
-        const tile = tiles[section];
+        const cell = cells[section];
         return (
           <a
             key={section}
             href={`#${section}`}
-            className="flex min-h-12 min-w-0 items-center justify-between gap-2 rounded-md bg-sunken px-3 py-1.5 transition-colors hover:bg-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-h-14 min-w-0 items-center justify-between gap-2 border-border px-4 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring max-md:[&:nth-child(n+3)]:border-t sm:[&:nth-child(odd)]:pl-0 md:[&:nth-child(3)]:pl-4 max-md:[&:nth-child(even)]:border-l md:[&:not(:first-child)]:border-l"
           >
             <span className="grid min-w-0">
-              <span
-                className={cn(
-                  "truncate",
-                  tile?.value ? "text-meta text-ink-3" : "text-body text-ink",
-                )}
-              >
-                {tile?.label ?? t(`jump.${section}`)}
+              <span className="truncate text-meta text-ink-3">
+                {cell.label ?? t(`jump.${section}`)}
               </span>
-              {tile?.value && (
-                <span className="truncate text-body tabular-nums text-ink">
-                  {tile.value}
-                </span>
-              )}
+              <span className="truncate text-body tabular-nums text-ink">
+                {cell.value}
+              </span>
             </span>
             <ChevronRight aria-hidden className="size-4 shrink-0 text-ink-3" />
           </a>

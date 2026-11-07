@@ -173,7 +173,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 )}
               >
                 {/* The label over it says which way it went. */}
-                <Amount value={money(Math.abs(profitChange))} />
+                <Amount value={money(Math.abs(profitChange))} toned />
               </span>
               <span className="text-meta text-ink-3">lei</span>
             </p>

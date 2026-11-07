@@ -59,7 +59,7 @@ export function FindingsPanel({
       })}
       actions={
         manufacturer.confidence && (
-          <Confidence level={manufacturer.confidence}>
+          <Confidence>
             {tAdmin(`confidence.${manufacturer.confidence}`)}
           </Confidence>
         )

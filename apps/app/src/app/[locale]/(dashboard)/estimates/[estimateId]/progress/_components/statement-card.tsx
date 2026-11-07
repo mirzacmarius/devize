@@ -207,7 +207,8 @@ export function StatementCard({
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="size-8"
+                  // The dots end on the page's edge, not the button's.
+                  className="-mr-2 size-8"
                   aria-label={tc("actions")}
                 >
                   <Icons.More aria-hidden />
@@ -252,8 +253,9 @@ export function StatementCard({
           </div>
         </div>
         <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
-        {/* Nothing leaves from here: the firm sends it and notes what happened. */}
-        {statement.latest && statement.status !== "approved" && (
+        {/* Nothing leaves from here: the firm sends it and notes what happened.
+            Said once, on the first statement. */}
+        {number === 1 && statement.status !== "approved" && (
           <p className="m-0 text-meta text-ink-2">
             {statement.status === "draft" ? t("nextDraft") : t("nextSent")}
           </p>
@@ -350,9 +352,8 @@ function RowsTable({
   let group: string | undefined;
   let periodValue = 0;
 
-  // What's not there stays out of the way, so the period's figures stand out.
-  const orDash = (value: number, shown: string) =>
-    value === 0 ? <span className="text-ink-3">–</span> : shown;
+  // What's not there stays blank, so the period's figures stand out.
+  const ifAny = (value: number, shown: string) => (value === 0 ? null : shown);
 
   return (
     <Table bleed className="min-w-[50rem]">
@@ -361,7 +362,7 @@ function RowsTable({
           <TableHead>{t("article")}</TableHead>
           <TableHead className="text-right">{t("contract")}</TableHead>
           <TableHead className="text-right">{t("previous")}</TableHead>
-          <TableHead className="bg-muted pr-[21px] text-right font-medium text-ink">
+          <TableHead className="bg-sunken pr-[21px] text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className="text-right">{t("cumulative")}</TableHead>
@@ -445,7 +446,7 @@ function RowsTable({
                   {formatQuantity(row.contractQuantity, locale)}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
-                  {orDash(
+                  {ifAny(
                     row.previousQuantity,
                     formatQuantity(row.previousQuantity, locale),
                   )}
@@ -471,8 +472,10 @@ function RowsTable({
                     className={cn(
                       // Up by the field's padding, level with the row's first line.
                       "-my-1.5 h-8 w-20",
-                      // What can be typed in looks like it.
-                      fillable && "border-input bg-field",
+                      // What was typed looks like it; an empty one opens with
+                      // its row, in a column that already says what it's for.
+                      fillable && row.quantity !== 0 && "border-input bg-field",
+                      fillable && "group-hover/row:border-input",
                       row.quantity === 0
                         ? "text-ink-3"
                         : "font-medium text-ink",
@@ -481,11 +484,12 @@ function RowsTable({
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
                   <div className="grid justify-items-end gap-0.5">
-                    {orDash(
+                    {ifAny(
                       row.cumulativeQuantity,
                       formatQuantity(row.cumulativeQuantity, locale),
                     )}
-                    {row.cumulativeQuantity !== 0 && (
+                    {/* All of it done needs no saying; more than all of it does. */}
+                    {row.cumulativeQuantity !== 0 && row.percent !== 100 && (
                       <span
                         className={cn(
                           "text-meta",
@@ -499,13 +503,13 @@ function RowsTable({
                   </div>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right align-top tabular-nums text-ink-2">
-                  {orDash(
+                  {ifAny(
                     Math.max(0, row.remainingQuantity),
                     formatQuantity(Math.max(0, row.remainingQuantity), locale),
                   )}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right align-top tabular-nums">
-                  {orDash(row.value, formatMoney(row.value, locale))}
+                  {ifAny(row.value, formatMoney(row.value, locale))}
                 </TableCell>
               </TableRow>
             </Fragment>

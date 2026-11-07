@@ -201,7 +201,7 @@ export function EstimateList() {
                   <TableCell>
                     <EstimateStatusPill status={row.status} />
                   </TableCell>
-                  <TableCell className="text-right text-body-lg font-medium tabular-nums">
+                  <TableCell className="text-right text-body font-medium tabular-nums">
                     {formatMoney(row.total, locale)}
                     <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
                       lei

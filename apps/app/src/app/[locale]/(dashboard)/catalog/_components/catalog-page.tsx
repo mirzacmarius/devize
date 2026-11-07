@@ -19,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
-import { cn } from "@devize/ui/utils";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Plus } from "lucide-react";
@@ -281,12 +280,9 @@ export function CatalogPage() {
                             {norm.source !== "base" && ` · ${normSource(norm)}`}
                           </span>
                           {unconfirmed(norm) && (
-                            // Under its producer where that column shows.
                             <span
-                              className={cn(
-                                "whitespace-nowrap",
-                                !isOwn && "lg:hidden",
-                              )}
+                              className="whitespace-nowrap"
+                              title={t("unconfirmedHint")}
                             >
                               {` · ${t("unconfirmed")}`}
                             </span>
@@ -295,22 +291,9 @@ export function CatalogPage() {
                       </Link>
                     </TableCell>
                     {!isOwn && (
-                      <TableCell className="hidden lg:table-cell">
-                        <div className="grid justify-items-start gap-0.5">
-                          <span className="text-ink-2">
-                            {norm.source !== "base"
-                              ? (norm.manufacturerName ?? normSource(norm))
-                              : "–"}
-                          </span>
-                          {unconfirmed(norm) && (
-                            <StatusPill
-                              tone="draft"
-                              title={t("unconfirmedHint")}
-                            >
-                              {t("unconfirmed")}
-                            </StatusPill>
-                          )}
-                        </div>
+                      <TableCell className="hidden text-ink-2 lg:table-cell">
+                        {norm.source !== "base" &&
+                          (norm.manufacturerName ?? normSource(norm))}
                       </TableCell>
                     )}
                     {isOwn && (

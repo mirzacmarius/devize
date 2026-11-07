@@ -120,6 +120,7 @@ export function HomePage() {
           short={t("kpi.acceptedShort")}
           value={money(home?.accepted.total)}
           unit={t("lei")}
+          metaShort={t("kpi.acceptedShortMeta")}
           meta={
             home &&
             (rate === undefined
@@ -134,15 +135,16 @@ export function HomePage() {
           short={t("kpi.sentShort")}
           value={money(home?.sent.total)}
           unit={t("lei")}
+          metaShort={
+            home && t("kpi.sentMetaShort", { count: count(home.sent.unread) })
+          }
           meta={home && t("kpi.sentMeta", { count: count(home.sent.unread) })}
         />
         <Kpi
           label={t("kpi.drafts")}
           value={money(home?.drafts.total)}
           unit={t("lei")}
-          meta={
-            home && t("kpi.draftsMeta", { count: count(home.drafts.count) })
-          }
+          meta={home && t("kpi.draftsMeta", { count: home.drafts.count })}
         />
       </Card>
       <div
@@ -188,6 +190,7 @@ function Kpi({
   value,
   unit,
   meta,
+  metaShort,
 }: {
   lead?: boolean;
   label: string;
@@ -196,6 +199,7 @@ function Kpi({
   value: string;
   unit?: string;
   meta: ReactNode;
+  metaShort?: ReactNode;
 }) {
   return (
     <div
@@ -222,7 +226,7 @@ function Kpi({
             "tabular-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
             lead
               ? "text-[28px] leading-9 sm:text-kpi"
-              : "text-base leading-6 sm:text-[24px] sm:leading-9",
+              : "text-base leading-6 sm:text-stat sm:leading-9",
           )}
         >
           <Amount value={value} />
@@ -235,13 +239,15 @@ function Kpi({
           </span>
         )}
       </div>
-      <p
-        className={cn(
-          "m-0 min-h-[18px] truncate text-meta text-ink-3",
-          !lead && "max-sm:hidden",
+      <p className="m-0 min-h-[18px] truncate text-meta text-ink-3">
+        {metaShort ? (
+          <>
+            <span className="sm:hidden">{metaShort}</span>
+            <span className="max-sm:hidden">{meta}</span>
+          </>
+        ) : (
+          meta
         )}
-      >
-        {meta}
       </p>
     </div>
   );
@@ -369,7 +375,6 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
       : todoIcons[item.kind];
   const href =
     item.kind === "alert" ? "/prices" : `/estimates/${item.estimate._id}`;
-  const now = isNow(item);
   const inDays = (days: number) =>
     days <= 0
       ? t("today")
@@ -381,14 +386,13 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   let text: string;
   let figure: string | undefined;
   let figureClass = "text-ink-2";
+  // The icon's colour says what the figure's says, and only then.
+  let tone: keyof typeof todoTones = "quiet";
   const sub: string[] = [item.estimate.title];
   switch (item.kind) {
     case "question":
       text = t("question", { code });
-      figure =
-        item.count === 1
-          ? t("questionOne")
-          : t("questionCount", { count: formatCount(item.count, locale) });
+      figure = t("questionCount", { count: item.count });
       break;
     case "alert":
       if (item.profitChange === 0) {
@@ -401,6 +405,7 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
           amount: formatMoney(Math.abs(item.profitChange), locale),
         });
         figureClass = cn("font-medium", down ? "text-warning" : "text-success");
+        tone = down ? "warning" : "quiet";
         sub.push(
           t("alertLeft", { left: formatMoney(item.profitLeft, locale) }),
         );
@@ -420,15 +425,16 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
       figure = t("unreadDays", { days: formatCount(item.days, locale) });
       break;
   }
-  if ((item.kind === "deadline" || item.kind === "expiring") && now) {
+  if ((item.kind === "deadline" || item.kind === "expiring") && isNow(item)) {
     figureClass = "font-medium text-warning";
+    tone = "warning";
   }
 
   return (
     <TodoLine
       href={href}
       icon={icon}
-      tone={now ? "warning" : "quiet"}
+      tone={tone}
       text={text}
       sub={sub.join(" · ")}
       figure={figure}
@@ -473,33 +479,37 @@ function TodoLine({
     >
       <Link
         href={href}
-        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)_auto] content-center items-baseline gap-x-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)] content-center items-baseline gap-x-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[auto_minmax(0,1fr)_auto]"
       >
         <span
           aria-hidden
           className={cn(
-            "row-span-2 grid size-7 place-items-center self-center rounded-md [&_svg]:size-4",
+            "row-span-3 grid size-7 place-items-center self-center rounded-md sm:row-span-2 [&_svg]:size-4",
             todoTones[tone],
           )}
         >
           <Icon />
         </span>
         <span
-          className={cn("min-w-0 text-body text-ink", !figure && "col-span-2")}
+          className={cn(
+            "col-start-2 min-w-0 text-body font-medium text-ink",
+            !figure && "sm:col-span-2",
+          )}
         >
           {text}
         </span>
+        {/* On a phone it stays with what to do, under it. */}
         {figure && (
           <span
             className={cn(
-              "whitespace-nowrap text-right text-body tabular-nums",
+              "col-start-2 whitespace-nowrap text-body tabular-nums sm:col-start-3 sm:text-right",
               figureClass,
             )}
           >
             {figure}
           </span>
         )}
-        <span className="col-span-2 col-start-2 line-clamp-2 text-meta text-ink-3">
+        <span className="col-start-2 line-clamp-2 text-meta text-ink-3 sm:col-span-2">
           {sub}
         </span>
       </Link>
@@ -548,24 +558,26 @@ function RecentCard({
               >
                 <Link
                   href={`/estimates/${row._id}`}
-                  className="-mx-2 grid min-h-[59px] grid-cols-[minmax(0,1fr)] content-center gap-y-0.5 rounded-md px-2 py-1.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="-mx-2 grid min-h-[59px] grid-cols-[minmax(0,1fr)_auto] content-center items-baseline gap-x-4 gap-y-0.5 rounded-md px-2 py-1.5 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span className="flex items-baseline justify-between gap-4">
-                    <span className="min-w-0 text-body font-medium text-ink sm:truncate">
-                      {row.title}
-                    </span>
-                    <span className="shrink-0 text-body font-medium tabular-nums text-ink">
-                      {formatMoney(row.total, locale)}
+                  <span className="col-span-2 min-w-0 text-body font-medium text-ink sm:col-span-1 sm:truncate">
+                    {row.title}
+                  </span>
+                  {/* On a phone, last, in line with where it stands. */}
+                  <span className="order-last whitespace-nowrap text-right text-body font-medium tabular-nums text-ink sm:order-none">
+                    {formatMoney(row.total, locale)}
+                    <span className="ml-1 text-meta font-normal text-ink-3 sm:hidden">
+                      {th("lei")}
                     </span>
                   </span>
-                  <span className="flex items-baseline justify-between gap-4">
-                    <span className="min-w-0 truncate text-meta text-ink-3">
-                      {estimateCode(row.number, row.revision)}
-                      {" · "}
-                      {row.clientName ?? t("noClient")}
-                      {" · "}
-                      {formatDay(row.updatedAt, locale)}
-                    </span>
+                  <span className="col-span-2 min-w-0 truncate text-meta text-ink-3 sm:col-span-1">
+                    {estimateCode(row.number, row.revision)}
+                    {" · "}
+                    {row.clientName ?? t("noClient")}
+                    {" · "}
+                    {formatDay(row.updatedAt, locale)}
+                  </span>
+                  <span className="justify-self-start sm:justify-self-end">
                     <EstimateStatusPill status={row.status} />
                   </span>
                 </Link>

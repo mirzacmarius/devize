@@ -100,18 +100,18 @@ export function InvoiceList() {
               label={t("receivable.total")}
               value={receivable ? formatMoney(receivable.total, locale) : "–"}
               unit="lei"
+              note={
+                receivable &&
+                t("receivable.invoices", { count: receivable.openCount })
+              }
             />
             <Figure
               label={t("receivable.overdue")}
               value={receivable ? formatMoney(receivable.overdue, locale) : "–"}
-              unit={
+              unit="lei"
+              note={
                 receivable &&
-                (receivable.overdueCount > 0
-                  ? t("receivable.overdueCount", {
-                      unit: "lei",
-                      count: receivable.overdueCount,
-                    })
-                  : "lei")
+                t("receivable.invoices", { count: receivable.overdueCount })
               }
             />
             <Figure
@@ -120,12 +120,12 @@ export function InvoiceList() {
               note={
                 anaf?.firstLate && (
                   <span className="flex flex-wrap items-baseline gap-x-3">
-                    <StatusPill tone="danger">
+                    <StatusPill tone="danger" className="text-ink-2">
                       {t("receivable.lateCount", { count: anaf.late })}
                     </StatusPill>
                     <Link
                       href={`/invoices/${anaf.firstLate}`}
-                      className="rounded-xs text-ink underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="rounded-xs text-ink-2 underline underline-offset-4 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {anaf.late === 1 ? t("lateOpen") : t("lateOpenFirst")}
                     </Link>
@@ -217,7 +217,7 @@ export function InvoiceList() {
                       </Link>
                     </TableCell>
                     <TableCell className="hidden text-ink-2 md:table-cell">
-                      {row.buyerName || <span className="text-ink-3">–</span>}
+                      {row.buyerName}
                     </TableCell>
                     <TableCell>
                       <InvoiceStatusPill
@@ -239,9 +239,7 @@ export function InvoiceList() {
                     </TableCell>
                     {/* What's still to come in is what this list is read for. */}
                     <TableCell className="hidden text-right tabular-nums xl:table-cell">
-                      {owed === undefined ? (
-                        <span className="text-ink-3">–</span>
-                      ) : (
+                      {owed !== undefined && (
                         <span className="font-medium">
                           {formatMoney(owed, locale)}
                         </span>
@@ -268,9 +266,7 @@ export function InvoiceList() {
                             </span>
                           )}
                         </div>
-                      ) : (
-                        <span className="text-ink-3">–</span>
-                      )}
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 );

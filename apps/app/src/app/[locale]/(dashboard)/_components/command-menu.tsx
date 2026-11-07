@@ -224,6 +224,7 @@ type Entry = {
   icon: LucideIcon;
   label: string;
   meta?: string;
+  amount?: string;
   pill?: ReactNode;
   /** A page to open; prefetched while the entry is chosen. */
   href?: string;
@@ -390,10 +391,10 @@ function CommandSearch({
         meta: [
           estimateCode(estimate.number, estimate.revision),
           estimate.clientName,
-          money(estimate.total),
         ]
           .filter(Boolean)
           .join(" · "),
+        amount: money(estimate.total),
         pill: <EstimateStatusPill status={estimate.status} />,
         href,
         run: go(href),
@@ -416,7 +417,8 @@ function CommandSearch({
         group: "invoices",
         icon: Icons.Invoice,
         label: t("invoice", { code: invoice.code }),
-        meta: [invoice.buyerName, money(invoice.total)].join(" · "),
+        meta: invoice.buyerName,
+        amount: money(invoice.total),
         pill: <InvoiceStatusPill status={invoice.status} />,
         href,
         run: go(href),
@@ -606,7 +608,16 @@ function CommandSearch({
                       </span>
                     )}
                   </div>
-                  {entry.pill}
+                  {(entry.amount || entry.pill) && (
+                    <div className="grid shrink-0 justify-items-end">
+                      {entry.amount && (
+                        <span className="text-body tabular-nums text-ink">
+                          {entry.amount}
+                        </span>
+                      )}
+                      {entry.pill}
+                    </div>
+                  )}
                   <CornerDownLeft
                     aria-hidden
                     className={cn(

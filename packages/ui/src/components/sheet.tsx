@@ -20,7 +20,7 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-scrim-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-scrim data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className,
     )}
     {...props}
@@ -40,7 +40,7 @@ const sheetVariants = cva(
         // The mobile sidebar drawer (under 768px) opens from the left.
         left: "inset-y-0 left-0 h-full w-[85%] max-w-[320px] data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm",
         right:
-          "inset-y-0 right-0 h-full w-[92%] data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-md",
+          "inset-y-0 right-0 h-full w-[92%] data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:inset-y-2 sm:right-2 sm:h-auto sm:max-w-md sm:rounded-2xl",
       },
     },
     defaultVariants: {

@@ -190,6 +190,7 @@ export const receivable = query({
       )
       .take(MAX_OPEN_INVOICES);
     let total = 0;
+    let openCount = 0;
     let overdue = 0;
     let overdueCount = 0;
     for (const invoice of open) {
@@ -198,6 +199,7 @@ export const receivable = query({
       }
       const owed = invoice.totals.total - invoice.paidAmount;
       total += owed;
+      openCount += 1;
       if (invoice.dueDate < args.today) {
         overdue += owed;
         overdueCount += 1;
@@ -205,6 +207,7 @@ export const receivable = query({
     }
     return {
       total: roundLei(total),
+      openCount,
       overdue: roundLei(overdue),
       overdueCount,
     };

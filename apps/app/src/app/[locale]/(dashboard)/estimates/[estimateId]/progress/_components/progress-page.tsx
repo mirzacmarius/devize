@@ -120,7 +120,7 @@ export function ProgressPage() {
           </Breadcrumb>
         }
         title={t("title")}
-        description={estimate.title}
+        description={[estimate.title, t("summary.basis")].join(" · ")}
         actions={
           overview.canCreate &&
           selected && (

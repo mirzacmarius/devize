@@ -65,7 +65,7 @@ export function ProducerHeader({
         }
         title={profile.name}
         status={
-          <StatusPill tone={profile.claimed ? "success" : "neutral"} filled>
+          <StatusPill tone={profile.claimed ? "success" : "neutral"}>
             {profile.claimed ? t("claimed") : t("unclaimed")}
           </StatusPill>
         }

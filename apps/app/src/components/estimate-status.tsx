@@ -15,17 +15,7 @@ const tones: Record<EstimateStatus, StatusPillProps["tone"]> = {
 };
 
 /** Where a Deviz stands: Ciornă, Trimis clientului, Acceptat de client… */
-export function EstimateStatusPill({
-  status,
-  filled,
-}: {
-  status: EstimateStatus;
-  filled?: boolean;
-}) {
+export function EstimateStatusPill({ status }: { status: EstimateStatus }) {
   const t = useScopedI18n("estimateStatus");
-  return (
-    <StatusPill tone={tones[status]} filled={filled}>
-      {t(status)}
-    </StatusPill>
-  );
+  return <StatusPill tone={tones[status]}>{t(status)}</StatusPill>;
 }

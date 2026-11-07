@@ -10,7 +10,7 @@ import { type ReactNode, useId, useState } from "react";
 // One row of a rail, whatever it does: a name, what it holds, and a chevron when
 // it opens or leads somewhere. The whole row is the target.
 const ROW =
-  "group flex min-h-11 w-full min-w-0 items-center gap-3 rounded-xs text-left tracking-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:min-h-8";
+  "group flex min-h-11 w-full min-w-0 items-center gap-3 rounded-xs text-left tracking-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:min-h-9";
 
 function RowText({
   title,
@@ -44,7 +44,7 @@ function RowText({
               {lead}
             </StatusPill>
           ) : (
-            <span className="truncate text-body font-normal tabular-nums text-ink">
+            <span className="truncate text-body font-normal tabular-nums text-ink-2 transition-colors group-hover:text-ink">
               {lead}
             </span>
           ))}

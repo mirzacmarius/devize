@@ -160,9 +160,7 @@ function MaterialRow({
               </span>
             )}
           </div>
-        ) : (
-          <span className="pr-[34px] text-ink-3">–</span>
-        )}
+        ) : null}
       </TableCell>
       <TableCell className={numberClass}>
         <div className="grid justify-items-end gap-0.5">

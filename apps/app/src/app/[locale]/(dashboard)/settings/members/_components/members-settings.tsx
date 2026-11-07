@@ -227,6 +227,8 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                           <Button
                             variant="ghost"
                             size="icon"
+                            // The dots end on the page's edge, not the button's.
+                            className="-mr-2.5"
                             aria-label={tc("actions")}
                           >
                             <Icons.More aria-hidden />
@@ -243,7 +245,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                       </DropdownMenu>
                     ) : (
                       // Keeps the roles lined up with the rows that have a menu.
-                      <span aria-hidden className="size-9 shrink-0" />
+                      <span aria-hidden className="-mr-2.5 size-9 shrink-0" />
                     )}
                   </div>
                 </li>
@@ -294,11 +296,11 @@ function InvitationsCard() {
         <CardDescription>{t("invitationsDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="m-0 grid list-none p-0">
+        <ul className="m-0 grid list-none gap-2 p-0">
           {invitations.map((invitation) => (
             <li
               key={invitation._id}
-              className="grid items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[minmax(0,1fr)_auto]"
+              className="grid items-center gap-x-4 gap-y-2 rounded-lg bg-sunken p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
             >
               <div className="grid min-w-0 gap-1">
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -334,6 +336,7 @@ function InvitationsCard() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="size-8"
                       aria-label={tc("actions")}
                     >
                       <Icons.More aria-hidden />

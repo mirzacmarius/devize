@@ -13,7 +13,7 @@ export function SummaryCard({ overview }: { overview: Overview }) {
   const percent = Math.round(overview.executed.percent * 10) / 10;
   const executed = formatPercent(percent, locale);
   return (
-    <FigureStrip hint={t("hint")}>
+    <FigureStrip>
       <Figure label={t("title")} value={executed}>
         <MeterBar
           className="mt-1.5"
@@ -31,6 +31,11 @@ export function SummaryCard({ overview }: { overview: Overview }) {
         label={t("executedValue")}
         value={formatMoney(overview.executed.subtotal, locale)}
         unit="lei"
+        note={
+          overview.statements.some(({ status }) => status !== "approved")
+            ? t("withOpen")
+            : undefined
+        }
       />
       <Figure
         label={t("approved")}
@@ -39,14 +44,17 @@ export function SummaryCard({ overview }: { overview: Overview }) {
             ? formatMoney(overview.approved.subtotal, locale)
             : "–"
         }
-        unit={
-          overview.approved &&
-          `lei · ${formatPercent(
-            Math.round(overview.approved.percent * 10) / 10,
-            locale,
-          )}`
+        unit={overview.approved && "lei"}
+        note={
+          overview.approved
+            ? t("approvedShare", {
+                percent: formatPercent(
+                  Math.round(overview.approved.percent * 10) / 10,
+                  locale,
+                ),
+              })
+            : t("noApproved")
         }
-        note={overview.approved ? undefined : t("noApproved")}
       />
       <Figure
         label={t("remaining")}

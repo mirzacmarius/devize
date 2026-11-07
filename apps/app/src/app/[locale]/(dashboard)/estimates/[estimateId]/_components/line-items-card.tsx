@@ -65,11 +65,7 @@ const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-4";
 const TITLE_CELL = "pl-0 [@container(min-width:38rem)]:pl-6";
 const NESTED_TITLE_CELL = "pl-3 [@container(min-width:38rem)]:pl-10";
 
-/**
- * A property of a row, on its quietest line: a dot and a word in the row's own
- * colour. With many rows in a Deviz, a coloured word on each would outweigh the
- * numbers.
- */
+/** A property of a row, on its quietest line: a dot and a word. */
 function RowTag({
   tone,
   children,
@@ -77,11 +73,7 @@ function RowTag({
   tone: "danger" | "warning" | "ai" | "neutral";
   children: ReactNode;
 }) {
-  return (
-    <StatusPill tone={tone} className="text-ink-2">
-      {children}
-    </StatusPill>
-  );
+  return <StatusPill tone={tone}>{children}</StatusPill>;
 }
 
 /** Lei for one unit of a line item, all kinds of resources together. */
@@ -186,9 +178,7 @@ export function LineItemsCard({
         <div className="flex items-center gap-2">
           <CardTitle>{t("items.title")}</CardTitle>
           <Count tone="plain">{count}</Count>
-          <span className="ml-1 text-meta text-ink-3 max-sm:hidden">
-            {t("items.inLei")}
-          </span>
+          <span className="ml-1 text-meta text-ink-3">{t("items.inLei")}</span>
         </div>
         {editable && (
           <div className="flex flex-wrap items-center gap-2">
@@ -390,12 +380,6 @@ function SectionRow({
       <TableCell className={FROM_WIDE} />
       <TableCell className="band-end whitespace-nowrap text-right font-medium tabular-nums">
         {formatMoney(group.total, locale)}
-        {/* A phone has no column head to say it: on the totals, not every line. */}
-        <span
-          className={cn("ml-1 text-meta font-normal text-ink-3", NARROW_ONLY)}
-        >
-          lei
-        </span>
       </TableCell>
     </TableGroupRow>
   );
@@ -597,7 +581,7 @@ function ItemRows({
             aria-expanded={expanded}
             aria-controls={detailsId}
             className={cn(
-              "group grid w-full min-w-0 gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[1rem_minmax(0,1fr)] [@container(min-width:38rem)]:gap-x-2",
+              "group grid w-full min-w-0 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[1rem_minmax(0,1fr)] [@container(min-width:38rem)]:gap-x-2",
               // Room for the row's menu where it's always shown; with a pointer
               // it floats over the row's end, only while it's asked for.
               editable && "[@media(hover:none)]:pr-9",
@@ -611,36 +595,35 @@ function ItemRows({
                 expanded && "rotate-90",
               )}
             />
-            <span className="text-body text-ink [text-wrap:balance]">
-              <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
-                {index}.{" "}
-              </span>
-              <span className="group-hover:underline">
-                {keepUnits(item.title)}
-              </span>
-              {/* After the title's last word, so most rows keep to two lines. */}
-              <span className="hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:inline">
-                {[tenderPosition, code, source].filter(Boolean).map((part) => (
+            <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
+              {index}
+            </span>
+            <span className="text-body text-ink [text-wrap:pretty] group-hover:underline">
+              {keepUnits(item.title)}
+            </span>
+            <span className="col-start-2 hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:block">
+              {[tenderPosition, code, source]
+                .filter(Boolean)
+                .map((part, place) => (
                   <Fragment key={part}>
-                    {" · "}
+                    {place > 0 && " · "}
                     <span className="whitespace-nowrap">{part}</span>
                   </Fragment>
                 ))}
-                <span className={MID_ONLY}>
-                  {" · "}
-                  <span className="whitespace-nowrap">
-                    {t("items.pricePerUnit", { price, unit })}
-                  </span>
+              <span className={MID_ONLY}>
+                {" · "}
+                <span className="whitespace-nowrap">
+                  {t("items.pricePerUnit", { price, unit })}
                 </span>
-                {tags.length > 0 && "\u2002"}
-                {tags.length > 0 && (
-                  <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
-                )}
               </span>
+              {tags.length > 0 && "\u2002"}
+              {tags.length > 0 && (
+                <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
+              )}
             </span>
             <span
               className={cn(
-                "flex items-baseline justify-between gap-3 text-meta tabular-nums text-ink-3",
+                "col-start-2 flex items-baseline justify-between gap-3 text-meta tabular-nums text-ink-3",
                 NARROW_ONLY,
               )}
             >
@@ -659,7 +642,7 @@ function ItemRows({
             {(tenderPosition || source || tags.length > 0) && (
               <span
                 className={cn(
-                  "flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3",
+                  "col-start-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3",
                   NARROW_ONLY,
                 )}
               >

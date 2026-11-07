@@ -9,7 +9,13 @@ import { Segments } from "@devize/ui/meter";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { Check, ChevronRight, CircleAlert, TriangleAlert } from "lucide-react";
+import {
+  Check,
+  ChevronRight,
+  CircleAlert,
+  CircleDashed,
+  TriangleAlert,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { FoldCard } from "@/components/fold-card";
@@ -21,12 +27,13 @@ import type { Check as CheckResult, CheckState } from "./checks";
 import { useRefreshedMessage } from "./estimate-actions";
 import type { Estimate, OpenPanel, Updates } from "./types";
 
-const ringClass: Record<CheckState, string> = {
-  passed: "bg-success-soft text-success",
-  warning: "bg-warning-soft text-warning",
-  failed: "bg-danger-soft text-danger",
-  pending: "shadow-[inset_0_0_0_1.5px_hsl(var(--tick))]",
-};
+const stateIcon: Record<CheckState, { icon: typeof Check; className: string }> =
+  {
+    passed: { icon: Check, className: "text-success" },
+    warning: { icon: CircleAlert, className: "text-warning-dot" },
+    failed: { icon: TriangleAlert, className: "text-danger" },
+    pending: { icon: CircleDashed, className: "text-ink-3" },
+  };
 
 // How many missing resources to name before "și încă 3".
 const NAMED = 3;
@@ -84,7 +91,9 @@ export function ChecksCard({
         className="[&>span]:h-1"
       />
       {open_.length > 0 && (
-        <ul className="m-0 grid list-none gap-3 p-0">{open_.map(row)}</ul>
+        <ul className="m-0 grid list-none gap-3 rounded-lg bg-sunken p-3">
+          {open_.map(row)}
+        </ul>
       )}
       {passed.length > 0 && (
         <div className="grid gap-3">
@@ -118,7 +127,8 @@ export function ChecksCard({
         id="checks"
         title={t("checks.title")}
         lead={lead}
-        flag={checks.some((check) => check.state !== "passed")}
+        // A Deviz that has left can't be fixed here: it says so, without alarm.
+        flag={editable && open_.length > 0}
       >
         {body}
       </FoldCard>
@@ -128,9 +138,7 @@ export function ChecksCard({
     <Card id="checks" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("checks.title")}</CardTitle>
-        <span className="text-meta tabular-nums text-ink-3">
-          {t("checks.score", { passed: passed.length, total: checks.length })}
-        </span>
+        <span className="text-meta tabular-nums text-ink-2">{lead}</span>
       </CardHeader>
       <CardContent className="gap-3">{body}</CardContent>
     </Card>
@@ -152,22 +160,10 @@ function CheckRow({
 }) {
   const t = useScopedI18n("estimate");
   const { title, detail } = useCheckText()(check);
+  const { icon: Icon, className } = stateIcon[check.state];
   return (
-    <li className="grid grid-cols-[20px_minmax(0,1fr)] items-start gap-2.5">
-      <span
-        className={cn(
-          "grid size-5 place-items-center rounded-full",
-          ringClass[check.state],
-        )}
-      >
-        {check.state === "passed" && <Check className="size-3.5" aria-hidden />}
-        {check.state === "warning" && (
-          <CircleAlert className="size-3.5" aria-hidden />
-        )}
-        {check.state === "failed" && (
-          <TriangleAlert className="size-3.5" aria-hidden />
-        )}
-      </span>
+    <li className="grid grid-cols-[16px_minmax(0,1fr)] items-start gap-2.5">
+      <Icon className={cn("mt-0.5 size-4", className)} aria-hidden />
       <div className="grid min-w-0 justify-items-start">
         <span className="text-body font-medium text-ink">
           <span className="sr-only">{t(`checks.states.${check.state}`)}: </span>

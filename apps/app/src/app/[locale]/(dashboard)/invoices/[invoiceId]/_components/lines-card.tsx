@@ -28,7 +28,6 @@ import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { Plus, Trash2 } from "lucide-react";
 import { type ReactNode, useState } from "react";
-import { Amount } from "@/components/amount";
 import { DecimalInput } from "@/components/decimal-input";
 import { useRun } from "@/components/use-run";
 import {
@@ -192,18 +191,10 @@ function Totals({
             <dd
               className={cn(
                 "m-0 min-w-32 text-right tabular-nums text-ink",
-                closes
-                  ? "text-figure"
-                  : row.strong
-                    ? "text-body font-medium"
-                    : "text-body",
+                row.strong || closes ? "text-body font-medium" : "text-body",
               )}
             >
-              {closes ? (
-                <Amount value={formatMoney(row.value, locale)} />
-              ) : (
-                formatMoney(row.value, locale)
-              )}
+              {formatMoney(row.value, locale)}
               {/* The column above says lei; a phone's sum stands alone. */}
               <span className="text-meta font-normal text-ink-3 sm:hidden">
                 {" "}

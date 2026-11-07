@@ -46,7 +46,7 @@ export function Figure({
     <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-3.5 max-xl:last:odd:col-span-2 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l">
       <p className="m-0 text-meta text-ink-2">{label}</p>
       <p className="m-0 flex min-w-0 flex-wrap items-baseline gap-x-1.5">
-        <span className="text-figure tabular-nums text-ink">
+        <span className="text-stat tabular-nums text-ink">
           {typeof value === "string" ? <Amount value={value} /> : value}
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}

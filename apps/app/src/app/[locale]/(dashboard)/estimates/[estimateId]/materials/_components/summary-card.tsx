@@ -22,7 +22,10 @@ export function SummaryCard({ list }: { list: ShoppingList }) {
       <Figure
         label={t("leftover")}
         value={formatMoney(totals.leftoverCost, locale)}
-        unit={`lei · ${formatPercent(Math.round(share * 10) / 10, locale)}`}
+        unit="lei"
+        note={t("leftoverShare", {
+          percent: formatPercent(Math.round(share * 10) / 10, locale),
+        })}
       />
       <Figure
         label={t("inEstimate")}
