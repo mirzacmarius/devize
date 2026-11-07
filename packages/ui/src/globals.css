@@ -426,7 +426,7 @@
   @media (min-width: 1280px) {
     .app-main .settings-sections > [data-slot="card"]:not([data-framed]) {
       display: grid;
-      grid-template-columns: 240px minmax(0, 824px);
+      grid-template-columns: 240px minmax(0, 640px);
       column-gap: 48px;
       align-items: start;
       padding-bottom: 0;
@@ -555,6 +555,26 @@
   .rail-summary > [data-slot="card"]:last-child > [data-slot="card-content"] > div:last-child > [data-row]:last-child {
     margin-bottom: -8px;
   }
+  /* Rows in the frame: a hairline starts them, and they stay together. */
+  .app-main .rail-summary > :not([data-fold]) + [data-fold] {
+    padding-top: 8px;
+  }
+  .app-main .rail-summary > [data-fold] + [data-fold] {
+    margin-top: 0;
+    padding-top: 0;
+    border-top-width: 0;
+  }
+  .app-main .rail-summary > [data-fold] > [data-slot="card-header"] {
+    padding: 0;
+  }
+  .rail-summary > [data-fold]:last-child {
+    margin-bottom: -13px;
+  }
+  @media (min-width: 1280px) {
+    .rail-summary > [data-fold]:last-child {
+      margin-bottom: -7px;
+    }
+  }
   /* Stacked on a narrower screen, rows that are only rows stay together. */
   @media (max-width: 1279.98px) {
     .rail-sections [data-fold] + [data-fold] {
@@ -591,7 +611,7 @@
       background: hsl(var(--panel));
     }
     .foot-action > * {
-      height: 44px;
+      height: 44px !important;
     }
     .app-main:has(.foot-action) {
       padding-bottom: 6rem;

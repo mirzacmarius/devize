@@ -10,13 +10,13 @@ import { cn } from "../utils";
 const statusPillVariants = cva(
   // An empty ::before would set the baseline of the row it stands in, so the
   // dot is centred on its own and the text keeps the line it shares.
-  "inline-flex items-baseline gap-1.5 whitespace-nowrap text-meta before:size-[7px] before:shrink-0 before:self-center before:rounded-full before:content-['']",
+  "inline-flex items-baseline gap-1.5 whitespace-nowrap text-meta before:size-2 before:shrink-0 before:self-center before:rounded-full before:content-['']",
   {
     variants: {
       tone: {
         // Not out in the world yet: Ciornă. An open dot.
         draft:
-          "text-ink-3 before:shadow-[inset_0_0_0_1.5px_hsl(var(--neutral-dot))]",
+          "text-ink-3 before:shadow-[inset_0_0_0_1.5px_hsl(var(--active-dot))]",
         // Out and moving, waiting on someone: Trimis clientului, Emisă
         active: "text-ink-2 before:bg-active-dot",
         // Finished or set aside, nothing to do: Decontat, Expirat

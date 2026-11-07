@@ -404,7 +404,7 @@ function RowsTable({
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink">
+          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.025]">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -529,7 +529,7 @@ function RowsTable({
                   </Reference>
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left">
+                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.025]">
                   <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">
@@ -595,14 +595,12 @@ function RowsTable({
                         formatQuantity(row.cumulativeQuantity, locale),
                       )}
                     </Reference>
-                    {/* All of it done needs no saying; more than all of it does. */}
-                    {row.cumulativeQuantity !== 0 && row.percent !== 100 && (
+                    {/* What's left says how far it got; more than all of it
+                        wants saying. */}
+                    {row.over && (
                       <span
-                        className={cn(
-                          "text-meta",
-                          row.over ? "text-warning" : "text-ink-3",
-                        )}
-                        title={row.over ? t("over") : undefined}
+                        className="text-meta text-warning"
+                        title={t("over")}
                       >
                         {formatPercent(row.percent, locale)}
                       </span>

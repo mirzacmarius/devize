@@ -236,9 +236,12 @@ export function CatalogPage() {
                       </span>
                     ) : (
                       allUnconfirmed(entry.rows) && (
-                        <span className="text-meta text-ink-3">
+                        <StatusPill
+                          tone="draft"
+                          title={t("parts.producersNoteLong")}
+                        >
                           {t("parts.producersNote")}
-                        </span>
+                        </StatusPill>
                       )
                     )}
                   </div>

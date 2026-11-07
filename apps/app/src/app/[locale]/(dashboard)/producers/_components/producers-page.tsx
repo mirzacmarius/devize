@@ -8,14 +8,33 @@ import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
 import { useQuery } from "convex/react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { ListToolbar } from "@/components/list-toolbar";
 import { SearchInput } from "@/components/search-input";
 import { useScopedI18n } from "@/locales/client";
 
+/** A producer has no logo with us: its initials, on a tile like a firm's. */
+function ProducerMark({ name }: { name: string }) {
+  const initials = name
+    .split(/\s+/)
+    .filter((word) => /^\p{L}/u.test(word))
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("");
+  return (
+    <span
+      aria-hidden
+      className="row-span-2 grid size-10 place-items-center self-center rounded-md bg-card text-body font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+    >
+      {initials}
+    </span>
+  );
+}
+
 /**
- * The Producători whose norms are in the catalog, as a directory: each entry
+ * The Producători whose norms are in the catalog, as a directory: each card
  * says what it covers and opens its profile, with the norms and products it
  * publishes and whether it runs the profile itself.
  */
@@ -91,32 +110,36 @@ export function ProducersPage() {
               {t("noResults", { text: search })}
             </p>
           )}
-          <ul className="m-0 grid list-none gap-x-8 p-0 md:grid-cols-2 xl:grid-cols-3">
+          <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 xl:grid-cols-3">
             {rows?.map((producer) => (
-              <li key={producer._id} className="border-t border-border">
+              <li key={producer._id} className="grid min-w-0">
                 <Link
                   href={`/producers/${producer._id}`}
-                  className="group -mx-2 grid h-full content-start gap-y-0.5 rounded-md px-2 pb-5 pt-3 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] grid-rows-[auto_auto_1fr] gap-x-3 rounded-lg border border-card-border p-4 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span className="flex min-w-0 items-baseline justify-between gap-4">
-                    <span className="min-w-0 truncate text-body font-medium text-ink max-md:text-body-lg">
-                      {producer.name}
-                    </span>
-                    <span className="shrink-0 whitespace-nowrap text-meta tabular-nums text-ink-2">
-                      {t("normCount", {
-                        count: producer.moreNorms
-                          ? t("moreNorms", { count: producer.normCount })
-                          : producer.normCount,
-                      })}
-                    </span>
+                  <ProducerMark name={producer.name} />
+                  <span className="min-w-0 truncate text-title-card text-ink">
+                    {producer.name}
                   </span>
-                  <span className="line-clamp-2 text-meta text-ink-3">
+                  <ChevronRight
+                    aria-hidden
+                    className="-mr-1 size-4 self-center text-ink-3 transition-colors group-hover:text-ink"
+                  />
+                  <span className="col-span-2 col-start-2 line-clamp-2 min-w-0 text-meta text-ink-3">
                     {producer.categories.join(" · ")}
                   </span>
-                  <span className="flex flex-wrap items-baseline gap-x-2 text-meta tabular-nums text-ink-3">
-                    {t("edition", { edition: producer.edition })}
+                  <span className="col-span-3 mt-3 flex flex-wrap items-baseline justify-between gap-x-3 self-end text-meta tabular-nums text-ink-2">
+                    <span>
+                      {producer.moreNorms
+                        ? t("normCountMore", { count: producer.normCount })
+                        : t("normCount", { count: producer.normCount })}
+                      {" · "}
+                      {t("edition", { edition: producer.edition })}
+                    </span>
                     {producer.claimed && (
-                      <StatusPill tone="success">{t("managed")}</StatusPill>
+                      <StatusPill tone="success" title={t("managed")}>
+                        {t("managedShort")}
+                      </StatusPill>
                     )}
                   </span>
                 </Link>

@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
-import { Amount } from "@/components/amount";
+import { Amount, Lei } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { FootAction } from "@/components/foot-action";
@@ -160,7 +160,7 @@ export function HomePage() {
           className={cn(
             "grid min-w-0 gap-6",
             !showSetup &&
-              "xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] xl:gap-x-12",
+              "xl:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] xl:gap-x-12",
           )}
         >
           <TodoCard todo={home?.todo} />
@@ -388,7 +388,7 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 
   // What to do, on the left; how much or how soon, in the column on the right.
   let text: string;
-  let figure: string | undefined;
+  let figure: ReactNode;
   let figureClass = "text-ink-2";
   // The icon's colour says what the figure's says, and only then.
   let tone: keyof typeof todoTones = "quiet";
@@ -405,9 +405,11 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
         const down = item.profitChange < 0;
         // The words say which way it went.
         text = t(down ? "alertDown" : "alertUp", { code });
-        figure = t("alertAmount", {
-          amount: `${down ? "−" : "+"}${formatMoney(Math.abs(item.profitChange), locale)}`,
-        });
+        figure = (
+          <Lei
+            value={`${down ? "−" : "+"}${formatMoney(Math.abs(item.profitChange), locale)}`}
+          />
+        );
         figureClass = cn("font-medium", down ? "text-warning" : "text-success");
         tone = down ? "warning" : "quiet";
         note = t("alertLeft", { left: formatMoney(item.profitLeft, locale) });
@@ -476,7 +478,7 @@ function TodoLine({
   text: string;
   sub: string;
   note?: string;
-  figure?: string;
+  figure?: ReactNode;
   figureClass: string;
   phoneHidden?: boolean;
 }) {
@@ -573,8 +575,8 @@ function RecentCard({
                   key={row._id}
                   className="border-t border-border sm:col-span-2 sm:grid sm:grid-cols-subgrid"
                 >
-                  {/* One column at the end for all the rows: sums on its right
-                      edge, status dots down its left. */}
+                  {/* One column at the end for all the rows: sums and statuses on
+                      its right edge. */}
                   <Link
                     href={`/estimates/${row._id}`}
                     className="-mx-2 grid min-h-[63px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:col-span-2 sm:grid-cols-subgrid sm:gap-x-4"
@@ -590,12 +592,12 @@ function RecentCard({
                       {" · "}
                       {row.clientName ?? t("noClient")}
                     </span>
-                    <span className="-my-px flex h-[18px] items-center max-sm:hidden">
-                      <EstimateStatusPill status={row.status} />
+                    <span className="flex h-[18px] items-center justify-end max-sm:hidden">
+                      <EstimateStatusPill short status={row.status} />
                     </span>
                     {/* On a phone, its own line: where it stands and how much. */}
                     <span className="flex items-baseline justify-between gap-4 sm:hidden">
-                      <EstimateStatusPill status={row.status} />
+                      <EstimateStatusPill short status={row.status} />
                       <span className="whitespace-nowrap text-body font-medium tabular-nums text-ink">
                         {formatMoney(row.total, locale)}
                       </span>

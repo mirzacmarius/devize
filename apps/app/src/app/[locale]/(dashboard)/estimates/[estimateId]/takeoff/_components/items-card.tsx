@@ -32,9 +32,10 @@ import type { Item, Room, Section, Takeoff, Target } from "./types";
 
 type Grouped = Item & { totals: { total: number } };
 
-// A group's heading: with nothing to sum, the label on a rule a table has.
+// A group's heading, as on the Deviz: a band over the titles, and what it comes
+// to, here how many of its Articole are measured, at the end.
 const bandClass =
-  "flex min-h-10 items-end border-b border-rule pb-1.5 text-body font-medium text-ink";
+  "-mx-[var(--card-pad)] flex min-h-9 items-center justify-between gap-4 rounded-md bg-sunken py-1 pl-[calc(var(--card-pad)+1.75rem)] pr-[var(--card-pad)] text-body font-medium text-ink";
 
 /**
  * The Articole of a Deviz with their Antemăsurători: each measured from the
@@ -65,6 +66,14 @@ export function ItemsCard({
   );
   const sectionName = (section: Section) =>
     section.code ? `${section.code} ${section.name}` : section.name;
+  const measuredCount = (list: readonly { item: Grouped }[]) => (
+    <span className="shrink-0 whitespace-nowrap font-normal tabular-nums text-ink-2">
+      {t("sectionCount", {
+        measured: list.filter(({ item }) => item.takeoffs.length > 0).length,
+        total: list.length,
+      })}
+    </span>
+  );
   const rows = (list: readonly { item: Grouped; index: number }[]) =>
     list.map(({ item, index }) => (
       <ItemRow
@@ -98,12 +107,17 @@ export function ItemsCard({
               <Fragment key={group.section._id}>
                 <li data-group className={bandClass}>
                   {sectionName(group.section)}
+                  {measuredCount([
+                    ...group.items,
+                    ...group.chapters.flatMap((chapter) => chapter.items),
+                  ])}
                 </li>
                 {rows(group.items)}
                 {group.chapters.map((chapter) => (
                   <Fragment key={chapter.section._id}>
                     <li data-group className={cn(bandClass, "font-normal")}>
                       {sectionName(chapter.section)}
+                      {measuredCount(chapter.items)}
                     </li>
                     {rows(chapter.items)}
                   </Fragment>

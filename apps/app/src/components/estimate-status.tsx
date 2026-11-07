@@ -14,8 +14,22 @@ const tones: Record<EstimateStatus, StatusPillProps["tone"]> = {
   archived: "neutral",
 };
 
-/** Where a Deviz stands: Ciornă, Trimis clientului, Acceptat de client… */
-export function EstimateStatusPill({ status }: { status: EstimateStatus }) {
+/**
+ * Where a Deviz stands: Ciornă, Trimis clientului, Acceptat de client…; `short`
+ * where a list has its titles to fit: Trimis, Acceptat…
+ */
+export function EstimateStatusPill({
+  status,
+  short = false,
+}: {
+  status: EstimateStatus;
+  short?: boolean;
+}) {
   const t = useScopedI18n("estimateStatus");
-  return <StatusPill tone={tones[status]}>{t(status)}</StatusPill>;
+  const tShort = useScopedI18n("estimateStatusShort");
+  return (
+    <StatusPill tone={tones[status]} title={short ? t(status) : undefined}>
+      {short ? tShort(status) : t(status)}
+    </StatusPill>
+  );
 }

@@ -199,7 +199,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         }
                       >
                         <SelectTrigger
-                          className="h-8 w-[148px]"
+                          className="h-8 w-[148px] border-transparent bg-transparent text-ink-2 hover:text-ink data-[state=open]:border-edge max-sm:-ml-3"
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />
@@ -348,7 +348,14 @@ function InvitationsCard() {
               </div>
               {/* In the column the members' menus are in. */}
               <div className="col-start-2 flex items-center justify-between gap-1 sm:col-start-3 sm:justify-end">
-                <CopyLinkButton token={invitation.token} />
+                <CopyLinkButton
+                  token={invitation.token}
+                  label={
+                    invitation.emailStatus === "not_sent"
+                      ? t("copyLinkToSend")
+                      : undefined
+                  }
+                />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -385,9 +392,11 @@ function InvitationsCard() {
 
 function CopyLinkButton({
   token,
+  label,
   variant = "outline",
 }: {
   token: string;
+  label?: string;
   variant?: "outline" | "default";
 }) {
   const t = useScopedI18n("settings.members");
@@ -403,7 +412,7 @@ function CopyLinkButton({
   return (
     <Button type="button" size="sm" variant={variant} onClick={copy}>
       <Icons.Copy aria-hidden />
-      {t("copyLink")}
+      {label ?? t("copyLink")}
     </Button>
   );
 }
