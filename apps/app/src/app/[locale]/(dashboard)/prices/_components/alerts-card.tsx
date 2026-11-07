@@ -173,7 +173,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               <span
                 className={cn(
                   "text-kpi tabular-nums",
-                  profitChange < 0 ? "text-warning-figure" : "text-success",
+                  profitChange < 0 ? "text-warning" : "text-success",
                 )}
               >
                 {/* The label over it says which way it went. */}

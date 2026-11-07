@@ -3,6 +3,7 @@
 import type { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
+import { Logo } from "@devize/ui/logo";
 import {
   Sheet,
   SheetContent,
@@ -13,7 +14,6 @@ import type { Preloaded } from "convex/react";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Wordmark } from "@/components/wordmark";
 import { useScopedI18n } from "@/locales/client";
 import { useOpenCommandMenu } from "./command-menu";
 import { SidebarContent } from "./sidebar-content";
@@ -63,7 +63,7 @@ export function MobileNav({
         href="/"
         className="flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <Wordmark />
+        <Logo className="size-7" />
       </Link>
       <Button
         variant="ghost"

@@ -20,7 +20,7 @@ import {
   Loader2,
   LogOut,
   PanelLeft,
-  Receipt,
+  ReceiptText,
   RefreshCw,
   Ruler,
   Settings,
@@ -55,7 +55,7 @@ export const Icons = {
   // A Proces-verbal de recepție.
   Reception: ClipboardCheck,
   Deviz: FileText,
-  Invoice: Receipt,
+  Invoice: ReceiptText,
   OfficialForms: FileSpreadsheet,
   Spreadsheet: Sheet,
   NormAdded: FileCheck,

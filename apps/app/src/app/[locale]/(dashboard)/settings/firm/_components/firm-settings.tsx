@@ -149,7 +149,7 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
   };
 
   return (
-    <Card className="sm:-mb-6">
+    <Card>
       <div className="flex flex-wrap items-center gap-4 p-[var(--card-pad)] sm:p-0">
         <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
           {firm.logoUrl ? (
@@ -415,21 +415,24 @@ function DetailsForm({
             </div>
           </fieldset>
         </CardContent>
-        <CardFooter className={footer}>
-          {canEdit ? (
-            <>
-              <span />
-              <Button type="submit" disabled={saving || !changed}>
-                {saving && (
-                  <Icons.Loader className="animate-spin" aria-hidden />
-                )}
-                {tc("save")}
-              </Button>
-            </>
-          ) : (
-            <p className="m-0 text-meta text-ink-3">{t("readOnly")}</p>
-          )}
-        </CardFooter>
+        {/* Save shows up when there's something to save. */}
+        {(!canEdit || changed || saving) && (
+          <CardFooter className={footer}>
+            {canEdit ? (
+              <>
+                <span />
+                <Button type="submit" disabled={saving}>
+                  {saving && (
+                    <Icons.Loader className="animate-spin" aria-hidden />
+                  )}
+                  {tc("save")}
+                </Button>
+              </>
+            ) : (
+              <p className="m-0 text-meta text-ink-3">{t("readOnly")}</p>
+            )}
+          </CardFooter>
+        )}
       </form>
     </Card>
   );

@@ -22,8 +22,9 @@ import {
 import { toast } from "@devize/ui/sonner";
 import { StatusPill } from "@devize/ui/status-pill";
 import { Textarea } from "@devize/ui/textarea";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Check, Plus } from "lucide-react";
 import Link from "next/link";
 import {
   type FormEvent,
@@ -259,7 +260,7 @@ function AddNorm({
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-center gap-x-4 gap-y-0.5 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_auto_32px]"
+                    className="group -mx-3 grid min-h-[60px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-start gap-x-4 gap-y-0.5 rounded-md px-3 py-2.5 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_112px_32px]"
                   >
                     <span className="grid min-w-0 gap-0.5">
                       <span className="text-body text-ink [text-wrap:pretty]">
@@ -275,7 +276,7 @@ function AddNorm({
                           {norm.source !== "base" && ` · ${normSource(norm)}`}
                         </span>
                         {inEstimate.has(norm._id) && (
-                          <StatusPill tone="active" className="shrink-0">
+                          <StatusPill tone="success" className="shrink-0">
                             {t("addNorm.inEstimate")}
                           </StatusPill>
                         )}
@@ -296,9 +297,18 @@ function AddNorm({
                     {/* Plain to see before the pointer gets there: this adds. */}
                     <span
                       aria-hidden
-                      className="col-start-2 row-span-2 row-start-1 grid size-8 place-items-center rounded-md border border-border text-ink-2 transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground sm:col-start-3 sm:row-span-1"
+                      className={cn(
+                        "col-start-2 row-span-2 row-start-1 -my-1.5 grid size-8 place-items-center rounded-md border transition-colors sm:col-start-3 sm:row-span-1",
+                        inEstimate.has(norm._id)
+                          ? "border-transparent bg-success-soft text-success"
+                          : "border-border text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
+                      )}
                     >
-                      <Plus className="size-4" />
+                      {inEstimate.has(norm._id) ? (
+                        <Check className="size-4" />
+                      ) : (
+                        <Plus className="size-4" />
+                      )}
                     </span>
                   </button>
                 </li>

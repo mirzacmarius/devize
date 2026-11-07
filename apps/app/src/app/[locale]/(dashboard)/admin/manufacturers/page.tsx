@@ -15,6 +15,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Nil } from "@/components/nil";
 import { useScopedI18n } from "@/locales/client";
 import {
   Confidence,
@@ -203,14 +204,16 @@ export default function ManufacturersPage() {
                       {tAdmin(`status.norms.${row.normsStatus}`)}
                     </TableCell>
                     <TableCell className="text-ink-2">
-                      {row.confidence && (
+                      {row.confidence ? (
                         <Confidence>
                           {tAdmin(`confidenceLevel.${row.confidence}`)}
                         </Confidence>
+                      ) : (
+                        <Nil />
                       )}
                     </TableCell>
                     <TableCell>
-                      {row.message && (
+                      {row.message ? (
                         <Pill
                           tone={
                             row.message.status === "draft"
@@ -224,6 +227,8 @@ export default function ManufacturersPage() {
                         >
                           {tAdmin(`status.message.${row.message.status}`)}
                         </Pill>
+                      ) : (
+                        <Nil />
                       )}
                     </TableCell>
                   </TableRow>

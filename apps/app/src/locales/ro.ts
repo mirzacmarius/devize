@@ -437,7 +437,7 @@ export default {
   },
   estimate: {
     rail: {
-      preparation: "Verificări și calcule",
+      preparation: "Pregătire",
       records: "Documente și date",
     },
     jump: {
@@ -1867,6 +1867,7 @@ export default {
       accept: "Accept oferta",
       decline: "Nu accept",
       download: "Descarcă PDF",
+      downloadShort: "PDF",
       downloadFailed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
     },
     accept: {
@@ -1976,7 +1977,7 @@ export default {
     title: "Catalog",
     costNote:
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
-    unconfirmed: "Neconfirmată",
+    unconfirmed: "Neconfirmată de producător",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
@@ -1988,6 +1989,8 @@ export default {
     searchPlaceholder: "Caută după cod sau lucrare",
     columns: {
       norm: "Normă",
+      category: "Categorie",
+      source: "Sursă",
       cost: "Cost ref.",
       status: "Stare",
       updated: "Modificată",
@@ -2711,7 +2714,7 @@ export default {
         wave: "Etapa",
         status: "Stare",
         norms: "Norme",
-        confidence: "Încredere",
+        confidence: "Încredere date",
         email: "Email",
       },
       working: "Lucrează…",
@@ -3219,12 +3222,7 @@ export default {
     "count#other": "{count} de producători",
     managedCount: "{count} își administrează profilul",
     managed: "Administrat de producător",
-    columns: {
-      name: "Producător",
-      edition: "Ediție",
-      status: "Profil",
-      norms: "Norme",
-    },
+    managedShort: "Administrat",
     empty:
       "Încă nu e niciun producător în catalog. Profilurile apar pe măsură ce publicăm normele lor.",
     normCount: "Norme: {count}",
@@ -4223,8 +4221,7 @@ export default {
     draftCode: "Ciornă",
     overdue: "Restantă",
     owedPart: "de încasat {owed}",
-    lateOpen: "Deschide factura",
-    lateOpenFirst: "Deschide-o pe prima",
+    lateAction: "Transmite la ANAF",
     receivable: {
       total: "De încasat",
       overdue: "Plăți restante",
@@ -4256,7 +4253,8 @@ export default {
       failed: "Trimitere eșuată",
     },
     efacturaLate: "Termen depășit",
-    efacturaDue: "până la {date}",
+    efacturaLateOn: "Termen depășit: {date}",
+    efacturaDue: "Până la {date}",
     card: {
       title: "Facturi",
       invoicedOf: "Facturat {invoiced} din {accepted} lei",

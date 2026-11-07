@@ -96,7 +96,14 @@ export function HomePage() {
         }
       />
       {/* On a phone the next section's hairline closes the figures. */}
-      <Card className="grid grid-cols-3 max-sm:-mb-6 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.35fr)_repeat(3,minmax(0,1fr))]">
+      {/* Where there's room the last figure starts on the column under it. */}
+      <Card
+        className={cn(
+          "grid grid-cols-3 max-sm:-mb-6 sm:grid-cols-2 xl:grid-cols-4",
+          !showSetup &&
+            "min-[1400px]:grid-cols-[repeat(3,minmax(0,1fr))_calc((100%-3rem)*0.4+1.5rem)]",
+        )}
+      >
         <Kpi
           lead
           label={t("kpi.receivable")}
@@ -205,10 +212,10 @@ function Kpi({
   return (
     <div
       className={cn(
-        "row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0.5 border-border sm:gap-y-1 sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(even)]:border-l sm:max-xl:[&:nth-child(n+3)]:border-t sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l",
+        "row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0.5 border-border sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(even)]:border-l sm:max-xl:[&:nth-child(n+3)]:border-t sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l",
         lead
-          ? "max-sm:col-span-3 max-sm:px-4 max-sm:pb-3.5 max-sm:pt-3"
-          : "max-sm:border-t max-sm:px-3 max-sm:py-2.5 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
+          ? "max-sm:col-span-3 max-sm:px-4 max-sm:pb-3 max-sm:pt-2.5"
+          : "max-sm:border-t max-sm:px-3 max-sm:py-2 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
       )}
     >
       <p className="m-0 truncate text-meta text-ink-2">
@@ -227,7 +234,7 @@ function Kpi({
             "tabular-nums tracking-[-0.01em] text-ink [font-weight:var(--weight-figure)]",
             lead
               ? "text-[28px] leading-9 sm:text-kpi"
-              : "text-base leading-6 max-sm:[&>span]:text-ink sm:text-stat sm:leading-9",
+              : "text-base leading-6 max-sm:[&>span]:text-ink sm:text-stat",
           )}
         >
           <Amount value={value} />
@@ -480,12 +487,12 @@ function TodoLine({
     >
       <Link
         href={href}
-        className="group -mx-2 grid min-h-[59px] grid-cols-[auto_minmax(0,1fr)] content-center items-baseline gap-x-3 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+        className="group -mx-2 grid min-h-[62px] grid-cols-[auto_minmax(0,1fr)_auto] content-center items-baseline gap-x-3 gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden
           className={cn(
-            "row-span-3 grid size-7 place-items-center self-center rounded-md sm:row-span-2 [&_svg]:size-4",
+            "row-span-2 grid size-7 place-items-center self-center rounded-md [&_svg]:size-4",
             todoTones[tone],
           )}
         >
@@ -494,23 +501,22 @@ function TodoLine({
         <span
           className={cn(
             "col-start-2 min-w-0 text-body font-medium text-ink",
-            !figure && "sm:col-span-2",
+            !figure && "col-span-2",
           )}
         >
           {text}
         </span>
-        {/* On a phone it stays with what to do, under it. */}
         {figure && (
           <span
             className={cn(
-              "col-start-2 whitespace-nowrap text-body tabular-nums sm:col-start-3 sm:text-right",
+              "col-start-3 row-start-1 whitespace-nowrap text-right text-body tabular-nums",
               figureClass,
             )}
           >
             {figure}
           </span>
         )}
-        <span className="col-start-2 line-clamp-2 text-meta text-ink-3 sm:col-span-2">
+        <span className="col-span-2 col-start-2 line-clamp-2 text-meta text-ink-3">
           {sub}
         </span>
       </Link>
@@ -559,11 +565,11 @@ function RecentCard({
                 <li key={row._id} className="border-t border-border">
                   <Link
                     href={`/estimates/${row._id}`}
-                    className="-mx-2 grid min-h-[59px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="-mx-2 grid min-h-[62px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {/* Each line on its own, so a title gives way only to its sum. */}
                     <span className="flex min-w-0 items-baseline justify-between gap-4">
-                      <span className="min-w-0 text-body font-medium text-ink sm:truncate">
+                      <span className="min-w-0 text-body text-ink sm:truncate">
                         {row.title}
                       </span>
                       <span className="whitespace-nowrap text-body tabular-nums text-ink max-sm:hidden">
@@ -578,7 +584,7 @@ function RecentCard({
                         {" · "}
                         {formatDay(row.updatedAt, locale)}
                       </span>
-                      <span className="shrink-0 max-sm:hidden">
+                      <span className="shrink-0 leading-[18px] max-sm:hidden [&>*]:leading-[18px]">
                         <EstimateStatusPill status={row.status} />
                       </span>
                     </span>

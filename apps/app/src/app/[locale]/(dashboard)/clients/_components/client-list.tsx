@@ -73,13 +73,15 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <SearchInput
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            aria-label={t("searchPlaceholder")}
-            className="w-full sm:max-w-xs"
-          />
+          <div className="flex justify-end">
+            <SearchInput
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:w-80"
+            />
+          </div>
           <Table stack twoLine>
             <TableHeader>
               <TableRow>

@@ -33,7 +33,7 @@ export default async function Page() {
           <SampleEstimate />
         </div>
       </aside>
-      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:m-2 xl:ml-0 xl:rounded-2xl xl:shadow-panel">
+      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:m-2 xl:ml-0 xl:justify-start xl:rounded-2xl xl:pt-[max(3rem,calc(50vh-273px))] xl:shadow-panel">
         <div className="grid w-full max-w-[400px] gap-6">
           <Wordmark className="text-xl xl:hidden" />
           <div className="grid gap-1.5">

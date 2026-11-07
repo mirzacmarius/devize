@@ -438,7 +438,7 @@ export default {
   },
   estimate: {
     rail: {
-      preparation: "Checks and calculations",
+      preparation: "Preparation",
       records: "Documents and details",
     },
     jump: {
@@ -1869,6 +1869,7 @@ export default {
       accept: "Accept the offer",
       decline: "Decline",
       download: "Download PDF",
+      downloadShort: "PDF",
       downloadFailed: "The PDF couldn't be made. Try again.",
     },
     accept: {
@@ -1978,7 +1979,7 @@ export default {
   catalog: {
     title: "Catalog",
     costNote: "Direct cost at reference prices; an estimate uses your prices.",
-    unconfirmed: "Unconfirmed",
+    unconfirmed: "Not confirmed by the manufacturer",
     unconfirmedHint: "The manufacturer hasn't checked it yet.",
     noCost: "No price",
     newNorm: "New norm",
@@ -1990,6 +1991,8 @@ export default {
     searchPlaceholder: "Search by code or work",
     columns: {
       norm: "Norm",
+      category: "Category",
+      source: "Source",
       cost: "Ref. cost",
       status: "Status",
       updated: "Changed",
@@ -2712,7 +2715,7 @@ export default {
         wave: "Stage",
         status: "Status",
         norms: "Norms",
-        confidence: "Confidence",
+        confidence: "Data confidence",
         email: "Email",
       },
       working: "Working…",
@@ -3221,12 +3224,7 @@ export default {
     "count#other": "{count} manufacturers",
     managedCount: "{count} manage their own profile",
     managed: "Managed by the manufacturer",
-    columns: {
-      name: "Manufacturer",
-      edition: "Edition",
-      status: "Profile",
-      norms: "Norms",
-    },
+    managedShort: "Managed",
     empty:
       "No manufacturers in the catalog yet. Profiles appear as we publish their norms.",
     normCount: "Norms: {count}",
@@ -4226,8 +4224,7 @@ export default {
     draftCode: "Draft",
     overdue: "Overdue",
     owedPart: "to collect {owed}",
-    lateOpen: "Open the invoice",
-    lateOpenFirst: "Open the first",
+    lateAction: "Send to ANAF",
     receivable: {
       total: "To collect",
       overdue: "Overdue payments",
@@ -4259,7 +4256,8 @@ export default {
       failed: "Sending failed",
     },
     efacturaLate: "Deadline passed",
-    efacturaDue: "by {date}",
+    efacturaLateOn: "Deadline passed: {date}",
+    efacturaDue: "By {date}",
     card: {
       title: "Invoices",
       invoicedOf: "Invoiced {invoiced} of {accepted} lei",

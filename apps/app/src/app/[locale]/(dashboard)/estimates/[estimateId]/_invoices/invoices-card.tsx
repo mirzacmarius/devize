@@ -5,6 +5,7 @@ import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Fact, FactList } from "@/components/fact-list";
 import { FoldRow } from "@/components/fold-card";
@@ -13,10 +14,12 @@ import { RailStat } from "@/components/rail-stat";
 import { formatMoney, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
+import { useInvoiceActions } from "./use-invoice-actions";
 
 /**
- * The Deviz's Facturi: what is left to bill of what the client accepted, and
- * the invoices so far. The next one to make is the header's main action.
+ * The Deviz's Facturi: what is left to bill of what the client accepted, the
+ * invoices so far, and the next one to make. Once the work is done that's the
+ * header's main action too; while it goes on, only here and in the menu.
  */
 export function InvoicesCard({ estimate }: { estimate: Estimate }) {
   const t = useScopedI18n("invoices");
@@ -24,6 +27,11 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
   const billing = useQuery(api.invoices.invoices.forEstimate, {
     estimateId: estimate._id,
   });
+  const invoicing = useInvoiceActions(
+    estimate._id,
+    estimate.status === "accepted",
+  );
+  const next = invoicing.actions[0];
   // Nothing to bill until the client accepts.
   if (
     billing === undefined ||
@@ -118,6 +126,19 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
         </Fact>
       </FactList>
       {list}
+      {next && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-2 justify-self-start"
+          disabled={invoicing.busy}
+          onClick={next.run}
+        >
+          <Plus aria-hidden />
+          {next.label}
+        </Button>
+      )}
     </RailStat>
   );
 }

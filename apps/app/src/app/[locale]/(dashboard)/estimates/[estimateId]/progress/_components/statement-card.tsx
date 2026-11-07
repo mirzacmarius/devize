@@ -32,6 +32,7 @@ import { Fragment, type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
+import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
@@ -352,8 +353,9 @@ function RowsTable({
   let group: string | undefined;
   let periodValue = 0;
 
-  // What's not there stays blank, so the period's figures stand out.
-  const ifAny = (value: number, shown: string) => (value === 0 ? null : shown);
+  // What's not there is a dash, so the period's figures stand out.
+  const ifAny = (value: number, shown: string) =>
+    value === 0 ? <Nil /> : shown;
 
   return (
     <Table bleed className="min-w-[50rem]">
@@ -393,14 +395,12 @@ function RowsTable({
               )}
               <TableRow className="group/row [&>td]:py-3">
                 <TableCell className="relative align-top">
-                  <div className="grid min-w-64 justify-items-start gap-0.5 pr-14">
-                    <span>
-                      <span className="tabular-nums text-ink-3">
-                        {row.position}.{" "}
-                      </span>
-                      {row.title}
+                  <div className="grid min-w-64 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-14">
+                    <span className="tabular-nums text-ink-3">
+                      {row.position}
                     </span>
-                    <span className="text-meta tabular-nums text-ink-3">
+                    <span>{row.title}</span>
+                    <span className="col-start-2 text-meta tabular-nums text-ink-3">
                       <span className="tabular-nums">{row.code}</span>
                       {" · "}
                       {t("pricePerUnit", {
@@ -455,6 +455,7 @@ function RowsTable({
                 <TableCell className="whitespace-nowrap bg-sunken pr-[21px] text-right align-top">
                   <InlineNumber
                     fixed
+                    placeholder="–"
                     value={row.quantity}
                     format={(value) =>
                       value !== 0 ? formatQuantity(value, locale) : ""

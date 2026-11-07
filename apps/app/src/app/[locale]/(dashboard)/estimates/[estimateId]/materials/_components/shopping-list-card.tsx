@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { Pencil } from "lucide-react";
+import { Nil } from "@/components/nil";
 import {
   formatCount,
   formatInputNumber,
@@ -60,7 +61,7 @@ export function ShoppingListCard({
             <TableRow>
               <TableHead>{t("material")}</TableHead>
               <TableHead className={HEAD_OVER_NUMBER}>{t("need")}</TableHead>
-              <TableHead>{t("buy")}</TableHead>
+              <TableHead className="pl-8">{t("buy")}</TableHead>
               <TableHead className={HEAD_OVER_NUMBER}>
                 {t("leftover")}
               </TableHead>
@@ -139,7 +140,7 @@ function MaterialRow({
         {formatQuantityRounded(row.need, locale)}
         <span className={UNIT_SLOT}>{unit}</span>
       </TableCell>
-      <TableCell className="whitespace-nowrap align-top tabular-nums">
+      <TableCell className="whitespace-nowrap pl-8 align-top tabular-nums">
         <Packages row={row} />
       </TableCell>
       <TableCell className={numberClass}>
@@ -160,7 +161,12 @@ function MaterialRow({
               </span>
             )}
           </div>
-        ) : null}
+        ) : (
+          <>
+            <Nil />
+            <span className={UNIT_SLOT} />
+          </>
+        )}
       </TableCell>
       <TableCell className={numberClass}>
         <div className="grid justify-items-end gap-0.5">

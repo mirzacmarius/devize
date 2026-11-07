@@ -147,7 +147,7 @@ function ItemRow({
   return (
     <li className="grid gap-2 border-b border-border py-4 last:border-b-0">
       <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-start gap-x-2 max-sm:items-baseline max-sm:gap-y-1 sm:grid-cols-[1.75rem_minmax(0,1fr)_auto] sm:gap-x-3">
-        <span className="pt-px text-meta tabular-nums text-ink-3">{index}</span>
+        <span className="text-body tabular-nums text-ink-3">{index}</span>
         {/* On a phone the title has the whole width, and the amount sits on the quantity's line. */}
         <div className="grid min-w-0 gap-1 max-sm:contents">
           <span

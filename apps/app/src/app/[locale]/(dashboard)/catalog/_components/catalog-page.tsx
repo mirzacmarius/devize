@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { TabsNav, TabsNavLink } from "@devize/ui/tabs-nav";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Plus } from "lucide-react";
@@ -26,12 +27,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useState } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { Nil } from "@/components/nil";
 import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
 import { SearchInput } from "@/components/search-input";
-import { SegmentedControl } from "@/components/segmented-control";
-import { formatDay, formatMoney, formatUnit } from "@/lib/format";
+import { formatDay, formatMoney, formatUnit, keepUnits } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 
 export type CatalogView = "catalog" | "own";
@@ -59,8 +60,10 @@ function matches(norm: NormRow, words: readonly string[]) {
  * words of the work; the public ones are also browsed by category of the
  * base catalog, which narrows a search too.
  */
-// The unit hangs after the number, so the numbers stay in one column.
-const COST_UNIT = "ml-1.5 inline-block min-w-11 text-left text-meta text-ink-3";
+// The unit stands in its own slot, flush with the table's right edge, so the
+// numbers stay in one column.
+const COST_UNIT =
+  "ml-1.5 inline-block min-w-11 text-right text-meta text-ink-3";
 
 export function CatalogPage() {
   const t = useScopedI18n("catalog");
@@ -115,16 +118,7 @@ export function CatalogPage() {
         : listed.status === "LoadingFirstPage"
           ? undefined
           : listed.results;
-  const columns = isOwn ? 4 : 2;
 
-  const changeView = (next: CatalogView) => {
-    setText("");
-    window.history.replaceState(
-      null,
-      "",
-      next === "own" ? "/catalog?view=own" : "/catalog",
-    );
-  };
   const changeCategory = (key: BaseCategoryKey | null) => {
     window.history.replaceState(
       null,
@@ -158,17 +152,28 @@ export function CatalogPage() {
         actions={actions}
       />
       <section className="grid min-w-0 gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <SegmentedControl
-            label={t("views.label")}
-            value={view}
-            onChange={changeView}
-            options={[
-              { value: "catalog", label: t("views.catalog") },
-              { value: "own", label: t("views.own") },
-            ]}
-          />
-          <div className="flex min-w-0 flex-wrap items-center gap-2 max-sm:w-full">
+        {/* Where there's room the search stands on the tabs' line. */}
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
+          <TabsNav
+            aria-label={t("views.label")}
+            className="lg:col-span-2 lg:col-start-1 lg:row-start-1"
+          >
+            <TabsNavLink asChild active={!isOwn}>
+              <Link replace href="/catalog" onClick={() => setText("")}>
+                {t("views.catalog")}
+              </Link>
+            </TabsNavLink>
+            <TabsNavLink asChild active={isOwn}>
+              <Link
+                replace
+                href="/catalog?view=own"
+                onClick={() => setText("")}
+              >
+                {t("views.own")}
+              </Link>
+            </TabsNavLink>
+          </TabsNav>
+          <div className="flex min-w-0 flex-wrap items-center gap-2 lg:col-start-2 lg:row-start-1 lg:self-center">
             {!isOwn && (
               <NormCategorySelect
                 label={t("categories.label")}
@@ -204,14 +209,23 @@ export function CatalogPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("columns.norm")}</TableHead>
+                  {!isOwn && (
+                    <TableHead className="hidden w-48 lg:table-cell">
+                      {t("columns.category")}
+                    </TableHead>
+                  )}
+                  {!isOwn && (
+                    <TableHead className="hidden w-40 lg:table-cell">
+                      {t("columns.source")}
+                    </TableHead>
+                  )}
                   {isOwn && <TableHead>{t("columns.status")}</TableHead>}
                   {isOwn && (
                     <TableHead className="hidden sm:table-cell">
                       {t("columns.updated")}
                     </TableHead>
                   )}
-                  {/* Over the numbers, not over the unit that follows them. */}
-                  <TableHead className="text-right last:pr-[50px]">
+                  <TableHead className="text-right">
                     {t("columns.cost")}
                   </TableHead>
                 </TableRow>
@@ -219,14 +233,14 @@ export function CatalogPage() {
               <TableBody>
                 {rows === undefined && (
                   <TableRow>
-                    <TableCell colSpan={columns} className="text-ink-3">
+                    <TableCell colSpan={4} className="text-ink-3">
                       {tc("loading")}
                     </TableCell>
                   </TableRow>
                 )}
                 {rows?.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={columns} className="text-ink-3">
+                    <TableCell colSpan={4} className="text-ink-3">
                       {search && !isOwn && category ? (
                         <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                           {t("noResultsInCategory", {
@@ -259,7 +273,7 @@ export function CatalogPage() {
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <span className="text-body font-medium text-ink group-hover:underline">
-                          {norm.title}
+                          {keepUnits(norm.title)}
                         </span>
                         <span className="flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3">
                           <span>
@@ -268,13 +282,16 @@ export function CatalogPage() {
                                 ? `${norm.code} · v${norm.version}`
                                 : norm.code}
                             </span>
-                            {norm.category && ` · ${norm.category}`}
-                            {norm.source !== "base" &&
-                              ` · ${norm.manufacturerName ?? normSource(norm)}`}
+                            {/* The public list has columns for these where there's room. */}
+                            <span className={isOwn ? undefined : "lg:hidden"}>
+                              {norm.category && ` · ${norm.category}`}
+                              {norm.source !== "base" &&
+                                ` · ${norm.manufacturerName ?? normSource(norm)}`}
+                            </span>
                           </span>
                           {unconfirmed(norm) && (
                             <StatusPill
-                              tone="warning"
+                              tone="draft"
                               title={t("unconfirmedHint")}
                             >
                               {t("unconfirmed")}
@@ -283,6 +300,16 @@ export function CatalogPage() {
                         </span>
                       </Link>
                     </TableCell>
+                    {!isOwn && (
+                      <TableCell className="hidden text-ink-2 lg:table-cell">
+                        {norm.category ?? <Nil />}
+                      </TableCell>
+                    )}
+                    {!isOwn && (
+                      <TableCell className="hidden text-ink-2 first-letter:uppercase lg:table-cell">
+                        {norm.manufacturerName ?? normSource(norm)}
+                      </TableCell>
+                    )}
                     {isOwn && (
                       <TableCell>
                         <NormStatusPill status={norm.status} />
@@ -293,11 +320,9 @@ export function CatalogPage() {
                         {formatDay(norm.updatedAt, locale)}
                       </TableCell>
                     )}
-                    <TableCell className="whitespace-nowrap text-right tabular-nums">
+                    <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top">
                       {norm.referenceCost === undefined ? (
-                        <span className="inline-block pr-[50px]">
-                          <StatusPill tone="warning">{t("noCost")}</StatusPill>
-                        </span>
+                        <StatusPill tone="warning">{t("noCost")}</StatusPill>
                       ) : (
                         <>
                           {formatMoney(norm.referenceCost, locale)}

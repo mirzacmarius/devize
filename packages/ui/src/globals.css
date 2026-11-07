@@ -23,7 +23,7 @@
   --nav-active: 60 9.1% 89.2%; /* #e6e6e1: the current page in the sidebar */
   --tile: 60 15.4% 94.9%; /* #f4f4f0: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 60 4% 10% / 0.18; /* behind whatever comes forward: a dialog, a sheet */
+  --scrim: 60 4% 10% / 0.32; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
   --border: 60 9.8% 90%; /* #e8e8e3 */
@@ -49,8 +49,7 @@
   --success: 151.2 48.3% 29.6%; /* #27704d */
   --success-soft: 138.5 35.1% 92.7%; /* #e6f3ea */
   --success-dot: 149.7 47.9% 42.9%; /* #39a26d */
-  --warning: 38.2 80.5% 24.1%; /* #6f4b0c: 7.8:1 on white */
-  --warning-figure: 39.1 100% 27.1%; /* #8a5a00: a warning at 24 px and up */
+  --warning: 39.1 100% 27.1%; /* #8a5a00 */
   --warning-soft: 37.5 88.9% 92.9%; /* #fdf1dd */
   --warning-dot: 35.5 79.6% 55.9%; /* #e89f35 */
   --danger: 2.7 64.4% 40.8%; /* #ab2b25 */
@@ -95,7 +94,7 @@
   --nav-active: 60 2.3% 17.3%; /* #2d2d2b */
   --tile: 60 2.4% 16.5%; /* #2b2b29 */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
-  --scrim: 0 0% 0% / 0.5;
+  --scrim: 0 0% 0% / 0.6;
 
   --border: 60 2% 19.6%; /* #333331 */
   --border-control: 60 2.6% 37.5%; /* #62625d */
@@ -106,20 +105,19 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.2% 57.5%; /* #96968f: 6.9:1 on the panel */
 
-  --action: 60 11.6% 91.6%; /* #ecece7: the one bright thing on the page */
+  --action: 60 7.1% 83.5%; /* #d8d8d2: the one bright thing on the page */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
   --brand: 67.7 100% 38%; /* #a9c200: a step quieter on a dark page */
 
-  --success: 142 43.6% 69.4%; /* #8fd3a8 */
+  --success: 142 28.3% 58.4%; /* #77b38d: below the secondary text, as in light */
   --success-soft: 145.7 25.9% 15.9%; /* #1e3327 */
   --success-dot: 146 46.8% 56.5%; /* #5cc489 */
-  --warning: 38.7 68.2% 69.2%; /* #e6c07b */
-  --warning-figure: 38.7 68.2% 69.2%; /* #e6c07b */
+  --warning: 38.2 47.8% 59.4%; /* #c9a566 */
   --warning-soft: 36 32.5% 15.1%; /* #33291a */
   --warning-dot: 36.8 74.9% 59.4%; /* #e5a94a */
-  --danger: 6.1 74.6% 76.9%; /* #f0a198 */
+  --danger: 6.5 52.2% 68.8%; /* #d98f86 */
   --danger-soft: 6.4 31.8% 17.3%; /* #3a211e */
   --danger-solid: 4.9 72.2% 63.3%; /* #e5695e */
   --on-danger-solid: 2.9 53.8% 7.6%; /* #1e0a09 */
@@ -433,7 +431,8 @@
     }
   }
   /* In a rail, values end on one edge, where a row's chevron starts. */
-  .rail-sections [data-slot="fact"] {
+  .rail-sections [data-slot="fact"],
+  .rail-sections [data-slot="meter"] {
     margin-right: 19px;
   }
   /* Stacked on a narrower screen, rows that are only rows stay together. */
@@ -442,15 +441,9 @@
       margin-top: -24px;
     }
   }
-  /* A bar at the screen's foot: the list fades out under it, no line cuts it. */
-  .foot-bar::before {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    bottom: 100%;
-    height: 24px;
-    pointer-events: none;
-    background: linear-gradient(to top, hsl(var(--card)), hsl(var(--card) / 0));
+  /* A bar at the screen's foot: a layer over the list, with its own rule. */
+  .foot-bar {
+    border-top: 1px solid hsl(var(--border));
   }
   /* A band starts a group: the row before it needs no rule of its own. */
   tr:has(+ tr[data-band]) {
@@ -484,6 +477,13 @@
       inset-block: 0;
       width: var(--card-pad);
       background: hsl(var(--card));
+    }
+    [data-past-hero] .items-table > thead th,
+    [data-past-hero] .items-table > thead th:first-child::before,
+    [data-past-hero] .items-table > thead th:last-child::after {
+      box-shadow:
+        inset 0 -1px 0 hsl(var(--card-border)),
+        0 6px 6px -6px hsl(var(--scrim));
     }
     .items-table > thead th:first-child::before {
       right: 100%;
@@ -594,11 +594,29 @@
   }
   /* The hairline of ticks on the marketing site. */
   .tick-rule {
-    height: 6px;
-    background: repeating-linear-gradient(
-      90deg,
-      hsl(var(--tick)) 0 1px,
-      transparent 1px 4px
-    );
+    position: relative;
+    height: 8px;
+    background:
+      repeating-linear-gradient(
+          90deg,
+          hsl(var(--border-control)) 0 1px,
+          transparent 1px 40px
+        )
+        left bottom / 100% 8px no-repeat,
+      repeating-linear-gradient(
+          90deg,
+          hsl(var(--tick)) 0 1px,
+          transparent 1px 8px
+        )
+        left bottom / 100% 4px no-repeat;
+  }
+  .tick-rule::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    height: 8px;
+    background: hsl(var(--border-control));
   }
 }

@@ -37,8 +37,8 @@ const config = {
         departure: ["var(--font-departure-mono)"],
       },
       // Devize type styles. Big means thin: display, title-page and kpi are 300.
-      // Inside the app a screen's title is title-screen, and the sum that
-      // matters on a document is kpi; `figure` is the step below it.
+      // Inside the app a screen's title is title-screen and the total of a
+      // document is hero; a strip's lead is kpi, `figure` the step below.
       fontSize: {
         display: [
           "60px",
@@ -49,8 +49,16 @@ const config = {
           { lineHeight: "40px", letterSpacing: "-0.015em", fontWeight: "300" },
         ],
         "title-screen": [
-          "26px",
-          { lineHeight: "32px", letterSpacing: "-0.018em", fontWeight: "400" },
+          "24px",
+          { lineHeight: "32px", letterSpacing: "-0.016em", fontWeight: "400" },
+        ],
+        hero: [
+          "40px",
+          {
+            lineHeight: "44px",
+            letterSpacing: "-0.015em",
+            fontWeight: "var(--weight-figure)",
+          },
         ],
         kpi: [
           "32px",
@@ -149,7 +157,6 @@ const config = {
         },
         warning: {
           DEFAULT: "hsl(var(--warning))",
-          figure: "hsl(var(--warning-figure))",
           soft: "hsl(var(--warning-soft))",
           dot: "hsl(var(--warning-dot))",
         },

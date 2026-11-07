@@ -43,17 +43,33 @@ const efacturaTones: Record<EfacturaStatus, StatusPillProps["tone"]> = {
   failed: "danger",
 };
 
-/** Where an invoice stands with ANAF; one still unsent after its deadline is flagged. */
+/**
+ * Where an invoice stands with ANAF; one still unsent after its deadline is
+ * flagged. Given the deadline, an unsent one says it instead of "not sent".
+ */
 export function EfacturaPill({
   status,
   late = false,
+  deadline,
 }: {
   status: EfacturaStatus;
   late?: boolean;
+  deadline?: string;
 }) {
   const t = useScopedI18n("invoices");
   if (status === "not_sent" && late) {
-    return <StatusPill tone="danger">{t("efacturaLate")}</StatusPill>;
+    return (
+      <StatusPill tone="danger">
+        {deadline ? t("efacturaLateOn", { date: deadline }) : t("efacturaLate")}
+      </StatusPill>
+    );
+  }
+  if (status === "not_sent" && deadline) {
+    return (
+      <StatusPill tone="draft">
+        {t("efacturaDue", { date: deadline })}
+      </StatusPill>
+    );
   }
   return (
     <StatusPill tone={efacturaTones[status]}>

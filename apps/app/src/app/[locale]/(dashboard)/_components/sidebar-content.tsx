@@ -81,7 +81,7 @@ export function SidebarContent({
           onClick={onNavigate}
           className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Wordmark />
+          <Wordmark className="gap-2.5" />
         </Link>
       </div>
       <FirmSwitcher onNavigate={onNavigate} />

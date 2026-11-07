@@ -90,14 +90,9 @@ export function EstimateList() {
         description={t("allWithVat")}
         actions={
           <>
-            {/* A phone has room for its icon beside the main action. */}
-            <Button
-              variant="outline"
-              className="max-sm:px-0"
-              onClick={() => setBrowsing(true)}
-            >
-              <LayoutTemplate aria-hidden />
-              <span className="max-sm:sr-only">{tt("open")}</span>
+            <Button variant="outline" onClick={() => setBrowsing(true)}>
+              <LayoutTemplate aria-hidden className="max-sm:hidden" />
+              {tt("open")}
             </Button>
             <Button onClick={startBlank}>
               <Plus aria-hidden />

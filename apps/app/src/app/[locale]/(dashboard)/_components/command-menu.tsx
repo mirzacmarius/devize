@@ -564,8 +564,8 @@ function CommandSearch({
         aria-label={t("results")}
         aria-busy={!settled}
         hidden={entries.length === 0}
-        // Fades where it scrolls, so a row cut in half looks like more to come.
-        className="max-h-[min(60vh,27rem)] overflow-y-auto p-2 pb-4 [mask-image:linear-gradient(to_top,transparent,#000_12px)]"
+        // The usual list stops on a row's edge; a longer one fades where it's cut.
+        className="max-h-[min(60vh,418px)] overflow-y-auto p-2 [mask-image:linear-gradient(to_top,transparent,#000_6px)]"
       >
         {groups.map(({ group, entries: inGroup }) => (
           // biome-ignore lint/a11y/useSemanticElements: a listbox groups its options with role="group"; a fieldset groups form fields
@@ -573,7 +573,7 @@ function CommandSearch({
             key={group}
             role="group"
             aria-labelledby={`${listId}-${group}`}
-            className="pb-1"
+            className="border-t border-border pb-1 first:border-t-0"
           >
             <div
               id={`${listId}-${group}`}
@@ -596,7 +596,7 @@ function CommandSearch({
                   onMouseMove={() => !selected && setActiveId(entry.id)}
                   className={cn(
                     "flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5",
-                    selected ? "bg-sunken text-ink" : "text-ink-2",
+                    selected ? "bg-nav-active text-ink" : "text-ink-2",
                   )}
                 >
                   <Icon aria-hidden className="size-4 shrink-0 text-ink-3" />

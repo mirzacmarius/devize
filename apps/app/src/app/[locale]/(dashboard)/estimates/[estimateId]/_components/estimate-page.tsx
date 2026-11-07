@@ -221,14 +221,13 @@ export function EstimatePage() {
             note={withoutVat}
           />
           <EstimateStepper estimate={estimate} />
-          <div
-            aria-hidden
-            className="tick-rule mt-3 max-sm:hidden lg:col-span-2"
-          />
         </div>
         <SectionLinks estimate={estimate} checks={checks} />
       </div>
-      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
+      <div
+        data-past-hero={pastHero || undefined}
+        className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8"
+      >
         <div className="grid min-w-0 gap-6">
           {editable && (
             <ProposalBanner

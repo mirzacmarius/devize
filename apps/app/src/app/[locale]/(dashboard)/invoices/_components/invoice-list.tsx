@@ -25,6 +25,7 @@ import {
   type InvoiceStatus,
   InvoiceStatusPill,
 } from "@/components/invoice-status";
+import { Nil } from "@/components/nil";
 import { SegmentedControl } from "@/components/segmented-control";
 import {
   formatCalendarDay,
@@ -75,11 +76,21 @@ export function InvoiceList() {
         description={isEmpty ? undefined : tc("inLei")}
         actions={
           isEmpty ? undefined : (
-            // The firm keeps its invoices 5 years (Legea 82/1991 art. 25).
-            <InvoiceArchiveButton
-              organizationId={firm._id}
-              firmName={firm.name}
-            />
+            <>
+              {/* The firm keeps its invoices 5 years (Legea 82/1991 art. 25). */}
+              <InvoiceArchiveButton
+                organizationId={firm._id}
+                firmName={firm.name}
+                className="max-sm:[&>svg]:hidden"
+              />
+              {anaf?.firstLate && (
+                <Button asChild>
+                  <Link href={`/invoices/${anaf.firstLate}`}>
+                    {t("lateAction")}
+                  </Link>
+                </Button>
+              )}
+            </>
           )
         }
       />
@@ -121,17 +132,9 @@ export function InvoiceList() {
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
               note={
                 anaf?.firstLate && (
-                  <span className="flex flex-wrap items-baseline gap-x-3">
-                    <StatusPill tone="danger">
-                      {t("receivable.lateCount", { count: anaf.late })}
-                    </StatusPill>
-                    <Link
-                      href={`/invoices/${anaf.firstLate}`}
-                      className="rounded-xs text-ink-2 underline underline-offset-4 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      {anaf.late === 1 ? t("lateOpen") : t("lateOpenFirst")}
-                    </Link>
-                  </span>
+                  <StatusPill tone="danger">
+                    {t("receivable.lateCount", { count: anaf.late })}
+                  </StatusPill>
                 )
               }
             />
@@ -155,11 +158,11 @@ export function InvoiceList() {
                 <TableHead className="hidden md:table-cell">
                   {t("columns.client")}
                 </TableHead>
-                <TableHead>{t("columns.status")}</TableHead>
+                <TableHead className="md:pr-8">{t("columns.status")}</TableHead>
                 <TableHead className="text-right">
                   {t("columns.total")}
                 </TableHead>
-                <TableHead className="hidden text-right xl:table-cell">
+                <TableHead className="hidden pl-8 text-right xl:table-cell">
                   {t("columns.owed")}
                 </TableHead>
                 <TableHead className="hidden text-right md:table-cell">
@@ -221,13 +224,13 @@ export function InvoiceList() {
                     <TableCell className="hidden text-ink-2 md:table-cell">
                       {row.buyerName}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="md:pr-8">
                       <InvoiceStatusPill
                         status={row.status}
                         overdue={row.dueDate < today}
                       />
                     </TableCell>
-                    <TableCell className="text-right tabular-nums max-md:text-body-lg max-md:font-medium">
+                    <TableCell className="text-right tabular-nums max-md:text-body-lg max-md:font-medium xl:text-ink-2">
                       {formatMoney(row.total, locale)}
                       <span className="ml-1 text-meta font-normal text-ink-3 md:hidden">
                         lei
@@ -240,8 +243,10 @@ export function InvoiceList() {
                       )}
                     </TableCell>
                     {/* What's still to come in is what this list is read for. */}
-                    <TableCell className="hidden text-right tabular-nums xl:table-cell">
-                      {owed !== undefined && (
+                    <TableCell className="hidden pl-8 text-right tabular-nums xl:table-cell">
+                      {owed === undefined ? (
+                        <Nil />
+                      ) : (
                         <span className="font-medium">
                           {formatMoney(owed, locale)}
                         </span>
@@ -252,23 +257,17 @@ export function InvoiceList() {
                     </TableCell>
                     <TableCell className="hidden pl-8 lg:table-cell">
                       {live ? (
-                        <div className="grid justify-items-start gap-0.5">
-                          <EfacturaPill
-                            status={row.efactura.status}
-                            late={row.efactura.deadline < today}
-                          />
-                          {row.efactura.status === "not_sent" && (
-                            <span className="text-meta text-ink-3">
-                              {t("efacturaDue", {
-                                date: formatCalendarDay(
-                                  row.efactura.deadline,
-                                  locale,
-                                ),
-                              })}
-                            </span>
+                        <EfacturaPill
+                          status={row.efactura.status}
+                          late={row.efactura.deadline < today}
+                          deadline={formatCalendarDay(
+                            row.efactura.deadline,
+                            locale,
                           )}
-                        </div>
-                      ) : null}
+                        />
+                      ) : (
+                        <Nil />
+                      )}
                     </TableCell>
                   </TableRow>
                 );

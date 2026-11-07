@@ -34,7 +34,7 @@ type Grouped = Item & { totals: { total: number } };
 
 // A group's heading: the band a table's group row has, up to the card's edges.
 const bandClass =
-  "-mx-[var(--card-pad)] flex h-10 items-center bg-sunken px-[var(--card-pad)] text-body font-medium text-ink";
+  "-mx-[var(--card-pad)] flex h-9 items-center bg-sunken px-[var(--card-pad)] text-body font-medium text-ink sm:rounded-md";
 
 /**
  * The Articole of a Deviz with their Antemăsurători: each measured from the
@@ -151,12 +151,10 @@ function ItemRow({
   return (
     <li className="grid gap-1.5 border-b border-border py-3 last:border-0">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <div className="grid min-w-0 flex-1 basis-64 gap-0.5">
-          <span className="text-body text-ink">
-            <span className="text-ink-3 tabular-nums">{index}.</span>{" "}
-            {item.title}
-          </span>
-          <span className="flex flex-wrap items-center gap-2 text-meta text-ink-3">
+        <div className="grid min-w-0 flex-1 basis-64 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5">
+          <span className="text-body tabular-nums text-ink-3">{index}</span>
+          <span className="text-body text-ink">{item.title}</span>
+          <span className="col-start-2 flex flex-wrap items-center gap-2 text-meta text-ink-3">
             <span className="tabular-nums">{item.code}</span>
             <span className="tabular-nums">
               {t("inEstimate", {

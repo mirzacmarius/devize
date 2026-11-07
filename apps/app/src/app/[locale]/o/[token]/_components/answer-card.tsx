@@ -86,7 +86,7 @@ export function TotalBlock({
       <span
         aria-live="polite"
         className={cn(
-          "text-kpi tabular-nums text-ink transition-opacity sm:text-[38px] sm:leading-[42px]",
+          "text-kpi tabular-nums text-ink transition-opacity sm:text-hero",
           updating && "opacity-60",
         )}
       >
@@ -260,7 +260,7 @@ export function AnswerCard({
             {t("decide.accept")}
           </Button>
           {/* A step back from the answer the page is asking for. */}
-          <div className="grid grid-cols-2 gap-1 [&>button]:px-2 [&>button]:text-ink-2">
+          <div className="-mx-2 flex items-center justify-between [&>button]:px-2 [&>button]:text-ink-2">
             <Button
               type="button"
               variant="ghost"
@@ -349,8 +349,8 @@ export function MobileAnswerBar({
           <>
             <Button
               type="button"
-              variant="ghost"
-              className="h-11 px-3 text-ink-2"
+              variant="outline"
+              className="h-11 shrink-0 px-3"
               disabled={offer.preview}
               onClick={onDecline}
             >
@@ -358,9 +358,8 @@ export function MobileAnswerBar({
             </Button>
             <Button
               type="button"
-              variant="ghost"
-              size="icon"
-              className="-mx-1 size-11 shrink-0 text-ink-2"
+              variant="outline"
+              className="h-11 shrink-0 gap-1.5 px-3"
               aria-label={t("decide.download")}
               disabled={downloading}
               onClick={onDownload}
@@ -370,6 +369,7 @@ export function MobileAnswerBar({
               ) : (
                 <Download aria-hidden />
               )}
+              {t("decide.downloadShort")}
             </Button>
           </>
         )}
