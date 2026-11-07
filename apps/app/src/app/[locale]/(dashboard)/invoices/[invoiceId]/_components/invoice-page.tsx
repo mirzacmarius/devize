@@ -2,12 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
 import { PageHeader } from "@devize/ui/page-header";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
@@ -70,8 +65,6 @@ export function InvoicePage() {
             <BreadcrumbLink asChild>
               <Link href="/invoices">{t("page.breadcrumbList")}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{title}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={title}

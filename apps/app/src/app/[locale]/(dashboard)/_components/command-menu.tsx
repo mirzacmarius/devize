@@ -38,9 +38,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { Lei } from "@/components/amount";
-import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
-import { InvoiceStatusPill } from "@/components/invoice-status";
 import { estimateCode, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ClientSheet } from "../clients/_components/client-sheet";
@@ -226,7 +224,6 @@ type Entry = {
   label: string;
   meta?: string;
   amount?: ReactNode;
-  pill?: ReactNode;
   /** A page to open; prefetched while the entry is chosen. */
   href?: string;
   run: () => void;
@@ -396,7 +393,6 @@ function CommandSearch({
           .filter(Boolean)
           .join(" · "),
         amount: money(estimate.total),
-        pill: <EstimateStatusPill status={estimate.status} dot="end" />,
         href,
         run: go(href),
       };
@@ -420,7 +416,6 @@ function CommandSearch({
         label: t("invoice", { code: invoice.code }),
         meta: invoice.buyerName,
         amount: money(invoice.total),
-        pill: <InvoiceStatusPill status={invoice.status} dot="end" />,
         href,
         run: go(href),
       };
@@ -609,15 +604,10 @@ function CommandSearch({
                       </span>
                     )}
                   </div>
-                  {(entry.amount || entry.pill) && (
-                    <div className="grid shrink-0 justify-items-end">
-                      {entry.amount && (
-                        <span className="text-body tabular-nums text-ink">
-                          {entry.amount}
-                        </span>
-                      )}
-                      {entry.pill}
-                    </div>
+                  {entry.amount && (
+                    <span className="shrink-0 self-start text-body tabular-nums text-ink">
+                      {entry.amount}
+                    </span>
                   )}
                   <CornerDownLeft
                     aria-hidden

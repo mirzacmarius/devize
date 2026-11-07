@@ -33,9 +33,9 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
           "w-full caption-bottom border-collapse text-body",
           stack && "table-stack",
           twoLine === true &&
-            "md:[&>tbody>tr:not([data-band])>td]:h-16 md:[&>tbody>tr:not([data-band])>td]:py-[11px] md:[&>tbody>tr:not([data-band])>td]:align-baseline",
+            "md:[&>tbody>tr:not([data-group])>td]:h-16 md:[&>tbody>tr:not([data-group])>td]:py-[11px] md:[&>tbody>tr:not([data-group])>td]:align-baseline",
           twoLine === "below-xl" &&
-            "md:max-xl:[&>tbody>tr:not([data-band])>td]:h-16 md:[&>tbody>tr:not([data-band])>td]:py-[11px] md:[&>tbody>tr:not([data-band])>td]:align-baseline",
+            "md:max-xl:[&>tbody>tr:not([data-group])>td]:h-16 md:[&>tbody>tr:not([data-group])>td]:py-[11px] md:[&>tbody>tr:not([data-group])>td]:align-baseline",
           className,
         )}
         {...props}
@@ -92,17 +92,24 @@ const TableRow = React.forwardRef<
 ));
 TableRow.displayName = "TableRow";
 
-// A group's heading row, in the sunken band. In a `bleed` table its first and
-// last cells take `band-start` and `band-end`, and the band runs to the card's
-// edges.
+// A group's heading row. One with a sum is the sunken band: in a `bleed` table
+// its first and last cells take `band-start` and `band-end`, and the band runs
+// to the card's edges. One with nothing to sum is `ruled`: a label on a rule,
+// from the first column, like the labels over Home's lists.
 const TableGroupRow = React.forwardRef<
   HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLTableRowElement> & { ruled?: boolean }
+>(({ className, ruled, ...props }, ref) => (
   <tr
     ref={ref}
-    data-band
-    className={cn("bg-sunken [&>td]:h-9 [&>td]:py-1", className)}
+    data-group
+    data-band={ruled ? undefined : true}
+    className={cn(
+      ruled
+        ? "border-b border-b-rule [&>td]:font-medium max-md:pb-1.5 max-md:pt-4 md:[&>td]:h-10 md:[&>td]:pb-1.5 md:[&>td]:pt-3 md:[&>td]:align-bottom"
+        : "bg-sunken [&>td]:h-9 [&>td]:py-1",
+      className,
+    )}
     {...props}
   />
 ));
@@ -115,7 +122,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "whitespace-nowrap px-3 pb-2.5 text-left align-bottom text-head text-ink-3 first:pl-0 last:pr-0",
+      "whitespace-nowrap px-3 pb-2.5 text-left align-bottom text-head text-ink-2 first:pl-0 last:pr-0",
       className,
     )}
     {...props}

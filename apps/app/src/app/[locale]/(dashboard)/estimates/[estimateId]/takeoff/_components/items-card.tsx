@@ -32,9 +32,9 @@ import type { Item, Room, Section, Takeoff, Target } from "./types";
 
 type Grouped = Item & { totals: { total: number } };
 
-// A group's heading: the band a table's group row has, up to the card's edges.
+// A group's heading: with nothing to sum, the label on a rule a table has.
 const bandClass =
-  "-mx-[var(--card-pad)] flex h-9 items-center bg-sunken pl-[calc(var(--card-pad)+1.75rem)] pr-[var(--card-pad)] text-body font-medium text-ink sm:rounded-md";
+  "flex min-h-10 items-end border-b border-rule pb-1.5 text-body font-medium text-ink";
 
 /**
  * The Articole of a Deviz with their Antemăsurători: each measured from the
@@ -96,16 +96,13 @@ export function ItemsCard({
             {rows(groups.loose)}
             {groups.sections.map((group) => (
               <Fragment key={group.section._id}>
-                <li className={bandClass}>{sectionName(group.section)}</li>
+                <li data-group className={bandClass}>
+                  {sectionName(group.section)}
+                </li>
                 {rows(group.items)}
                 {group.chapters.map((chapter) => (
                   <Fragment key={chapter.section._id}>
-                    <li
-                      className={cn(
-                        bandClass,
-                        "pl-[calc(var(--card-pad)+1.75rem+12px)]",
-                      )}
-                    >
+                    <li data-group className={cn(bandClass, "font-normal")}>
                       {sectionName(chapter.section)}
                     </li>
                     {rows(chapter.items)}

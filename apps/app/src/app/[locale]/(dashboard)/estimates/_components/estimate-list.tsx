@@ -207,7 +207,7 @@ export function EstimateList() {
                       href={`/estimates/${row._id}`}
                       className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className="text-body font-[450] text-ink group-hover:underline max-md:text-body-lg">
+                      <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
                         {row.title}
                       </span>
                       <span className="truncate text-meta tabular-nums text-ink-3 xl:hidden">

@@ -21,8 +21,6 @@ export function TakeoffCard({ estimate }: { estimate: Estimate }) {
   const summary = useQuery(api.takeoffs.page.summary, {
     estimateId: estimate._id,
   });
-  const started =
-    summary !== undefined && (summary.rooms > 0 || summary.takeoffs > 0);
   const notes = summary
     ? [
         ...summary.drifted
@@ -42,16 +40,14 @@ export function TakeoffCard({ estimate }: { estimate: Estimate }) {
       title={t("title")}
       href={`/estimates/${estimate._id}/takeoff`}
       lead={
-        summary === undefined
+        summary === undefined || summary.items === 0
           ? null
-          : started || estimate.status !== "draft"
-            ? summary.measured === 1
-              ? t("leadOne", { items: formatCount(summary.items, locale) })
-              : t("lead", {
-                  measured: formatCount(summary.measured, locale),
-                  items: formatCount(summary.items, locale),
-                })
-            : t("start")
+          : summary.measured === 1
+            ? t("leadOne", { items: formatCount(summary.items, locale) })
+            : t("lead", {
+                measured: formatCount(summary.measured, locale),
+                items: formatCount(summary.items, locale),
+              })
       }
     >
       {notes.length > 0 &&

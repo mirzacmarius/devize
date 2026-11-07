@@ -15,7 +15,7 @@
   --shell: 60 12.5% 93.7%; /* #f1f1ed */
   --panel: 60 25% 98.4%; /* #fcfcfa */
   --card: 0 0% 100%; /* #ffffff */
-  --card-border: 60 6.7% 85.3%; /* #dcdcd7: a card's edge, the rule under a table's heads */
+  --card-border: 60 5.9% 83.3%; /* #d7d7d2: a card's edge, the rule under a table's heads */
   --sunken: 60 17.2% 94.3%; /* #f3f3ee: a band inside a card, a quiet box */
   --muted: 60 10.5% 92.5%; /* #eeeeea */
   --field: 0 0% 100%; /* #ffffff: editable looks open; disabled looks `muted` */
@@ -26,7 +26,7 @@
   --scrim: 60 4% 12% / 0.28; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
-  --border: 60 7.5% 86.9%; /* #e0e0db */
+  --border: 60 6.3% 84.5%; /* #dadad5 */
   --border-control: 60 4.3% 72.9%; /* #bdbdb7: outlined buttons and the sides of a field */
   --border-field: 60 3.1% 55.9%; /* #92928b: a field's lower edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
@@ -100,7 +100,7 @@
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.6;
 
-  --border: 60 2.1% 18.4%; /* #30302e */
+  --border: 60 2% 20%; /* #343432 */
   --border-control: 60 2.4% 32.5%; /* #555551 */
   --tick-major: 60 2.6% 37.5%; /* #62625d */
   --border-field: 60 2.5% 39%; /* #666661 */
@@ -557,12 +557,21 @@
   .foot-bar {
     border-top: 1px solid hsl(var(--border));
   }
-  /* A band starts a group: the row before it needs no rule of its own, and heads
-     right above one need none either. */
-  tr:has(+ tr[data-band]) {
+  .foot-bar::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: calc(100% + 1px);
+    height: 16px;
+    background: linear-gradient(to top, hsl(var(--panel)), hsl(var(--panel) / 0));
+    pointer-events: none;
+  }
+  /* A heading starts a group: the row before it needs no rule of its own, and
+     heads right above one need none either. */
+  :is(tr, li):has(+ [data-group]) {
     border-bottom-width: 0;
   }
-  table:has(> tbody > tr[data-band]:first-child) > thead > tr {
+  table:has(> tbody > tr[data-group]:first-child) > thead > tr {
     border-bottom-color: transparent;
   }
   /* The Articole's heads stay in sight under the bar that keeps the total. */
@@ -603,7 +612,7 @@
       width: var(--card-pad);
       background: hsl(var(--card));
     }
-    /* The rule stays as wide as the columns; only the shadow reaches the edges. */
+    /* Stuck, the rule and the shadow are as wide as the bands passing under. */
     [data-past-hero] .items-table > thead th {
       box-shadow:
         inset 0 -1px 0 hsl(var(--head-rule)),
@@ -611,7 +620,9 @@
     }
     [data-past-hero] .items-table > thead th:first-child::before,
     [data-past-hero] .items-table > thead th:last-child::after {
-      box-shadow: 0 6px 6px -6px hsl(var(--scrim));
+      box-shadow:
+        inset 0 -1px 0 hsl(var(--head-rule)),
+        0 6px 6px -6px hsl(var(--scrim));
     }
     .items-table > thead th:first-child::before {
       right: 100%;

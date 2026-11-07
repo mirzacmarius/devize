@@ -32,7 +32,6 @@ import { Fragment, type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
-import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
@@ -163,24 +162,28 @@ export function StatementCard({
 
   return (
     <Card>
-      <CardHeader className="grid justify-stretch gap-1">
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-          {/* What it comes to and what it covers, on its name's line. */}
-          <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
-            <div className="flex flex-wrap items-center gap-2">
+      <CardHeader className="grid justify-stretch gap-1 sm:!pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+          <div className="grid min-w-0 gap-1">
+            {/* What it comes to, on its name's line. */}
+            <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
               {picker}
+              <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
+                <span className="sr-only">{t("thisValue")}</span>
+                <span className="text-figure tabular-nums text-ink">
+                  {formatMoney(statement.period.subtotal, locale)}
+                </span>
+                {t("thisValueUnit")}
+              </p>
+            </div>
+            {/* Where it stands and what it covers, as under a page's title. */}
+            <p className="m-0 text-meta tabular-nums text-ink-3">
               <StatusPill tone={statementTone[statement.status]}>
                 {tStatus(statement.status)}
               </StatusPill>
-            </div>
-            <p className="m-0 flex items-baseline gap-1.5 text-meta text-ink-3">
-              <span className="sr-only">{t("thisValue")}</span>
-              <span className="text-figure tabular-nums text-ink">
-                {formatMoney(statement.period.subtotal, locale)}
-              </span>
-              {t("thisValueUnit")}
+              {" · "}
+              {facts.join(" · ")}
             </p>
-            <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button
@@ -376,9 +379,8 @@ function RowsTable({
     groupValues.set(row.group, (groupValues.get(row.group) ?? 0) + row.value);
   }
 
-  // What's not there is a dash, so the period's figures stand out.
-  const ifAny = (value: number, shown: string) =>
-    value === 0 ? <Nil /> : shown;
+  // What's not there stays blank, so the period's figures stand out.
+  const ifAny = (value: number, shown: string) => (value === 0 ? null : shown);
 
   return (
     <Table bleed stack className="xl:min-w-[50rem]">
@@ -392,7 +394,7 @@ function RowsTable({
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] rounded-t-lg bg-sunken pr-[57px] text-right font-medium text-ink">
+          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -513,7 +515,7 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken pr-3 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
+                <TableCell className="whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left">
                   <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">
@@ -521,7 +523,6 @@ function RowsTable({
                     </span>
                     <InlineNumber
                       fixed
-                      placeholder={spent ? "–" : undefined}
                       value={row.quantity}
                       format={(value) =>
                         value !== 0 ? formatQuantity(value, locale) : ""
@@ -536,13 +537,12 @@ function RowsTable({
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
                         "-my-1.5 w-20",
-                        // What's to be filled in stands out of the column as a
-                        // field does; with nothing left it reads as the columns
-                        // beside it, until it's pointed at.
+                        // What's to be filled in is a field like any other; with
+                        // nothing left it's blank, until it's pointed at.
                         fillable &&
                           !spent &&
-                          "border-b-edge bg-field md:rounded-b-none md:hover:rounded-b-sm md:focus:rounded-b-sm",
-                        fillable && "placeholder:text-ink-3/60 hover:bg-field",
+                          "border-input border-b-edge bg-field",
+                        fillable && "hover:bg-field",
                         row.quantity === 0
                           ? "text-ink-3"
                           : "font-medium text-ink",

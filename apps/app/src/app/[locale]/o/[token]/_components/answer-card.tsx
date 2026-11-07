@@ -362,8 +362,7 @@ export function MobileAnswerBar({
             <Button
               type="button"
               variant="ghost"
-              size="icon"
-              className="-mr-3.5 size-11 shrink-0"
+              className="-mr-2 h-11 shrink-0 gap-1.5 px-2"
               aria-label={t("decide.download")}
               disabled={downloading}
               onClick={onDownload}
@@ -373,6 +372,9 @@ export function MobileAnswerBar({
               ) : (
                 <Download aria-hidden />
               )}
+              <span aria-hidden className="max-[359px]:hidden">
+                {t("decide.pdfShort")}
+              </span>
             </Button>
           </>
         )}

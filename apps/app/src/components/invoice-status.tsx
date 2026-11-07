@@ -21,24 +21,16 @@ const statusTones: Record<InvoiceStatus, StatusPillProps["tone"]> = {
 export function InvoiceStatusPill({
   status,
   overdue = false,
-  dot,
 }: {
   status: InvoiceStatus;
   overdue?: boolean;
-  dot?: StatusPillProps["dot"];
 }) {
   const t = useScopedI18n("invoices");
   if (status === "issued" && overdue) {
-    return (
-      <StatusPill tone="warning" dot={dot}>
-        {t("overdue")}
-      </StatusPill>
-    );
+    return <StatusPill tone="warning">{t("overdue")}</StatusPill>;
   }
   return (
-    <StatusPill tone={statusTones[status]} dot={dot}>
-      {t(`status.${status}`)}
-    </StatusPill>
+    <StatusPill tone={statusTones[status]}>{t(`status.${status}`)}</StatusPill>
   );
 }
 

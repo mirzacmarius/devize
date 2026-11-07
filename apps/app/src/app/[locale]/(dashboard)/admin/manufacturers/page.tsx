@@ -19,7 +19,6 @@ import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { ListToolbar } from "@/components/list-toolbar";
-import { Nil } from "@/components/nil";
 import { useScopedI18n } from "@/locales/client";
 import {
   Confidence,
@@ -156,7 +155,7 @@ export default function ManufacturersPage() {
         ) : rows.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (
-          <Table bleed className="min-w-[52rem]">
+          <Table className="min-w-[52rem]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-8">
@@ -186,12 +185,8 @@ export default function ManufacturersPage() {
                 : [{ key: status as string, name: undefined, rows }]
               ).flatMap((group) => [
                 group.name && group.rows.length > 0 && (
-                  <TableGroupRow key={group.key}>
-                    <TableCell className="band-start" />
-                    <TableCell
-                      colSpan={stages > 1 ? 6 : 5}
-                      className="band-end font-medium"
-                    >
+                  <TableGroupRow key={group.key} ruled>
+                    <TableCell colSpan={stages > 1 ? 7 : 6} data-stack="wide">
                       {group.name}
                       <span className="ml-2 font-normal tabular-nums text-ink-3">
                         {group.rows.length}
@@ -251,16 +246,14 @@ export default function ManufacturersPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        {row.confidence ? (
+                        {row.confidence && (
                           <Confidence>
                             {tAdmin(`confidenceLevel.${row.confidence}`)}
                           </Confidence>
-                        ) : (
-                          <Nil />
                         )}
                       </TableCell>
                       <TableCell>
-                        {row.message ? (
+                        {row.message && (
                           <Pill
                             tone={
                               row.message.status === "draft"
@@ -280,8 +273,6 @@ export default function ManufacturersPage() {
                           >
                             {tAdmin(`status.message.${row.message.status}`)}
                           </Pill>
-                        ) : (
-                          <Nil />
                         )}
                       </TableCell>
                     </TableRow>

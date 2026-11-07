@@ -1,6 +1,7 @@
 "use client";
 
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { Count } from "@devize/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { StatusPill } from "@devize/ui/status-pill";
 import { Switch } from "@devize/ui/switch";
@@ -90,10 +91,11 @@ export function WorksCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <span className="text-right text-meta text-ink-3">
-          {t("count", { count: offer.items.length })} · {t("amounts")}
-        </span>
+        <div className="flex items-center gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          <Count tone="plain">{offer.items.length}</Count>
+          <span className="ml-1 text-meta text-ink-3">{t("amounts")}</span>
+        </div>
       </CardHeader>
       <CardContent className="gap-0">
         {groups.loose.length > 0 && list(groups.loose)}

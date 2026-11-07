@@ -174,7 +174,7 @@ export default {
       "anafCount#other": "{count} de facturi",
       now: "Acum",
       next: "Urmează",
-      showAll: "Vezi toate ({count})",
+      showAll: "Vezi toate cele {count}",
       today: "azi",
       tomorrow: "mâine",
       inDays: "în {days} zile",
@@ -620,7 +620,9 @@ export default {
       score: "{passed} din {total} trecute",
       left: "{left} din {total} rămase",
       leftOne: "1 din {total} rămasă",
-      showPassed: "Arată cele trecute ({count})",
+      "showPassed#one": "Arată cea trecută",
+      "showPassed#few": "Arată cele {count} trecute",
+      "showPassed#other": "Arată cele {count} de trecute",
       hidePassed: "Ascunde cele trecute",
       pending: "Se verifică…",
       states: {
@@ -1826,7 +1828,6 @@ export default {
     },
     works: {
       title: "Lucrările",
-      count: "Lucrări: {count}",
       amounts: "sume în lei, fără TVA",
       line: "{quantity} {unit} × {price} lei",
       materials: "Materiale",
@@ -1864,6 +1865,7 @@ export default {
       accept: "Accept oferta",
       decline: "Nu accept",
       download: "Descarcă PDF",
+      pdfShort: "PDF",
       downloadFailed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
     },
     accept: {
@@ -1978,6 +1980,7 @@ export default {
     unconfirmedNote:
       "Neconfirmată: norma vine din documentele publice ale producătorului, iar el n-a verificat-o încă.",
     unconfirmedState: "Neconfirmată",
+    producerBand: "producător",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
     views: {
@@ -4874,7 +4877,6 @@ export default {
       drifted: "„{title}”: cantitatea din deviz nu mai e cea măsurată.",
       unchecked: "Măsurători scrise de Devize AI, neverificate: {count}.",
       orphans: "Măsurători fără articol: {count}.",
-      start: "Măsoară",
     },
     summary: {
       title: "Pe scurt",

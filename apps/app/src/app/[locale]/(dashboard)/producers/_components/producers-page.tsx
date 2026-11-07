@@ -2,12 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { normalizeText } from "@devize/backend/convex/lib/text";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -24,7 +19,6 @@ import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { ListToolbar } from "@/components/list-toolbar";
-import { Nil } from "@/components/nil";
 import { SearchInput } from "@/components/search-input";
 import { useScopedI18n } from "@/locales/client";
 
@@ -49,13 +43,12 @@ export function ProducersPage() {
   return (
     <>
       <PageHeader
+        className="xl:max-w-[928px]"
         breadcrumb={
           <Breadcrumb aria-label={t("breadcrumb")}>
             <BreadcrumbLink asChild>
               <Link href="/catalog">{tCatalog("title")}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
@@ -86,7 +79,7 @@ export function ProducersPage() {
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
-        <section className="grid min-w-0 gap-3">
+        <section className="grid min-w-0 gap-3 xl:max-w-[928px]">
           {/* From a tablet up it stands in the page's head. */}
           <ListToolbar className="sm:hidden">
             <SearchInput
@@ -146,7 +139,7 @@ export function ProducersPage() {
                         className="grid gap-y-0.5 rounded-xs after:absolute xl:gap-y-0 after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
                       >
                         <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
-                          <span className="min-w-0 truncate text-body font-[450] text-ink">
+                          <span className="min-w-0 truncate text-body font-medium text-ink">
                             {producer.name}
                           </span>
                           {producer.claimed && (
@@ -172,7 +165,7 @@ export function ProducersPage() {
                       </span>
                     </TableCell>
                     <TableCell className="hidden text-right text-meta tabular-nums text-ink-2 md:table-cell">
-                      {producer.edition ?? <Nil />}
+                      {producer.edition}
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums md:table-cell">
                       {norms}

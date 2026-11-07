@@ -175,7 +175,7 @@ export default {
       "anafCount#other": "{count} invoices",
       now: "Now",
       next: "Coming up",
-      showAll: "See all ({count})",
+      showAll: "See all {count}",
       today: "today",
       tomorrow: "tomorrow",
       inDays: "in {days} days",
@@ -622,7 +622,9 @@ export default {
       score: "{passed} of {total} passed",
       left: "{left} of {total} left",
       leftOne: "1 of {total} left",
-      showPassed: "Show passed ({count})",
+      "showPassed#one": "Show the one that passed",
+      "showPassed#few": "Show the {count} that passed",
+      "showPassed#other": "Show the {count} that passed",
       hidePassed: "Hide passed",
       pending: "Checking…",
       states: {
@@ -1828,7 +1830,6 @@ export default {
     },
     works: {
       title: "The works",
-      count: "Works: {count}",
       amounts: "amounts in lei, before VAT",
       line: "{quantity} {unit} × {price} lei",
       materials: "Materials",
@@ -1866,6 +1867,7 @@ export default {
       accept: "Accept the offer",
       decline: "Decline",
       download: "Download PDF",
+      pdfShort: "PDF",
       downloadFailed: "The PDF couldn't be made. Try again.",
     },
     accept: {
@@ -1980,6 +1982,7 @@ export default {
     unconfirmedNote:
       "Unconfirmed: the norm comes from the producer's public documents and the producer hasn't checked it yet.",
     unconfirmedState: "Not confirmed",
+    producerBand: "manufacturer",
     noCost: "No price",
     newNorm: "New norm",
     views: {
@@ -4879,7 +4882,6 @@ export default {
         "“{title}”: the estimate's quantity is no longer the measured one.",
       unchecked: "Take-offs written by Devize AI, unchecked: {count}.",
       orphans: "Take-offs without a line item: {count}.",
-      start: "Measure",
     },
     summary: {
       title: "At a glance",

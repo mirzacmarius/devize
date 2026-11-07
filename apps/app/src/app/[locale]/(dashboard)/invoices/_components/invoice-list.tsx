@@ -26,7 +26,6 @@ import {
   InvoiceStatusPill,
 } from "@/components/invoice-status";
 import { ListToolbar } from "@/components/list-toolbar";
-import { Nil } from "@/components/nil";
 import { SegmentedControl } from "@/components/segmented-control";
 import {
   formatCalendarDay,
@@ -226,7 +225,7 @@ export function InvoiceList() {
                         href={`/invoices/${row._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="text-body font-[450] tabular-nums text-ink group-hover:underline max-md:text-body-lg">
+                        <span className="text-body font-medium tabular-nums text-ink group-hover:underline max-md:text-body-lg">
                           {row.code ?? t(`kind.${row.kind}`)}
                         </span>
                         <span className="truncate text-meta tabular-nums text-ink-3">
@@ -278,9 +277,7 @@ export function InvoiceList() {
                     </TableCell>
                     {/* What's still to come in is what this list is read for. */}
                     <TableCell className="hidden pl-8 text-right tabular-nums xl:table-cell">
-                      {owed === undefined ? (
-                        <Nil />
-                      ) : (
+                      {owed !== undefined && (
                         <span className="font-medium">
                           {formatMoney(owed, locale)}
                         </span>
@@ -290,7 +287,7 @@ export function InvoiceList() {
                       {formatCalendarDay(row.dueDate, locale)}
                     </TableCell>
                     <TableCell className="hidden pl-8 xl:table-cell">
-                      {live ? (
+                      {live && (
                         <EfacturaPill
                           status={row.efactura.status}
                           late={row.efactura.deadline < today}
@@ -299,8 +296,6 @@ export function InvoiceList() {
                             locale,
                           )}
                         />
-                      ) : (
-                        <Nil />
                       )}
                     </TableCell>
                   </TableRow>

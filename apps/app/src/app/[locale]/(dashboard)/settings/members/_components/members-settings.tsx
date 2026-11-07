@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@devize/ui/dropdown-menu";
 import { Icons } from "@devize/ui/icons";
-import { Input, toolbarField } from "@devize/ui/input";
+import { Input } from "@devize/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,7 +35,6 @@ import {
 } from "@devize/ui/select";
 import { toast } from "@devize/ui/sonner";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
-import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Mail } from "lucide-react";
@@ -200,12 +199,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         }
                       >
                         <SelectTrigger
-                          // A quiet field: a list of outlined ones would
-                          // outweigh the people.
-                          className={cn(
-                            "h-8 w-auto justify-start gap-2",
-                            toolbarField,
-                          )}
+                          className="h-8 w-[148px]"
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />
@@ -328,7 +322,14 @@ function InvitationsCard() {
                   <span className="truncate text-body text-ink">
                     {invitation.email}
                   </span>
-                  <StatusPill tone={emailTones[invitation.emailStatus]}>
+                  <StatusPill
+                    tone={emailTones[invitation.emailStatus]}
+                    title={
+                      invitation.emailStatus === "not_sent"
+                        ? t("inviteEmailHint.not_sent")
+                        : undefined
+                    }
+                  >
                     {t(`emailStatus.${invitation.emailStatus}`)}
                   </StatusPill>
                 </span>
@@ -344,11 +345,6 @@ function InvitationsCard() {
                     .filter(Boolean)
                     .join(" · ")}
                 </span>
-                {invitation.emailStatus === "not_sent" && (
-                  <span className="text-meta text-ink-2">
-                    {t("inviteEmailHint.not_sent")}
-                  </span>
-                )}
               </div>
               {/* In the column the members' menus are in. */}
               <div className="col-start-2 flex items-center justify-between gap-1 sm:col-start-3 sm:justify-end">

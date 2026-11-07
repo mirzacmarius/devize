@@ -217,10 +217,7 @@ export function CatalogPage() {
             />
           </div>
         </div>
-        <div className="grid min-w-0 gap-4 sm:[--card-pad:12px]">
-          {!isOwn && rows?.some(unconfirmed) && (
-            <p className="m-0 text-meta text-ink-3">{t("unconfirmedNote")}</p>
-          )}
+        <div className="grid min-w-0 gap-4">
           {isOwn && !search && own?.length === 0 ? (
             <EmptyState
               icon={<Icons.Catalog />}
@@ -233,7 +230,7 @@ export function CatalogPage() {
               }
             />
           ) : (
-            <Table stack bleed twoLine={isOwn ? true : "below-xl"}>
+            <Table stack twoLine={isOwn ? true : "below-xl"}>
               <TableHeader>
                 <TableRow>
                   {/* Where there's room the public list is one line a row. */}
@@ -323,24 +320,34 @@ export function CatalogPage() {
                   return (
                     <Fragment key={norm._id}>
                       {opens && (
-                        <TableGroupRow className="max-md:py-0">
-                          {/* Over the titles, past the codes. */}
-                          <TableCell
-                            colSpan={6}
-                            data-stack="wide"
-                            className="band-start band-end max-md:flex max-md:items-center xl:first:pl-[124px]"
-                          >
-                            <span className="font-medium first-letter:uppercase">
-                              {band}
-                            </span>
-                            {unconfirmedBands.get(band) && (
-                              <StatusPill
-                                tone="draft"
-                                title={t("unconfirmedHint")}
-                                className="ml-3"
-                              >
-                                {t("unconfirmedState")}
-                              </StatusPill>
+                        <TableGroupRow ruled>
+                          <TableCell colSpan={6} data-stack="wide">
+                            {norm.manufacturerId ? (
+                              <>
+                                <Link
+                                  href={`/producers/${norm.manufacturerId}`}
+                                  className="rounded-xs hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                >
+                                  {band}
+                                </Link>
+                                {/* Which kind of group it is, beside the categories. */}
+                                <span
+                                  title={
+                                    unconfirmedBands.get(band)
+                                      ? t("unconfirmedHint")
+                                      : undefined
+                                  }
+                                  className="ml-2 text-meta font-normal text-ink-3"
+                                >
+                                  {t("producerBand")}
+                                  {unconfirmedBands.get(band) &&
+                                    ` · ${t("unconfirmed")}`}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="inline-block first-letter:uppercase">
+                                {band}
+                              </span>
                             )}
                           </TableCell>
                         </TableGroupRow>
@@ -500,6 +507,9 @@ export function CatalogPage() {
                 {tc("loadMore")}
               </Button>
             )}
+          {!isOwn && rows?.some(unconfirmed) && (
+            <p className="m-0 text-meta text-ink-3">{t("unconfirmedNote")}</p>
+          )}
         </div>
       </section>
     </>

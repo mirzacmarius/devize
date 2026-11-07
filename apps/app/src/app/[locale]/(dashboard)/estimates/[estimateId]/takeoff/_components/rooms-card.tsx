@@ -34,7 +34,6 @@ import { useMutation } from "convex/react";
 import { Lock, Plus } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import { formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -164,19 +163,8 @@ export function RoomsCard({
               {groups.map((group, index) => (
                 <Fragment key={group.level ?? `level-${index}`}>
                   {grouped && (
-                    <TableGroupRow className="max-md:py-0">
-                      {/* A span can't follow which columns show. */}
-                      <TableCell
-                        colSpan={locked ? 8 : 9}
-                        className="band-start band-end hidden font-medium xl:table-cell"
-                      >
-                        {group.level ?? "–"}
-                      </TableCell>
-                      <TableCell
-                        colSpan={locked ? 4 : 5}
-                        data-stack="wide"
-                        className="band-start band-end font-medium max-md:flex max-md:items-center md:max-xl:pl-0 xl:hidden"
-                      >
+                    <TableGroupRow ruled>
+                      <TableCell colSpan={locked ? 8 : 9} data-stack="wide">
                         {group.level ?? "–"}
                       </TableCell>
                     </TableGroupRow>
@@ -295,7 +283,7 @@ function RoomRow({
   const [busy, setBusy] = useState(false);
   const place = rooms.findIndex((other) => other._id === room._id);
   const metres = (value: number | undefined) =>
-    value === undefined ? <Nil /> : formatQuantity(value, locale);
+    value === undefined ? null : formatQuantity(value, locale);
   const openings = openingsOf(room, t);
   // Under the name where the columns for them are gone.
   const sides = [
@@ -358,7 +346,7 @@ function RoomRow({
         </div>
       </TableCell>
       <TableCell className="hidden whitespace-nowrap text-ink-2 xl:table-cell">
-        {openings.length > 0 ? openings.join(" · ") : <Nil />}
+        {openings.join(" · ")}
       </TableCell>
       <TableCell className={sideClass}>{metres(room.length)}</TableCell>
       <TableCell className={sideClass}>{metres(room.width)}</TableCell>
