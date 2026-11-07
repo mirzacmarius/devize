@@ -35,7 +35,6 @@ import {
   estimateCode,
   formatCalendarDay,
   formatCount,
-  formatDay,
   formatMoney,
   formatPercent,
   formatToday,
@@ -582,10 +581,6 @@ function RecentCard({
                         {estimateCode(row.number, row.revision)}
                         {" · "}
                         {row.clientName ?? t("noClient")}
-                        <span className="xl:max-[1399px]:hidden">
-                          {" · "}
-                          {formatDay(row.updatedAt, locale)}
-                        </span>
                       </span>
                       <span className="-my-px flex h-[18px] shrink-0 items-center max-sm:hidden">
                         <EstimateStatusPill status={row.status} />

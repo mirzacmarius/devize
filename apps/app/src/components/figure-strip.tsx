@@ -17,7 +17,7 @@ export function FigureStrip({
     <section className="grid min-w-0 gap-2">
       <Card
         className={cn(
-          "grid grid-cols-2 xl:auto-cols-fr xl:grid-flow-col",
+          "grid grid-cols-2 xl:auto-cols-[minmax(0,1fr)] xl:grid-flow-col xl:grid-cols-[minmax(0,1.25fr)]",
           className,
         )}
       >

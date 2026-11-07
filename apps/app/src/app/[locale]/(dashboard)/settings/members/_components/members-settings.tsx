@@ -303,7 +303,7 @@ function InvitationsCard() {
           {invitations.map((invitation) => (
             <li
               key={invitation._id}
-              className="grid items-center gap-x-4 gap-y-2 rounded-lg bg-sunken p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
+              className="grid items-center gap-x-4 gap-y-2 rounded-lg bg-sunken p-4 sm:-mx-[var(--card-pad)] sm:grid-cols-[minmax(0,1fr)_auto] sm:px-[var(--card-pad)]"
             >
               <div className="grid min-w-0 gap-1">
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-1">

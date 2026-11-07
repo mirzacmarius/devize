@@ -31,6 +31,7 @@
   --border-field: 60 3.1% 55.9%; /* #92928b: a field's lower edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
   --tick-major: 60 4.3% 77.5%; /* #c8c8c3 */
+  --rule: 60 4.3% 77.5%; /* #c8c8c3, a table's head and its totals */
   --meter: 60 2.3% 42.2%; /* #6e6e69: how far along, quieter than a button */
 
   /* Text */
@@ -103,6 +104,7 @@
   --tick-major: 60 2.6% 37.5%; /* #62625d */
   --border-field: 60 2.5% 39%; /* #666661 */
   --tick: 60 2.1% 28.4%; /* #4a4a47 */
+  --rule: 60 2.1% 28.4%; /* #4a4a47 */
   --meter: 60 3.2% 62.7%; /* #a3a39d */
 
   --ink: 60 7.9% 85.1%; /* #dcdcd6 */
@@ -417,7 +419,8 @@
   }
   /* Stacked, there are no labels: a line starts each group of rows. */
   @media (max-width: 1279.98px) {
-    .app-main .rail-list > [data-rail-label] + [data-fold] {
+    .app-main .rail-list > [data-rail-label] + [data-fold],
+    .app-main .rail-list > [data-rail-group] > [data-fold]:first-child {
       padding-top: 8px;
       border-top: 1px solid hsl(var(--border));
     }
@@ -436,9 +439,11 @@
       border-top-width: 0;
     }
   }
-  /* Stacked, values end on one edge, where a row's chevron starts. */
+  /* A rail's values end on one edge, where a row's chevron starts. */
+  .rail-sections:has([data-row-end]) [data-slot="fact"] {
+    margin-right: 19px;
+  }
   @media (max-width: 1279.98px) {
-    .rail-sections [data-slot="fact"],
     .rail-sections [data-slot="meter"] {
       margin-right: 19px;
     }
@@ -512,13 +517,13 @@
       border-bottom-width: 0;
     }
     .items-table {
-      --head-rule: var(--card-border);
+      --head-rule: var(--rule);
     }
     .items-table:has(> tbody > tr[data-band]:first-child) {
       --head-rule: 0 0% 0% / 0;
     }
     [data-past-hero] .items-table:has(> tbody > tr[data-band]:first-child) {
-      --head-rule: var(--card-border);
+      --head-rule: var(--rule);
     }
     .items-table > thead th {
       position: sticky;

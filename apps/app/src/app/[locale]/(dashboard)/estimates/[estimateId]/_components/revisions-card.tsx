@@ -69,7 +69,7 @@ export function RevisionsCard({ estimate }: { estimate: Estimate }) {
                   <Link
                     href={`/estimates/${estimate._id}/compare?with=${revision._id}`}
                     aria-label={t("revisions.compareWith", { code })}
-                    className="rounded-xs text-meta text-ink-2 underline underline-offset-[3px] hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="rounded-xs text-meta text-ink-2 underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {t("revisions.compare")}
                   </Link>

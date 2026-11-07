@@ -17,6 +17,7 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
     ) / 100;
   const measured = data.items.filter((item) => item.takeoffs.length > 0);
   const differs = measured.filter((item) => item.differs).length;
+  const unmeasured = data.items.length - measured.length;
   return (
     <FigureStrip
       hint={
@@ -42,7 +43,20 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
             </span>
           </>
         }
-        note={differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
+        note={
+          <>
+            {unmeasured > 0 && (
+              <a
+                href="#items"
+                className="rounded-xs underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {t("unmeasured", { left: formatCount(unmeasured, locale) })}
+              </a>
+            )}
+            {unmeasured > 0 && differs > 0 && " · "}
+            {differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
+          </>
+        }
       />
       <Figure
         label={t("rooms")}

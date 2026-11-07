@@ -47,6 +47,10 @@ function unconfirmed(norm: NormRow) {
   return norm.source === "manufacturer" && !norm.confirmed;
 }
 
+function normCode(norm: NormRow) {
+  return norm.version > 1 ? `${norm.code} · v${norm.version}` : norm.code;
+}
+
 /** Whether a norm's code and name hold every word typed, diacritics aside. */
 function matches(norm: NormRow, words: readonly string[]) {
   const text = normalizeText(
@@ -212,12 +216,20 @@ export function CatalogPage() {
               }
             />
           ) : (
-            <Table stack twoLine>
+            <Table stack twoLine={isOwn ? true : "below-xl"}>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("columns.norm")}</TableHead>
+                  {/* Where there's room the public list is one line a row. */}
                   {!isOwn && (
-                    <TableHead className="hidden w-64 xl:table-cell">
+                    <TableHead className="hidden w-28 xl:table-cell">
+                      {t("columns.code")}
+                    </TableHead>
+                  )}
+                  <TableHead className="md:max-xl:pl-0">
+                    {t("columns.norm")}
+                  </TableHead>
+                  {!isOwn && (
+                    <TableHead className="hidden w-[304px] xl:table-cell">
                       {t("columns.source")}
                     </TableHead>
                   )}
@@ -277,7 +289,14 @@ export function CatalogPage() {
                 )}
                 {rows?.map((norm) => (
                   <TableRow key={norm._id}>
-                    <TableCell data-stack="wide">
+                    {!isOwn && (
+                      <TableCell className="hidden whitespace-nowrap xl:table-cell">
+                        <span className="text-meta tabular-nums text-ink-3">
+                          {normCode(norm)}
+                        </span>
+                      </TableCell>
+                    )}
+                    <TableCell data-stack="wide" className="md:max-xl:pl-0">
                       <Link
                         href={`/catalog/${norm._id}`}
                         className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -285,12 +304,15 @@ export function CatalogPage() {
                         <span className="text-body font-medium text-ink group-hover:underline">
                           {keepUnits(norm.title)}
                         </span>
-                        <span className="flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3">
+                        <span
+                          className={cn(
+                            "flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3",
+                            !isOwn && "xl:hidden",
+                          )}
+                        >
                           <span>
                             <span className="tabular-nums">
-                              {norm.version > 1
-                                ? `${norm.code} · v${norm.version}`
-                                : norm.code}
+                              {normCode(norm)}
                             </span>
                             {norm.category && ` · ${norm.category}`}
                             {/* The public list has a column for this where there's room. */}
@@ -312,7 +334,7 @@ export function CatalogPage() {
                       <TableCell className="md:max-xl:hidden">
                         <span
                           className={cn(
-                            "block max-md:text-meta",
+                            "block max-md:text-meta xl:flex xl:items-baseline xl:justify-between xl:gap-3",
                             norm.source === "base"
                               ? "text-ink-3"
                               : "text-ink-2 max-md:text-ink-3",
@@ -322,12 +344,21 @@ export function CatalogPage() {
                             {norm.manufacturerName ?? normSource(norm)}
                           </span>
                           {unconfirmed(norm) && (
-                            <span
-                              title={t("unconfirmedHint")}
-                              className="text-ink-3"
-                            >
-                              {` · ${t("unconfirmed")}`}
-                            </span>
+                            <>
+                              <span
+                                title={t("unconfirmedHint")}
+                                className="text-ink-3 xl:hidden"
+                              >
+                                {` · ${t("unconfirmed")}`}
+                              </span>
+                              <StatusPill
+                                tone="draft"
+                                title={t("unconfirmedHint")}
+                                className="hidden xl:inline-flex"
+                              >
+                                {t("unconfirmedState")}
+                              </StatusPill>
+                            </>
                           )}
                         </span>
                       </TableCell>

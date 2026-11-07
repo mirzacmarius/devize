@@ -12,6 +12,7 @@ import { AISuggestion } from "@devize/ui/ai-suggestion";
 import { Badge } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
+import { toolbarField } from "@devize/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -201,19 +202,21 @@ function AddNorm({
         />
       ) : (
         <>
-          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_12rem]">
-            <SearchInput
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("addNorm.searchPlaceholder")}
-              aria-label={t("addNorm.searchPlaceholder")}
-              autoFocus
-            />
+          <div className="grid gap-2 sm:grid-cols-[14rem_minmax(0,1fr)]">
             <NormCategorySelect
               label={t("addNorm.categories")}
               allLabel={t("addNorm.allCategories")}
               value={categoryKey}
               onChange={setCategoryKey}
+              className={cn("max-sm:order-last", toolbarField)}
+            />
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("addNorm.searchPlaceholder")}
+              aria-label={t("addNorm.searchPlaceholder")}
+              autoFocus
             />
           </div>
           {!search && !category ? (

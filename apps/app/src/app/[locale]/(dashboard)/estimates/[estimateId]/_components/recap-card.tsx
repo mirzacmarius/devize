@@ -123,7 +123,7 @@ export function RecapCard({
                   row.kind === "subtotal" && "border-t border-border",
                   // The accountant's double rule, under what everything adds to.
                   row.kind === "total" &&
-                    "border-t-[3px] border-double border-tick",
+                    "border-t-[3px] border-double border-rule",
                 )}
               >
                 <th

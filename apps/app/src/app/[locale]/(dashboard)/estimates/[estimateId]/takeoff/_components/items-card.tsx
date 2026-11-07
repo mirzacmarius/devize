@@ -79,7 +79,7 @@ export function ItemsCard({
     ));
 
   return (
-    <Card>
+    <Card id="items" className="scroll-mt-4">
       <CardHeader className="grid justify-items-start gap-1">
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription className="m-0">{t("description")}</CardDescription>
@@ -152,7 +152,9 @@ function ItemRow({
     <li className="grid gap-1.5 border-b border-border py-3 last:border-0">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div className="grid min-w-0 flex-1 basis-64 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5">
-          <span className="text-body tabular-nums text-ink-3">{index}</span>
+          <span className="w-4 text-right text-body tabular-nums text-ink-3">
+            {index}
+          </span>
           <span className="text-body text-ink">{item.title}</span>
           <span className="col-start-2 flex flex-wrap items-center gap-2 text-meta text-ink-3">
             <span className="tabular-nums">{item.code}</span>

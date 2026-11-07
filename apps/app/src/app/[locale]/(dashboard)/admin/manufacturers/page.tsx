@@ -162,14 +162,14 @@ export default function ManufacturersPage() {
                 <TableHead className="w-8">
                   <span className="sr-only">{t("selectNew")}</span>
                 </TableHead>
-                <TableHead>{t("columns.name")}</TableHead>
+                <TableHead className="w-[30%]">{t("columns.name")}</TableHead>
                 {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
-                <TableHead className="w-44">{t("columns.status")}</TableHead>
-                <TableHead className="w-32">{t("columns.norms")}</TableHead>
-                <TableHead className="w-32">
+                <TableHead className="w-[20%]">{t("columns.status")}</TableHead>
+                <TableHead className="w-[16%]">{t("columns.norms")}</TableHead>
+                <TableHead className="w-[16%]">
                   {t("columns.confidence")}
                 </TableHead>
-                <TableHead className="w-28">{t("columns.email")}</TableHead>
+                <TableHead>{t("columns.email")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -270,10 +270,6 @@ export default function ManufacturersPage() {
                                 : row.message.status === "rejected"
                                   ? "neutral"
                                   : "active"
-                            }
-                            dot={
-                              row.message.status === "draft" &&
-                              row.message.blocked === true
                             }
                             className={
                               row.message.status === "draft" &&

@@ -182,7 +182,7 @@ function Totals({
             key={row.label}
             className={cn(
               "flex items-baseline justify-between gap-6 sm:justify-end",
-              closes && "mt-0.5 border-t-[3px] border-double border-tick pt-2",
+              closes && "mt-0.5 border-t-[3px] border-double border-rule pt-2",
             )}
           >
             <dt

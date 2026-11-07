@@ -183,7 +183,7 @@ export function RoomsCard({
                   ))}
                 </Fragment>
               ))}
-              <TableRow className="font-medium hover:bg-transparent md:[&>td]:border-t-[3px] md:[&>td]:border-double md:[&>td]:border-t-tick">
+              <TableRow className="font-medium hover:bg-transparent md:[&>td]:border-t-[3px] md:[&>td]:border-double md:[&>td]:border-t-rule">
                 <TableCell colSpan={5} className="hidden xl:table-cell">
                   {t("total")}
                 </TableCell>

@@ -19,7 +19,7 @@ export function PricesPage() {
 
   return (
     <>
-      <PageHeader title={t("title")} />
+      <PageHeader title={t("title")} description={t("description")} />
       <AlertsCard alerts={alerts} />
       <ProductsCard />
       <HowCard />

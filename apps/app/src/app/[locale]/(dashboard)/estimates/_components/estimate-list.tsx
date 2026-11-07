@@ -151,19 +151,23 @@ export function EstimateList() {
               />
               <Button
                 variant="outline"
-                size="icon"
-                className="size-10 shrink-0 sm:hidden"
-                aria-label={tt("open")}
+                className="h-10 shrink-0 sm:hidden"
                 onClick={() => setBrowsing(true)}
               >
-                <LayoutTemplate aria-hidden />
+                {tt("open")}
               </Button>
             </div>
           </ListToolbar>
-          <Table stack twoLine>
+          <Table stack twoLine="below-xl">
             <TableHeader>
               <TableRow>
-                <TableHead>{t("columns.estimate")}</TableHead>
+                {/* Where there's room the number has a column, under no title. */}
+                <TableHead className="hidden w-24 xl:table-cell">
+                  {t("columns.code")}
+                </TableHead>
+                <TableHead className="md:max-xl:pl-0">
+                  {t("columns.estimate")}
+                </TableHead>
                 <TableHead className="hidden md:table-cell">
                   {t("columns.client")}
                 </TableHead>
@@ -179,21 +183,26 @@ export function EstimateList() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
+                  <TableCell colSpan={6} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
+                  <TableCell colSpan={6} className="text-ink-3">
                     {search ? t("noResults", { text: search }) : t("noneHere")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.map((row) => (
                 <TableRow key={row._id}>
-                  <TableCell data-stack="wide">
+                  <TableCell className="hidden whitespace-nowrap xl:table-cell">
+                    <span className="text-meta tabular-nums text-ink-3">
+                      {estimateCode(row.number, row.revision)}
+                    </span>
+                  </TableCell>
+                  <TableCell data-stack="wide" className="md:max-xl:pl-0">
                     <Link
                       href={`/estimates/${row._id}`}
                       className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -201,7 +210,7 @@ export function EstimateList() {
                       <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
                         {row.title}
                       </span>
-                      <span className="truncate text-meta tabular-nums text-ink-3">
+                      <span className="truncate text-meta tabular-nums text-ink-3 xl:hidden">
                         {estimateCode(row.number, row.revision)}
                         <span className="md:hidden">
                           {" · "}

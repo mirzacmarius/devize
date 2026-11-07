@@ -113,14 +113,65 @@ export function FoldRow({
  * What the rows under it are about, where they stand beside the main column
  * and read as one list.
  */
-export function RailLabel({ children }: { children: ReactNode }) {
+export function RailLabel({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
   return (
     <h3
       data-rail-label
-      className="m-0 mb-0.5 mt-2.5 hidden border-t border-border pt-3.5 text-caption text-ink-3 xl:block"
+      className={cn(
+        "m-0 mb-0.5 mt-2.5 hidden border-t border-border pt-3.5 text-caption text-ink-3 xl:block",
+        className,
+      )}
     >
       {children}
     </h3>
+  );
+}
+
+/**
+ * Rows that have had their day. Beside the main column, one row that opens
+ * them; stacked under it they stay rows, which the links above the Articole
+ * lead to.
+ */
+export function RailGroup({
+  title,
+  children,
+}: {
+  title: ReactNode;
+  children: ReactNode;
+}) {
+  const { open, toggle, contentId } = useFold(false);
+  return (
+    <>
+      <div className="hidden xl:block">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={contentId}
+          onClick={toggle}
+          className={ROW}
+        >
+          <RowText title={title} open={open} />
+        </button>
+      </div>
+      <div
+        id={contentId}
+        data-rail-group
+        className={cn(
+          "contents",
+          open
+            ? "xl:mb-1 xl:block xl:border-b xl:border-border xl:pb-1"
+            : "xl:hidden",
+        )}
+      >
+        {children}
+      </div>
+    </>
   );
 }
 

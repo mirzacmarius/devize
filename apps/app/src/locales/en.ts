@@ -402,6 +402,7 @@ export default {
     noResults: "No estimate matches “{text}”.",
     noneHere: "No estimates in this state.",
     columns: {
+      code: "No.",
       estimate: "Estimate",
       client: "Client",
       status: "Status",
@@ -491,7 +492,6 @@ export default {
       draft: "Draft",
       sent: "Sent to client",
       accepted: "Accepted",
-      rejected: "Rejected",
       waiting: "Waiting for an answer",
       states: {
         done: "done",
@@ -541,7 +541,7 @@ export default {
     },
     items: {
       title: "Line items",
-      inLei: "amounts in lei",
+      inLei: "amounts in lei, without VAT",
       addNorm: "Add from catalog",
       addCustom: "Own line item",
       addSection: "Chapter or object",
@@ -1878,6 +1878,7 @@ export default {
       accept: "Accept the offer",
       decline: "Decline",
       download: "Download PDF",
+      pdf: "PDF",
       downloadFailed: "The PDF couldn't be made. Try again.",
     },
     accept: {
@@ -1989,6 +1990,7 @@ export default {
     costNote: "Direct cost at reference prices; an estimate uses your prices.",
     unconfirmed: "not confirmed",
     unconfirmedHint: "The manufacturer hasn't checked it yet.",
+    unconfirmedState: "Not confirmed",
     noCost: "No price",
     newNorm: "New norm",
     views: {
@@ -1998,6 +2000,7 @@ export default {
     },
     searchPlaceholder: "Search by code or work",
     columns: {
+      code: "Code",
       norm: "Norm",
       source: "Source",
       cost: "Ref. cost",
@@ -2250,7 +2253,6 @@ export default {
     columns: {
       name: "Name",
       contact: "Contact",
-      address: "Address",
       estimates: "Estimates",
       owed: "To collect",
     },
@@ -4525,6 +4527,8 @@ export default {
   },
   prices: {
     title: "Prices",
+    description:
+      "Store prices and what they change in your estimates · amounts in lei",
     alerts: {
       title: "Price alerts",
       description:
@@ -4897,6 +4901,7 @@ export default {
       perimeter: "Perimeter",
       measured: "Measured line items",
       ofItems: "of {items}",
+      unmeasured: "{left} to measure",
       differs: "With another quantity in the estimate",
     },
     rooms: {
@@ -5326,7 +5331,6 @@ export default {
       executed: "{percent} executed",
       contract: "Contract value",
       executedValue: "Executed",
-      withOpen: "open: {value} lei",
       approved: "Confirmed by the beneficiary",
       approvedShare: "{percent} of the contract",
       noApproved: "No statement confirmed yet",
@@ -5368,6 +5372,7 @@ export default {
       completed: "Items brought to their contract quantity: {count}.",
       completedNone: "Every item was already at its contract quantity.",
       send: "Mark as sent",
+      thisValue: "This statement's value",
       downloadPdf: "Download PDF",
       nextDraft:
         "Fill in “This period”, download the statement and send it to the beneficiary, then mark it here.",

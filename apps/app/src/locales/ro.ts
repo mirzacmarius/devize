@@ -396,10 +396,11 @@ export default {
       accepted: "Acceptate",
       rejected: "Respinse",
     },
-    searchPlaceholder: "Caută după lucrare sau număr",
+    searchPlaceholder: "Caută lucrare sau număr",
     noResults: "Niciun deviz nu se potrivește cu „{text}”.",
     noneHere: "Niciun deviz în această stare.",
     columns: {
+      code: "Nr.",
       estimate: "Deviz",
       client: "Client",
       status: "Stare",
@@ -489,7 +490,6 @@ export default {
       draft: "Ciornă",
       sent: "Trimis clientului",
       accepted: "Acceptat",
-      rejected: "Respins",
       waiting: "Așteaptă răspunsul",
       states: {
         done: "încheiat",
@@ -539,7 +539,7 @@ export default {
     },
     items: {
       title: "Articole",
-      inLei: "sume în lei",
+      inLei: "sume în lei, fără TVA",
       addNorm: "Adaugă din catalog",
       addCustom: "Articol propriu",
       addSection: "Capitol sau obiect",
@@ -1876,6 +1876,7 @@ export default {
       accept: "Accept oferta",
       decline: "Nu accept",
       download: "Descarcă PDF",
+      pdf: "PDF",
       downloadFailed: "PDF-ul nu a putut fi făcut. Încearcă din nou.",
     },
     accept: {
@@ -1987,6 +1988,7 @@ export default {
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "neconfirmată",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
+    unconfirmedState: "Neconfirmată",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
     views: {
@@ -1996,6 +1998,7 @@ export default {
     },
     searchPlaceholder: "Caută după cod sau lucrare",
     columns: {
+      code: "Cod",
       norm: "Normă",
       source: "Sursă",
       cost: "Cost ref.",
@@ -2251,7 +2254,6 @@ export default {
     columns: {
       name: "Nume",
       contact: "Contact",
-      address: "Adresă",
       estimates: "Devize",
       owed: "De încasat",
     },
@@ -4522,6 +4524,8 @@ export default {
   },
   prices: {
     title: "Prețuri",
+    description:
+      "Prețurile din magazine și ce schimbă ele în devize · sume în lei",
     alerts: {
       title: "Alerte de preț",
       description:
@@ -4892,6 +4896,7 @@ export default {
       perimeter: "Perimetru",
       measured: "Articole măsurate",
       ofItems: "din {items}",
+      unmeasured: "{left} de măsurat",
       differs: "Cu altă cantitate în deviz",
     },
     rooms: {
@@ -5318,7 +5323,6 @@ export default {
       executed: "{percent} executat",
       contract: "Valoarea contractului",
       executedValue: "Executat",
-      withOpen: "deschis: {value} lei",
       approved: "Confirmat de beneficiar",
       approvedShare: "{percent} din contract",
       noApproved: "Nicio situație confirmată încă",
@@ -5360,6 +5364,7 @@ export default {
       completed: "Articole aduse la cantitatea din contract: {count}.",
       completedNone: "Toate articolele erau deja la cantitatea din contract.",
       send: "Marchează trimisă",
+      thisValue: "Valoarea acestei situații",
       downloadPdf: "Descarcă PDF",
       nextDraft:
         "Completează „În perioadă”, descarcă situația și trimite-o beneficiarului, apoi marcheaz-o aici.",

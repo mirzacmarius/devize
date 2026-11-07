@@ -186,7 +186,7 @@ export function LineItemsCard({
             {!isEmpty && (
               <>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   className="text-ai hover:text-ai"
                   onClick={() => open({ kind: "proposal" })}
@@ -294,7 +294,9 @@ export function LineItemsCard({
           <Table bleed className="items-table">
             <TableHeader>
               <TableRow>
-                <TableHead className={cn("w-5", FROM_MID)}>#</TableHead>
+                <TableHead className={cn("w-5 text-right", FROM_MID)}>
+                  #
+                </TableHead>
                 <TableHead className={TITLE_CELL}>
                   {t("items.columns.item")}
                 </TableHead>
@@ -567,7 +569,10 @@ function ItemRows({
     <>
       <TableRow className="items-row group/row [&>td]:py-[11px]">
         <TableCell
-          className={cn("align-top tabular-nums text-ink-3", FROM_MID)}
+          className={cn(
+            "text-right align-top tabular-nums text-ink-3",
+            FROM_MID,
+          )}
         >
           {index}
         </TableCell>

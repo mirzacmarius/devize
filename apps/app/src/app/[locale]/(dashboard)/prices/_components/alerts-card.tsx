@@ -14,7 +14,7 @@ import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
-import { Amount, Lei } from "@/components/amount";
+import { Lei } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
@@ -131,7 +131,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
   return (
     <section
       aria-label={`${code} ${estimate.title}`}
-      className="grid gap-5 rounded-lg bg-sunken p-4 sm:p-5"
+      className="grid gap-5 rounded-lg bg-sunken p-4 sm:-mx-[var(--card-pad)] sm:px-[var(--card-pad)] sm:py-5"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid min-w-0 flex-1 basis-80 gap-0.5">
@@ -181,7 +181,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 )}
               >
                 {/* The label over it says which way it went. */}
-                <Amount value={money(Math.abs(profitChange))} toned />
+                {money(Math.abs(profitChange))}
               </span>
               <span className="text-meta text-ink-3">lei</span>
             </p>

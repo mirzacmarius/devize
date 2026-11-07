@@ -12,11 +12,6 @@ export function SummaryCard({ overview }: { overview: Overview }) {
   const locale = useCurrentLocale();
   const percent = Math.round(overview.executed.percent * 10) / 10;
   const executed = formatPercent(percent, locale);
-  // What of the executed value the client hasn't confirmed yet.
-  const open =
-    Math.round(
-      (overview.executed.subtotal - (overview.approved?.subtotal ?? 0)) * 100,
-    ) / 100;
   return (
     <FigureStrip>
       <Figure lead label={t("title")} value={executed}>
@@ -36,11 +31,6 @@ export function SummaryCard({ overview }: { overview: Overview }) {
         label={t("executedValue")}
         value={formatMoney(overview.executed.subtotal, locale)}
         unit="lei"
-        note={
-          open !== 0
-            ? t("withOpen", { value: formatMoney(open, locale) })
-            : undefined
-        }
       />
       <Figure
         label={t("approved")}

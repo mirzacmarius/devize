@@ -128,7 +128,7 @@ export function PriceCard({
               </dd>
             </div>
           ))}
-          <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-tick pt-3">
+          <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-rule pt-3">
             <dt className="text-body-lg font-medium text-ink">
               {hasVat ? t("total") : t("totalNoVat")}
             </dt>

@@ -2,7 +2,12 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { normalizeText } from "@devize/backend/convex/lib/text";
-import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@devize/ui/breadcrumb";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -49,6 +54,8 @@ export function ProducersPage() {
             <BreadcrumbLink asChild>
               <Link href="/catalog">{tCatalog("title")}</Link>
             </BreadcrumbLink>
+            <BreadcrumbSeparator />
+            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
@@ -74,22 +81,22 @@ export function ProducersPage() {
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-80"
+              className="w-full sm:ml-auto sm:w-80"
             />
           </ListToolbar>
           <Table stack>
             <TableHeader>
               <TableRow>
-                <TableHead className="xl:w-[38%]">
+                <TableHead className="xl:w-[32%]">
                   {t("columns.name")}
                 </TableHead>
-                <TableHead className="hidden xl:table-cell">
+                <TableHead className="hidden xl:table-cell xl:w-[40%]">
                   {t("columns.categories")}
                 </TableHead>
-                <TableHead className="hidden w-24 text-right md:table-cell">
+                <TableHead className="hidden w-24 text-right md:table-cell xl:w-[14%]">
                   {t("columns.edition")}
                 </TableHead>
-                <TableHead className="hidden w-20 text-right md:table-cell">
+                <TableHead className="hidden w-20 text-right md:table-cell xl:w-[14%]">
                   {t("columns.norms")}
                 </TableHead>
               </TableRow>
@@ -117,7 +124,7 @@ export function ProducersPage() {
                   // The whole row leads to the profile.
                   <TableRow
                     key={producer._id}
-                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-[62px] xl:[&>td]:h-[52px] xl:[&>td]:py-4 xl:[&>td]:align-baseline"
+                    className="group/row relative transition-colors hover:bg-tile md:max-xl:[&>td]:h-[62px] xl:[&>td]:py-3 xl:[&>td]:align-baseline"
                   >
                     <TableCell data-stack="wide">
                       <Link

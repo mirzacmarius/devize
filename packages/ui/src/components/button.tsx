@@ -24,7 +24,7 @@ const buttonVariants = cva(
         destructive:
           "bg-danger-soft text-danger hover:opacity-90 disabled:bg-muted disabled:text-ink-3",
         ghost: "text-ink-2 hover:bg-tile hover:text-ink disabled:text-ink-3",
-        link: "gap-1 text-ink underline decoration-tick underline-offset-[3px] hover:decoration-current disabled:text-ink-3",
+        link: "gap-1 text-ink underline decoration-ink-3/50 underline-offset-[3px] hover:decoration-current disabled:text-ink-3",
       },
       size: {
         default: "h-9 px-3.5",

@@ -8,7 +8,9 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   // the whole row. Hide what a phone doesn't need with `max-md:hidden`.
   stack?: boolean;
   // Every row has a second line: one height for such lists across the app.
-  twoLine?: boolean;
+  // "below-xl": only until there's room to give that line columns of its own;
+  // from there a row is one line.
+  twoLine?: boolean | "below-xl";
   // Inside a card: it scrolls up to the card's edges, and a group row's band
   // (`band-start`, `band-end`) can run that far.
   bleed?: boolean;
@@ -30,8 +32,10 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
         className={cn(
           "w-full caption-bottom border-collapse text-body",
           stack && "table-stack",
-          twoLine &&
+          twoLine === true &&
             "md:[&>tbody>tr>td]:h-[60px] md:[&>tbody>tr>td]:py-[11px] md:[&>tbody>tr>td]:align-baseline",
+          twoLine === "below-xl" &&
+            "md:max-xl:[&>tbody>tr>td]:h-[60px] md:max-xl:[&>tbody>tr>td]:py-[11px] md:max-xl:[&>tbody>tr>td]:align-baseline xl:[&>tbody>tr>td]:py-3 xl:[&>tbody>tr>td]:align-baseline",
           className,
         )}
         {...props}
@@ -80,7 +84,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-tile data-[state=selected]:bg-tile [thead_&]:border-b-card-border [thead_&]:hover:bg-transparent",
+      "border-b transition-colors hover:bg-tile data-[state=selected]:bg-tile [thead_&]:border-b-rule [thead_&]:hover:bg-transparent",
       className,
     )}
     {...props}

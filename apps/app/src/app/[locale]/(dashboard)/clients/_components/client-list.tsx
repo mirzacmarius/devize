@@ -93,21 +93,22 @@ export function ClientList() {
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-80"
+              className="w-full sm:ml-auto sm:w-80"
             />
           </ListToolbar>
           <Table stack twoLine>
             <TableHeader>
               <TableRow>
-                <TableHead>{t("columns.name")}</TableHead>
-                <TableHead>{t("columns.contact")}</TableHead>
-                <TableHead className="hidden xl:table-cell">
-                  {t("columns.address")}
+                <TableHead className="xl:w-[38%]">
+                  {t("columns.name")}
                 </TableHead>
-                <TableHead className="hidden w-20 text-right md:table-cell">
+                <TableHead className="xl:w-[32%]">
+                  {t("columns.contact")}
+                </TableHead>
+                <TableHead className="hidden w-20 text-right md:table-cell xl:w-[12%]">
                   {t("columns.estimates")}
                 </TableHead>
-                <TableHead className="hidden w-32 text-right md:table-cell">
+                <TableHead className="hidden w-32 text-right md:table-cell xl:w-[18%]">
                   {t("columns.owed")}
                 </TableHead>
               </TableRow>
@@ -115,14 +116,14 @@ export function ClientList() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-ink-3">
+                  <TableCell colSpan={4} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
@@ -170,9 +171,6 @@ export function ClientList() {
                           )}
                         </div>
                       )}
-                    </TableCell>
-                    <TableCell className="hidden text-meta text-ink-3 xl:table-cell">
-                      <span className="line-clamp-2">{row.address}</span>
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums md:table-cell">
                       {going?.estimates ? going.estimates : <Nil />}

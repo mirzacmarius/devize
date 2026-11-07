@@ -18,7 +18,7 @@ import { Lei } from "@/components/amount";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
-import { RailLabel } from "@/components/fold-card";
+import { RailGroup, RailLabel } from "@/components/fold-card";
 import { Rail, RailList, RailSummary } from "@/components/rail-stat";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
@@ -276,13 +276,26 @@ export function EstimatePage() {
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <Rail sticky>
           {railLead}
-          {/* The same two groups whatever it's at; the summary takes what leads. */}
+          {/* While it's a draft, its preparation is the work; once it has left,
+              one row. The summary takes what leads. */}
           <RailList>
-            <RailLabel>{t("rail.preparation")}</RailLabel>
-            {status !== "draft" && rail.checks}
-            {preparation}
-            {packaging}
-            <RailLabel>{t("rail.records")}</RailLabel>
+            {status === "draft" ? (
+              <>
+                <RailLabel>{t("rail.preparation")}</RailLabel>
+                {preparation}
+                {packaging}
+                <RailLabel>{t("rail.records")}</RailLabel>
+              </>
+            ) : (
+              <>
+                <RailGroup title={t("rail.preparation")}>
+                  {rail.checks}
+                  {preparation}
+                  {packaging}
+                </RailGroup>
+                <RailLabel className="xl:hidden">{t("rail.records")}</RailLabel>
+              </>
+            )}
             {(status === "draft" || status === "accepted") && rail.offer}
             {records}
           </RailList>

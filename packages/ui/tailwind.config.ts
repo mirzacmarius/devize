@@ -142,6 +142,7 @@ const config = {
         tile: "hsl(var(--tile))",
         backdrop: "hsl(var(--backdrop))",
         tick: "hsl(var(--tick))",
+        rule: "hsl(var(--rule))",
         meter: "hsl(var(--meter))",
         ink: {
           DEFAULT: "hsl(var(--ink))",

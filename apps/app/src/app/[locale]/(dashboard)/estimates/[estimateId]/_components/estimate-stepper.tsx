@@ -1,11 +1,16 @@
 "use client";
 
-import { type Step, Stepper } from "@devize/ui/stepper";
+import { Stepper } from "@devize/ui/stepper";
+import { cn } from "@devize/ui/utils";
+import { EstimateStatusPill } from "@/components/estimate-status";
 import { formatDay } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./types";
 
-/** Where a Deviz is in its life: draft, sent, then the client's answer. */
+/**
+ * Where a Deviz is in its life: draft, sent, then the client's answer. Once
+ * answered, the way there says nothing: only the answer and when.
+ */
 export function EstimateStepper({
   estimate,
   className,
@@ -19,31 +24,20 @@ export function EstimateStepper({
   if (status === "archived") {
     return null;
   }
+  if (status === "accepted" || status === "rejected") {
+    return (
+      <p
+        className={cn(
+          "m-0 flex items-baseline gap-2 text-meta tabular-nums text-ink-3",
+          className,
+        )}
+      >
+        <EstimateStatusPill status={status} />
+        {formatDay(estimate.updatedAt, locale)}
+      </p>
+    );
+  }
   const sent = status !== "draft";
-  const answer: Step =
-    status === "rejected"
-      ? {
-          id: "answer",
-          title: t("steps.rejected"),
-          meta: formatDay(estimate.updatedAt, locale),
-          state: "failed",
-        }
-      : {
-          id: "answer",
-          title: t("steps.accepted"),
-          meta:
-            status === "accepted"
-              ? formatDay(estimate.updatedAt, locale)
-              : status === "sent"
-                ? t("steps.waiting")
-                : undefined,
-          state:
-            status === "accepted"
-              ? "success"
-              : status === "sent"
-                ? "current"
-                : "todo",
-        };
   return (
     <Stepper
       className={className}
@@ -72,7 +66,12 @@ export function EstimateStepper({
               : undefined,
           state: sent ? "done" : "todo",
         },
-        answer,
+        {
+          id: "answer",
+          title: t("steps.accepted"),
+          meta: sent ? t("steps.waiting") : undefined,
+          state: sent ? "current" : "todo",
+        },
       ]}
     />
   );
