@@ -55,7 +55,7 @@ export function Figure({
         <span
           className={cn(
             "text-stat tabular-nums text-ink",
-            lead && "sm:text-kpi",
+            lead && "sm:text-hero",
           )}
         >
           {typeof value === "string" ? <Amount value={value} /> : value}

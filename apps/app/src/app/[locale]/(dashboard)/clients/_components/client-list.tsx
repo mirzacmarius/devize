@@ -40,6 +40,12 @@ export function ClientList() {
     organizationId: firm._id,
   });
   const activityOf = new Map(activity?.map((row) => [row.clientId, row]) ?? []);
+  const owed = (id: Doc<"clients">["_id"]) => activityOf.get(id)?.owed ?? 0;
+  // Who owes the most first; everyone else stays in the order of their names.
+  const rows =
+    clients && activity
+      ? [...clients].sort((a, b) => owed(b._id) - owed(a._id))
+      : undefined;
   const [open, setOpen] = useState(false);
   const [client, setClient] = useState<Doc<"clients"> | null>(null);
 
@@ -110,21 +116,21 @@ export function ClientList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clients === undefined && (
+              {rows === undefined && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
-              {clients?.length === 0 && (
+              {rows?.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
               )}
-              {clients?.map((row) => {
+              {rows?.map((row) => {
                 const going = activityOf.get(row._id);
                 return (
                   <TableRow key={row._id}>
@@ -152,7 +158,7 @@ export function ClientList() {
                           {row.email && (
                             <a
                               href={`mailto:${row.email}`}
-                              className="max-w-full truncate text-meta text-ink-2 hover:underline"
+                              className="max-w-full truncate text-meta text-ink-3 hover:underline"
                             >
                               {row.email}
                             </a>
@@ -160,10 +166,7 @@ export function ClientList() {
                           {row.phone && (
                             <a
                               href={`tel:${row.phone}`}
-                              className={cn(
-                                "whitespace-nowrap text-meta tabular-nums hover:underline",
-                                row.email ? "text-ink-3" : "text-ink-2",
-                              )}
+                              className="whitespace-nowrap text-meta tabular-nums text-ink-3 hover:underline"
                             >
                               {row.phone}
                             </a>
@@ -171,7 +174,7 @@ export function ClientList() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="hidden text-meta text-ink-2 xl:table-cell">
+                    <TableCell className="hidden text-meta text-ink-3 xl:table-cell">
                       <span className="line-clamp-2">{row.address}</span>
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums md:table-cell">

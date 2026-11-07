@@ -10,7 +10,7 @@ import { cn } from "../utils";
 const statusPillVariants = cva(
   // An empty ::before would set the baseline of the row it stands in, so the
   // dot is centred on its own and the text keeps the line it shares.
-  "inline-flex items-baseline gap-1.5 whitespace-nowrap text-meta before:size-1.5 before:shrink-0 before:self-center before:rounded-full before:content-['']",
+  "inline-flex items-baseline gap-1.5 whitespace-nowrap text-meta before:size-[7px] before:shrink-0 before:self-center before:rounded-full before:content-['']",
   {
     variants: {
       tone: {

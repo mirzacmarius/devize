@@ -140,6 +140,20 @@ export function EstimatePage() {
     progress: <ProgressCard key="progress" estimate={estimate} />,
     invoices: <InvoicesCard key="invoices" estimate={estimate} />,
   };
+  const preparation = (
+    <>
+      <CompatibilityCard estimate={estimate} editable={editable} />
+      <TakeoffCard estimate={estimate} />
+    </>
+  );
+  const packaging = <PackagingCard estimateId={estimate._id} />;
+  const records = (
+    <>
+      <DocumentsCard estimate={estimate} />
+      <DetailsCard estimate={estimate} editable={editable} open={setPanel} />
+      <RevisionsCard estimate={estimate} />
+    </>
+  );
   // What the Deviz is at first; the rest in one quiet list of rows.
   const railLead = (
     <RailSummary>
@@ -195,11 +209,15 @@ export function EstimatePage() {
               </>
             }
           />
-          <EstimateStepper estimate={estimate} />
+          {/* The status pill says where it stands; a phone gets to the work sooner. */}
+          <EstimateStepper
+            estimate={estimate}
+            className="max-sm:hidden min-[1400px]:hidden"
+          />
         </div>
         {/* Beside the title; on a phone, in a bar at the screen's foot, with the
             total once the one above has scrolled away. */}
-        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
+        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7 min-[1400px]:relative">
           {pastHero && (
             <div className="min-w-0 flex-1 max-sm:!h-auto sm:hidden">
               <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
@@ -221,6 +239,11 @@ export function EstimatePage() {
             }
             open={setPanel}
             fill={!pastHero}
+          />
+          {/* Where there's room it stands under the actions, on the client's line. */}
+          <EstimateStepper
+            estimate={estimate}
+            className="absolute right-0 top-full mt-0.5 hidden w-max flex-nowrap min-[1400px]:flex"
           />
         </div>
         <div ref={hero} className="md:col-span-2">
@@ -254,22 +277,28 @@ export function EstimatePage() {
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <Rail sticky>
           {railLead}
-          {/* Once it's sent, the preparation has had its day; what to buy hasn't. */}
-          <RailFold label={t("rail.preparation")} folded={status !== "draft"}>
-            {status !== "draft" && rail.checks}
-            <CompatibilityCard estimate={estimate} editable={editable} />
-            <TakeoffCard estimate={estimate} />
-          </RailFold>
-          <PackagingCard estimateId={estimate._id} />
-          <RailLabel>{t("rail.records")}</RailLabel>
-          {(status === "accepted" || status === "draft") && rail.offer}
-          <DocumentsCard estimate={estimate} />
-          <DetailsCard
-            estimate={estimate}
-            editable={editable}
-            open={setPanel}
-          />
-          <RevisionsCard estimate={estimate} />
+          {status === "draft" ? (
+            <>
+              <RailLabel>{t("rail.preparation")}</RailLabel>
+              {preparation}
+              {packaging}
+              <RailLabel>{t("rail.records")}</RailLabel>
+              {rail.offer}
+              {records}
+            </>
+          ) : (
+            // Once it's sent, one list: what to buy first, the preparation,
+            // which has had its day, last.
+            <>
+              {packaging}
+              {status === "accepted" && rail.offer}
+              {records}
+              <RailFold label={t("rail.preparation")}>
+                {rail.checks}
+                {preparation}
+              </RailFold>
+            </>
+          )}
         </Rail>
       </div>
 

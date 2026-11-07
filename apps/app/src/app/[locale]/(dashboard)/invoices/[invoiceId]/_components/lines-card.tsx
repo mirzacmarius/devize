@@ -196,7 +196,7 @@ function Totals({
             </dt>
             <dd
               className={cn(
-                "m-0 min-w-32 text-right tabular-nums text-ink",
+                "m-0 min-w-[118px] text-right tabular-nums text-ink",
                 row.strong || closes ? "text-body font-medium" : "text-body",
               )}
             >

@@ -16,7 +16,6 @@ import {
   TableRow,
 } from "@devize/ui/table";
 import { useQuery } from "convex/react";
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { Nil } from "@/components/nil";
@@ -53,7 +52,8 @@ export function ProducersPage() {
   );
 
   return (
-    <>
+    // A short list of names: it keeps its figures near them.
+    <div className="grid min-w-0 gap-4 sm:gap-6 xl:max-w-[960px]">
       <PageHeader
         breadcrumb={
           <Breadcrumb aria-label={t("breadcrumb")}>
@@ -92,20 +92,19 @@ export function ProducersPage() {
                 <TableHead className="hidden w-20 text-right md:table-cell">
                   {t("columns.norms")}
                 </TableHead>
-                <TableHead className="hidden w-10 md:table-cell" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={3} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
               )}
               {rows?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={3} className="text-ink-3">
                     {t("noResults", { text: search })}
                   </TableCell>
                 </TableRow>
@@ -127,7 +126,7 @@ export function ProducersPage() {
                       >
                         <span
                           aria-hidden
-                          className="row-span-2 grid size-8 place-items-center rounded-md bg-tile text-[12px] font-medium leading-4 text-ink-2"
+                          className="row-span-2 grid size-8 place-items-center rounded-md border border-border bg-card text-[12px] font-medium leading-4 text-ink-2"
                         >
                           {initials(producer.name)}
                         </span>
@@ -157,12 +156,6 @@ export function ProducersPage() {
                     <TableCell className="hidden text-right tabular-nums md:table-cell">
                       {norms}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <ChevronRight
-                        aria-hidden
-                        className="-mr-[5px] ml-auto size-4 text-ink-3"
-                      />
-                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -170,6 +163,6 @@ export function ProducersPage() {
           </Table>
         </section>
       )}
-    </>
+    </div>
   );
 }

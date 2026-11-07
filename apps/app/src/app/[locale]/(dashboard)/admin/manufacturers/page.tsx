@@ -29,10 +29,6 @@ import {
   useRun,
 } from "../_components/ui";
 
-// A state that asks nothing of anyone: its words, on the others' edge, no dot.
-const QUIET_STATE = "before:bg-transparent before:shadow-none";
-const quietTones: (string | undefined)[] = ["draft", "active", "neutral"];
-
 const statuses = [
   "new",
   "review",
@@ -107,7 +103,7 @@ export default function ManufacturersPage() {
             ))}
           </NativeSelect>
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" onClick={() => setAdding(!adding)}>
+            <Button onClick={() => setAdding(!adding)}>
               <Plus aria-hidden />
               {tAdd("title")}
             </Button>
@@ -199,24 +195,17 @@ export default function ManufacturersPage() {
                           {t("working")}
                         </Pill>
                       ) : (
-                        <Pill
-                          tone={manufacturerTone[row.status]}
-                          className={
-                            quietTones.includes(manufacturerTone[row.status])
-                              ? QUIET_STATE
-                              : undefined
-                          }
-                        >
+                        <Pill tone={manufacturerTone[row.status]}>
                           {tAdmin(`status.manufacturer.${row.status}`)}
                         </Pill>
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className="text-meta text-ink-2">
+                      <span className="text-meta text-ink-3">
                         {tAdmin(`status.norms.${row.normsStatus}`)}
                       </span>
                     </TableCell>
-                    <TableCell className="text-ink-2">
+                    <TableCell>
                       {row.confidence ? (
                         <Confidence>
                           {tAdmin(`confidenceLevel.${row.confidence}`)}
@@ -240,6 +229,12 @@ export default function ManufacturersPage() {
                           dot={
                             row.message.status === "draft" &&
                             row.message.blocked === true
+                          }
+                          className={
+                            row.message.status === "draft" &&
+                            row.message.blocked
+                              ? undefined
+                              : "text-ink-3"
                           }
                         >
                           {tAdmin(`status.message.${row.message.status}`)}

@@ -120,8 +120,16 @@ export function InvoiceList() {
             />
             <Figure
               label={t("receivable.overdue")}
-              value={receivable ? formatMoney(receivable.overdue, locale) : "–"}
-              unit="lei"
+              value={
+                !receivable ? (
+                  "–"
+                ) : receivable.overdue > 0 ? (
+                  formatMoney(receivable.overdue, locale)
+                ) : (
+                  <Nil />
+                )
+              }
+              unit={receivable?.overdue === 0 ? undefined : "lei"}
               note={
                 receivable &&
                 t("receivable.invoices", { count: receivable.overdueCount })
@@ -132,7 +140,7 @@ export function InvoiceList() {
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
               note={
                 anaf?.firstLate && (
-                  <StatusPill tone="danger">
+                  <StatusPill tone="danger" className="text-ink-2">
                     {t("receivable.lateCount", { count: anaf.late })}
                   </StatusPill>
                 )

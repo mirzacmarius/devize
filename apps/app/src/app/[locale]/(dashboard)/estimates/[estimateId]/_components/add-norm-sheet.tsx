@@ -80,7 +80,7 @@ export function AddNormSheet({
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
       <SheetContent
         closeLabel={tc("close")}
-        className="w-full overflow-y-auto sm:max-w-xl"
+        className="w-full overflow-hidden sm:max-w-xl"
       >
         <SheetHeader>
           <SheetTitle>{t("addNorm.title")}</SheetTitle>
@@ -88,13 +88,26 @@ export function AddNormSheet({
             {t("addNorm.description")}
           </SheetDescription>
         </SheetHeader>
-        {open && (
-          <AddNorm
-            estimate={estimate}
-            initialSectionId={sectionId}
-            onCustom={onCustom}
-          />
-        )}
+        {/* The list scrolls; what's in the Deviz by now, and the way out, stay. */}
+        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-1">
+          {open && (
+            <AddNorm
+              estimate={estimate}
+              initialSectionId={sectionId}
+              onCustom={onCustom}
+            />
+          )}
+        </div>
+        <div className="-mx-6 -mb-6 flex items-center justify-between gap-4 border-t border-border px-6 py-3">
+          <span className="text-meta tabular-nums text-ink-3">
+            {t("addNorm.itemsInEstimate", {
+              count: estimate.lineItems.length,
+            })}
+          </span>
+          <Button type="button" onClick={onClose}>
+            {t("addNorm.done")}
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   );

@@ -788,6 +788,11 @@ export default {
     },
     addNorm: {
       inEstimate: "În deviz",
+      "itemsInEstimate#zero": "Niciun articol în deviz",
+      "itemsInEstimate#one": "Un articol în deviz",
+      "itemsInEstimate#few": "{count} articole în deviz",
+      "itemsInEstimate#other": "{count} de articole în deviz",
+      done: "Gata",
       title: "Adaugă din catalog",
       description:
         "Costul din listă e de referință; în deviz se folosesc prețurile tale.",
@@ -1979,7 +1984,6 @@ export default {
       "Cost direct la prețuri de referință; în deviz se folosesc prețurile tale.",
     unconfirmed: "Neconfirmată",
     unconfirmedHint: "Producătorul n-a verificat-o încă.",
-    unconfirmedNote: "Neconfirmată: producătorul n-a verificat-o încă.",
     noCost: "Fără preț",
     newNorm: "Normă nouă",
     views: {
@@ -5325,6 +5329,7 @@ export default {
       pick: "Alege situația",
     },
     statement: {
+      headTotal: "Total fără TVA",
       period: "Perioada {start} – {end}",
       date: "Data {date}",
       sentOn: "Trimisă la {date}",

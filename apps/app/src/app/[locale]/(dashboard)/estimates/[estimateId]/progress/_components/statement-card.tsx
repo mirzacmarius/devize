@@ -29,6 +29,7 @@ import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Download, Paperclip } from "lucide-react";
 import { Fragment, type ReactNode, useState } from "react";
+import { Amount } from "@/components/amount";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
@@ -259,7 +260,21 @@ export function StatementCard({
             </DropdownMenu>
           </div>
         </div>
-        <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <p className="m-0 text-meta text-ink-3">{facts.join(" · ")}</p>
+          {/* What it comes to; the recap under the table says how. */}
+          {statement.period.subtotal !== 0 && (
+            <p className="m-0 flex items-baseline gap-1.5 whitespace-nowrap">
+              <span className="text-meta text-ink-3">{t("headTotal")}</span>
+              <span className="text-figure tabular-nums text-ink">
+                <Amount
+                  value={formatMoney(statement.period.subtotal, locale)}
+                />
+              </span>
+              <span className="text-meta text-ink-3">lei</span>
+            </p>
+          )}
+        </div>
         {/* Nothing leaves from here: the firm sends it and notes what happened.
             Said once, on the first statement. */}
         {number === 1 && statement.status !== "approved" && (
@@ -367,10 +382,11 @@ function RowsTable({
     <Table bleed stack className="xl:min-w-[50rem]">
       <TableHeader>
         <TableRow>
-          <TableHead>{t("article")}</TableHead>
+          {/* Over the titles, past their positions. */}
+          <TableHead className="first:pl-7">{t("article")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
-          <TableHead className="w-[110px] rounded-t-lg bg-sunken pr-6 text-right font-medium text-ink">
+          <TableHead className="w-[110px] rounded-t-lg bg-sunken/60 pr-6 text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -480,7 +496,7 @@ function RowsTable({
                   )}
                 </TableCell>
                 {/* The column being filled in. */}
-                <TableCell className="whitespace-nowrap bg-sunken pr-6 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
+                <TableCell className="whitespace-nowrap bg-sunken/60 pr-6 text-right align-top max-md:bg-transparent max-md:!pl-7 max-md:text-left">
                   <div className="max-md:flex max-md:items-center max-md:gap-2">
                     {/* On a phone its head is gone, so it says what it is. */}
                     <span className="text-meta text-ink-3 md:hidden">

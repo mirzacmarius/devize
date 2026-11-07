@@ -227,7 +227,7 @@ export function EstimateActions({
             variant="ghost"
             size="icon"
             // The dots end on the page's edge, not the button's.
-            className="max-sm:ml-auto sm:-mr-2.5"
+            className="max-sm:ml-auto max-sm:border max-sm:border-control sm:-mr-2.5"
             aria-label={tc("actions")}
           >
             <Icons.More aria-hidden />

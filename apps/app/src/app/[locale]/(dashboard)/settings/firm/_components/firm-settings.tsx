@@ -340,17 +340,17 @@ function DetailsForm({
                 />
               </Field>
             </div>
-            <Field label={t("address")} htmlFor="firm-address">
-              <Input
-                id="firm-address"
-                value={address}
-                onChange={(event) => setAddress(event.target.value)}
-                placeholder={t("addressPlaceholder")}
-                autoComplete="street-address"
-                maxLength={500}
-              />
-            </Field>
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+              <Field label={t("address")} htmlFor="firm-address">
+                <Input
+                  id="firm-address"
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
+                  placeholder={t("addressPlaceholder")}
+                  autoComplete="street-address"
+                  maxLength={500}
+                />
+              </Field>
               <Field label={tFirm("county")} htmlFor="firm-county">
                 <Select value={county} onValueChange={setCounty}>
                   <SelectTrigger id="firm-county">
@@ -365,6 +365,8 @@ function DetailsForm({
                   </SelectContent>
                 </Select>
               </Field>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
               <Field label={t("phone")} htmlFor="firm-phone">
                 <Input
                   id="firm-phone"
@@ -376,19 +378,23 @@ function DetailsForm({
                   maxLength={50}
                 />
               </Field>
+              <Field
+                label={t("email")}
+                htmlFor="firm-email"
+                error={errors.email}
+              >
+                <Input
+                  id="firm-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder={t("emailPlaceholder")}
+                  autoComplete="email"
+                  maxLength={200}
+                  aria-invalid={errors.email !== undefined}
+                />
+              </Field>
             </div>
-            <Field label={t("email")} htmlFor="firm-email" error={errors.email}>
-              <Input
-                id="firm-email"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder={t("emailPlaceholder")}
-                autoComplete="email"
-                maxLength={200}
-                aria-invalid={errors.email !== undefined}
-              />
-            </Field>
             <div className="flex items-start justify-between gap-4 pt-1">
               <div className="grid gap-0.5">
                 <label
@@ -409,21 +415,28 @@ function DetailsForm({
             </div>
           </fieldset>
         </CardContent>
-        {/* Says where the form stands; only unsaved changes stay in sight. */}
+        {/* Says where the form stands; only unsaved changes stay in sight, and
+            with them the button, on a line that keeps its height without it. */}
         <CardFooter
-          className={cn(footer, (changed || saving) && "sticky bottom-0 z-10")}
+          className={cn(
+            footer,
+            "min-h-[61px]",
+            (changed || saving) && "sticky bottom-0 z-10",
+          )}
         >
           {canEdit ? (
             <>
               <span className="text-meta text-ink-3" aria-live="polite">
                 {changed || saving ? t("unsaved") : t("allSaved")}
               </span>
-              <Button type="submit" disabled={saving || !changed}>
-                {saving && (
-                  <Icons.Loader className="animate-spin" aria-hidden />
-                )}
-                {tc("save")}
-              </Button>
+              {(changed || saving) && (
+                <Button type="submit" disabled={saving}>
+                  {saving && (
+                    <Icons.Loader className="animate-spin" aria-hidden />
+                  )}
+                  {tc("save")}
+                </Button>
+              )}
             </>
           ) : (
             <p className="m-0 text-meta text-ink-3">{t("readOnly")}</p>

@@ -265,7 +265,7 @@ function OfferHero({
       <span className="text-caption text-ink-3">
         {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
       </span>
-      <h1 className="m-0 text-title-screen text-ink [text-wrap:balance] sm:text-title-page">
+      <h1 className="m-0 text-title-screen text-ink [text-wrap:balance] max-sm:text-[22px] max-sm:leading-7 sm:text-title-page">
         {offer.title}
       </h1>
       {/* A line each on a phone, a sentence where there's room. */}

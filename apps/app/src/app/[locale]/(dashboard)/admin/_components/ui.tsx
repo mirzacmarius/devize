@@ -60,7 +60,7 @@ export const Pill = StatusPill;
 /** How much research trusts a finding: worth a glance, never an alarm. */
 export function Confidence({ children }: { children: ReactNode }) {
   return (
-    <span className="whitespace-nowrap text-meta text-ink-2">{children}</span>
+    <span className="whitespace-nowrap text-meta text-ink-3">{children}</span>
   );
 }
 

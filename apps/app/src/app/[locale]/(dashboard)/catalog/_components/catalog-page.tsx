@@ -61,10 +61,9 @@ function matches(norm: NormRow, words: readonly string[]) {
  * base catalog, which narrows a search too.
  */
 // The unit hangs after the number in a slot of its own, as on a Deviz, so the
-// numbers and the head over them keep one edge, and the column ends on the
-// table's.
+// numbers and the head over them keep one edge.
 const COST_UNIT =
-  "ml-2 inline-block w-11 text-right text-meta text-ink-3 max-md:w-auto";
+  "ml-2 inline-block w-11 text-left text-meta text-ink-3 max-md:w-auto";
 
 // Under the title only between a phone, which has its own line for it, and the
 // width with a column for it.
@@ -153,16 +152,7 @@ export function CatalogPage() {
     <>
       <PageHeader
         title={t("title")}
-        description={
-          <>
-            {t("costNote")}
-            {!isOwn && (
-              <span className="block max-sm:hidden">
-                {t("unconfirmedNote")}
-              </span>
-            )}
-          </>
-        }
+        description={t("costNote")}
         actions={actions}
       />
       <section className="grid min-w-0 gap-3">
@@ -325,7 +315,8 @@ export function CatalogPage() {
                       <TableCell className="md:max-xl:hidden">
                         <span
                           className={cn(
-                            "flex flex-wrap items-baseline gap-x-2.5 max-md:text-meta",
+                            // Two lines, as the title beside it has; a phone keeps one.
+                            "grid justify-items-start gap-0.5 max-md:flex max-md:flex-wrap max-md:items-baseline max-md:gap-x-2.5 max-md:text-meta",
                             norm.source === "base"
                               ? "text-ink-3"
                               : "text-ink-2 max-md:text-ink-3",

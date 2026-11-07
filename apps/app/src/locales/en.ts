@@ -791,6 +791,11 @@ export default {
     },
     addNorm: {
       inEstimate: "In the estimate",
+      "itemsInEstimate#zero": "No items in the estimate",
+      "itemsInEstimate#one": "1 item in the estimate",
+      "itemsInEstimate#few": "{count} items in the estimate",
+      "itemsInEstimate#other": "{count} items in the estimate",
+      done: "Done",
       title: "Add from catalog",
       description:
         "The cost listed is a reference; an estimate uses your prices.",
@@ -1981,7 +1986,6 @@ export default {
     costNote: "Direct cost at reference prices; an estimate uses your prices.",
     unconfirmed: "Not confirmed",
     unconfirmedHint: "The manufacturer hasn't checked it yet.",
-    unconfirmedNote: "Not confirmed: the manufacturer hasn't checked it yet.",
     noCost: "No price",
     newNorm: "New norm",
     views: {
@@ -5333,6 +5337,7 @@ export default {
       pick: "Choose the statement",
     },
     statement: {
+      headTotal: "Total without VAT",
       period: "Period {start} – {end}",
       date: "Date {date}",
       sentOn: "Sent on {date}",

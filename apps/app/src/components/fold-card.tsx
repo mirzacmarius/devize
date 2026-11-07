@@ -15,16 +15,21 @@ function RowText({
   title,
   lead,
   open,
+  quiet = false,
 }: {
   title: ReactNode;
   lead?: ReactNode;
   open?: boolean;
+  quiet?: boolean;
 }) {
   return (
     <>
       <span
         className={cn(
-          "text-body font-normal text-ink-2 transition-colors group-hover:text-ink xl:text-meta",
+          "transition-colors",
+          quiet
+            ? "text-caption text-ink-3 group-hover:text-ink-2"
+            : "text-body font-normal text-ink-2 group-hover:text-ink xl:text-meta",
           lead !== undefined ? "shrink-0" : "min-w-0",
         )}
       >
@@ -127,23 +132,13 @@ export function RailLabel({ children }: { children: ReactNode }) {
  */
 export function RailFold({
   label,
-  folded,
   children,
 }: {
   label: string;
-  folded: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const contentId = useId();
-  if (!folded) {
-    return (
-      <>
-        <RailLabel>{label}</RailLabel>
-        {children}
-      </>
-    );
-  }
   return (
     <>
       <div
@@ -157,7 +152,7 @@ export function RailFold({
           onClick={() => setOpen(!open)}
           className={ROW}
         >
-          <RowText title={label} open={open} />
+          <RowText title={label} open={open} quiet />
         </button>
       </div>
       <div

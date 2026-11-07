@@ -6,7 +6,13 @@ import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./types";
 
 /** Where a Deviz is in its life: draft, sent, then the client's answer. */
-export function EstimateStepper({ estimate }: { estimate: Estimate }) {
+export function EstimateStepper({
+  estimate,
+  className,
+}: {
+  estimate: Estimate;
+  className?: string;
+}) {
   const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
   const { status, lockedAt } = estimate;
@@ -40,8 +46,7 @@ export function EstimateStepper({ estimate }: { estimate: Estimate }) {
         };
   return (
     <Stepper
-      // The status pill says where it stands; a phone gets to the work sooner.
-      className="max-sm:hidden"
+      className={className}
       aria-label={t("steps.label")}
       stateLabels={{
         done: t("steps.states.done"),

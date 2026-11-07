@@ -167,7 +167,8 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
 
       {/* What it does to the profit first: it's what the firm stands to lose. */}
       <div className="grid gap-x-12 gap-y-5 xl:grid-cols-2">
-        <div className="grid content-start gap-3">
+        {/* The rules on both sides fall on one line. */}
+        <div className="grid content-start gap-4">
           <div className="grid gap-1">
             <p className="m-0 text-meta text-ink-2">
               {profitChange < 0 ? t("profitDown") : t("profitUp")}
@@ -198,7 +199,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
           </div>
           <dl className="m-0 grid">
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-meta text-ink-2">
+              <dt className="text-body text-ink-2">
                 {t("total")}
                 {" · "}
                 {dearer ? t("up", { percent }) : t("down", { percent })}
@@ -211,7 +212,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-meta text-ink-2">{t("direct")}</dt>
+              <dt className="text-body text-ink-2">{t("direct")}</dt>
               <dd className="m-0 text-body tabular-nums text-ink">
                 {t("fromTo", {
                   from: money(alert.sentDirect),
@@ -242,7 +243,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                     >
                       <th
                         scope="row"
-                        className="py-1.5 pl-0 pr-4 text-left font-normal text-ink"
+                        className="py-1.5 pl-0 pr-4 text-left font-normal text-ink-2"
                       >
                         {change.name}
                         <span className="block text-meta tabular-nums text-ink-3 sm:hidden">

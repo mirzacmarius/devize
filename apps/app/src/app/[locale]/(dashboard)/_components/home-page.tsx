@@ -96,14 +96,7 @@ export function HomePage() {
         }
       />
       {/* On a phone the next section's hairline closes the figures. */}
-      {/* Where there's room the last figure starts on the column under it. */}
-      <Card
-        className={cn(
-          "grid grid-cols-3 max-sm:-mb-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.25fr)_repeat(3,minmax(0,1fr))]",
-          !showSetup &&
-            "min-[1400px]:grid-cols-[minmax(0,1.25fr)_repeat(2,minmax(0,1fr))_calc((100%-3rem)*0.4+1.5rem)]",
-        )}
-      >
+      <Card className="grid grid-cols-3 max-sm:-mb-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.25fr)_repeat(3,minmax(0,1fr))]">
         <Kpi
           lead
           label={t("kpi.receivable")}
@@ -215,7 +208,7 @@ function Kpi({
         "row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0.5 border-border sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:py-3 sm:max-xl:[&:nth-child(even)]:border-l sm:max-xl:[&:nth-child(n+3)]:border-t sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l",
         lead
           ? "max-sm:col-span-3 max-sm:px-4 max-sm:pb-3 max-sm:pt-2.5"
-          : "max-sm:px-3 max-sm:py-2 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
+          : "max-sm:border-t max-sm:px-3 max-sm:py-2 max-sm:[&:nth-child(2)]:pl-4 max-sm:[&:nth-child(n+3)]:border-l",
       )}
     >
       <p className="m-0 truncate text-meta text-ink-2">

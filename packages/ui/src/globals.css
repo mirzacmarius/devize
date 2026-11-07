@@ -16,18 +16,18 @@
   --panel: 60 25% 98.4%; /* #fcfcfa */
   --card: 0 0% 100%; /* #ffffff */
   --card-border: 60 7.7% 87.3%; /* #e1e1dc: a card's edge, the rule under a table's heads */
-  --sunken: 60 18.2% 95.7%; /* #f6f6f2: a band inside a card, a quiet box */
+  --sunken: 60 17.2% 94.3%; /* #f3f3ee: a band inside a card, a quiet box */
   --muted: 60 10.5% 92.5%; /* #eeeeea */
   --field: 0 0% 100%; /* #ffffff: editable looks open; disabled looks `muted` */
   --selected: 0 0% 100%; /* #ffffff */
   --nav-active: 60 9.4% 87.5%; /* #e2e2dc: the current page in the sidebar */
   --tile: 60 15.4% 94.9%; /* #f4f4f0: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 220 6% 10% / 0.18; /* behind whatever comes forward: a dialog, a sheet */
+  --scrim: 220 6% 10% / 0.24; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
   --border: 60 8.5% 88.4%; /* #e4e4df */
-  --border-control: 60 3.4% 65.1%; /* #a9a9a3: outlined buttons, in the fields' family */
+  --border-control: 60 4.3% 72.9%; /* #bdbdb7: outlined buttons, between a hairline and a field */
   --border-field: 60 3.1% 55.9%; /* #92928b: a field's edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
   --tick-major: 60 4.3% 77.5%; /* #c8c8c3 */
@@ -92,14 +92,14 @@
   --sunken: 60 3% 12.9%; /* #222220: a band, one step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
-  --selected: 60 2.3% 26.1%; /* #444441: a segment raised on its rail */
+  --selected: 60 2.6% 30.6%; /* #50504c: a segment raised on its rail */
   --nav-active: 60 2.3% 17.3%; /* #2d2d2b */
   --tile: 60 2.4% 16.5%; /* #2b2b29 */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.6;
 
   --border: 60 2% 19.6%; /* #333331 */
-  --border-control: 60 2.6% 37.5%; /* #62625d */
+  --border-control: 60 2.4% 32.5%; /* #555551 */
   --tick-major: 60 2.6% 37.5%; /* #62625d */
   --border-field: 60 2.5% 39%; /* #666661 */
   --tick: 60 2.1% 28.4%; /* #4a4a47 */
@@ -109,7 +109,7 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.2% 57.5%; /* #96968f: 6.9:1 on the panel */
 
-  --action: 60 5.3% 77.6%; /* #c9c9c3: the one bright thing on the page */
+  --action: 60 7.9% 85.1%; /* #dcdcd6: the one bright thing on the page */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
@@ -118,7 +118,7 @@
   --success: 142 28.3% 58.4%; /* #77b38d: below the secondary text, as in light */
   --success-soft: 145.7 25.9% 15.9%; /* #1e3327 */
   --success-dot: 146 46.8% 56.5%; /* #5cc489 */
-  --warning: 38.2 47.8% 59.4%; /* #c9a566 */
+  --warning: 38.9 59.8% 60%; /* #d6ab5c */
   --warning-soft: 36 32.5% 15.1%; /* #33291a */
   --warning-dot: 36.8 74.9% 59.4%; /* #e5a94a */
   --danger: 9.4 63.1% 65.7%; /* #e0806f */
@@ -466,7 +466,7 @@
      after what it opens with start a hairline below. */
   @media (min-width: 1280px) {
     .app-main .rail-sections > .rail-summary:not(:empty) + [data-fold] {
-      margin-top: 16px;
+      margin-top: 20px;
       padding-top: 8px;
       border-top: 1px solid hsl(var(--border));
     }
@@ -476,7 +476,6 @@
       border-top-width: 0;
     }
   }
-  .rail-summary [data-slot="fact"],
   .rail-summary [data-slot="meter"] {
     margin-right: 0;
   }
