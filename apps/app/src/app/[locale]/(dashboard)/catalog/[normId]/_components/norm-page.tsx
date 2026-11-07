@@ -76,7 +76,7 @@ export function NormPage() {
         actions={<NormActions norm={norm} />}
       />
       <NormNotice norm={norm} />
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
         <div className="grid min-w-0 gap-6">
           <ResourcesCard norm={norm} />
           <ScopeCard norm={norm} />

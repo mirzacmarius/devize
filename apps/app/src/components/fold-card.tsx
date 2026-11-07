@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
-import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -10,17 +9,15 @@ import { type ReactNode, useId, useState } from "react";
 // One row of a rail, whatever it does: a name, what it holds, and a chevron when
 // it opens or leads somewhere. The whole row is the target.
 const ROW =
-  "group flex min-h-11 w-full min-w-0 items-center gap-3 rounded-xs text-left tracking-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:min-h-9";
+  "group flex min-h-11 w-full min-w-0 items-center gap-3 rounded-xs text-left tracking-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:min-h-8";
 
 function RowText({
   title,
   lead,
-  flag,
   open,
 }: {
   title: ReactNode;
   lead?: ReactNode;
-  flag?: boolean;
   open?: boolean;
 }) {
   return (
@@ -35,19 +32,11 @@ function RowText({
       </span>
       {/* The chevron's glyph ends on the column's edge, where the rail's edge is. */}
       <span className="-mr-[5px] ml-auto flex min-w-0 items-center gap-2">
-        {lead !== undefined &&
-          (flag ? (
-            <StatusPill
-              tone="warning"
-              className="min-w-0 truncate text-body font-normal"
-            >
-              {lead}
-            </StatusPill>
-          ) : (
-            <span className="truncate text-body font-normal tabular-nums text-ink-2 transition-colors group-hover:text-ink">
-              {lead}
-            </span>
-          ))}
+        {lead !== undefined && (
+          <span className="truncate text-body font-normal tabular-nums text-ink">
+            {lead}
+          </span>
+        )}
         <ChevronRight
           aria-hidden
           className={cn(
@@ -118,6 +107,21 @@ export function FoldRow({
 }
 
 /**
+ * What the rows under it are about, where they stand beside the main column
+ * and read as one list.
+ */
+export function RailLabel({ children }: { children: ReactNode }) {
+  return (
+    <h3
+      data-rail-label
+      className="m-0 mb-0.5 mt-6 hidden border-b border-border pb-1 text-caption text-ink-3 xl:block"
+    >
+      {children}
+    </h3>
+  );
+}
+
+/**
  * A section of a page's rail that is looked at now and then: its name and one
  * line of what it holds, and the rest once opened. `attention` opens it by
  * itself when it has something to say, until someone closes it.
@@ -126,14 +130,12 @@ export function FoldCard({
   id,
   title,
   lead,
-  flag,
   attention = false,
   children,
 }: {
   id?: string;
   title: string;
   lead?: ReactNode;
-  flag?: boolean;
   attention?: boolean;
   children: ReactNode;
 }) {
@@ -149,7 +151,7 @@ export function FoldCard({
             onClick={toggle}
             className={ROW}
           >
-            <RowText title={title} lead={lead} flag={flag} open={open} />
+            <RowText title={title} lead={lead} open={open} />
           </button>
         </CardTitle>
       </CardHeader>

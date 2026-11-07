@@ -153,7 +153,7 @@ export function ProfilePage() {
       <div
         className={
           profile.products.length > 0
-            ? "grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]"
+            ? "grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8"
             : "grid gap-6"
         }
       >
@@ -349,7 +349,7 @@ function DetailsCard({
           "grid gap-6",
           details?.about &&
             rows.length > 0 &&
-            "lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]",
+            "lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] lg:gap-x-8",
         )}
       >
         {!details && (

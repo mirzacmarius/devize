@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { RailLabel } from "@/components/fold-card";
 import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { useScrolledPast } from "@/components/use-scrolled-past";
@@ -186,7 +187,7 @@ export function EstimatePage() {
         />
         {/* Beside the title; on a phone, in a bar at the screen's foot, with the
             total once the one above has scrolled away. */}
-        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:border-t max-sm:border-border max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
+        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
           {pastHero && (
             <div className="min-w-0 flex-1 max-sm:!h-auto sm:hidden">
               <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
@@ -220,10 +221,14 @@ export function EstimatePage() {
             note={withoutVat}
           />
           <EstimateStepper estimate={estimate} />
+          <div
+            aria-hidden
+            className="tick-rule mt-3 max-sm:hidden lg:col-span-2"
+          />
         </div>
         <SectionLinks estimate={estimate} checks={checks} />
       </div>
-      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-10">
+      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
         <div className="grid min-w-0 gap-6">
           {editable && (
             <ProposalBanner
@@ -242,10 +247,12 @@ export function EstimatePage() {
         {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
         <div className="rail-sections grid min-w-0 gap-6 xl:sticky xl:top-14 xl:-mx-1 xl:max-h-[calc(100vh-4.5rem)] xl:gap-0 xl:overflow-y-auto xl:px-1 xl:[scrollbar-width:thin]">
           {railLead}
+          <RailLabel>{t("rail.preparation")}</RailLabel>
           {status !== "draft" && rail.checks}
           <CompatibilityCard estimate={estimate} editable={editable} />
           <TakeoffCard estimate={estimate} />
           <PackagingCard estimateId={estimate._id} />
+          <RailLabel>{t("rail.records")}</RailLabel>
           {(status === "accepted" || status === "draft") && rail.offer}
           <DocumentsCard estimate={estimate} />
           <DetailsCard
@@ -407,10 +414,12 @@ function SectionLinks({
     checks: {
       value:
         passed < checks.length
-          ? t("checks.left", {
-              left: checks.length - passed,
-              total: checks.length,
-            })
+          ? checks.length - passed === 1
+            ? t("checks.leftOne", { total: checks.length })
+            : t("checks.left", {
+                left: checks.length - passed,
+                total: checks.length,
+              })
           : t("checks.score", { passed, total: checks.length }),
     },
     recap: { value: t("jump.recapValue") },
@@ -445,7 +454,10 @@ function SectionLinks({
                 {cell.value}
               </span>
             </span>
-            <ChevronRight aria-hidden className="size-4 shrink-0 text-ink-3" />
+            <ChevronRight
+              aria-hidden
+              className="-mr-[5px] size-4 shrink-0 text-ink-3"
+            />
           </a>
         );
       })}

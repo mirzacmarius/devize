@@ -457,13 +457,8 @@ function RowsTable({
                     fixed
                     value={row.quantity}
                     format={(value) =>
-                      value !== 0
-                        ? formatQuantity(value, locale)
-                        : fillable
-                          ? ""
-                          : "–"
+                      value !== 0 ? formatQuantity(value, locale) : ""
                     }
-                    placeholder="–"
                     label={t("quantityLabel", { title: row.title })}
                     disabled={!fillable}
                     onCommit={(quantity) =>
@@ -475,7 +470,8 @@ function RowsTable({
                       // What was typed looks like it; an empty one opens with
                       // its row, in a column that already says what it's for.
                       fillable && row.quantity !== 0 && "border-input bg-field",
-                      fillable && "group-hover/row:border-input",
+                      fillable &&
+                        "group-hover/row:border-input [@media(hover:none)]:border-input",
                       row.quantity === 0
                         ? "text-ink-3"
                         : "font-medium text-ink",

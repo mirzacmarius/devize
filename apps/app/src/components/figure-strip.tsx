@@ -28,31 +28,44 @@ export function FigureStrip({
   );
 }
 
-/** One figure of a FigureStrip: what it is, how much, and in what. */
+/**
+ * One figure of a FigureStrip: what it is, how much, and in what. The rows are
+ * the strip's, so the figures share a baseline whatever their size; `lead` is
+ * the one the page comes down to.
+ */
 export function Figure({
   label,
   value,
   unit,
   note,
+  lead = false,
   children,
 }: {
   label: ReactNode;
   value: ReactNode;
   unit?: ReactNode;
   note?: ReactNode;
+  lead?: boolean;
   children?: ReactNode;
 }) {
   return (
-    <div className="grid min-w-0 content-start gap-0.5 border-border px-4 py-3.5 max-xl:last:odd:col-span-2 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l">
+    <div className="row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0.5 border-border px-4 py-3.5 max-xl:last:odd:col-span-2 max-xl:[&:nth-child(even)]:border-l max-xl:[&:nth-child(n+3)]:border-t sm:px-6 sm:py-1 sm:first:pl-0 sm:max-xl:[&:nth-child(odd)]:pl-0 xl:[&:not(:first-child)]:border-l">
       <p className="m-0 text-meta text-ink-2">{label}</p>
-      <p className="m-0 flex min-w-0 flex-wrap items-baseline gap-x-1.5">
-        <span className="text-stat tabular-nums text-ink">
+      <p className="m-0 flex min-w-0 flex-wrap items-baseline gap-x-1.5 self-baseline">
+        <span
+          className={cn(
+            "text-stat tabular-nums text-ink",
+            lead && "sm:text-kpi",
+          )}
+        >
           {typeof value === "string" ? <Amount value={value} /> : value}
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}
       </p>
-      {note && <div className="text-meta tabular-nums text-ink-3">{note}</div>}
-      {children}
+      <div className="min-w-0 text-meta tabular-nums text-ink-3">
+        {note}
+        {children}
+      </div>
     </div>
   );
 }

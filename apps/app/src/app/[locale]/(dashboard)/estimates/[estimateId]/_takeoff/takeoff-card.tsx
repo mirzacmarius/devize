@@ -45,10 +45,12 @@ export function TakeoffCard({ estimate }: { estimate: Estimate }) {
         summary === undefined
           ? null
           : started || estimate.status !== "draft"
-            ? t("lead", {
-                measured: formatCount(summary.measured, locale),
-                items: formatCount(summary.items, locale),
-              })
+            ? summary.measured === 1
+              ? t("leadOne", { items: formatCount(summary.items, locale) })
+              : t("lead", {
+                  measured: formatCount(summary.measured, locale),
+                  items: formatCount(summary.items, locale),
+                })
             : t("start")
       }
     >

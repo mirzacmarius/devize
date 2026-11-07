@@ -565,7 +565,7 @@ function CommandSearch({
         aria-busy={!settled}
         hidden={entries.length === 0}
         // Fades where it scrolls, so a row cut in half looks like more to come.
-        className="max-h-[min(60vh,28rem)] overflow-y-auto p-2 pb-4 [mask-image:linear-gradient(to_top,transparent,#000_12px)]"
+        className="max-h-[min(60vh,27rem)] overflow-y-auto p-2 pb-4 [mask-image:linear-gradient(to_top,transparent,#000_12px)]"
       >
         {groups.map(({ group, entries: inGroup }) => (
           // biome-ignore lint/a11y/useSemanticElements: a listbox groups its options with role="group"; a fieldset groups form fields

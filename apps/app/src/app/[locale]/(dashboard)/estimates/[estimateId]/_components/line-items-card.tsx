@@ -299,13 +299,15 @@ export function LineItemsCard({
                   {t("items.columns.item")}
                 </TableHead>
                 {/* Over the numbers, not over the unit that follows them. */}
-                <TableHead className={cn("w-32 pr-12 text-right", FROM_MID)}>
+                <TableHead
+                  className={cn("w-[116px] pr-12 text-right", FROM_MID)}
+                >
                   {t("items.columns.quantity")}
                 </TableHead>
                 <TableHead className={cn("w-[92px] text-right", FROM_WIDE)}>
                   {t("items.columns.unitPrice")}
                 </TableHead>
-                <TableHead className="w-[104px] text-right">
+                <TableHead className="w-[100px] text-right">
                   {t("items.columns.value")}
                 </TableHead>
               </TableRow>

@@ -61,7 +61,7 @@ export function RatesPage() {
           )
         }
       />
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] lg:gap-x-8">
         <Card>
           <CardHeader className="grid justify-stretch gap-1">
             <CardTitle>{t("ratesTitle")}</CardTitle>

@@ -70,13 +70,18 @@ export function AlertsCard({ alerts }: { alerts: AlertList | undefined }) {
           )}
         </div>
         {/* Up by what they stand taller than the title, level with its line. */}
-        <div className="flex flex-wrap items-center gap-3 sm:-mt-[7px]">
+        <div className="flex flex-wrap items-center gap-3 sm:-mt-1">
           <ThresholdControl
             alertPercent={alerts?.alertPercent}
             canEdit={firm.role !== "member"}
           />
           {on && (
-            <Button variant="outline" onClick={check} disabled={checking}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={check}
+              disabled={checking}
+            >
               {t("checkNow")}
             </Button>
           )}
@@ -126,12 +131,12 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
   return (
     <section
       aria-label={`${code} ${estimate.title}`}
-      className="grid gap-5 rounded-lg border border-card-border p-4 sm:p-5"
+      className="grid gap-5 rounded-lg bg-sunken p-4 sm:p-5"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid min-w-0 flex-1 basis-80 gap-0.5">
           <h4 className="m-0 text-title-card text-ink">{estimate.title}</h4>
-          <p className="m-0 flex flex-wrap items-center gap-x-1.5 text-meta tabular-nums text-ink-3">
+          <p className="m-0 flex flex-wrap items-center gap-x-2 text-meta tabular-nums text-ink-3">
             {[
               code,
               estimate.clientName,
@@ -139,7 +144,6 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
             ]
               .filter(Boolean)
               .join(" · ")}
-            <span aria-hidden>·</span>
             <EstimateStatusPill status={estimate.status} />
           </p>
         </div>
@@ -169,7 +173,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               <span
                 className={cn(
                   "text-kpi tabular-nums",
-                  profitChange < 0 ? "text-warning" : "text-success",
+                  profitChange < 0 ? "text-warning-figure" : "text-success",
                 )}
               >
                 {/* The label over it says which way it went. */}
@@ -189,23 +193,23 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               })}
             </p>
           </div>
-          <dl className="m-0 grid text-meta leading-5">
-            <div className="flex flex-wrap justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-ink-3">
+          <dl className="m-0 grid">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
+              <dt className="text-meta text-ink-2">
                 {t("total")}
                 {" · "}
                 {dearer ? t("up", { percent }) : t("down", { percent })}
               </dt>
-              <dd className="m-0 tabular-nums text-ink-2">
+              <dd className="m-0 text-body tabular-nums text-ink">
                 {t("fromTo", {
                   from: money(alert.sentTotal),
                   to: money(alert.currentTotal),
                 })}
               </dd>
             </div>
-            <div className="flex flex-wrap justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-ink-3">{t("direct")}</dt>
-              <dd className="m-0 tabular-nums text-ink-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
+              <dt className="text-meta text-ink-2">{t("direct")}</dt>
+              <dd className="m-0 text-body tabular-nums text-ink">
                 {t("fromTo", {
                   from: money(alert.sentDirect),
                   to: money(alert.currentDirect),
@@ -216,7 +220,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         </div>
 
         {alert.changes.length > 0 && (
-          <div className="grid content-start gap-1.5">
+          <div className="grid content-start">
             <table className="w-full border-collapse text-body">
               <caption className="pb-2 text-left text-meta text-ink-2">
                 {t("changes")}
@@ -253,13 +257,15 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                     </tr>
                   );
                 })}
+                {more > 0 && (
+                  <tr className="border-t border-border">
+                    <td colSpan={3} className="py-1.5 text-meta text-ink-3">
+                      {t("more", { count: more })}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
-            {more > 0 && (
-              <p className="m-0 border-t border-border pt-2 text-meta text-ink-3">
-                {t("more", { count: more })}
-              </p>
-            )}
           </div>
         )}
       </div>

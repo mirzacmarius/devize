@@ -20,6 +20,7 @@ import {
   SheetTitle,
 } from "@devize/ui/sheet";
 import { toast } from "@devize/ui/sonner";
+import { StatusPill } from "@devize/ui/status-pill";
 import { Textarea } from "@devize/ui/textarea";
 import { useMutation, useQuery } from "convex/react";
 import { ArrowLeft, Plus } from "lucide-react";
@@ -144,6 +145,7 @@ function AddNorm({
   );
   const results = search ? found : category ? inCategory : undefined;
   const words = normalizeText(search).split(" ").filter(Boolean);
+  const inEstimate = new Set(estimate.lineItems.map((item) => item.normId));
 
   const onAdded = () => {
     setAdded((count) => count + 1);
@@ -266,10 +268,17 @@ function AddNorm({
                           words={words}
                         />
                       </span>
-                      <span className="truncate text-meta text-ink-3">
-                        <span className="tabular-nums">{norm.code}</span>
-                        {norm.category && ` · ${norm.category}`}
-                        {norm.source !== "base" && ` · ${normSource(norm)}`}
+                      <span className="flex min-w-0 items-baseline gap-2 text-meta text-ink-3">
+                        <span className="truncate">
+                          <span className="tabular-nums">{norm.code}</span>
+                          {norm.category && ` · ${norm.category}`}
+                          {norm.source !== "base" && ` · ${normSource(norm)}`}
+                        </span>
+                        {inEstimate.has(norm._id) && (
+                          <StatusPill tone="active" className="shrink-0">
+                            {t("addNorm.inEstimate")}
+                          </StatusPill>
+                        )}
                       </span>
                     </span>
                     <span className="col-start-1 row-start-2 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
@@ -287,7 +296,7 @@ function AddNorm({
                     {/* Plain to see before the pointer gets there: this adds. */}
                     <span
                       aria-hidden
-                      className="col-start-2 row-span-2 row-start-1 grid size-8 place-items-center rounded-md border border-input text-ink-2 transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground sm:col-start-3 sm:row-span-1"
+                      className="col-start-2 row-span-2 row-start-1 grid size-8 place-items-center rounded-md border border-border text-ink-2 transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground sm:col-start-3 sm:row-span-1"
                     >
                       <Plus className="size-4" />
                     </span>
@@ -359,9 +368,7 @@ function MatchedWords({
     return (
       <Fragment key={key}>
         {part.slice(0, at)}
-        <span className="rounded-[3px] bg-muted [box-decoration-break:clone]">
-          {word}
-        </span>
+        <span className="font-medium">{word}</span>
         {part.slice(at + word.length)}
       </Fragment>
     );

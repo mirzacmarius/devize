@@ -37,7 +37,7 @@ export default async function Page() {
         <div className="grid w-full max-w-[400px] gap-6">
           <Wordmark className="text-xl xl:hidden" />
           <div className="grid gap-1.5">
-            <h1 className="m-0 text-title-screen text-ink">{t("heading")}</h1>
+            <h1 className="m-0 text-title-page text-ink">{t("heading")}</h1>
             <p className="m-0 text-body text-ink-2">{t("description")}</p>
           </div>
           <SignInOptions withGoogle={withGoogle} />

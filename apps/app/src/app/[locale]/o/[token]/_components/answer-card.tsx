@@ -94,7 +94,7 @@ export function TotalBlock({
         <span className="text-meta text-ink-3">lei</span>
       </span>
       {deposit !== undefined && (
-        <span className="text-meta text-ink-2">
+        <span className="text-balance text-meta text-ink-2">
           {t("deposit", {
             percent: formatPercent(deposit, locale),
             amount: formatMoney(roundLei((total * deposit) / 100), locale),
@@ -318,7 +318,7 @@ export function MobileAnswerBar({
     .filter(Boolean)
     .join(" · ");
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card lg:hidden">
+    <div className="foot-bar fixed inset-x-0 bottom-0 z-40 bg-card lg:hidden">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
         {showTotal && (
           <div className="grid min-w-0">

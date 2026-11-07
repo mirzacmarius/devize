@@ -61,7 +61,7 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
         {invoice.payments.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("none")}</p>
         ) : (
-          <ul className="m-0 grid list-none p-0">
+          <ul className="m-0 grid list-none border-t border-border p-0">
             {invoice.payments.map((payment, index) => (
               <li
                 key={keys[index]}

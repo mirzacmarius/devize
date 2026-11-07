@@ -87,9 +87,7 @@ export function EstimateList() {
     <>
       <PageHeader
         title={t("title")}
-        // The column says it from a tablet up.
         description={t("allWithVat")}
-        className="md:[&_p]:hidden"
         actions={
           <>
             {/* A phone has room for its icon beside the main action. */}

@@ -61,7 +61,7 @@ export function FirmSettings() {
   }
   const canEdit = details.role === "owner" || details.role === "admin";
   return (
-    <div className="grid min-w-0 max-w-[640px] gap-6">
+    <div className="grid min-w-0 gap-6">
       <LogoCard firm={details} canEdit={canEdit} />
       {/* A new form for another firm. */}
       <DetailsForm key={details._id} firm={details} canEdit={canEdit} />
@@ -149,8 +149,8 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
   };
 
   return (
-    <Card>
-      <div className="flex flex-wrap items-center gap-4 p-[var(--card-pad)] sm:px-0 sm:pt-0">
+    <Card className="sm:-mb-6">
+      <div className="flex flex-wrap items-center gap-4 p-[var(--card-pad)] sm:p-0">
         <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
           {firm.logoUrl ? (
             <img
@@ -245,6 +245,15 @@ function DetailsForm({
     email?: string;
   }>({});
   const [saving, setSaving] = useState(false);
+  const changed =
+    name !== firm.name ||
+    cui !== (firm.cui ?? "") ||
+    tradeRegister !== (firm.tradeRegister ?? "") ||
+    address !== (firm.address ?? "") ||
+    county !== (firm.county ?? "") ||
+    email !== (firm.email ?? "") ||
+    phone !== (firm.phone ?? "") ||
+    vatPayer !== firm.vatPayer;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -410,7 +419,7 @@ function DetailsForm({
           {canEdit ? (
             <>
               <span />
-              <Button type="submit" disabled={saving}>
+              <Button type="submit" disabled={saving || !changed}>
                 {saving && (
                   <Icons.Loader className="animate-spin" aria-hidden />
                 )}

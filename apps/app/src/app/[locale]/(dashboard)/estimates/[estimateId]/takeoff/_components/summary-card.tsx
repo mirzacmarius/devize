@@ -29,6 +29,15 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
       }
     >
       <Figure
+        lead
+        label={t("measured")}
+        value={t("ofItems", {
+          measured: formatCount(measured.length, locale),
+          items: formatCount(data.items.length, locale),
+        })}
+        note={differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
+      />
+      <Figure
         label={t("rooms")}
         value={formatCount(data.rooms.length, locale)}
       />
@@ -55,14 +64,6 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
           locale,
         )}
         unit="m"
-      />
-      <Figure
-        label={t("measured")}
-        value={t("ofItems", {
-          measured: formatCount(measured.length, locale),
-          items: formatCount(data.items.length, locale),
-        })}
-        note={differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
       />
     </FigureStrip>
   );

@@ -68,6 +68,7 @@ export function LinesCard({ invoice }: { invoice: Invoice }) {
 
 function LinesTable({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.lines");
+  const tLei = useScopedI18n("common");
   const locale = useCurrentLocale();
   const keys = uniqueKeys(
     invoice.lines,
@@ -76,7 +77,10 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
+        <div className="flex items-baseline gap-3">
+          <CardTitle>{t("title")}</CardTitle>
+          <span className="text-meta text-ink-3">{tLei("inLei")}</span>
+        </div>
       </CardHeader>
       <CardContent>
         <Table>

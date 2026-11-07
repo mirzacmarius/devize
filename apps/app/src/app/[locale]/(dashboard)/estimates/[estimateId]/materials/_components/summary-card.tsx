@@ -15,6 +15,7 @@ export function SummaryCard({ list }: { list: ShoppingList }) {
   return (
     <FigureStrip>
       <Figure
+        lead
         label={t("bought")}
         value={formatMoney(totals.boughtCost, locale)}
         unit="lei"

@@ -14,7 +14,7 @@ export function SummaryCard({ overview }: { overview: Overview }) {
   const executed = formatPercent(percent, locale);
   return (
     <FigureStrip>
-      <Figure label={t("title")} value={executed}>
+      <Figure lead label={t("title")} value={executed}>
         <MeterBar
           className="mt-1.5"
           value={percent}

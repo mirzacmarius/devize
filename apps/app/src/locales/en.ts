@@ -2,6 +2,7 @@ import type { Dictionary } from "./types";
 
 export default {
   common: {
+    inLei: "Amounts in lei",
     appName: "Devize",
     appDescription:
       "Construction estimates with manufacturers' norms and up-to-date store prices.",
@@ -135,11 +136,11 @@ export default {
     lei: "lei",
     subtitle: "{date} · amounts in lei, with VAT",
     kpi: {
-      drafts: "In progress",
-      "draftsMeta#zero": "No drafts",
-      "draftsMeta#one": "One draft",
-      "draftsMeta#few": "{count} drafts",
-      "draftsMeta#other": "{count} drafts",
+      drafts: "Drafts",
+      "draftsMeta#zero": "No estimates",
+      "draftsMeta#one": "One estimate",
+      "draftsMeta#few": "{count} estimates",
+      "draftsMeta#other": "{count} estimates",
       sent: "Sent to clients",
       sentShort: "Sent",
       sentMeta: "Unread by the client: {count}",
@@ -165,7 +166,7 @@ export default {
       alertDown: "Profit drops · {code}",
       alertUp: "Profit rises · {code}",
       alertAmount: "{amount} lei",
-      alertLeft: "{left} lei left",
+      alertLeft: "{left} lei left",
       anaf: "Send to ANAF",
       anafSub: "e-Factura deadline passed",
       "anafCount#one": "one invoice",
@@ -183,6 +184,7 @@ export default {
       unreadDays: "for {days} days",
     },
     recent: {
+      order: "Last changed",
       title: "Recent estimates",
       all: "All estimates",
       empty: "No estimates yet. Start from the norms in the catalog.",
@@ -378,7 +380,7 @@ export default {
   estimates: {
     title: "Estimates",
     new: "New estimate",
-    allWithVat: "Amounts with VAT",
+    allWithVat: "Amounts in lei, with VAT",
     emptyTitle: "No estimates yet",
     emptyDescription:
       "Start from the catalog's norms, with your rates and store prices, and the summary adds itself up.",
@@ -398,7 +400,7 @@ export default {
       estimate: "Estimate",
       client: "Client",
       status: "Status",
-      total: "Total incl. VAT (lei)",
+      total: "Total incl. VAT",
       updated: "Updated",
     },
     noClient: "No client",
@@ -435,6 +437,10 @@ export default {
     create: "Create the estimate",
   },
   estimate: {
+    rail: {
+      preparation: "Checks and calculations",
+      records: "Documents and details",
+    },
     jump: {
       label: "Estimate sections",
       recap: "Summary",
@@ -536,8 +542,7 @@ export default {
       addCustom: "Own line item",
       addSection: "Chapter or object",
       addMore: "Other ways to add",
-      locked:
-        "The estimate was sent, so it can't change any more. To change it, create a revision.",
+      locked: "Locked · to change it, create a revision",
       emptyTitle: "No line items yet",
       emptyDescription:
         "Search the catalog's norms by code or by job. Prices come from the company's rates and from stores.",
@@ -587,8 +592,8 @@ export default {
     resourceColumns: {
       resource: "Resource",
       consumption: "Consumption",
-      price: "Price (lei)",
-      value: "Value per {unit} (lei)",
+      price: "Price",
+      value: "Value per {unit}",
     },
     sections: {
       object: "Object",
@@ -624,7 +629,7 @@ export default {
       title: "Checks",
       score: "{passed} of {total} passed",
       left: "{left} of {total} left",
-      scoreLabel: "{passed} of {total} checks passed",
+      leftOne: "1 of {total} left",
       showPassed: "Show passed ({count})",
       hidePassed: "Hide passed",
       pending: "Checking…",
@@ -733,7 +738,7 @@ export default {
       columns: {
         item: "Cost",
         rate: "Rate",
-        value: "Value (lei)",
+        value: "Value",
       },
       rates: {
         cam: "{rate} of labour",
@@ -784,6 +789,7 @@ export default {
       saved: "The line item was saved.",
     },
     addNorm: {
+      inEstimate: "In the estimate",
       title: "Add from catalog",
       description:
         "Search by code or job. The cost listed is a reference; an estimate uses your prices.",
@@ -1984,9 +1990,7 @@ export default {
     searchPlaceholder: "Search by code or work",
     columns: {
       norm: "Norm",
-      source: "Producer",
-      unit: "Unit",
-      cost: "Ref. cost (lei)",
+      cost: "Ref. cost",
       status: "Status",
       updated: "Changed",
     },
@@ -2048,8 +2052,8 @@ export default {
       columns: {
         resource: "Resource",
         consumption: "Consumption",
-        price: "Ref. price (lei)",
-        value: "Value (lei)",
+        price: "Ref. price",
+        value: "Value",
       },
       none: "The norm has no resources yet.",
       noPrice: "no price",
@@ -2235,8 +2239,7 @@ export default {
     noResults: "No client matches “{text}”.",
     columns: {
       name: "Name",
-      phone: "Phone",
-      email: "Email",
+      contact: "Contact",
       address: "Address",
     },
     kinds: {
@@ -2541,8 +2544,8 @@ export default {
       },
       norms: {
         unknown: "Unknown",
-        existing: "Has norms",
-        none_found: "No public norms",
+        existing: "Found",
+        none_found: "Not found",
         received: "Received",
       },
       message: {
@@ -3213,11 +3216,15 @@ export default {
   },
   producers: {
     title: "Manufacturers",
-    description: "A claimed profile is managed by the manufacturer itself.",
+    "count#one": "One manufacturer",
+    "count#few": "{count} manufacturers",
+    "count#other": "{count} manufacturers",
+    managedCount: "{count} manage their own profile",
+    managed: "Managed by the manufacturer",
     columns: {
       name: "Manufacturer",
       edition: "Edition",
-      status: "Status",
+      status: "Profile",
       norms: "Norms",
     },
     empty:
@@ -3455,7 +3462,7 @@ export default {
           product: "Product",
           sent: "In estimates sent",
           accepted: "In estimates accepted",
-          value: "Value accepted (lei)",
+          value: "Value accepted",
           replaced: "Replaced",
         },
         inEstimates: "Estimates: {count}",
@@ -4211,8 +4218,8 @@ export default {
       invoice: "Invoice",
       client: "Client",
       status: "Status",
-      total: "Total with VAT (lei)",
-      owed: "To collect (lei)",
+      total: "Total with VAT",
+      owed: "To collect",
       due: "Due",
       efactura: "e-Factura",
     },
@@ -4316,9 +4323,9 @@ export default {
         description: "Description",
         unit: "Unit",
         quantity: "Qty",
-        unitPrice: "Unit price (lei)",
+        unitPrice: "Unit price",
         vatRate: "VAT",
-        net: "Amount (lei)",
+        net: "Amount",
       },
       add: "Add a line",
       remove: "Remove the line",
@@ -4542,7 +4549,7 @@ export default {
       description:
         "The store products your firm buys. Prices read from the stores' pages are updated daily.",
       product: "Product",
-      price: "Price with VAT (lei)",
+      price: "Price with VAT",
       change: "Change",
       checked: "Checked",
       forMaterial: "{store} · for {material}",
@@ -4762,12 +4769,12 @@ export default {
     table: {
       title: "Shopping list",
       description:
-        "Rounded to whole packages, in the cheapest mix. Prices from the estimate, without VAT.",
+        "Rounded to whole packages, in the cheapest mix. Amounts in lei, without VAT.",
       material: "Material",
       need: "Needed",
       buy: "You buy",
       leftover: "Left over",
-      cost: "Cost (lei)",
+      cost: "Cost",
       packageOf: "{count} × {kind} of {size} {unit}",
       pieces: "{count} {unit}",
       bulk: "As much as needed",
@@ -4855,7 +4862,8 @@ export default {
     download: { pdf: "Appendix as PDF", xlsx: "Appendix as Excel" },
     card: {
       title: "Quantity take-off",
-      lead: "Measured: {measured} of {items}",
+      lead: "{measured} of {items} measured",
+      leadOne: "1 of {items} measured",
       drifted:
         "“{title}”: the estimate's quantity is no longer the measured one.",
       unchecked: "Take-offs written by Devize AI, unchecked: {count}.",
@@ -5058,8 +5066,10 @@ export default {
     clear: "The materials suit where the work is done.",
     clearLead: "All suit",
     empty: "Shows once you add line items.",
-    errors: "Mistakes: {count}",
-    warnings: "To check: {count}",
+    "errors#one": "{count} mistake",
+    "errors#few": "{count} mistakes",
+    "errors#other": "{count} mistakes",
+    warnings: "{count} to check",
     severity: {
       error: "Wrong",
       warning: "To check",
@@ -5190,7 +5200,9 @@ export default {
     locked: "The estimate was sent: changes go in a revision of it.",
     rest: {
       title: "Rest of the system",
-      lead: "Missing: {count}",
+      "lead#one": "{count} missing",
+      "lead#few": "{count} missing",
+      "lead#other": "{count} missing",
       missing: "“{title}” is missing",
       from: "{system}, for “{items}”",
       quantitySame: "{quantity} {unit}, like the line items above",
@@ -5319,7 +5331,7 @@ export default {
       quantity: "This period",
       cumulative: "To date",
       remaining: "Left",
-      value: "Value (lei)",
+      value: "Value",
       quantityLabel: "Quantity executed this period, {title}",
       over: "Over the contract quantity",
       attachment: "Measurements",

@@ -50,6 +50,7 @@
   --success-soft: 138.5 35.1% 92.7%; /* #e6f3ea */
   --success-dot: 149.7 47.9% 42.9%; /* #39a26d */
   --warning: 38.2 80.5% 24.1%; /* #6f4b0c: 7.8:1 on white */
+  --warning-figure: 39.1 100% 27.1%; /* #8a5a00: a warning at 24 px and up */
   --warning-soft: 37.5 88.9% 92.9%; /* #fdf1dd */
   --warning-dot: 35.5 79.6% 55.9%; /* #e89f35 */
   --danger: 2.7 64.4% 40.8%; /* #ab2b25 */
@@ -102,19 +103,20 @@
   --meter: 60 3.2% 62.7%; /* #a3a39d */
 
   --ink: 60 7.9% 85.1%; /* #dcdcd6 */
-  --ink-2: 60 5% 76.5%; /* #c6c6c0 */
-  --ink-3: 60 3.1% 61.6%; /* #a0a09a: 6.9:1 on the panel */
+  --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
+  --ink-3: 60 3.2% 57.5%; /* #96968f: 6.9:1 on the panel */
 
   --action: 60 11.6% 91.6%; /* #ecece7: the one bright thing on the page */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
-  --brand: 67.8 100% 43.9%; /* #c3e000: a step quieter on a dark page */
+  --brand: 67.7 100% 38%; /* #a9c200: a step quieter on a dark page */
 
   --success: 142 43.6% 69.4%; /* #8fd3a8 */
   --success-soft: 145.7 25.9% 15.9%; /* #1e3327 */
   --success-dot: 146 46.8% 56.5%; /* #5cc489 */
   --warning: 38.7 68.2% 69.2%; /* #e6c07b */
+  --warning-figure: 38.7 68.2% 69.2%; /* #e6c07b */
   --warning-soft: 36 32.5% 15.1%; /* #33291a */
   --warning-dot: 36.8 74.9% 59.4%; /* #e5a94a */
   --danger: 6.1 74.6% 76.9%; /* #f0a198 */
@@ -218,6 +220,7 @@
     flex: none;
     width: 14px;
     height: 14px;
+    margin-left: -5px;
     background: currentColor;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
       center / contain no-repeat;
@@ -394,17 +397,19 @@
       padding-bottom: 20px;
     }
   }
-  /* The rail's rows are one list, whatever stands above them. */
-  .app-main .rail-sections > [data-slot="card"]:not([data-fold]) + [data-fold] {
-    margin-top: -8px;
-    padding-top: 8px;
-    border-top: 1px solid hsl(var(--border));
+  /* A label over no rows says nothing. */
+  .rail-sections > [data-rail-label]:is(:first-child, :last-child, :has(+ [data-rail-label])) {
+    display: none;
+  }
+  /* Stacked, there are no labels: a line starts each group of rows. */
+  @media (max-width: 1279.98px) {
+    .app-main .rail-sections > [data-rail-label] + [data-fold] {
+      padding-top: 8px;
+      border-top: 1px solid hsl(var(--border));
+    }
   }
   /* Beside the main card, a column of sections rather than a stack of cards. */
   @media (min-width: 1280px) {
-    .app-main .rail-sections > [data-slot="card"]:not([data-fold]) + [data-fold] {
-      margin-top: 20px;
-    }
     .app-main .rail-sections > [data-stat]:not(:first-child) {
       margin-top: 24px;
     }
@@ -427,9 +432,8 @@
       padding-top: 4px;
     }
   }
-  /* In a rail, figures and meters end on one edge, where a row's chevron starts. */
-  .rail-sections [data-slot="fact"],
-  .rail-sections [data-slot="meter"] {
+  /* In a rail, values end on one edge, where a row's chevron starts. */
+  .rail-sections [data-slot="fact"] {
     margin-right: 19px;
   }
   /* Stacked on a narrower screen, rows that are only rows stay together. */
@@ -437,6 +441,20 @@
     .rail-sections > [data-fold] + [data-fold] {
       margin-top: -24px;
     }
+  }
+  /* A bar at the screen's foot: the list fades out under it, no line cuts it. */
+  .foot-bar::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 100%;
+    height: 24px;
+    pointer-events: none;
+    background: linear-gradient(to top, hsl(var(--card)), hsl(var(--card) / 0));
+  }
+  /* A band starts a group: the row before it needs no rule of its own. */
+  tr:has(+ tr[data-band]) {
+    border-bottom-width: 0;
   }
   /* The Articole's heads stay in sight under the bar that keeps the total. */
   @media (min-width: 768px) {

@@ -59,6 +59,9 @@ function matches(norm: NormRow, words: readonly string[]) {
  * words of the work; the public ones are also browsed by category of the
  * base catalog, which narrows a search too.
  */
+// The unit hangs after the number, so the numbers stay in one column.
+const COST_UNIT = "ml-1.5 inline-block min-w-11 text-left text-meta text-ink-3";
+
 export function CatalogPage() {
   const t = useScopedI18n("catalog");
   const tc = useScopedI18n("common");
@@ -112,7 +115,7 @@ export function CatalogPage() {
         : listed.status === "LoadingFirstPage"
           ? undefined
           : listed.results;
-  const columns = isOwn ? 5 : 4;
+  const columns = isOwn ? 4 : 2;
 
   const changeView = (next: CatalogView) => {
     setText("");
@@ -201,21 +204,14 @@ export function CatalogPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("columns.norm")}</TableHead>
-                  {!isOwn && (
-                    <TableHead className="hidden lg:table-cell">
-                      {t("columns.source")}
-                    </TableHead>
-                  )}
                   {isOwn && <TableHead>{t("columns.status")}</TableHead>}
                   {isOwn && (
                     <TableHead className="hidden sm:table-cell">
                       {t("columns.updated")}
                     </TableHead>
                   )}
-                  <TableHead className="hidden sm:table-cell">
-                    {t("columns.unit")}
-                  </TableHead>
-                  <TableHead className="text-right">
+                  {/* Over the numbers, not over the unit that follows them. */}
+                  <TableHead className="text-right last:pr-[50px]">
                     {t("columns.cost")}
                   </TableHead>
                 </TableRow>
@@ -265,37 +261,28 @@ export function CatalogPage() {
                         <span className="text-body font-medium text-ink group-hover:underline">
                           {norm.title}
                         </span>
-                        <span className="text-meta text-ink-3">
-                          <span className="tabular-nums">
-                            {norm.version > 1
-                              ? `${norm.code} · v${norm.version}`
-                              : norm.code}
-                          </span>
-                          {norm.category && ` · ${norm.category}`}
-                          {/* What its columns say on a wider screen. */}
-                          <span className="sm:hidden">
-                            {` · ${formatUnit(norm.unit, locale)}`}
-                          </span>
-                          <span className={isOwn ? undefined : "lg:hidden"}>
-                            {norm.source !== "base" && ` · ${normSource(norm)}`}
+                        <span className="flex flex-wrap items-baseline gap-x-2 text-meta text-ink-3">
+                          <span>
+                            <span className="tabular-nums">
+                              {norm.version > 1
+                                ? `${norm.code} · v${norm.version}`
+                                : norm.code}
+                            </span>
+                            {norm.category && ` · ${norm.category}`}
+                            {norm.source !== "base" &&
+                              ` · ${norm.manufacturerName ?? normSource(norm)}`}
                           </span>
                           {unconfirmed(norm) && (
-                            <span
-                              className="whitespace-nowrap"
+                            <StatusPill
+                              tone="warning"
                               title={t("unconfirmedHint")}
                             >
-                              {` · ${t("unconfirmed")}`}
-                            </span>
+                              {t("unconfirmed")}
+                            </StatusPill>
                           )}
                         </span>
                       </Link>
                     </TableCell>
-                    {!isOwn && (
-                      <TableCell className="hidden text-ink-2 lg:table-cell">
-                        {norm.source !== "base" &&
-                          (norm.manufacturerName ?? normSource(norm))}
-                      </TableCell>
-                    )}
                     {isOwn && (
                       <TableCell>
                         <NormStatusPill status={norm.status} />
@@ -306,14 +293,18 @@ export function CatalogPage() {
                         {formatDay(norm.updatedAt, locale)}
                       </TableCell>
                     )}
-                    <TableCell className="hidden text-ink-2 sm:table-cell">
-                      {formatUnit(norm.unit, locale)}
-                    </TableCell>
                     <TableCell className="whitespace-nowrap text-right tabular-nums">
                       {norm.referenceCost === undefined ? (
-                        <StatusPill tone="warning">{t("noCost")}</StatusPill>
+                        <span className="inline-block pr-[50px]">
+                          <StatusPill tone="warning">{t("noCost")}</StatusPill>
+                        </span>
                       ) : (
-                        formatMoney(norm.referenceCost, locale)
+                        <>
+                          {formatMoney(norm.referenceCost, locale)}
+                          <span className={COST_UNIT}>
+                            lei/{formatUnit(norm.unit, locale)}
+                          </span>
+                        </>
                       )}
                     </TableCell>
                   </TableRow>

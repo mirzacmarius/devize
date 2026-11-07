@@ -153,7 +153,7 @@ function StatsContent({ stats }: { stats: Stats }) {
             />
           </div>
           <MonthsCard stats={stats} />
-          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
             <NormsCard stats={stats} />
             <CountiesCard stats={stats} />
           </div>

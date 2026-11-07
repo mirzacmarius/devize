@@ -36,6 +36,7 @@ export function ThresholdControl({
         className="m-0 min-w-0 border-0 p-0 disabled:opacity-60"
       >
         <SegmentedControl
+          compact
           label={t("label")}
           value={String(alertPercent)}
           options={thresholdOptions(alertPercent).map((percent) => ({

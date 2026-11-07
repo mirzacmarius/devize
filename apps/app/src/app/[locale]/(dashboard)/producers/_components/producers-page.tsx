@@ -33,6 +33,7 @@ export function ProducersPage() {
   const [text, setText] = useState("");
   const search = useDeferredValue(text.trim());
   const words = normalizeText(search).split(" ").filter(Boolean);
+  const managed = producers?.filter((producer) => producer.claimed).length ?? 0;
   const rows = producers?.filter((producer) => {
     const name = normalizeText(producer.name);
     return words.every((word) => name.includes(word));
@@ -49,12 +50,21 @@ export function ProducersPage() {
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description")}
+        description={
+          producers && producers.length > 0
+            ? [
+                t("count", { count: producers.length }),
+                managed > 0 && t("managedCount", { count: managed }),
+              ]
+                .filter(Boolean)
+                .join(" · ")
+            : "\u00a0"
+        }
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
-        <section className="grid min-w-0 gap-3">
+        <section className="grid min-w-0 max-w-[880px] gap-3">
           <SearchInput
             value={text}
             onChange={(event) => setText(event.target.value)}
@@ -75,11 +85,11 @@ export function ProducersPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("columns.name")}</TableHead>
-                  <TableHead className="hidden md:table-cell">
+                  <TableHead className="hidden w-24 md:table-cell">
                     {t("columns.edition")}
                   </TableHead>
-                  <TableHead>{t("columns.status")}</TableHead>
-                  <TableHead className="text-right">
+                  <TableHead className="w-60">{t("columns.status")}</TableHead>
+                  <TableHead className="w-20 text-right">
                     {t("columns.norms")}
                   </TableHead>
                 </TableRow>
@@ -108,11 +118,9 @@ export function ProducersPage() {
                         {producer.edition}
                       </TableCell>
                       <TableCell>
-                        <StatusPill
-                          tone={producer.claimed ? "success" : "draft"}
-                        >
-                          {producer.claimed ? t("claimed") : t("unclaimed")}
-                        </StatusPill>
+                        {producer.claimed && (
+                          <StatusPill tone="success">{t("managed")}</StatusPill>
+                        )}
                       </TableCell>
                       <TableCell className="text-right tabular-nums text-ink">
                         <span className="md:hidden">

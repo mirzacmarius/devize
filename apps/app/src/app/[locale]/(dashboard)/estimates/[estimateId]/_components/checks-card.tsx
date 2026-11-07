@@ -5,7 +5,6 @@ import { laborFloor } from "@devize/backend/convex/lib/labor";
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
-import { Segments } from "@devize/ui/meter";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
@@ -74,22 +73,12 @@ export function ChecksCard({
   );
   const lead =
     open_.length > 0
-      ? t("checks.left", { left: open_.length, total: checks.length })
+      ? open_.length === 1
+        ? t("checks.leftOne", { total: checks.length })
+        : t("checks.left", { left: open_.length, total: checks.length })
       : t("checks.score", { passed: passed.length, total: checks.length });
   const body = (
     <>
-      <Segments
-        value={passed.length}
-        max={checks.length}
-        tone={
-          open_.some((check) => check.state === "failed") ? "danger" : "action"
-        }
-        label={t("checks.scoreLabel", {
-          passed: passed.length,
-          total: checks.length,
-        })}
-        className="[&>span]:h-1"
-      />
       {open_.length > 0 && (
         <ul className="m-0 grid list-none gap-3 rounded-lg bg-sunken p-3">
           {open_.map(row)}
@@ -106,7 +95,7 @@ export function ChecksCard({
             <ChevronRight
               aria-hidden
               className={cn(
-                "size-3.5 transition-transform",
+                "-ml-[5px] size-3.5 transition-transform",
                 showPassed && "rotate-90",
               )}
             />
@@ -128,7 +117,6 @@ export function ChecksCard({
         title={t("checks.title")}
         lead={lead}
         // A Deviz that has left can't be fixed here: it says so, without alarm.
-        flag={editable && open_.length > 0}
       >
         {body}
       </FoldCard>

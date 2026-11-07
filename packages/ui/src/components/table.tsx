@@ -15,7 +15,8 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
 }
 
 // Numbers: put `text-right tabular-nums` on numeric heads and cells, two
-// decimals, dot for thousands (39.916,16). Currency goes in the head, "(lei)".
+// decimals, dot for thousands (39.916,16). A table says its currency once, on
+// its section's line ("sume în lei"); a field says it on its label.
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, stack, bleed, twoLine, ...props }, ref) => (
     <div
@@ -96,7 +97,8 @@ const TableGroupRow = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tr
     ref={ref}
-    className={cn("bg-sunken [&>td]:h-10 [&>td]:py-1", className)}
+    data-band
+    className={cn("bg-sunken [&>td]:h-9 [&>td]:py-1", className)}
     {...props}
   />
 ));

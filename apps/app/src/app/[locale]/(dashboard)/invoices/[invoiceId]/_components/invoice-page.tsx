@@ -84,7 +84,7 @@ export function InvoicePage() {
           .join(" · ")}
         actions={<InvoiceActions invoice={invoice} />}
       />
-      <div className="-mt-1">
+      <div className="-mt-1 grid gap-y-3">
         <TotalHero
           label={t("page.total")}
           total={formatMoney(invoice.totals.total, locale)}
@@ -92,8 +92,9 @@ export function InvoicePage() {
             total: formatMoney(invoice.totals.net, locale),
           })}
         />
+        <div aria-hidden className="tick-rule mt-3 max-sm:hidden" />
       </div>
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-10">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
         <div className="grid min-w-0 gap-6">
           <LinesCard invoice={invoice} />
           {!draft && <PaymentsCard invoice={invoice} />}

@@ -77,12 +77,7 @@ export function WorksCard({
           : "-mx-[var(--card-pad)] bg-sunken px-[var(--card-pad)] sm:rounded-md",
       )}
     >
-      <h3
-        className={cn(
-          "m-0 min-w-0 text-body text-ink",
-          nested ? "font-medium" : "font-semibold",
-        )}
-      >
+      <h3 className={cn("m-0 min-w-0 text-body font-medium text-ink")}>
         {sectionName(section)}
       </h3>
       <span className="shrink-0 text-body font-medium tabular-nums text-ink">
@@ -231,7 +226,7 @@ function ItemRow({
               <ChevronRight
                 aria-hidden
                 className={cn(
-                  "size-3.5 transition-transform",
+                  "-ml-[5px] size-3.5 transition-transform",
                   showMaterials && "rotate-90",
                 )}
               />

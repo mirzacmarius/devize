@@ -72,6 +72,7 @@ export function InvoiceList() {
     <>
       <PageHeader
         title={t("title")}
+        description={isEmpty ? undefined : tc("inLei")}
         actions={
           isEmpty ? undefined : (
             // The firm keeps its invoices 5 years (Legea 82/1991 art. 25).
@@ -97,6 +98,7 @@ export function InvoiceList() {
         <section className="grid min-w-0 gap-3">
           <FigureStrip className="mb-3">
             <Figure
+              lead
               label={t("receivable.total")}
               value={receivable ? formatMoney(receivable.total, locale) : "–"}
               unit="lei"
@@ -120,7 +122,7 @@ export function InvoiceList() {
               note={
                 anaf?.firstLate && (
                   <span className="flex flex-wrap items-baseline gap-x-3">
-                    <StatusPill tone="danger" className="text-ink-2">
+                    <StatusPill tone="danger">
                       {t("receivable.lateCount", { count: anaf.late })}
                     </StatusPill>
                     <Link

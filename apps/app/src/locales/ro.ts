@@ -1,5 +1,6 @@
 export default {
   common: {
+    inLei: "Sume în lei",
     appName: "Devize",
     appDescription:
       "Devize de construcții cu norme de la producători și prețuri la zi din magazine.",
@@ -134,11 +135,11 @@ export default {
     lei: "lei",
     subtitle: "{date} · sume în lei, cu TVA",
     kpi: {
-      drafts: "În lucru",
-      "draftsMeta#zero": "Nicio ciornă",
-      "draftsMeta#one": "O ciornă",
-      "draftsMeta#few": "{count} ciorne",
-      "draftsMeta#other": "{count} de ciorne",
+      drafts: "Ciorne",
+      "draftsMeta#zero": "Niciun deviz",
+      "draftsMeta#one": "Un deviz",
+      "draftsMeta#few": "{count} devize",
+      "draftsMeta#other": "{count} de devize",
       sent: "Trimise clienților",
       sentShort: "Trimise",
       sentMeta: "Necitite de client: {count}",
@@ -164,7 +165,7 @@ export default {
       alertDown: "Profitul scade · {code}",
       alertUp: "Profitul crește · {code}",
       alertAmount: "{amount} lei",
-      alertLeft: "Rămân {left} lei",
+      alertLeft: "Rămân {left} lei",
       anaf: "Transmite la ANAF",
       anafSub: "Termen e-Factura depășit",
       "anafCount#one": "o factură",
@@ -183,6 +184,7 @@ export default {
     },
     recent: {
       title: "Devize recente",
+      order: "Ultimele modificate",
       all: "Toate devizele",
       empty: "Încă nu ai niciun deviz. Pornești de la normele din catalog.",
       noClient: "Fără client",
@@ -376,7 +378,7 @@ export default {
   estimates: {
     title: "Devize",
     new: "Deviz nou",
-    allWithVat: "Sume cu TVA",
+    allWithVat: "Sume în lei, cu TVA",
     emptyTitle: "Încă nu ai niciun deviz",
     emptyDescription:
       "Pornești de la normele din catalog, cu tarifele tale și prețurile magazinelor, iar recapitulația se calculează singură.",
@@ -396,7 +398,7 @@ export default {
       estimate: "Deviz",
       client: "Client",
       status: "Stare",
-      total: "Total cu TVA (lei)",
+      total: "Total cu TVA",
       updated: "Modificat",
     },
     noClient: "Fără client",
@@ -434,6 +436,10 @@ export default {
     create: "Creează devizul",
   },
   estimate: {
+    rail: {
+      preparation: "Verificări și calcule",
+      records: "Documente și date",
+    },
     jump: {
       label: "Secțiunile devizului",
       recap: "Recapitulație",
@@ -534,8 +540,7 @@ export default {
       addCustom: "Articol propriu",
       addSection: "Capitol sau obiect",
       addMore: "Alte feluri de a adăuga",
-      locked:
-        "Devizul e trimis și nu se mai modifică. Pentru schimbări, creează o revizie.",
+      locked: "Blocat · pentru schimbări, creează o revizie",
       emptyTitle: "Niciun articol încă",
       emptyDescription:
         "Caută norme în catalog după cod sau după lucrare. Prețurile vin din tarifele firmei și din magazine.",
@@ -585,8 +590,8 @@ export default {
     resourceColumns: {
       resource: "Resursă",
       consumption: "Consum",
-      price: "Preț (lei)",
-      value: "Valoare pe {unit} (lei)",
+      price: "Preț",
+      value: "Valoare pe {unit}",
     },
     sections: {
       object: "Obiect",
@@ -621,8 +626,8 @@ export default {
     checks: {
       title: "Verificări",
       score: "{passed} din {total} trecute",
-      left: "Rămase: {left} din {total}",
-      scoreLabel: "{passed} din {total} verificări trecute",
+      left: "{left} din {total} rămase",
+      leftOne: "1 din {total} rămasă",
       showPassed: "Arată cele trecute ({count})",
       hidePassed: "Ascunde cele trecute",
       pending: "Se verifică…",
@@ -730,7 +735,7 @@ export default {
       columns: {
         item: "Cheltuială",
         rate: "Cotă",
-        value: "Valoare (lei)",
+        value: "Valoare",
       },
       rates: {
         cam: "{rate} din manoperă",
@@ -781,6 +786,7 @@ export default {
       saved: "Articolul a fost salvat.",
     },
     addNorm: {
+      inEstimate: "În deviz",
       title: "Adaugă din catalog",
       description:
         "Caută după cod sau lucrare. Costul din listă e de referință; în deviz se folosesc prețurile tale.",
@@ -1982,9 +1988,7 @@ export default {
     searchPlaceholder: "Caută după cod sau lucrare",
     columns: {
       norm: "Normă",
-      source: "Producător",
-      unit: "U.M.",
-      cost: "Cost ref. (lei)",
+      cost: "Cost ref.",
       status: "Stare",
       updated: "Modificată",
     },
@@ -2044,12 +2048,12 @@ export default {
     resources: {
       title: "Resurse pe {unit}",
       description:
-        "Ce consumă o unitate de lucrare, cu prețurile de referință ale normei. În deviz, resursele iau tarifele și prețurile firmei.",
+        "Ce consumă o unitate de lucrare, în lei, cu prețurile de referință ale normei. În deviz, resursele iau tarifele și prețurile firmei.",
       columns: {
         resource: "Resursă",
         consumption: "Consum",
-        price: "Preț ref. (lei)",
-        value: "Valoare (lei)",
+        price: "Preț ref.",
+        value: "Valoare",
       },
       none: "Norma nu are încă resurse.",
       noPrice: "fără preț",
@@ -2236,8 +2240,7 @@ export default {
     noResults: "Niciun client nu se potrivește cu „{text}”.",
     columns: {
       name: "Nume",
-      phone: "Telefon",
-      email: "Email",
+      contact: "Contact",
       address: "Adresă",
     },
     kinds: {
@@ -2540,8 +2543,8 @@ export default {
       },
       norms: {
         unknown: "Necunoscut",
-        existing: "Are norme",
-        none_found: "Fără norme publice",
+        existing: "Găsite",
+        none_found: "Negăsite",
         received: "Primite",
       },
       message: {
@@ -3211,11 +3214,15 @@ export default {
   },
   producers: {
     title: "Producători",
-    description: "Un profil revendicat e administrat chiar de producător.",
+    "count#one": "Un producător",
+    "count#few": "{count} producători",
+    "count#other": "{count} de producători",
+    managedCount: "{count} își administrează profilul",
+    managed: "Administrat de producător",
     columns: {
       name: "Producător",
       edition: "Ediție",
-      status: "Stare",
+      status: "Profil",
       norms: "Norme",
     },
     empty:
@@ -3446,14 +3453,14 @@ export default {
       products: {
         title: "Cererea pentru produsele voastre",
         description:
-          "Cât din fiecare produs cuprind devizele trimise și cele acceptate. La cele acceptate contează varianta aleasă de client, fără lucrările opționale lăsate deoparte.",
+          "Cât din fiecare produs cuprind devizele trimise și cele acceptate, cu valoarea în lei. La cele acceptate contează varianta aleasă de client, fără lucrările opționale lăsate deoparte.",
         empty:
           "Niciun produs al vostru nu a ajuns încă într-un deviz în aceste 12 luni.",
         columns: {
           product: "Produs",
           sent: "În devize trimise",
           accepted: "În devize acceptate",
-          value: "Valoare acceptată (lei)",
+          value: "Valoare acceptată",
           replaced: "Înlocuit",
         },
         inEstimates: "Devize: {count}",
@@ -4208,8 +4215,8 @@ export default {
       invoice: "Factura",
       client: "Client",
       status: "Stare",
-      total: "Total cu TVA (lei)",
-      owed: "De încasat (lei)",
+      total: "Total cu TVA",
+      owed: "De încasat",
       due: "Scadență",
       efactura: "e-Factura",
     },
@@ -4312,9 +4319,9 @@ export default {
         description: "Denumire",
         unit: "U.M.",
         quantity: "Cant.",
-        unitPrice: "Preț unitar (lei)",
+        unitPrice: "Preț unitar",
         vatRate: "TVA",
-        net: "Valoare (lei)",
+        net: "Valoare",
       },
       add: "Adaugă un rând",
       remove: "Șterge rândul",
@@ -4537,9 +4544,9 @@ export default {
     products: {
       title: "Produse alese",
       description:
-        "Produsele din magazine pe care le cumpără firma. Prețurile citite din paginile magazinelor se actualizează zilnic.",
+        "Produsele din magazine pe care le cumpără firma, cu prețuri în lei. Cele citite din paginile magazinelor se actualizează zilnic.",
       product: "Produs",
-      price: "Preț cu TVA (lei)",
+      price: "Preț cu TVA",
       change: "Schimbare",
       checked: "Verificat",
       forMaterial: "{store} · pentru {material}",
@@ -4758,12 +4765,12 @@ export default {
     table: {
       title: "Lista de cumpărături",
       description:
-        "Rotunjit la ambalaje întregi, în cea mai ieftină combinație. Prețuri din deviz, fără TVA.",
+        "Rotunjit la ambalaje întregi, în cea mai ieftină combinație. Sume în lei, fără TVA.",
       material: "Material",
       need: "Necesar",
       buy: "Cumperi",
       leftover: "Rămâne",
-      cost: "Cost (lei)",
+      cost: "Cost",
       packageOf: "{count} × {kind} de {size} {unit}",
       pieces: "{count} {unit}",
       bulk: "Cât trebuie",
@@ -4839,7 +4846,7 @@ export default {
     },
     card: {
       title: "Ambalaje și pierderi",
-      lead: "Rest {cost} lei",
+      lead: "{cost} lei rest",
       hinted:
         "„{title}”: titlul spune „{method}”, dar consumul e cel din normă.",
       stale: "„{title}”: modul de montaj trebuie aplicat din nou.",
@@ -4851,7 +4858,8 @@ export default {
     download: { pdf: "Anexa în PDF", xlsx: "Anexa în Excel" },
     card: {
       title: "Antemăsurătoare",
-      lead: "Măsurate: {measured} din {items}",
+      lead: "{measured} din {items} măsurate",
+      leadOne: "1 din {items} măsurat",
       drifted: "„{title}”: cantitatea din deviz nu mai e cea măsurată.",
       unchecked: "Măsurători scrise de Devize AI, neverificate: {count}.",
       orphans: "Măsurători fără articol: {count}.",
@@ -5050,8 +5058,10 @@ export default {
     clear: "Materialele se potrivesc cu locul lucrărilor.",
     clearLead: "Se potrivesc",
     empty: "Apare după ce adaugi articole.",
-    errors: "Greșeli: {count}",
-    warnings: "De verificat: {count}",
+    "errors#one": "{count} greșeală",
+    "errors#few": "{count} greșeli",
+    "errors#other": "{count} de greșeli",
+    warnings: "{count} de verificat",
     severity: {
       error: "Greșit",
       warning: "De verificat",
@@ -5182,7 +5192,9 @@ export default {
     locked: "Devizul e trimis: schimbările se fac într-o revizie a lui.",
     rest: {
       title: "Restul sistemului",
-      lead: "Lipsesc: {count}",
+      "lead#one": "{count} lipsește",
+      "lead#few": "{count} lipsesc",
+      "lead#other": "{count} lipsesc",
       missing: "Lipsește „{title}”",
       from: "{system}, pentru „{items}”",
       quantitySame: "{quantity} {unit}, ca articolele de mai sus",
@@ -5311,7 +5323,7 @@ export default {
       quantity: "În perioadă",
       cumulative: "Cumulat",
       remaining: "Rest",
-      value: "Valoare (lei)",
+      value: "Valoare",
       quantityLabel: "Cantitate executată în perioadă, {title}",
       over: "Peste cantitatea din contract",
       attachment: "Atașament",

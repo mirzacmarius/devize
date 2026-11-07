@@ -77,7 +77,10 @@ export function RecapCard({
   return (
     <Card id="recap" className="scroll-mt-4">
       <CardHeader>
-        <CardTitle>{t("recap.title")}</CardTitle>
+        <div className="flex items-baseline gap-3">
+          <CardTitle>{t("recap.title")}</CardTitle>
+          <span className="text-meta text-ink-3">{t("items.inLei")}</span>
+        </div>
         {editable && (
           <div className="flex flex-wrap items-center gap-x-4">
             {estimate.lineItems.length > 0 && (

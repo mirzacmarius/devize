@@ -146,10 +146,12 @@ export default function ManufacturersPage() {
                 </TableHead>
                 <TableHead>{t("columns.name")}</TableHead>
                 {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
-                <TableHead>{t("columns.status")}</TableHead>
-                <TableHead>{t("columns.norms")}</TableHead>
-                <TableHead>{t("columns.confidence")}</TableHead>
-                <TableHead>{t("columns.email")}</TableHead>
+                <TableHead className="w-44">{t("columns.status")}</TableHead>
+                <TableHead className="w-28">{t("columns.norms")}</TableHead>
+                <TableHead className="w-28">
+                  {t("columns.confidence")}
+                </TableHead>
+                <TableHead className="w-28">{t("columns.email")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -207,17 +209,22 @@ export default function ManufacturersPage() {
                         </Confidence>
                       )}
                     </TableCell>
-                    <TableCell className="text-ink-2">
-                      {/* A word, unless something stops it from going out. */}
-                      {row.message &&
-                        (row.message.blocked &&
-                        row.message.status === "draft" ? (
-                          <Pill tone="danger">
-                            {tAdmin(`status.message.${row.message.status}`)}
-                          </Pill>
-                        ) : (
-                          tAdmin(`status.message.${row.message.status}`)
-                        ))}
+                    <TableCell>
+                      {row.message && (
+                        <Pill
+                          tone={
+                            row.message.status === "draft"
+                              ? row.message.blocked
+                                ? "danger"
+                                : "draft"
+                              : row.message.status === "rejected"
+                                ? "neutral"
+                                : "active"
+                          }
+                        >
+                          {tAdmin(`status.message.${row.message.status}`)}
+                        </Pill>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

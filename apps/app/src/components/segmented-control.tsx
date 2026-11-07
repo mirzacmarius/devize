@@ -11,19 +11,23 @@ export function SegmentedControl<T extends string>({
   value,
   options,
   onChange,
+  compact = false,
   className,
 }: {
   label: string;
   value: T;
   options: readonly { value: T; label: ReactNode }[];
   onChange: (value: T) => void;
+  // Beside a small button: 32 px high, like it.
+  compact?: boolean;
   className?: string;
 }) {
   return (
     <fieldset
       aria-label={label}
       className={cn(
-        "m-0 inline-flex w-fit min-w-0 max-w-full items-center gap-0.5 overflow-x-auto rounded-md border-0 bg-muted p-1 [scrollbar-width:none]",
+        "m-0 inline-flex w-fit min-w-0 max-w-full items-center gap-0.5 overflow-x-auto rounded-md border-0 bg-muted [scrollbar-width:none]",
+        compact ? "p-0.5" : "p-1",
         className,
       )}
     >

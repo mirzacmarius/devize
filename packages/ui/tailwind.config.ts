@@ -149,6 +149,7 @@ const config = {
         },
         warning: {
           DEFAULT: "hsl(var(--warning))",
+          figure: "hsl(var(--warning-figure))",
           soft: "hsl(var(--warning-soft))",
           dot: "hsl(var(--warning-dot))",
         },
@@ -182,7 +183,7 @@ const config = {
       },
       spacing: {
         sidebar: "256px",
-        rail: "320px",
+        rail: "288px",
       },
       keyframes: {
         "accordion-down": {

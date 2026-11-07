@@ -60,7 +60,7 @@ export function ShoppingListCard({
             <TableRow>
               <TableHead>{t("material")}</TableHead>
               <TableHead className={HEAD_OVER_NUMBER}>{t("need")}</TableHead>
-              <TableHead className="text-right">{t("buy")}</TableHead>
+              <TableHead>{t("buy")}</TableHead>
               <TableHead className={HEAD_OVER_NUMBER}>
                 {t("leftover")}
               </TableHead>
@@ -139,7 +139,7 @@ function MaterialRow({
         {formatQuantityRounded(row.need, locale)}
         <span className={UNIT_SLOT}>{unit}</span>
       </TableCell>
-      <TableCell className={numberClass}>
+      <TableCell className="whitespace-nowrap align-top tabular-nums">
         <Packages row={row} />
       </TableCell>
       <TableCell className={numberClass}>
@@ -164,9 +164,7 @@ function MaterialRow({
       </TableCell>
       <TableCell className={numberClass}>
         <div className="grid justify-items-end gap-0.5">
-          <span className="font-medium">
-            {formatMoney(row.boughtCost, locale)}
-          </span>
+          <span>{formatMoney(row.boughtCost, locale)}</span>
           {row.leftoverCost > 0 && (
             <span className="text-meta text-ink-3">
               {t("leftoverCost", {
@@ -204,7 +202,7 @@ function Packages({ row }: { row: ListRow }) {
   }
   const kind = tKinds(row.package.kind);
   return (
-    <div className="grid justify-items-end">
+    <div className="grid">
       {purchase.counts.map((entry) => (
         <span key={entry.size}>
           {t("packageOf", {

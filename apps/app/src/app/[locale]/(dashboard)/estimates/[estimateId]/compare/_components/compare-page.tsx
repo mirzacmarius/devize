@@ -170,7 +170,7 @@ function Comparison() {
       {comparison === undefined ? (
         <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
       ) : (
-        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
           <div className="grid min-w-0 gap-6">
             <RecapCompareCard comparison={comparison} />
             <LinesCard comparison={comparison} />
