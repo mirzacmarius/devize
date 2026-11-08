@@ -92,6 +92,7 @@ export default {
       labour: "Manoperă",
       equipment: "Utilaj și transport",
       subtotal: "Total fără TVA",
+      vat: "TVA 21%",
     },
     google: "Continuă cu Google",
     or: "sau",
@@ -2752,7 +2753,11 @@ export default {
         norms: "Norme",
         confidence: "Încredere date",
       },
-      emailState: "Email: {state}",
+      email: {
+        draft: "Email de aprobat",
+        blocked: "Email de corectat",
+        rejected: "Email respins",
+      },
       working: "Lucrează…",
     },
     review: {
@@ -4304,8 +4309,8 @@ export default {
     efacturaLateNamed: "ANAF: termen depășit",
     efacturaDue: "Până la {date}",
     card: {
-      invoiced: "Facturat",
-      remaining: "De facturat, fără TVA",
+      invoiced: "Facturat, fără TVA",
+      remaining: "De facturat",
       list: "Lista facturilor",
       advance: "Factură de avans {percent}",
       final: "Factură finală",

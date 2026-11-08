@@ -314,14 +314,15 @@ function AddNorm({
                             unit: formatUnit(norm.unit, locale),
                           })}
                     </span>
-                    {/* Stands back until its row is reached for: then it says this adds. */}
+                    {/* One square throughout: outlined at rest, filled when its row is
+                        reached for, green once the norm is in the Deviz. */}
                     <span
                       aria-hidden
                       className={cn(
                         "col-start-2 row-span-2 row-start-1 -my-1.5 grid size-8 place-items-center rounded-md border transition-colors sm:col-start-3 sm:row-span-1",
                         inEstimate.has(norm._id)
                           ? "border-transparent bg-success-soft text-success"
-                          : "border-transparent text-ink-2 group-hover:bg-primary group-hover:text-primary-foreground",
+                          : "border-control text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
                       )}
                     >
                       {inEstimate.has(norm._id) ? (

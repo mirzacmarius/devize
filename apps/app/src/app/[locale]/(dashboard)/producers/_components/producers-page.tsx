@@ -121,7 +121,7 @@ export function ProducersPage() {
             <Table stack className="md:[&>tbody>tr>td]:h-14">
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("columns.name")}</TableHead>
+                  <TableHead className="w-[40%]">{t("columns.name")}</TableHead>
                   <TableHead className="w-24 text-right">
                     {t("columns.norms")}
                   </TableHead>
@@ -129,7 +129,7 @@ export function ProducersPage() {
                     {t("columns.edition")}
                   </TableHead>
                   {/* Last, at the list's edge: the one most rows leave empty. */}
-                  <TableHead className="w-48 text-right">
+                  <TableHead className="text-right">
                     {t("columns.profile")}
                   </TableHead>
                 </TableRow>

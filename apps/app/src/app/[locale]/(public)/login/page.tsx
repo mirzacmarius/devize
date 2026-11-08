@@ -23,7 +23,7 @@ export default async function Page() {
   const withGoogle = env.VERCEL_ENV !== "preview";
   return (
     <div className="grid min-h-screen w-full bg-shell xl:grid-cols-2">
-      <aside className="hidden min-w-0 grid-rows-[1fr_auto_1fr] justify-items-center gap-10 px-12 py-10 xl:grid">
+      <aside className="hidden min-w-0 grid-rows-[1fr_auto_1fr] justify-items-center gap-8 px-12 py-10 xl:grid">
         <Wordmark className="w-full max-w-[520px] self-start text-xl" />
         <div className="grid w-full max-w-[520px] gap-8">
           <p className="m-0 text-display text-ink [text-wrap:balance]">
@@ -58,6 +58,8 @@ async function SampleEstimate() {
     { label: t("materials"), value: 21480.3 },
     { label: t("labour"), value: 9204.26 },
     { label: t("equipment"), value: 2304 },
+    { label: t("subtotal"), value: 32988.56 },
+    { label: t("vat"), value: 6927.6 },
   ];
   return (
     <Card aria-hidden className="grid gap-5 p-6">
@@ -78,7 +80,7 @@ async function SampleEstimate() {
         {rows.map((row) => (
           <div
             key={row.label}
-            className="flex justify-between gap-4 border-t border-border py-2"
+            className="flex justify-between gap-4 border-t border-border py-1.5"
           >
             <dt className="text-ink-2">{row.label}</dt>
             <dd className="m-0 tabular-nums text-ink">
@@ -86,9 +88,9 @@ async function SampleEstimate() {
             </dd>
           </div>
         ))}
-        <div className="flex justify-between gap-4 border-t-[3px] border-double border-rule pt-2 font-medium text-ink">
-          <dt>{t("subtotal")}</dt>
-          <dd className="m-0 tabular-nums">{formatMoney(32988.56, locale)}</dd>
+        <div className="flex justify-between gap-4 border-t-[3px] border-double border-rule pt-1.5 font-medium text-ink">
+          <dt>{t("total")}</dt>
+          <dd className="m-0 tabular-nums">{formatMoney(39916.16, locale)}</dd>
         </div>
       </dl>
     </Card>

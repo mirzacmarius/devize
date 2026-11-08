@@ -93,6 +93,7 @@ export default {
       labour: "Labour",
       equipment: "Equipment and transport",
       subtotal: "Total without VAT",
+      vat: "VAT 21%",
     },
     description: "Estimates with manufacturers' norms and up-to-date prices.",
     google: "Continue with Google",
@@ -2753,7 +2754,11 @@ export default {
         norms: "Norms",
         confidence: "Data confidence",
       },
-      emailState: "Email: {state}",
+      email: {
+        draft: "Email to approve",
+        blocked: "Email to fix",
+        rejected: "Email rejected",
+      },
       working: "Working…",
     },
     review: {
@@ -4307,8 +4312,8 @@ export default {
     efacturaLateNamed: "ANAF: deadline passed",
     efacturaDue: "By {date}",
     card: {
-      invoiced: "Invoiced",
-      remaining: "To invoice, without VAT",
+      invoiced: "Invoiced, without VAT",
+      remaining: "To invoice",
       list: "Invoice list",
       advance: "Advance invoice {percent}",
       final: "Final invoice",

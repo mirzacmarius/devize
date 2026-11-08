@@ -14,6 +14,7 @@ import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
 import { toast } from "@devize/ui/sonner";
 import { useMutation, useQuery } from "convex/react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { Field } from "@/components/field";
@@ -174,6 +175,7 @@ function NewEstimateForm({
               variant="outline"
               onClick={() => setAddingClient(true)}
             >
+              <Plus aria-hidden />
               {t("addClient")}
             </Button>
           </div>

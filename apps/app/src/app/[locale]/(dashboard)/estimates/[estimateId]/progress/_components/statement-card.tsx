@@ -173,26 +173,25 @@ export function StatementCard({
   return (
     <Card>
       <CardHeader className="grid justify-stretch gap-1 sm:!pb-3">
-        {/* Its name and where it stands, what it comes to, what to do with it:
-            on one line where they fit. Short of that, what it comes to follows
-            the name, and where it stands has a line of its own. */}
+        {/* Its name, what it comes to and what to do with it on one line;
+            where it stands on a line of its own under them. */}
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <div className="order-1 min-w-0">{picker}</div>
-          <p className="order-3 m-0 basis-full text-meta tabular-nums text-ink-3 sm:order-4 xl:order-2 xl:basis-auto">
+          <p className="order-3 m-0 basis-full text-meta tabular-nums text-ink-3 sm:order-4">
             <StatusPill tone={statementTone[statement.status]}>
               {tStatus(statement.status)}
             </StatusPill>
             {" · "}
             {facts.join(" · ")}
           </p>
-          <p className="order-2 m-0 flex items-baseline gap-1.5 text-meta text-ink-3 xl:order-3 xl:ml-auto">
+          <p className="order-2 m-0 flex items-baseline gap-1.5 text-meta text-ink-3 xl:ml-auto">
             <span className="sr-only">{t("thisValue")}</span>
             <span className="text-figure tabular-nums text-ink">
               {formatMoney(statement.period.subtotal, locale)}
             </span>
             {t("thisValueUnit")}
           </p>
-          <div className="order-4 flex flex-wrap items-center gap-2 sm:order-3 sm:ml-auto xl:order-4 xl:ml-2">
+          <div className="order-4 flex flex-wrap items-center gap-2 sm:order-3 sm:ml-auto xl:ml-2">
             {/* Its label is on the line's baseline, with the words before it. */}
             <Button
               type="button"

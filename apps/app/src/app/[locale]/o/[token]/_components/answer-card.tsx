@@ -373,8 +373,8 @@ export function MobileAnswerBar({
             </Button>
             <Button
               type="button"
-              variant="ghost"
-              className="-mr-2 h-11 shrink-0 gap-1.5 px-2"
+              variant="outline"
+              className="h-11 shrink-0 gap-1.5 px-3"
               aria-label={t("decide.download")}
               disabled={downloading}
               onClick={onDownload}

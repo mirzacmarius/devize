@@ -248,7 +248,8 @@ export default function ManufacturersPage() {
                         </TableCell>
                       )}
                       <TableCell>
-                        <span className="flex flex-wrap items-baseline gap-x-4 gap-y-0.5">
+                        {/* Inline, it stands on the row's baseline with the name. */}
+                        <span className="inline-flex flex-wrap items-baseline gap-x-4 gap-y-0.5">
                           {row.activeJob ? (
                             <Pill tone="active" dot={false}>
                               <Loader2 className="size-3 animate-spin self-center" />
@@ -273,11 +274,11 @@ export default function ManufacturersPage() {
                                     : "draft"
                                 }
                               >
-                                {t("emailState", {
-                                  state: tAdmin(
-                                    `status.message.${row.message.status}`,
-                                  ),
-                                })}
+                                {row.message.status === "rejected"
+                                  ? t("email.rejected")
+                                  : row.message.blocked
+                                    ? t("email.blocked")
+                                    : t("email.draft")}
                               </Pill>
                             )}
                         </span>

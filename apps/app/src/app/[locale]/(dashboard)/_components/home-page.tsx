@@ -452,8 +452,8 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 const todoTones = {
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
-  // Only what can't wait has a tile and a colour.
-  quiet: "text-ink-3",
+  // Every line has its tile; only what can't wait has a colour.
+  quiet: "bg-sunken text-ink-3",
 };
 
 /**
