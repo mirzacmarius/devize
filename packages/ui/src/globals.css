@@ -23,10 +23,10 @@
   --nav-active: 60 8.3% 85.9%; /* #deded8: the current page in the sidebar */
   --tile: 60 15.4% 94.9%; /* #f4f4f0: hover */
   --backdrop: 37.5 10% 84.3%; /* #dbd8d3 */
-  --scrim: 60 4% 12% / 0.28; /* behind whatever comes forward: a dialog, a sheet */
+  --scrim: 60 4% 12% / 0.2; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
-  --border: 60 6.3% 84.5%; /* #dadad5 */
+  --border: 60 8.2% 88%; /* #e3e3de */
   --border-control: 60 4.3% 72.9%; /* #bdbdb7: outlined buttons and the sides of a field */
   --border-field: 60 3.1% 55.9%; /* #92928b: a field's lower edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
@@ -92,7 +92,7 @@
   --weight-figure: 350;
   --card: 60 1.5% 12.7%; /* #212120 */
   --card-border: 60 1.8% 22.4%; /* #3a3a38 */
-  --sunken: 60 2.7% 14.5%; /* #262624: a band, one step off the panel */
+  --sunken: 60 2.4% 16.1%; /* #2a2a28: a band, one step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
   --selected: 60 2.7% 22.2%; /* #3a3a37: a segment raised on its rail */
@@ -532,6 +532,7 @@
   /* No frame for the rows to line up with inside: they run the rail's width. */
   @media screen and (min-width: 1280px) {
     .rail-summary:empty + .rail-list {
+      margin-top: -7px;
       padding-inline: 0;
     }
   }
@@ -575,15 +576,6 @@
   .foot-bar {
     border-top: 1px solid hsl(var(--border));
   }
-  .foot-bar::before {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    bottom: calc(100% + 1px);
-    height: 24px;
-    background: linear-gradient(to top, hsl(var(--panel)), hsl(var(--panel) / 0));
-    pointer-events: none;
-  }
   /* A page's main action stands among its buttons; on a phone it's in a bar at
      the screen's foot, under the thumb, and the page scrolls out from under it. */
   .foot-action {
@@ -621,7 +613,12 @@
       overflow: visible;
     }
     .sticky-head {
+      --head-rule: var(--rule);
       margin-top: -8px;
+    }
+    /* Over a band it needs no rule, until the rows pass under it. */
+    .sticky-head:not([data-stuck]):has(> tbody > tr[data-band]:first-child) {
+      --head-rule: 0 0% 0% / 0;
     }
     .sticky-head > thead > tr {
       border-bottom-width: 0;
@@ -632,21 +629,39 @@
       z-index: 10;
       padding-top: 8px;
       background: hsl(var(--card));
-      box-shadow: inset 0 -1px 0 hsl(var(--rule));
+      box-shadow: inset 0 -1px 0 hsl(var(--head-rule));
+    }
+    /* The ends of the bands pass under it too; the rule stays with the rows. */
+    .sticky-head > thead th:first-child::before,
+    .sticky-head > thead th:last-child::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      width: var(--card-pad);
+      background: hsl(var(--card));
+    }
+    .sticky-head > thead th:first-child::before {
+      right: 100%;
+    }
+    .sticky-head > thead th:last-child::after {
+      left: 100%;
+    }
+  }
+  /* Below xl a list hides its code's column, so the next head starts the row. */
+  @media screen and (min-width: 768px) and (max-width: 1279px) {
+    .sticky-head > thead th[class~="hidden"]:first-child + th::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      right: 100%;
+      width: var(--card-pad);
+      background: hsl(var(--card));
     }
   }
   @media (min-width: 1024px) {
     .sticky-head > thead th {
       top: 8px;
     }
-  }
-  /* A category right under its part's heading needs no air of its own. */
-  tr[data-part] + tr[data-group] {
-    padding-top: 0;
-  }
-  tr[data-part] + tr[data-group] > td {
-    height: auto;
-    padding-top: 4px;
   }
   /* The Articole's heads stay in sight under the bar that keeps the total. */
   @media (min-width: 768px) {
@@ -686,7 +701,8 @@
       width: var(--card-pad);
       background: hsl(var(--card));
     }
-    /* Stuck, the rule and the shadow are as wide as the bands passing under. */
+    /* Stuck, the shadow is as wide as the bands passing under; the rule stays
+       with the rows. */
     [data-past-hero] .items-table > thead th {
       box-shadow:
         inset 0 -1px 0 hsl(var(--head-rule)),
@@ -694,9 +710,7 @@
     }
     [data-past-hero] .items-table > thead th:first-child::before,
     [data-past-hero] .items-table > thead th:last-child::after {
-      box-shadow:
-        inset 0 -1px 0 hsl(var(--head-rule)),
-        0 6px 6px -6px hsl(var(--scrim));
+      box-shadow: 0 6px 6px -6px hsl(var(--scrim));
     }
     .items-table > thead th:first-child::before {
       right: 100%;
@@ -716,7 +730,7 @@
     content: "";
     position: absolute;
     inset-block: 0;
-    width: var(--card-pad);
+    width: var(--band-hang, var(--card-pad));
     background: hsl(var(--sunken));
   }
   .band-start::before {
@@ -828,6 +842,13 @@
     }
     .table-stack td[data-stack="wide"] {
       grid-column: 1 / -1;
+    }
+    .table-stack tr[data-band] {
+      padding-block: 0;
+    }
+    .table-stack tr[data-band] > td {
+      display: flex;
+      align-items: center;
     }
   }
   /* Tenths under a meter: the ruler of the marketing site, at work. */

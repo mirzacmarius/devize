@@ -33,9 +33,9 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
           "w-full caption-bottom border-collapse text-body",
           stack && "table-stack",
           twoLine === true &&
-            "md:[&>tbody>tr:not([data-group])>td]:h-16 md:[&>tbody>tr:not([data-group])>td]:py-[11px] md:[&>tbody>tr:not([data-group])>td]:align-baseline",
+            "md:[&>tbody>tr:not([data-group])>td]:h-14 md:[&>tbody>tr:not([data-group])>td]:py-2 md:[&>tbody>tr:not([data-group])>td]:align-baseline",
           twoLine === "below-xl" &&
-            "md:max-xl:[&>tbody>tr:not([data-group])>td]:h-16 md:[&>tbody>tr:not([data-group])>td]:py-[11px] md:[&>tbody>tr:not([data-group])>td]:align-baseline",
+            "md:max-xl:[&>tbody>tr:not([data-group])>td]:h-14 md:max-xl:[&>tbody>tr:not([data-group])>td]:py-2 xl:[&>tbody>tr:not([data-group])>td]:py-[11px] md:[&>tbody>tr:not([data-group])>td]:align-baseline",
           className,
         )}
         {...props}
@@ -92,24 +92,18 @@ const TableRow = React.forwardRef<
 ));
 TableRow.displayName = "TableRow";
 
-// A group's heading row. One with a sum is the sunken band: in a `bleed` table
-// its first and last cells take `band-start` and `band-end`, and the band runs
-// to the card's edges. One with nothing to sum is `ruled`: a label on a hairline
-// with air above it, from the first column, like the labels over Home's lists.
+// A group's heading row, whatever it groups: the sunken band. In a `bleed` table
+// its first and last cells take `band-start` and `band-end`, and it hangs past
+// the rows, by the card's padding or `--band-hang`.
 const TableGroupRow = React.forwardRef<
   HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement> & { ruled?: boolean }
->(({ className, ruled, ...props }, ref) => (
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => (
   <tr
     ref={ref}
     data-group
-    data-band={ruled ? undefined : true}
-    className={cn(
-      ruled
-        ? "border-b [&>td]:text-caption [&>td]:font-medium [&>td]:text-ink-2 max-md:pb-1.5 max-md:pt-6 max-md:first:pt-3 md:[&>td]:h-10 md:[&>td]:pb-1.5 md:[&>td]:pt-6 md:first:[&>td]:pt-3 md:[&>td]:align-bottom"
-        : "bg-sunken [&>td]:h-9 [&>td]:py-1",
-      className,
-    )}
+    data-band
+    className={cn("bg-sunken [&>td]:h-9 [&>td]:py-1", className)}
     {...props}
   />
 ));

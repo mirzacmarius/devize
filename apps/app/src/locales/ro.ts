@@ -2751,8 +2751,8 @@ export default {
         status: "Stare",
         norms: "Norme",
         confidence: "Încredere date",
-        email: "Email",
       },
+      emailState: "Email: {state}",
       working: "Lucrează…",
     },
     review: {
@@ -3269,6 +3269,12 @@ export default {
     claimed: "Revendicat",
     unclaimed: "Nerevendicat",
     searchPlaceholder: "Caută un producător",
+    columns: {
+      name: "Producător",
+      norms: "Norme",
+      edition: "Ediție",
+      profile: "Profil",
+    },
     noResults: "Niciun producător nu se potrivește cu „{text}”.",
     breadcrumb: "Unde ești",
     tabs: {
@@ -4295,7 +4301,6 @@ export default {
       failed: "Trimitere eșuată",
     },
     efacturaLate: "Termen depășit",
-    efacturaLateOn: "Termen depășit: {date}",
     efacturaLateNamed: "ANAF: termen depășit",
     efacturaDue: "Până la {date}",
     card: {

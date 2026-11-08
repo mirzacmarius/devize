@@ -148,10 +148,13 @@ export function InvoiceList() {
               label={t("receivable.toSend")}
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
               unit={anaf && t("receivable.toSendUnit", { count: anaf.toSend })}
-              // Red on the rows it's about, not here as well.
+              // The count stays neutral; what's late says it, as on Home and the rows.
               note={
-                anaf?.firstLate &&
-                t("receivable.lateCount", { count: anaf.late })
+                anaf?.firstLate && (
+                  <span className="text-danger">
+                    {t("receivable.lateCount", { count: anaf.late })}
+                  </span>
+                )
               }
             />
           </FigureStrip>

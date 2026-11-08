@@ -280,7 +280,7 @@ function AddNorm({
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="group -mx-3 grid min-h-[63px] w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-start gap-x-4 gap-y-0.5 rounded-md px-3 py-2.5 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_112px_32px]"
+                    className="group -mx-3 grid min-h-14 w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-start gap-x-4 gap-y-0.5 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_112px_32px]"
                   >
                     <span className="grid min-w-0 gap-0.5">
                       <span className="text-body text-ink [text-wrap:pretty]">

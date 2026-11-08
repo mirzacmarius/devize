@@ -24,7 +24,7 @@ const statusPillVariants = cva(
         // A good result just reached: Acceptat de client, Sincronizat
         success: "text-ink-2 before:bg-success-dot",
         // Needs attention soon: Prețuri de actualizat
-        warning: "text-warning before:bg-current",
+        warning: "text-warning before:bg-warning-dot",
         // Blocks the next step: Verificare eșuată, Respins
         danger: "text-danger before:bg-current",
         // Proposed by AI, not applied yet

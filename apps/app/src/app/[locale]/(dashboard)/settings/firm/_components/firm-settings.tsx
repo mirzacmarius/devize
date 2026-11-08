@@ -301,20 +301,6 @@ function DetailsForm({
         <CardHeader className="grid justify-stretch gap-1">
           <CardTitle>{t("detailsTitle")}</CardTitle>
           <CardDescription>{t("detailsDescription")}</CardDescription>
-          {/* Its place stays while there's something to save, so the fields
-              don't move under the one typing. */}
-          {canEdit && (
-            <span
-              aria-hidden
-              className={cn(
-                "mt-2 flex items-center gap-1 text-meta text-ink-3",
-                (changed || saving) && "invisible",
-              )}
-            >
-              <Icons.Check className="size-3.5" />
-              {t("allSaved")}
-            </span>
-          )}
         </CardHeader>
         <CardContent>
           <fieldset disabled={!canEdit} className="m-0 grid gap-5 border-0 p-0">
@@ -425,6 +411,20 @@ function DetailsForm({
               </div>
             </div>
           </fieldset>
+          {/* Its place stays while there's something to save, so the page
+              doesn't move under the one typing. */}
+          {canEdit && (
+            <span
+              aria-hidden
+              className={cn(
+                "flex items-center justify-end gap-1 text-meta text-ink-3",
+                (changed || saving) && "invisible",
+              )}
+            >
+              <Icons.Check className="size-3.5" />
+              {t("allSaved")}
+            </span>
+          )}
         </CardContent>
         {canEdit && (
           <span className="sr-only" aria-live="polite">

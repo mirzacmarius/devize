@@ -61,19 +61,21 @@ export function EfacturaPill({
 }) {
   const t = useScopedI18n("invoices");
   if (status === "not_sent" && late) {
-    return (
+    const pill = (
       <StatusPill tone="danger">
-        {/* One run of text, so the day keeps a word's space from the fact. */}
-        <span>
-          {named
-            ? t("efacturaLateNamed")
-            : deadline
-              ? t("efacturaLateOn", {
-                  date: <span className="text-ink-2">{deadline}</span>,
-                })
-              : t("efacturaLate")}
-        </span>
+        {named ? t("efacturaLateNamed") : t("efacturaLate")}
       </StatusPill>
+    );
+    // The day on a line of its own, under the word and past the dot.
+    return deadline ? (
+      <span className="grid justify-items-start gap-0.5">
+        {pill}
+        <span className="pl-3.5 text-meta tabular-nums text-ink-3">
+          {deadline}
+        </span>
+      </span>
+    ) : (
+      pill
     );
   }
   if (status === "not_sent" && deadline) {

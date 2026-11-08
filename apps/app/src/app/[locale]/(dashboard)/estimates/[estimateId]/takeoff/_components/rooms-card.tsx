@@ -166,8 +166,12 @@ export function RoomsCard({
               {groups.map((group, index) => (
                 <Fragment key={group.level ?? `level-${index}`}>
                   {grouped && (
-                    <TableGroupRow ruled>
-                      <TableCell colSpan={locked ? 8 : 9} data-stack="wide">
+                    <TableGroupRow>
+                      <TableCell
+                        colSpan={locked ? 8 : 9}
+                        data-stack="wide"
+                        className="band-start band-end font-medium"
+                      >
                         {group.level ?? "–"}
                       </TableCell>
                     </TableGroupRow>

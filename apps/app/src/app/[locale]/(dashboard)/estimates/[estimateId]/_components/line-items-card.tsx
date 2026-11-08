@@ -81,9 +81,7 @@ function RowTag({
   return (
     <StatusPill
       tone={tone}
-      className={
-        tone === "warning" ? "text-ink-3 before:bg-warning-dot" : undefined
-      }
+      className={tone === "warning" ? "text-ink-3" : undefined}
     >
       {children}
     </StatusPill>

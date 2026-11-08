@@ -300,9 +300,7 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
             "max-sm:hidden",
         )}
       >
-        <h4 className="m-0 pb-1 text-caption font-medium text-ink-2">
-          {title}
-        </h4>
+        <h4 className="m-0 pb-1.5 text-head text-ink-3">{title}</h4>
         <ul className="m-0 grid list-none p-0">
           {first}
           {items.map((item) => (
@@ -486,11 +484,14 @@ function TodoLine({
 }) {
   return (
     <li
-      className={cn("border-t border-border", phoneHidden && "max-sm:hidden")}
+      className={cn(
+        "border-t border-border first:border-t-rule",
+        phoneHidden && "max-sm:hidden",
+      )}
     >
       <Link
         href={href}
-        className="group -mx-2 grid min-h-[63px] grid-cols-[auto_minmax(0,1fr)_auto] content-center items-baseline gap-x-3 gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group -mx-2 grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] content-center items-baseline gap-x-3 gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden
@@ -565,7 +566,7 @@ function RecentCard({
         ) : (
           // Under heads on the to-do list's label's line, so the two lists' lines match.
           <section className="grid">
-            <div className="flex justify-between gap-4 pb-1 text-caption font-medium text-ink-2 max-sm:hidden">
+            <div className="flex justify-between gap-4 pb-1.5 text-head text-ink-3 max-sm:hidden">
               <h4 className="m-0 [font:inherit]">{t("columnEstimate")}</h4>
               <span>{t("columnTotal")}</span>
             </div>
@@ -579,13 +580,13 @@ function RecentCard({
                 <li
                   key={row._id}
                   // A phone has no heads for a first rule to close.
-                  className="border-t border-border max-sm:first:border-t-0 sm:col-span-2 sm:grid sm:grid-cols-subgrid"
+                  className="border-t border-border first:border-t-rule max-sm:first:border-t-0 sm:col-span-2 sm:grid sm:grid-cols-subgrid"
                 >
                   {/* One column at the end for all the rows: sums and statuses on
                       its right edge. */}
                   <Link
                     href={`/estimates/${row._id}`}
-                    className="-mx-2 grid min-h-[63px] content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:col-span-2 sm:grid-cols-subgrid sm:gap-x-4"
+                    className="-mx-2 grid min-h-14 content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:col-span-2 sm:grid-cols-subgrid sm:gap-x-4"
                   >
                     <span className="min-w-0 text-body font-medium text-ink max-sm:text-body-lg sm:truncate">
                       {row.title}

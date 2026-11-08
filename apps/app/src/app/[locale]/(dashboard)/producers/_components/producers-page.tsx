@@ -7,8 +7,15 @@ import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { StatusPill } from "@devize/ui/status-pill";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
 import { useQuery } from "convex/react";
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { ListToolbar } from "@/components/list-toolbar";
@@ -34,9 +41,9 @@ function ProducerMark({ name }: { name: string }) {
 }
 
 /**
- * The Producători whose norms are in the catalog, as a directory: each card
- * says what it covers and opens its profile, with the norms and products it
- * publishes and whether it runs the profile itself.
+ * The Producători whose norms are in the catalog, as a directory: each row says
+ * what it covers and opens its profile, with the norms and products it publishes
+ * and whether it runs the profile itself.
  */
 export function ProducersPage() {
   const t = useScopedI18n("producers");
@@ -110,42 +117,65 @@ export function ProducersPage() {
               {t("noResults", { text: search })}
             </p>
           )}
-          <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 xl:grid-cols-3">
-            {rows?.map((producer) => (
-              <li key={producer._id} className="grid min-w-0">
-                <Link
-                  href={`/producers/${producer._id}`}
-                  className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] grid-rows-[auto_auto_1fr] gap-x-3 rounded-lg border border-card-border p-4 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <ProducerMark name={producer.name} />
-                  <span className="min-w-0 truncate text-title-card text-ink">
-                    {producer.name}
-                  </span>
-                  <ChevronRight
-                    aria-hidden
-                    className="-mr-1 size-4 self-center text-ink-3 transition-colors group-hover:text-ink"
-                  />
-                  <span className="col-span-2 col-start-2 line-clamp-2 min-w-0 text-meta text-ink-3">
-                    {producer.categories.join(" · ")}
-                  </span>
-                  <span className="col-span-2 col-start-2 mt-3 flex flex-wrap items-baseline justify-between gap-x-3 self-end text-meta tabular-nums text-ink-2">
-                    <span>
+          {rows && rows.length > 0 && (
+            <Table stack className="md:[&>tbody>tr>td]:h-14">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/2">{t("columns.name")}</TableHead>
+                  <TableHead className="w-20 text-right">
+                    {t("columns.norms")}
+                  </TableHead>
+                  <TableHead className="w-28 pl-8">
+                    {t("columns.edition")}
+                  </TableHead>
+                  <TableHead>{t("columns.profile")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((producer) => (
+                  <TableRow key={producer._id} className="relative">
+                    <TableCell data-stack="wide" className="md:max-w-0">
+                      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-0.5">
+                        <ProducerMark name={producer.name} />
+                        {/* The whole row opens the profile. */}
+                        <Link
+                          href={`/producers/${producer._id}`}
+                          className="min-w-0 truncate rounded-xs text-body font-medium text-ink before:absolute before:inset-0 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-md:text-body-lg"
+                        >
+                          {producer.name}
+                        </Link>
+                        <span className="min-w-0 truncate text-meta text-ink-3">
+                          {producer.categories.join(" · ")}
+                        </span>
+                      </div>
+                    </TableCell>
+                    {/* A phone has no heads: the two say what they are. */}
+                    <TableCell className="text-meta tabular-nums text-ink-3 max-md:!pl-12 md:hidden">
                       {producer.moreNorms
                         ? t("normCountMore", { count: producer.normCount })
                         : t("normCount", { count: producer.normCount })}
                       {" · "}
                       {t("edition", { edition: producer.edition })}
-                    </span>
-                    {producer.claimed && (
-                      <StatusPill tone="success" title={t("managed")}>
-                        {t("managedShort")}
-                      </StatusPill>
-                    )}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                    </TableCell>
+                    <TableCell className="hidden text-right tabular-nums md:table-cell">
+                      {producer.normCount}
+                      {producer.moreNorms && "+"}
+                    </TableCell>
+                    <TableCell className="hidden pl-8 tabular-nums text-ink-2 md:table-cell">
+                      {producer.edition}
+                    </TableCell>
+                    <TableCell className="max-md:empty:hidden">
+                      {producer.claimed && (
+                        <StatusPill tone="success" title={t("managed")}>
+                          {t("managedShort")}
+                        </StatusPill>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </section>
       )}
     </>

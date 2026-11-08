@@ -67,7 +67,7 @@ export function ItemsCard({
   const sectionName = (section: Section) =>
     section.code ? `${section.code} ${section.name}` : section.name;
   const measuredCount = (list: readonly { item: Grouped }[]) => (
-    <span className="shrink-0 whitespace-nowrap font-normal tabular-nums text-ink-2">
+    <span className="shrink-0 whitespace-nowrap font-normal tabular-nums text-ink-2 md:pr-9">
       {t("sectionCount", {
         measured: list.filter(({ item }) => item.takeoffs.length > 0).length,
         total: list.length,

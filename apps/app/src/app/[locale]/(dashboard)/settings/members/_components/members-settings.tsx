@@ -157,7 +157,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
               return (
                 <li
                   key={member.userId}
-                  className="grid min-h-16 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+                  className="grid min-h-14 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-2 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
                 >
                   <Avatar className="size-9">
                     {member.avatarUrl && (
@@ -308,7 +308,7 @@ function InvitationsCard() {
           {invitations.map((invitation) => (
             <li
               key={invitation._id}
-              className="grid min-h-16 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+              className="grid min-h-14 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-2 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
             >
               {/* A place kept among the members, until they accept. */}
               <span

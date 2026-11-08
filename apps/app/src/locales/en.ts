@@ -2752,8 +2752,8 @@ export default {
         status: "Status",
         norms: "Norms",
         confidence: "Data confidence",
-        email: "Email",
       },
+      emailState: "Email: {state}",
       working: "Working…",
     },
     review: {
@@ -3271,6 +3271,12 @@ export default {
     claimed: "Claimed",
     unclaimed: "Unclaimed",
     searchPlaceholder: "Search manufacturers",
+    columns: {
+      name: "Manufacturer",
+      norms: "Norms",
+      edition: "Edition",
+      profile: "Profile",
+    },
     noResults: "No manufacturer matches “{text}”.",
     breadcrumb: "You are here",
     tabs: {
@@ -4298,7 +4304,6 @@ export default {
       failed: "Sending failed",
     },
     efacturaLate: "Deadline passed",
-    efacturaLateOn: "Deadline passed: {date}",
     efacturaLateNamed: "ANAF: deadline passed",
     efacturaDue: "By {date}",
     card: {

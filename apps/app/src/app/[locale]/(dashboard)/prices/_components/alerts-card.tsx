@@ -209,35 +209,47 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 {" · "}
                 {dearer ? t("up", { percent }) : t("down", { percent })}
               </dt>
-              <dd className="m-0 text-body tabular-nums text-ink">
+              <dd className="m-0 text-body tabular-nums text-ink-3">
                 {t("fromTo", {
                   from: money(alert.sentTotal),
-                  to: money(alert.currentTotal),
+                  to: (
+                    <span className="font-medium text-ink">
+                      {money(alert.currentTotal)}
+                    </span>
+                  ),
                 })}
                 <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-body text-ink-2">{t("direct")}</dt>
-              <dd className="m-0 text-body tabular-nums text-ink">
+              <dd className="m-0 text-body tabular-nums text-ink-3">
                 {t("fromTo", {
                   from: money(alert.sentDirect),
-                  to: money(alert.currentDirect),
+                  to: (
+                    <span className="font-medium text-ink">
+                      {money(alert.currentDirect)}
+                    </span>
+                  ),
                 })}
                 <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-body text-ink-2">{t("profit")}</dt>
-              <dd
-                className={cn(
-                  "m-0 text-body tabular-nums",
-                  alert.profitLeft < 0 ? "text-danger" : "text-ink",
-                )}
-              >
+              <dd className="m-0 text-body tabular-nums text-ink-3">
                 {t("fromTo", {
                   from: money(alert.sentProfit),
-                  to: money(alert.profitLeft),
+                  to: (
+                    <span
+                      className={cn(
+                        "font-medium",
+                        alert.profitLeft < 0 ? "text-danger" : "text-ink",
+                      )}
+                    >
+                      {money(alert.profitLeft)}
+                    </span>
+                  ),
                 })}
                 <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
@@ -260,7 +272,11 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   <dd className="col-start-1 row-start-2 m-0 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
                     {t("change", {
                       from: money(change.oldPrice),
-                      to: money(change.newPrice),
+                      to: (
+                        <span className="text-ink">
+                          {money(change.newPrice)}
+                        </span>
+                      ),
                       unit: formatUnit(change.unit, locale),
                     })}
                   </dd>
