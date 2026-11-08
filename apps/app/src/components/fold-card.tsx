@@ -106,9 +106,12 @@ export function RailLabel({
  */
 export function RailGroup({
   title,
+  lead,
   children,
 }: {
   title: ReactNode;
+  // What they come to, on the row that opens them.
+  lead?: ReactNode;
   children: ReactNode;
 }) {
   const { open, toggle, contentId } = useFold(false);
@@ -122,7 +125,7 @@ export function RailGroup({
           onClick={toggle}
           className={ROW}
         >
-          <RowText title={title} open={open} />
+          <RowText title={title} lead={lead} open={open} />
         </button>
       </div>
       <div

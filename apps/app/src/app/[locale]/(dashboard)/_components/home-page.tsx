@@ -584,8 +584,8 @@ function RecentCard({
                   // A phone has no heads for a first rule to close.
                   className="border-t border-border first:border-t-rule max-sm:first:border-t-0 sm:col-span-2 sm:grid sm:grid-cols-subgrid"
                 >
-                  {/* One column at the end for all the rows: the sums on its
-                      right edge. */}
+                  {/* One column at the end for all the rows: the sums and
+                      their states on its right edge. */}
                   <Link
                     href={`/estimates/${row._id}`}
                     className="-mx-2 grid min-h-14 content-center gap-y-0.5 rounded-md px-2 py-2 transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:col-span-2 sm:grid-cols-subgrid sm:gap-x-4"
@@ -596,16 +596,15 @@ function RecentCard({
                     <span className="whitespace-nowrap text-right text-body font-medium tabular-nums text-ink max-sm:hidden">
                       {formatMoney(row.total, locale)}
                     </span>
-                    <span className="flex min-w-0 items-baseline gap-3">
-                      <span className="min-w-0 truncate text-meta text-ink-3">
-                        {estimateCode(row.number, row.revision)}
-                        {" · "}
-                        {row.clientName ?? t("noClient")}
-                      </span>
-                      {/* A flex box, so the line keeps the state's own height. */}
-                      <span className="flex shrink-0 max-sm:hidden">
-                        <EstimateStatusPill status={row.status} />
-                      </span>
+                    <span className="min-w-0 truncate text-meta text-ink-3">
+                      {estimateCode(row.number, row.revision)}
+                      {" · "}
+                      {row.clientName ?? t("noClient")}
+                    </span>
+                    {/* Under the sum, where every list keeps its state; a flex
+                        box, so the line keeps the state's own height. */}
+                    <span className="flex justify-end max-sm:hidden">
+                      <EstimateStatusPill status={row.status} />
                     </span>
                     {/* On a phone, its own line: where it stands and how much. */}
                     <span className="flex items-baseline justify-between gap-4 sm:hidden">

@@ -37,7 +37,7 @@ import { ProposalSheet } from "../_proposal/proposal-sheet";
 import { CompatibilityCard } from "../_systems/compatibility-card";
 import { TakeoffCard } from "../_takeoff/takeoff-card";
 import { AddNormSheet } from "./add-norm-sheet";
-import { type Check, runChecks } from "./checks";
+import { runChecks } from "./checks";
 import { ChecksCard } from "./checks-card";
 import { CustomItemDialog } from "./custom-item-dialog";
 import { DetailsCard } from "./details-card";
@@ -104,6 +104,19 @@ export function EstimatePage() {
     vatPayer: details?.vatPayer,
     updates,
   });
+  // How far the checks got, said the same in the rail and in the links.
+  const checksPassed = checks.filter(
+    (check) => check.state === "passed",
+  ).length;
+  const checksScore =
+    checksPassed === checks.length
+      ? t("checks.score", { passed: checksPassed, total: checks.length })
+      : checks.length - checksPassed === 1
+        ? t("checks.leftOne", { total: checks.length })
+        : t("checks.left", {
+            left: checks.length - checksPassed,
+            total: checks.length,
+          });
   const close = () => setPanel(null);
   const total = formatMoney(estimate.totals.total, locale);
   const withoutVat = t("summary.withoutVat", {
@@ -250,7 +263,7 @@ export function EstimatePage() {
               note={withoutVat}
             />
           </div>
-          <SectionLinks estimate={estimate} checks={checks} />
+          <SectionLinks estimate={estimate} checksScore={checksScore} />
           {editable && (
             <ProposalBanner
               estimateId={estimate._id}
@@ -269,7 +282,7 @@ export function EstimatePage() {
         <Rail sticky>
           {railLead}
           {/* While it's a draft, its preparation is the work; once it has left,
-              one row. */}
+              one row under the same label. */}
           <RailList>
             {status === "draft" ? (
               <>
@@ -280,12 +293,13 @@ export function EstimatePage() {
               </>
             ) : (
               <>
-                <RailGroup title={t("rail.preparation")}>
+                <RailLabel>{t("rail.preparation")}</RailLabel>
+                <RailGroup title={t("rail.preparationRow")} lead={checksScore}>
                   {rail.checks}
                   {preparation}
                   {packaging}
                 </RailGroup>
-                <RailLabel className="xl:hidden">{t("rail.records")}</RailLabel>
+                <RailLabel>{t("rail.records")}</RailLabel>
               </>
             )}
             <InvoicesRow estimate={estimate} />
@@ -401,10 +415,10 @@ function ScrolledBar({
  */
 function SectionLinks({
   estimate,
-  checks,
+  checksScore,
 }: {
   estimate: Estimate;
-  checks: Check[];
+  checksScore: string;
 }) {
   const t = useScopedI18n("estimate");
   const tOffer = useScopedI18n("offer");
@@ -426,7 +440,6 @@ function SectionLinks({
     : estimate.status === "draft"
       ? (["checks", "recap", "offer", "documents"] as const)
       : (["offer", "recap", "checks", "documents"] as const);
-  const passed = checks.filter((check) => check.state === "passed").length;
   const signedAt = offer?.signature?.signedAt ?? offer?.decidedAt;
   // Every cell says the same two things: what it is and where it stands.
   const cells: Record<
@@ -449,15 +462,7 @@ function SectionLinks({
     },
     checks: {
       label: estimate.status === "draft" ? t("checks.beforeOffer") : undefined,
-      value:
-        passed < checks.length
-          ? checks.length - passed === 1
-            ? t("checks.leftOne", { total: checks.length })
-            : t("checks.left", {
-                left: checks.length - passed,
-                total: checks.length,
-              })
-          : t("checks.score", { passed, total: checks.length }),
+      value: checksScore,
     },
     recap: { value: t("jump.recapValue") },
     offer: {

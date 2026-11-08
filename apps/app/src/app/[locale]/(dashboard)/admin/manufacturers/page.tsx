@@ -30,6 +30,7 @@ import {
   Panel,
   Pill,
   Textarea,
+  type Tone,
   useRun,
 } from "../_components/ui";
 
@@ -59,12 +60,13 @@ const groups = [
 const BOX_CELL =
   "md:[@media(hover:hover)]:relative md:[@media(hover:hover)]:w-0 md:[@media(hover:hover)]:p-0";
 const AFTER_BOX = "md:[@media(hover:hover)]:pl-0";
-// How far a producer's norms got, in ink: what came from them reads darkest.
-const normsInk: Record<string, string> = {
-  received: "text-ink",
-  existing: "text-ink-2",
-  none_found: "text-ink-3",
-  unknown: "text-ink-3",
+// How far a producer's norms got, in the dots every state has: open while none
+// are found, grey once some are, green once theirs are in.
+const normsTone: Record<string, Tone> = {
+  received: "success",
+  existing: "active",
+  none_found: "draft",
+  unknown: "draft",
 };
 
 export default function ManufacturersPage() {
@@ -291,11 +293,13 @@ export default function ManufacturersPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={cn("text-meta", normsInk[row.normsStatus])}
+                        {/* One grey for the words: the dot says how far. */}
+                        <Pill
+                          tone={normsTone[row.normsStatus] ?? "draft"}
+                          className="text-ink-2"
                         >
                           {tAdmin(`status.norms.${row.normsStatus}`)}
-                        </span>
+                        </Pill>
                       </TableCell>
                       <TableCell>
                         {row.confidence ? (

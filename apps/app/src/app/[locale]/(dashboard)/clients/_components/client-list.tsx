@@ -70,25 +70,12 @@ export function ClientList() {
             : `${t("count", { count: clients.length })} · ${tc("inLeiLower")}`
         }
         actions={
-          <>
-            {!isEmpty && (
-              <SearchInput
-                quiet
-                tall
-                value={text}
-                onChange={(event) => setText(event.target.value)}
-                placeholder={t("searchPlaceholder")}
-                aria-label={t("searchPlaceholder")}
-                className="w-48 max-sm:hidden md:w-64 xl:w-80"
-              />
-            )}
-            <FootAction>
-              <Button onClick={() => edit(null)}>
-                <Plus aria-hidden />
-                {t("new")}
-              </Button>
-            </FootAction>
-          </>
+          <FootAction>
+            <Button onClick={() => edit(null)}>
+              <Plus aria-hidden />
+              {t("new")}
+            </Button>
+          </FootAction>
         }
       />
       {isEmpty ? (
@@ -104,16 +91,19 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {/* From a tablet up it stands in the page's head. */}
-          <ListToolbar className="sm:hidden">
-            <SearchInput
-              quiet
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-full"
-            />
+          {/* What narrows the list, under the head as on every list: search
+              on the right. */}
+          <ListToolbar>
+            <div className="flex w-full min-w-0 sm:flex-1 sm:justify-end">
+              <SearchInput
+                quiet
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="w-full sm:max-w-xs"
+              />
+            </div>
           </ListToolbar>
           <Table stack twoLine>
             <TableHeader>

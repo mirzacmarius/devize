@@ -88,7 +88,7 @@ export function InlineNumber({
       className={cn(
         // The field's own edge and padding hang past the column, so the number
         // lines up with the head and the plain numbers around it.
-        "-mr-[9px] h-8 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors hover:border-edge focus:border-ink/60 focus:bg-field focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ink/10",
+        "-mr-[9px] h-8 rounded-sm border border-transparent bg-transparent px-2 text-right text-body tabular-nums text-ink transition-colors hover:border-edge focus:border-ink focus:bg-field focus:outline-none focus-visible:ring-1 focus-visible:ring-ring",
         className,
       )}
     />

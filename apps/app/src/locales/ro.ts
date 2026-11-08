@@ -449,6 +449,7 @@ export default {
   estimate: {
     rail: {
       preparation: "Pregătire",
+      preparationRow: "Verificări și cantități",
       records: "Documente și date",
     },
     jump: {

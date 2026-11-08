@@ -80,34 +80,24 @@ export function ProducersPage() {
                 .join(" · ")
             : " "
         }
-        actions={
-          producers?.length !== 0 && (
-            <SearchInput
-              quiet
-              tall
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-48 max-sm:hidden md:w-64 xl:w-80"
-            />
-          )
-        }
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {/* From a tablet up it stands in the page's head. */}
-          <ListToolbar className="sm:hidden">
-            <SearchInput
-              quiet
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-full"
-            />
+          {/* What narrows the list, under the head as on every list: search
+              on the right. */}
+          <ListToolbar>
+            <div className="flex w-full min-w-0 sm:flex-1 sm:justify-end">
+              <SearchInput
+                quiet
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="w-full sm:max-w-xs"
+              />
+            </div>
           </ListToolbar>
           {rows === undefined && (
             <p className="m-0 text-body text-ink-3">{tc("loading")}</p>

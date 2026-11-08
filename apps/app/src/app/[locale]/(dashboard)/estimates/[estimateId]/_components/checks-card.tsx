@@ -339,9 +339,9 @@ function useCheckText() {
         return {
           title: t("checks.current.warningTitle"),
           detail: t("checks.current.warning", {
-            // The figure to weigh, in the colour of what it warns of.
+            // The figure to weigh, in ink: the dot says what it warns of.
             difference: (
-              <span className="font-medium tabular-nums text-warning">
+              <span className="font-medium tabular-nums text-ink">
                 {difference}
               </span>
             ),

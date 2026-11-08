@@ -54,7 +54,7 @@ import { useDownloadProgress } from "./use-download-progress";
 // Articol says them on a line of its own, and the quantity to fill in stays.
 const ROOMY_HEAD = "hidden text-right xl:table-cell";
 const ROOMY_CELL =
-  "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-3 xl:table-cell";
+  "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell";
 
 // A quantity for reference, quieter than what's being filled in and what it
 // comes to, on the row's baseline.
@@ -401,8 +401,9 @@ function RowsTable({
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
-          {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.03] xl:pt-2.5">
+          {/* Over the numbers, not over the unit that follows them; the
+              rule under it, in ink, marks the column being filled in. */}
+          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:border-b-2 xl:border-b-ink xl:pb-[9px]">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -529,7 +530,7 @@ function RowsTable({
                 {/* The column being filled in. */}
                 <TableCell
                   className={cn(
-                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.03]",
+                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:border-x xl:border-border",
                     // Nothing in it and nothing to put in it: a phone skips the line.
                     !fillable && row.quantity === 0 && "max-md:hidden",
                   )}
@@ -558,8 +559,8 @@ function RowsTable({
                         // Up by the field's padding, level with the row's first line.
                         "-my-1 h-7 w-20",
                         // What's still to fill in is a field like any other. Once
-                        // filled in it's a number on the column's tint, a field
-                        // again when pointed at; without the tint, always one.
+                        // filled in it's a number between the column's rules, a
+                        // field again when pointed at; without them, always one.
                         fillable &&
                           !spent &&
                           (row.quantity === 0

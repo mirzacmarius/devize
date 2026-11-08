@@ -450,6 +450,7 @@ export default {
   estimate: {
     rail: {
       preparation: "Preparation",
+      preparationRow: "Checks and quantities",
       records: "Documents and details",
     },
     jump: {
