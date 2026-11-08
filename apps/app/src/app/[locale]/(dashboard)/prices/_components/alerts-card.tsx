@@ -38,6 +38,8 @@ const TOTALS =
 // prices are per goes with the name.
 const CHANGES =
   "grid shrink-0 grid-cols-[5rem_5rem_6.5rem] items-baseline justify-items-end tabular-nums";
+// A half's name and its heads, on the line the rows start under.
+const HEAD = "flex flex-wrap items-baseline justify-between gap-x-4 pb-2";
 const ROW =
   "flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5 text-body";
 
@@ -151,9 +153,9 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
             aria-hidden
             className={cn(
               "mt-0.5 grid size-7 shrink-0 place-items-center rounded-md [&_svg]:size-4",
-              profitChange < 0
-                ? "bg-warning-soft text-warning"
-                : "bg-success-soft text-success",
+              // The tile Acasă has for it: neutral, the mark in colour.
+              "bg-sunken",
+              profitChange < 0 ? "text-warning" : "text-success",
             )}
           >
             {profitChange < 0 ? <TrendingDown /> : <TrendingUp />}
@@ -190,36 +192,40 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         </div>
       </div>
 
-      {/* What it does to the profit first: it's what the firm stands to lose.
-          Under it, what was and what is in columns of their own, with their
-          heads over them. Both sides share one set of rows, so their rules
-          fall on one line and they end together. */}
+      {/* What it does to the profit first, on a line of its own: it's what
+          the firm stands to lose, and what it keeps. */}
+      <div className="grid gap-1">
+        <p className="m-0 text-meta text-ink-2">
+          {profitChange < 0 ? t("profitDown") : t("profitUp")}
+        </p>
+        <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
+          <span
+            className={cn(
+              "text-stat tabular-nums",
+              // The mark says it's a warning; the figure stays in ink.
+              profitChange < 0 ? "text-ink" : "text-success",
+            )}
+          >
+            {/* The label over it says which way it went. */}
+            {money(Math.abs(profitChange))}
+          </span>
+          <span className="text-meta text-ink-3">lei</span>
+          <span className="ml-2 text-meta text-ink-2">
+            {t("profitLeft", { amount: money(alert.profitLeft) })}
+          </span>
+        </p>
+      </div>
+
+      {/* Under it, the offer against today's prices: both halves' heads on one
+          line and their rows on one set of rules, so they end together. */}
       <div className="grid gap-x-12 gap-y-5 xl:grid-cols-2 xl:gap-y-0">
-        <div className="grid content-start xl:row-span-6 xl:grid-rows-subgrid">
-          <div className="grid gap-1 pb-2 xl:row-span-2 xl:gap-px">
-            <p className="m-0 text-meta text-ink-2">
-              {profitChange < 0 ? t("profitDown") : t("profitUp")}
-            </p>
-            {/* The heads at the foot of the line, level with the other half's. */}
-            <div className="flex flex-wrap items-end justify-between gap-x-4">
-              <p className="m-0 flex items-baseline gap-x-1.5">
-                <span
-                  className={cn(
-                    "text-stat tabular-nums",
-                    // The tile says it's a warning; the figure stays in ink.
-                    profitChange < 0 ? "text-ink" : "text-success",
-                  )}
-                >
-                  {/* The label over it says which way it went. */}
-                  {money(Math.abs(profitChange))}
-                </span>
-                <span className="text-meta text-ink-3">lei</span>
-              </p>
-              <span aria-hidden className={cn(TOTALS, "text-head text-ink-2")}>
-                <span>{t("before")}</span>
-                <span>{t("now")}</span>
-              </span>
-            </div>
+        <div className="grid content-start xl:row-span-5 xl:grid-rows-subgrid">
+          <div className={HEAD}>
+            <p className="m-0 text-meta text-ink-2">{t("estimate")}</p>
+            <span aria-hidden className={cn(TOTALS, "text-head text-ink-2")}>
+              <span>{t("before")}</span>
+              <span>{t("now")}</span>
+            </span>
           </div>
           <dl className="contents">
             <TotalRow
@@ -244,9 +250,8 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         </div>
 
         {alert.changes.length > 0 && (
-          <div className="grid content-start xl:row-span-6 xl:grid-rows-subgrid">
-            {/* Down to the rule both halves' rows start under. */}
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 pb-2 xl:row-span-2 xl:self-end">
+          <div className="grid content-start xl:row-span-5 xl:grid-rows-subgrid">
+            <div className={HEAD}>
               <p className="m-0 text-meta text-ink-2">{t("changes")}</p>
               <span aria-hidden className={cn(CHANGES, "text-head text-ink-2")}>
                 <span>{t("before")}</span>

@@ -199,9 +199,10 @@ export function LineItemsCard({
   return (
     <Card>
       {/* The title, its count and what it's in on one baseline, and the
-          note or the buttons at the end on it too. */}
+          note or the buttons at the end on it too. The title stands where a
+          button's words would put it, with buttons or without. */}
       <CardHeader ref={header} className="flex-wrap items-baseline">
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-baseline gap-2 pt-1">
           <CardTitle>{t("items.title")}</CardTitle>
           <Count tone="plain">{count}</Count>
           <span className="ml-1 text-meta text-ink-3">{t("items.inLei")}</span>
@@ -688,7 +689,7 @@ function ItemRows({
                   price,
                 })}
               </span>
-              <span className="whitespace-nowrap text-body font-medium text-ink">
+              <span className="whitespace-nowrap text-body text-ink">
                 {formatMoney(item.totals.total, locale)}
               </span>
             </span>

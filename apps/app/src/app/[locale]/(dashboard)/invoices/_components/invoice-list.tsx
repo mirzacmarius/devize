@@ -300,6 +300,8 @@ export function InvoiceList() {
                       {formatCalendarDay(row.dueDate, locale)}
                     </TableCell>
                     <TableCell className="hidden pl-8 xl:table-cell">
+                      {/* A draft has nothing at ANAF yet: a quiet dash. */}
+                      {!live && <Nil />}
                       {live && (
                         <EfacturaPill
                           status={row.efactura.status}

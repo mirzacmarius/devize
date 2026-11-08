@@ -403,9 +403,8 @@ function RowsTable({
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
-          {/* Over the numbers, not over the unit that follows them; in ink,
-              over the column being filled in, whose cells are fields. */}
-          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink">
+          {/* Over the numbers, not over the unit that follows them. */}
+          <TableHead className="w-[140px] pr-[57px] text-right">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -467,6 +466,13 @@ function RowsTable({
                         price: formatMoney(row.unitPrice, locale),
                         unit,
                       })}
+                      {/* A state, as the takeoff says "Nemăsurat". */}
+                      {row.remainingQuantity <= 0 && (
+                        <span className="text-success">
+                          {" · "}
+                          {t("complete")}
+                        </span>
+                      )}
                     </span>
                     <span className="col-start-2 text-meta tabular-nums text-ink-3 xl:hidden">
                       {t("contract")}{" "}
@@ -560,16 +566,14 @@ function RowsTable({
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
                         "-my-1 h-7 w-20",
-                        // What's still to fill in is a field like any other, and
-                        // so is what's been filled in: the column reads as the
-                        // one being filled in.
-                        fillable &&
-                          !spent &&
-                          "border-input border-b-edge bg-field",
+                        // What's still to fill in has a field's lower edge at
+                        // rest, and its whole frame when pointed at or typed in:
+                        // the column reads as the one being filled in, quietly.
+                        fillable && !spent && "border-b-edge",
                         fillable && "hover:bg-field focus:bg-field",
                         row.quantity === 0
                           ? "text-ink-3 placeholder:text-ink-3/60 md:placeholder:text-transparent"
-                          : "font-medium text-ink",
+                          : "text-ink",
                         // A thumb needs room, and has nothing to point with.
                         fillable && !spent
                           ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:border-b-edge max-md:bg-field"
@@ -611,10 +615,12 @@ function RowsTable({
                 </TableCell>
                 <TableCell className={ROOMY_CELL}>
                   <Reference>
-                    {/* All of it done says so, rather than a zero. */}
-                    {row.remainingQuantity <= 0
-                      ? t("complete")
-                      : formatQuantity(row.remainingQuantity, locale)}
+                    {/* All of it done is a dash here, and said under the title. */}
+                    {row.remainingQuantity <= 0 ? (
+                      <Nil />
+                    ) : (
+                      formatQuantity(row.remainingQuantity, locale)
+                    )}
                   </Reference>
                 </TableCell>
                 <TableCell

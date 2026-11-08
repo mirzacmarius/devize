@@ -121,12 +121,13 @@ export function Rail({
 }
 
 /**
- * What a rail opens with, whatever the Deviz is at: a frame of its own, its
- * parts a hairline apart. Nothing to show, no frame.
+ * What a rail opens with, whatever the Deviz is at: no frame, as the rows
+ * under it have none, its parts and its end a hairline apart. Nothing to show,
+ * no line.
  */
 export function RailSummary({ children }: { children: ReactNode }) {
   return (
-    <div className="rail-summary grid min-w-0 rounded-lg border border-card-border p-5">
+    <div className="rail-summary grid min-w-0 border-b border-border pb-5">
       {children}
     </div>
   );
@@ -134,11 +135,8 @@ export function RailSummary({ children }: { children: ReactNode }) {
 
 /**
  * The rows of a rail that are looked at now and then. Beside the main column
- * they stand under the summary, without a frame, on the edges of what's in it;
- * stacked under it, a list.
+ * they stand under the summary, on its edges; stacked under it, a list.
  */
 export function RailList({ children }: { children: ReactNode }) {
-  return (
-    <div className="rail-list contents xl:block xl:px-[21px]">{children}</div>
-  );
+  return <div className="rail-list contents xl:block">{children}</div>;
 }

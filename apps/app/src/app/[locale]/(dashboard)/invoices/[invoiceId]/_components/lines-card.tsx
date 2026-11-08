@@ -122,7 +122,7 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
                 <TableCell className="hidden text-right align-top text-ink-2 tabular-nums sm:table-cell">
                   {formatPercent(line.vatRate, locale)}
                 </TableCell>
-                <TableCell className="text-right align-top font-medium tabular-nums">
+                <TableCell className="text-right align-top tabular-nums text-ink">
                   {formatMoney(line.net, locale)}
                 </TableCell>
               </TableRow>
@@ -434,7 +434,7 @@ function LinesEditor({ invoice }: { invoice: Invoice }) {
                   )}
                 </div>
                 <div className="flex items-center justify-between gap-2 md:contents">
-                  <span className="text-body font-medium text-ink tabular-nums md:text-right">
+                  <span className="text-body text-ink tabular-nums md:text-right">
                     {line
                       ? formatMoney(
                           priceLine(line, invoice.seller.vatRegistered).net,

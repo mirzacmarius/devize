@@ -115,7 +115,7 @@ export function ClientList() {
                 <TableHead className="hidden xl:table-cell xl:w-[30%]">
                   {t("columns.latest")}
                 </TableHead>
-                <TableHead className="hidden w-32 text-right md:table-cell xl:w-[14%]">
+                <TableHead className="hidden w-32 text-right md:table-cell">
                   {t("columns.owed")}
                 </TableHead>
               </TableRow>
