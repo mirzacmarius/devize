@@ -22,24 +22,6 @@ import { ListToolbar } from "@/components/list-toolbar";
 import { SearchInput } from "@/components/search-input";
 import { useScopedI18n } from "@/locales/client";
 
-/** A producer has no logo with us: its initials, on a tile like a firm's. */
-function ProducerMark({ name }: { name: string }) {
-  const initials = name
-    .split(/\s+/)
-    .filter((word) => /^\p{L}/u.test(word))
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase())
-    .join("");
-  return (
-    <span
-      aria-hidden
-      className="row-span-2 grid size-9 place-items-center self-center rounded-md bg-card text-meta font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))] md:row-span-1"
-    >
-      {initials}
-    </span>
-  );
-}
-
 /**
  * The Producători whose norms are in the catalog, as a directory: each row says
  * what it covers and opens its profile, with the norms and products it publishes
@@ -85,19 +67,17 @@ export function ProducersPage() {
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {/* What narrows the list, under the head as on every list: search
-              on the right. */}
+          {/* What narrows the list, under the head as on every list; with
+              nothing to filter, the search starts where the table does. */}
           <ListToolbar>
-            <div className="flex w-full min-w-0 sm:flex-1 sm:justify-end">
-              <SearchInput
-                quiet
-                value={text}
-                onChange={(event) => setText(event.target.value)}
-                placeholder={t("searchPlaceholder")}
-                aria-label={t("searchPlaceholder")}
-                className="w-full sm:max-w-xs"
-              />
-            </div>
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:max-w-xs"
+            />
           </ListToolbar>
           {rows === undefined && (
             <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
@@ -108,7 +88,7 @@ export function ProducersPage() {
             </p>
           )}
           {rows && rows.length > 0 && (
-            <Table stack className="md:[&>tbody>tr>td]:h-14">
+            <Table stack>
               <TableHeader>
                 <TableRow>
                   <TableHead className="md:w-[18rem]">
@@ -131,8 +111,7 @@ export function ProducersPage() {
                 {rows.map((producer) => (
                   <TableRow key={producer._id} className="relative">
                     <TableCell data-stack="wide" className="md:max-w-0">
-                      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5">
-                        <ProducerMark name={producer.name} />
+                      <div className="grid min-w-0 gap-y-0.5">
                         {/* A managed profile is said beside the name. */}
                         <span className="flex min-w-0 items-baseline gap-3">
                           {/* The whole row opens the profile. */}
@@ -160,7 +139,7 @@ export function ProducersPage() {
                       </div>
                     </TableCell>
                     {/* A phone has no heads: the two say what they are. */}
-                    <TableCell className="text-meta tabular-nums text-ink-3 max-md:!pl-12 md:hidden">
+                    <TableCell className="text-meta tabular-nums text-ink-3 md:hidden">
                       {producer.moreNorms
                         ? t("normCountMore", { count: producer.normCount })
                         : t("normCount", { count: producer.normCount })}

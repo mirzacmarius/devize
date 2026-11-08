@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@devize/ui/button";
-import { cn } from "@devize/ui/utils";
 import { Mail, Phone } from "lucide-react";
 import { useScopedI18n } from "@/locales/client";
 import type { OfferFirm } from "./types";
@@ -50,20 +49,14 @@ export function ContactLinks({
     return null;
   }
   return (
-    <div
-      className={cn(
-        "flex shrink-0 flex-wrap justify-center gap-2",
-        // A bare icon ends on the page's margin, not its tap area.
-        compact && "max-sm:-mr-3",
-      )}
-    >
+    <div className="flex shrink-0 flex-wrap justify-center gap-2">
       {phone && (
         <Button
           variant="outline"
           size="sm"
           className={
             compact
-              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0 max-sm:[&_svg]:size-[22px]"
+              ? "max-sm:size-11 max-sm:p-0 max-sm:[&_svg]:size-5"
               : undefined
           }
           asChild
@@ -82,7 +75,7 @@ export function ContactLinks({
           size="sm"
           className={
             compact
-              ? "max-sm:size-11 max-sm:border-transparent max-sm:bg-transparent max-sm:p-0 max-sm:[&_svg]:size-[22px]"
+              ? "max-sm:size-11 max-sm:p-0 max-sm:[&_svg]:size-5"
               : undefined
           }
           asChild

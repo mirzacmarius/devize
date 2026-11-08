@@ -3,6 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import type { OpeningKind } from "@devize/backend/convex/takeoffs/measures";
+import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
@@ -86,12 +87,15 @@ export function RoomsCard({
   return (
     <Card>
       <CardHeader className="flex-wrap">
-        <CardTitle>
-          {t("title")}
+        {/* As every section says it: its name, how many, then what holds for
+            all of them. */}
+        <div className="flex items-center gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          {rooms.length > 0 && <Count tone="plain">{rooms.length}</Count>}
           {onlyLevel && (
-            <span className="font-normal text-ink-3"> · {onlyLevel}</span>
+            <span className="ml-1 text-meta text-ink-3">{onlyLevel}</span>
           )}
-        </CardTitle>
+        </div>
         {!locked && rooms.length > 0 && (
           <Button variant="secondary" size="sm" onClick={onAdd}>
             <Plus aria-hidden />

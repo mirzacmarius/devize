@@ -282,7 +282,7 @@ function OfferHero({
             type="button"
             variant="ghost"
             size="sm"
-            className="-my-2 -mr-2 h-9 shrink-0 gap-1.5 px-2 text-meta text-ink-2 lg:hidden"
+            className="-my-3 -mr-2 h-11 shrink-0 gap-1.5 px-2 text-meta text-ink-2 lg:hidden"
             aria-label={t("decide.download")}
             disabled={download.busy}
             onClick={download.onClick}

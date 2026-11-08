@@ -30,7 +30,6 @@ import {
   Panel,
   Pill,
   Textarea,
-  type Tone,
   useRun,
 } from "../_components/ui";
 
@@ -60,14 +59,6 @@ const groups = [
 const BOX_CELL =
   "md:[@media(hover:hover)]:relative md:[@media(hover:hover)]:w-0 md:[@media(hover:hover)]:p-0";
 const AFTER_BOX = "md:[@media(hover:hover)]:pl-0";
-// How far a producer's norms got, in the dots every state has: open while none
-// are found, grey once some are, green once theirs are in.
-const normsTone: Record<string, Tone> = {
-  received: "success",
-  existing: "active",
-  none_found: "draft",
-  unknown: "draft",
-};
 
 export default function ManufacturersPage() {
   const t = useScopedI18n("admin.manufacturers");
@@ -178,13 +169,13 @@ export default function ManufacturersPage() {
                 <TableHead className={cn("w-8", BOX_CELL)}>
                   <span className="sr-only">{t("selectNew")}</span>
                 </TableHead>
-                <TableHead className={cn("w-[30%]", AFTER_BOX)}>
+                <TableHead className={cn("w-[56%]", AFTER_BOX)}>
                   {t("columns.name")}
                 </TableHead>
                 {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
-                <TableHead className="w-[38%]">{t("columns.status")}</TableHead>
-                <TableHead className="w-[16%]">{t("columns.norms")}</TableHead>
-                <TableHead className="w-[16%]">
+                <TableHead className="w-[16%]">{t("columns.status")}</TableHead>
+                <TableHead className="w-[14%]">{t("columns.norms")}</TableHead>
+                <TableHead className="w-[14%]">
                   {t("columns.confidence")}
                 </TableHead>
               </TableRow>
@@ -293,13 +284,10 @@ export default function ManufacturersPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        {/* One grey for the words: the dot says how far. */}
-                        <Pill
-                          tone={normsTone[row.normsStatus] ?? "draft"}
-                          className="text-ink-2"
-                        >
+                        {/* A word: the dots are Stare's. */}
+                        <span className="text-meta text-ink-2">
                           {tAdmin(`status.norms.${row.normsStatus}`)}
-                        </Pill>
+                        </span>
                       </TableCell>
                       <TableCell>
                         {row.confidence ? (

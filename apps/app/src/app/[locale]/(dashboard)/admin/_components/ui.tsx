@@ -72,13 +72,13 @@ export function Confidence({
       {level && (
         <span
           aria-hidden
-          className="inline-flex h-2.5 items-end gap-0.5 self-center"
+          className="inline-flex h-3 items-end gap-0.5 self-center"
         >
-          {["h-1", "h-[7px]", "h-2.5"].map((height, step) => (
+          {["h-1.5", "h-[9px]", "h-3"].map((height, step) => (
             <span
               key={height}
               className={cn(
-                "w-[3px] rounded-[1px]",
+                "w-1 rounded-[1px]",
                 height,
                 step < bars ? "bg-ink-2" : "bg-tick",
               )}

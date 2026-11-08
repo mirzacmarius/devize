@@ -65,7 +65,8 @@ async function SampleEstimate() {
     { label: t("vat"), value: 6927.6, sum: true },
   ];
   return (
-    <Card aria-hidden className="grid gap-5 p-5">
+    // On the app's paper, as its cards are, not on white.
+    <Card aria-hidden className="grid gap-5 bg-panel p-5">
       <div className="grid gap-0.5">
         <span className="text-title-card text-ink">{t("title")}</span>
         <span className="text-meta text-ink-3">{t("meta")}</span>

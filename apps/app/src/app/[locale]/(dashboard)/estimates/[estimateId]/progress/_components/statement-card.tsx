@@ -403,7 +403,7 @@ function RowsTable({
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           {/* Over the numbers, not over the unit that follows them; the
               rule under it, in ink, marks the column being filled in. */}
-          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:border-b-2 xl:border-b-ink xl:pb-[9px]">
+          <TableHead className="relative w-[140px] pr-[57px] text-right font-medium text-ink xl:before:absolute xl:before:inset-x-0 xl:before:-bottom-px xl:before:h-0.5 xl:before:bg-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -530,7 +530,7 @@ function RowsTable({
                 {/* The column being filled in. */}
                 <TableCell
                   className={cn(
-                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:border-x xl:border-border",
+                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left",
                     // Nothing in it and nothing to put in it: a phone skips the line.
                     !fillable && row.quantity === 0 && "max-md:hidden",
                   )}
@@ -559,8 +559,8 @@ function RowsTable({
                         // Up by the field's padding, level with the row's first line.
                         "-my-1 h-7 w-20",
                         // What's still to fill in is a field like any other. Once
-                        // filled in it's a number between the column's rules, a
-                        // field again when pointed at; without them, always one.
+                        // filled in it's a number under the column's ink rule, a
+                        // field again when pointed at; without the rule, always one.
                         fillable &&
                           !spent &&
                           (row.quantity === 0

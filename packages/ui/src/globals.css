@@ -580,17 +580,17 @@
     position: absolute;
     inset-inline: 0;
     bottom: calc(100% + 1px);
-    /* From the rule, a slow start and a soft end: what passes under it fades
-       out without a cut. */
+    /* From the rule, 12 px of the page and then a soft end: what passes under
+       it is gone before it could be half read. */
     height: 28px;
     background: linear-gradient(
       to top,
-      hsl(var(--panel)),
-      hsl(var(--panel) / 0.92) 5px,
-      hsl(var(--panel) / 0.72) 10px,
-      hsl(var(--panel) / 0.44) 15px,
-      hsl(var(--panel) / 0.19) 20px,
-      hsl(var(--panel) / 0.03) 25px,
+      hsl(var(--panel)) 12px,
+      hsl(var(--panel) / 0.92) 15px,
+      hsl(var(--panel) / 0.72) 18px,
+      hsl(var(--panel) / 0.44) 20.5px,
+      hsl(var(--panel) / 0.19) 23.5px,
+      hsl(var(--panel) / 0.03) 26.5px,
       hsl(var(--panel) / 0) 28px
     );
     pointer-events: none;
@@ -752,12 +752,12 @@
       right: 0;
       height: 28px;
       background: linear-gradient(
-        hsl(var(--card)),
-        hsl(var(--card) / 0.92) 5px,
-        hsl(var(--card) / 0.72) 10px,
-        hsl(var(--card) / 0.44) 15px,
-        hsl(var(--card) / 0.19) 20px,
-        hsl(var(--card) / 0.03) 25px,
+        hsl(var(--card)) 12px,
+        hsl(var(--card) / 0.92) 15px,
+        hsl(var(--card) / 0.72) 18px,
+        hsl(var(--card) / 0.44) 20.5px,
+        hsl(var(--card) / 0.19) 23.5px,
+        hsl(var(--card) / 0.03) 26.5px,
         hsl(var(--card) / 0) 28px
       );
       pointer-events: none;

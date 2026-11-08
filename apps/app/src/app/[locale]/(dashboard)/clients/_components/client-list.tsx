@@ -91,19 +91,17 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {/* What narrows the list, under the head as on every list: search
-              on the right. */}
+          {/* What narrows the list, under the head as on every list; with
+              nothing to filter, the search starts where the table does. */}
           <ListToolbar>
-            <div className="flex w-full min-w-0 sm:flex-1 sm:justify-end">
-              <SearchInput
-                quiet
-                value={text}
-                onChange={(event) => setText(event.target.value)}
-                placeholder={t("searchPlaceholder")}
-                aria-label={t("searchPlaceholder")}
-                className="w-full sm:max-w-xs"
-              />
-            </div>
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:max-w-xs"
+            />
           </ListToolbar>
           <Table stack twoLine>
             <TableHeader>
