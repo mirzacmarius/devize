@@ -40,11 +40,12 @@ export function LockedNote({
   return (
     <p
       className={cn(
-        "m-0 flex items-center gap-1.5 text-meta text-ink-3",
+        // On the line's baseline, as the title beside it is.
+        "m-0 flex items-baseline gap-1.5 text-meta text-ink-3",
         className,
       )}
     >
-      <Lock className="size-3.5 shrink-0" aria-hidden />
+      <Lock className="size-3.5 shrink-0 self-center" aria-hidden />
       {label}
       <span aria-hidden>·</span>
       <Button

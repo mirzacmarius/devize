@@ -220,7 +220,9 @@ export function ClientList() {
                           <span className="font-medium">
                             {formatMoney(going.owed, locale)}
                           </span>
-                        ) : null}
+                        ) : (
+                          <Nil />
+                        )}
                       </span>
                     </TableCell>
                   </TableRow>

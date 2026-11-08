@@ -88,20 +88,22 @@ export function ProducersPage() {
             </p>
           )}
           {rows && rows.length > 0 && (
-            // As wide as what it says, so the counts that end each row stand
-            // near the name they belong to; on a phone, the page's width.
-            <Table stack className="md:w-auto">
+            // The page's width, as every list is: what it makes takes what's
+            // left, and the counts end each row on the edge.
+            <Table stack>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("columns.name")}</TableHead>
+                  <TableHead className="md:w-[22rem]">
+                    {t("columns.name")}
+                  </TableHead>
                   <TableHead className="hidden md:table-cell">
                     {t("columns.categories")}
                   </TableHead>
-                  {/* The counts end the row, a step off the words. */}
-                  <TableHead className="text-right md:pl-10">
+                  {/* The counts end the row, on the edge. */}
+                  <TableHead className="w-24 text-right">
                     {t("columns.edition")}
                   </TableHead>
-                  <TableHead className="text-right md:pl-10">
+                  <TableHead className="w-24 text-right">
                     {t("columns.norms")}
                   </TableHead>
                 </TableRow>
@@ -110,8 +112,7 @@ export function ProducersPage() {
                 {rows.map((producer) => (
                   <TableRow key={producer._id} className="relative">
                     <TableCell data-stack="wide">
-                      {/* As wide as its name, up to 20rem. */}
-                      <div className="grid min-w-0 gap-y-0.5 md:max-w-[20rem]">
+                      <div className="grid min-w-0 gap-y-0.5">
                         {/* A managed profile is said beside the name. */}
                         <span className="flex min-w-0 items-baseline gap-3">
                           {/* The whole row opens the profile. */}
@@ -146,15 +147,16 @@ export function ProducersPage() {
                       {" · "}
                       {t("edition", { edition: producer.edition })}
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 md:table-cell">
-                      <span className="block max-w-[22rem] truncate">
+                    {/* It gives way to the counts: what doesn't fit is cut. */}
+                    <TableCell className="hidden text-ink-2 md:table-cell md:max-w-0">
+                      <span className="block truncate">
                         {producer.categories.join(" · ")}
                       </span>
                     </TableCell>
-                    <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell md:pl-10">
+                    <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
                       {producer.edition}
                     </TableCell>
-                    <TableCell className="hidden text-right tabular-nums md:table-cell md:pl-10">
+                    <TableCell className="hidden text-right tabular-nums md:table-cell">
                       {producer.normCount}
                       {producer.moreNorms && "+"}
                     </TableCell>

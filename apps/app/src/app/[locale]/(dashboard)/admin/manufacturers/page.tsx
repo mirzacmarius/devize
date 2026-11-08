@@ -2,6 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { normalizeText } from "@devize/backend/convex/lib/text";
 import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import { toolbarField } from "@devize/ui/input";
@@ -18,9 +19,10 @@ import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useDeferredValue, useState } from "react";
 import { ListToolbar } from "@/components/list-toolbar";
 import { Nil } from "@/components/nil";
+import { SearchInput } from "@/components/search-input";
 import { useScopedI18n } from "@/locales/client";
 import {
   Confidence,
@@ -67,12 +69,19 @@ export default function ManufacturersPage() {
   const tAdd = useScopedI18n("admin.manufacturers.add");
   const [adding, setAdding] = useState(false);
   const [status, setStatus] = useState<Status | "all">("all");
-  const rows = useQuery(
+  const listed = useQuery(
     api.manufacturers.admin.list,
     status === "all" ? {} : { status },
   );
+  const [text, setText] = useState("");
+  const search = useDeferredValue(text.trim());
+  const words = normalizeText(search).split(" ").filter(Boolean);
+  const rows = listed?.filter((row) => {
+    const name = normalizeText(row.name);
+    return words.every((word) => name.includes(word));
+  });
   // A single stage says nothing, so its column goes.
-  const stages = new Set(rows?.map((row) => row.wave)).size;
+  const stages = new Set(listed?.map((row) => row.wave)).size;
   const [selected, setSelected] = useState<Set<Id<"manufacturers">>>(new Set());
   const [started, setStarted] = useState<number | null>(null);
   const startResearchMany = useMutation(
@@ -102,25 +111,37 @@ export default function ManufacturersPage() {
       {adding && <AddManufacturers />}
 
       <section className="grid min-w-0 gap-3 [--card-pad:16px] md:[--band-hang:12px] md:[--card-pad:32px]">
+        {/* The search first and the filter after it, as on every list; the
+            tab's own actions at the other end. */}
         <ListToolbar>
-          <label htmlFor="status_filter" className="sr-only">
-            {t("columns.status")}
-          </label>
-          <NativeSelect
-            id="status_filter"
-            className={cn("w-full sm:w-48", toolbarField)}
-            value={status}
-            onChange={(event) =>
-              setStatus(event.target.value as Status | "all")
-            }
-          >
-            <option value="all">{t("filterAll")}</option>
-            {statuses.map((value) => (
-              <option key={value} value={value}>
-                {tAdmin(`status.manufacturer.${value}`)}
-              </option>
-            ))}
-          </NativeSelect>
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:w-72"
+            />
+            <label htmlFor="status_filter" className="sr-only">
+              {t("columns.status")}
+            </label>
+            <NativeSelect
+              id="status_filter"
+              className={cn("w-full sm:w-48", toolbarField)}
+              value={status}
+              onChange={(event) =>
+                setStatus(event.target.value as Status | "all")
+              }
+            >
+              <option value="all">{t("filterAll")}</option>
+              {statuses.map((value) => (
+                <option key={value} value={value}>
+                  {tAdmin(`status.manufacturer.${value}`)}
+                </option>
+              ))}
+            </NativeSelect>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
@@ -162,7 +183,9 @@ export default function ManufacturersPage() {
         {rows === undefined ? (
           <Loader2 className="size-5 animate-spin text-ink-3" />
         ) : rows.length === 0 ? (
-          <p className="m-0 text-body text-ink-3">{t("empty")}</p>
+          <p className="m-0 text-body text-ink-3">
+            {search ? t("noResults", { text: search }) : t("empty")}
+          </p>
         ) : (
           <Table
             bleed
@@ -175,17 +198,21 @@ export default function ManufacturersPage() {
                 <TableHead className={cn("w-8", BOX_CELL)}>
                   <span className="sr-only">{t("selectNew")}</span>
                 </TableHead>
-                {/* Each column the room its words need, one after the other;
-                    what's left ends the row, after the last. */}
-                <TableHead className={cn("w-[20rem]", AFTER_BOX)}>
-                  {t("columns.name")}
-                </TableHead>
+                {/* The page's width, as every list is: the name takes what's
+                    left, and the last column ends on the edge. */}
+                <TableHead className={AFTER_BOX}>{t("columns.name")}</TableHead>
                 {stages > 1 && (
                   <TableHead className="w-20">{t("columns.wave")}</TableHead>
                 )}
-                <TableHead className="w-48">{t("columns.status")}</TableHead>
-                <TableHead className="w-36">{t("columns.norms")}</TableHead>
-                <TableHead>{t("columns.confidence")}</TableHead>
+                <TableHead className="w-[200px]">
+                  {t("columns.status")}
+                </TableHead>
+                <TableHead className="w-[140px]">
+                  {t("columns.norms")}
+                </TableHead>
+                <TableHead className="w-[140px] text-right">
+                  {t("columns.confidence")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -298,7 +325,7 @@ export default function ManufacturersPage() {
                           {tAdmin(`status.norms.${row.normsStatus}`)}
                         </span>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-right">
                         {row.confidence ? (
                           <Confidence level={row.confidence}>
                             {tAdmin(`confidenceLevel.${row.confidence}`)}

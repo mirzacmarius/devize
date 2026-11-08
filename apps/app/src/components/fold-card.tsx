@@ -90,7 +90,7 @@ export function RailLabel({
     <h3
       data-rail-label
       className={cn(
-        "m-0 mb-1 mt-4 hidden text-head text-ink-3 xl:block",
+        "m-0 mb-1 mt-4 hidden text-head text-ink-2 xl:block",
         className,
       )}
     >

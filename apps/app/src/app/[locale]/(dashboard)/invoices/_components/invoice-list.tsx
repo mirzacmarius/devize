@@ -28,6 +28,7 @@ import {
   InvoiceStatusPill,
 } from "@/components/invoice-status";
 import { ListToolbar } from "@/components/list-toolbar";
+import { Nil } from "@/components/nil";
 import { SegmentedControl } from "@/components/segmented-control";
 import {
   formatCalendarDay,
@@ -136,12 +137,14 @@ export function InvoiceList() {
                 ) : receivable.overdue > 0 ? (
                   formatMoney(receivable.overdue, locale)
                 ) : (
-                  <span className="text-ink-3">0</span>
+                  // Nothing late: a quiet dash, not a figure to read.
+                  <Nil />
                 )
               }
-              unit="lei"
+              unit={receivable && receivable.overdue > 0 ? "lei" : undefined}
               note={
                 receivable &&
+                receivable.overdueCount > 0 &&
                 t("receivable.invoices", { count: receivable.overdueCount })
               }
             />
@@ -282,10 +285,12 @@ export function InvoiceList() {
                     </TableCell>
                     {/* What's still to come in is what this list is read for. */}
                     <TableCell className="hidden pl-8 text-right tabular-nums xl:table-cell">
-                      {owed !== undefined && (
+                      {owed ? (
                         <span className="font-medium">
                           {formatMoney(owed, locale)}
                         </span>
+                      ) : (
+                        <Nil />
                       )}
                     </TableCell>
                     <TableCell className="hidden text-right text-meta text-ink-3 tabular-nums md:table-cell md:max-xl:pr-0">

@@ -92,7 +92,7 @@ export function ItemsCard({
     <Card id="items" className="scroll-mt-4">
       <CardHeader className="grid justify-items-start gap-1">
         {/* Its name and how many, as Camere says it above. */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-baseline gap-2">
           <CardTitle>{t("title")}</CardTitle>
           {items.length > 0 && <Count tone="plain">{items.length}</Count>}
         </div>
@@ -110,7 +110,7 @@ export function ItemsCard({
             <li
               aria-hidden
               className={cn(
-                "hidden pb-2.5 text-head text-ink-3 md:grid",
+                "hidden pb-2.5 text-head text-ink-2 md:grid",
                 COLUMNS,
                 groups.loose.length > 0 && "border-b border-rule",
               )}

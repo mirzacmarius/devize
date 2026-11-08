@@ -86,10 +86,10 @@ export function RoomsCard({
 
   return (
     <Card>
-      <CardHeader className="flex-wrap">
+      <CardHeader className="flex-wrap items-baseline">
         {/* As every section says it: its name, how many, then what holds for
-            all of them. */}
-        <div className="flex items-center gap-2">
+            all of them, on one baseline. */}
+        <div className="flex items-baseline gap-2">
           <CardTitle>{t("title")}</CardTitle>
           {rooms.length > 0 && <Count tone="plain">{rooms.length}</Count>}
           {onlyLevel && (
@@ -103,11 +103,7 @@ export function RoomsCard({
           </Button>
         )}
         {locked && (
-          <LockedNote
-            estimateId={estimateId}
-            label={tTakeoff("locked")}
-            className="self-start pt-[3px]"
-          />
+          <LockedNote estimateId={estimateId} label={tTakeoff("locked")} />
         )}
       </CardHeader>
       <CardContent>

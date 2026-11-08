@@ -32,6 +32,7 @@ import { Fragment, type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
+import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
@@ -387,8 +388,9 @@ function RowsTable({
     groupValues.set(row.group, (groupValues.get(row.group) ?? 0) + row.value);
   }
 
-  // What's not there is blank, so the period's figures stand out.
-  const ifAny = (value: number, shown: string) => (value === 0 ? null : shown);
+  // What's not there is a quiet dash, so the period's figures stand out.
+  const ifAny = (value: number, shown: string) =>
+    value === 0 ? <Nil /> : shown;
 
   return (
     <Table bleed stack className="xl:min-w-[50rem]">
@@ -609,13 +611,10 @@ function RowsTable({
                 </TableCell>
                 <TableCell className={ROOMY_CELL}>
                   <Reference>
-                    {ifAny(
-                      Math.max(0, row.remainingQuantity),
-                      formatQuantity(
-                        Math.max(0, row.remainingQuantity),
-                        locale,
-                      ),
-                    )}
+                    {/* All of it done says so, rather than a zero. */}
+                    {row.remainingQuantity <= 0
+                      ? t("complete")
+                      : formatQuantity(row.remainingQuantity, locale)}
                   </Reference>
                 </TableCell>
                 <TableCell

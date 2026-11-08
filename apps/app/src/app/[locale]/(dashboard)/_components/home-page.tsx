@@ -300,7 +300,7 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
             "max-sm:hidden",
         )}
       >
-        <h4 className="m-0 pb-1.5 text-head text-ink-3">{title}</h4>
+        <h4 className="m-0 pb-1.5 text-head text-ink-2">{title}</h4>
         <ul className="m-0 grid list-none p-0">
           {first}
           {items.map((item) => (
@@ -434,6 +434,15 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   if ((item.kind === "deadline" || item.kind === "expiring") && isNow(item)) {
     tone = "warning";
   }
+  // How soon, when it can wait, is a step back from a sum.
+  if (
+    (item.kind === "deadline" ||
+      item.kind === "expiring" ||
+      item.kind === "unread") &&
+    tone === "quiet"
+  ) {
+    figureClass = "text-ink-2";
+  }
 
   return (
     <TodoLine
@@ -453,8 +462,8 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
 const todoTones = {
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
-  // Every line has its tile; only what can't wait has a colour.
-  quiet: "bg-sunken text-ink-3",
+  // Only what can't wait has a tile: the rest is its mark alone.
+  quiet: "text-ink-3",
 };
 
 /**
@@ -567,7 +576,7 @@ function RecentCard({
         ) : (
           // Under heads on the to-do list's label's line, so the two lists' lines match.
           <section className="grid">
-            <div className="flex justify-between gap-4 pb-1.5 text-head text-ink-3 max-sm:hidden">
+            <div className="flex justify-between gap-4 pb-1.5 text-head text-ink-2 max-sm:hidden">
               <h4 className="m-0 [font:inherit]">{t("columnEstimate")}</h4>
               <span>{t("columnTotal")}</span>
             </div>

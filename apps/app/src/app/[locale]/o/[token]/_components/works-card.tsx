@@ -91,7 +91,7 @@ export function WorksCard({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
+        <div className="flex items-baseline gap-2">
           <CardTitle>{t("title")}</CardTitle>
           <Count tone="plain">{offer.items.length}</Count>
           <span className="ml-1 text-meta text-ink-3">{t("amounts")}</span>

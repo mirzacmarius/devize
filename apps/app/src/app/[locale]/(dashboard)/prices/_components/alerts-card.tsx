@@ -15,7 +15,6 @@ import { useMutation } from "convex/react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Lei } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { useRun } from "@/components/use-run";
@@ -31,9 +30,15 @@ import { signedMoney } from "./prices-view";
 import { ThresholdControl } from "./threshold-control";
 import type { AlertList, PriceAlert } from "./types";
 
-// What it was, then what it is now: the old figure and the arrow a step back,
-// the new one in ink, in a slot of its own so the arrows line up.
-const OUTCOME = "inline-block min-w-[5.5rem] text-right font-medium text-ink";
+// What it was and what it is now, each in a column of its own under its head:
+// the old figure a step back, the new one weighted.
+const TOTALS =
+  "grid shrink-0 grid-cols-[7rem_7rem] items-baseline justify-items-end tabular-nums";
+// A price before and now, what it's per, and what the change does to the total.
+const CHANGES =
+  "grid shrink-0 grid-cols-[5rem_5rem_3rem_6.5rem] items-baseline justify-items-end tabular-nums";
+const ROW =
+  "flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5 text-body";
 
 /**
  * The firm's sent and accepted devize whose total today's prices move past
@@ -185,109 +190,85 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
       </div>
 
       {/* What it does to the profit first: it's what the firm stands to lose.
-          Both sides share one set of rows, so their rules fall on one line and
-          they end together. */}
+          Under it, what was and what is in columns of their own, with their
+          heads over them. Both sides share one set of rows, so their rules
+          fall on one line and they end together. */}
       <div className="grid gap-x-12 gap-y-5 xl:grid-cols-2 xl:gap-y-0">
         <div className="grid content-start xl:row-span-6 xl:grid-rows-subgrid">
-          <div className="grid gap-1 pb-3 xl:row-span-2 xl:gap-px xl:pb-1">
+          <div className="grid gap-1 pb-2 xl:row-span-2 xl:gap-px">
             <p className="m-0 text-meta text-ink-2">
               {profitChange < 0 ? t("profitDown") : t("profitUp")}
             </p>
-            <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
-              <span
-                className={cn(
-                  "text-figure tabular-nums",
-                  // The tile says it's a warning; the figure stays in ink.
-                  profitChange < 0 ? "text-ink" : "text-success",
-                )}
-              >
-                {/* The label over it says which way it went. */}
-                {money(Math.abs(profitChange))}
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+              <p className="m-0 flex items-baseline gap-x-1.5">
+                <span
+                  className={cn(
+                    "text-stat tabular-nums",
+                    // The tile says it's a warning; the figure stays in ink.
+                    profitChange < 0 ? "text-ink" : "text-success",
+                  )}
+                >
+                  {/* The label over it says which way it went. */}
+                  {money(Math.abs(profitChange))}
+                </span>
+                <span className="text-meta text-ink-3">lei</span>
+              </p>
+              <span aria-hidden className={cn(TOTALS, "text-head text-ink-2")}>
+                <span>{t("before")}</span>
+                <span>{t("now")}</span>
               </span>
-              <span className="text-meta text-ink-3">lei</span>
-            </p>
+            </div>
           </div>
           <dl className="contents">
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-body text-ink-2">
-                {t("total")}
-                {" · "}
-                {dearer ? t("up", { percent }) : t("down", { percent })}
-              </dt>
-              <dd className="m-0 text-body tabular-nums text-ink-3">
-                {t("fromTo", {
-                  from: money(alert.sentTotal),
-                  to: (
-                    <span className={OUTCOME}>{money(alert.currentTotal)}</span>
-                  ),
-                })}
-                {"\u00a0"}lei
-              </dd>
-            </div>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-body text-ink-2">{t("direct")}</dt>
-              <dd className="m-0 text-body tabular-nums text-ink-3">
-                {t("fromTo", {
-                  from: money(alert.sentDirect),
-                  to: (
-                    <span className={OUTCOME}>
-                      {money(alert.currentDirect)}
-                    </span>
-                  ),
-                })}
-                {"\u00a0"}lei
-              </dd>
-            </div>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
-              <dt className="text-body text-ink-2">{t("profit")}</dt>
-              <dd className="m-0 text-body tabular-nums text-ink-3">
-                {t("fromTo", {
-                  from: money(alert.sentProfit),
-                  to: (
-                    <span
-                      className={cn(
-                        OUTCOME,
-                        alert.profitLeft < 0 && "text-danger",
-                      )}
-                    >
-                      {money(alert.profitLeft)}
-                    </span>
-                  ),
-                })}
-                {"\u00a0"}lei
-              </dd>
-            </div>
+            <TotalRow
+              label={`${t("total")} · ${
+                dearer ? t("up", { percent }) : t("down", { percent })
+              }`}
+              before={money(alert.sentTotal)}
+              now={money(alert.currentTotal)}
+            />
+            <TotalRow
+              label={t("direct")}
+              before={money(alert.sentDirect)}
+              now={money(alert.currentDirect)}
+            />
+            <TotalRow
+              label={t("profit")}
+              before={money(alert.sentProfit)}
+              now={money(alert.profitLeft)}
+              danger={alert.profitLeft < 0}
+            />
           </dl>
         </div>
 
         {alert.changes.length > 0 && (
           <div className="grid content-start xl:row-span-6 xl:grid-rows-subgrid">
             {/* Down to the rule both halves' rows start under. */}
-            <p className="m-0 pb-2 text-meta text-ink-2 xl:row-span-2 xl:self-end">
-              {t("changes")}
-            </p>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 pb-2 xl:row-span-2 xl:self-end">
+              <p className="m-0 text-meta text-ink-2">{t("changes")}</p>
+              <span aria-hidden className={cn(CHANGES, "text-head text-ink-2")}>
+                <span>{t("before")}</span>
+                <span>{t("now")}</span>
+                <span />
+                <span>{t("impact")}</span>
+              </span>
+            </div>
             <dl className="contents">
               {alert.changes.map((change) => (
-                <div
-                  key={`${change.name}:${change.unit}`}
-                  className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 border-t border-border py-1.5 text-body sm:grid-cols-[minmax(0,1fr)_auto_7rem]"
-                >
-                  <dt className="col-start-1 row-start-1 text-ink-2">
+                <div key={`${change.name}:${change.unit}`} className={ROW}>
+                  <dt className="min-w-0 flex-1 basis-40 text-ink-2">
                     {change.name}
                   </dt>
-                  <dd className="col-start-1 row-start-2 m-0 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
-                    {t("change", {
-                      from: money(change.oldPrice),
-                      to: (
-                        <span className="text-ink-2 sm:inline-block sm:min-w-[2.75rem] sm:text-right">
-                          {money(change.newPrice)}
-                        </span>
-                      ),
-                      unit: formatUnit(change.unit, locale),
-                    })}
-                  </dd>
-                  <dd className="col-start-2 row-start-1 m-0 whitespace-nowrap text-right font-medium tabular-nums text-ink sm:col-start-3">
-                    <Lei value={signedMoney(change.impact, locale)} />
+                  <dd className={cn(CHANGES, "m-0 ml-auto")}>
+                    <span className="text-ink-3">{money(change.oldPrice)}</span>
+                    <span className="text-ink-2">{money(change.newPrice)}</span>
+                    {/* What the prices are per, after the new one. */}
+                    <span className="justify-self-start pl-1.5 text-meta text-ink-3">
+                      /{formatUnit(change.unit, locale)}
+                    </span>
+                    <span className="font-medium text-ink">
+                      {signedMoney(change.impact, locale)}
+                    </span>
                   </dd>
                 </div>
               ))}
@@ -301,5 +282,30 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         )}
       </div>
     </section>
+  );
+}
+
+/** A total before and now, the new one weighted. */
+function TotalRow({
+  label,
+  before,
+  now,
+  danger = false,
+}: {
+  label: string;
+  before: string;
+  now: string;
+  danger?: boolean;
+}) {
+  return (
+    <div className={ROW}>
+      <dt className="min-w-0 flex-1 basis-40 text-ink-2">{label}</dt>
+      <dd className={cn(TOTALS, "m-0 ml-auto")}>
+        <span className="text-ink-3">{before}</span>
+        <span className={cn("font-medium text-ink", danger && "text-danger")}>
+          {now}
+        </span>
+      </dd>
+    </div>
   );
 }

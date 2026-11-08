@@ -198,8 +198,10 @@ export function LineItemsCard({
 
   return (
     <Card>
-      <CardHeader ref={header} className="flex-wrap">
-        <div className="flex items-center gap-2">
+      {/* The title, its count and what it's in on one baseline, and the
+          note or the buttons at the end on it too. */}
+      <CardHeader ref={header} className="flex-wrap items-baseline">
+        <div className="flex items-baseline gap-2">
           <CardTitle>{t("items.title")}</CardTitle>
           <Count tone="plain">{count}</Count>
           <span className="ml-1 text-meta text-ink-3">{t("items.inLei")}</span>
