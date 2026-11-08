@@ -117,7 +117,6 @@ export function ItemsCard({
             >
               <span className="w-4 text-right">#</span>
               <span>{t("columnItem")}</span>
-              <span>{t("columnState")}</span>
               <span className="text-right">{t("columnInEstimate")}</span>
             </li>
             {rows(groups.loose)}
@@ -153,12 +152,11 @@ export function ItemsCard({
 }
 
 /**
- * From a tablet up: a row's number, title, state and quantity in the Deviz. On
- * a wide page the title takes at most 36rem and the state and the quantity
- * share the rest, so neither stands far from the title it belongs to.
+ * From a tablet up: a row's number, title and quantity in the Deviz, on the
+ * edge as every quantity is. Its state goes on the line under the title, with
+ * its code, as on a phone.
  */
-const COLUMNS =
-  "md:grid-cols-[1.75rem_minmax(0,1fr)_11rem_7rem] xl:grid-cols-[1.75rem_minmax(0,36rem)_minmax(11rem,1fr)_minmax(7rem,1fr)]";
+const COLUMNS = "md:grid-cols-[1.75rem_minmax(0,1fr)_8rem]";
 
 function ItemRow({
   item,
@@ -215,9 +213,6 @@ function ItemRow({
             {index}
           </span>
           <span className="text-body text-ink md:pr-4">{item.title}</span>
-          <span className="hidden min-w-0 flex-wrap gap-x-2 gap-y-0.5 text-ink-3 md:flex">
-            {state}
-          </span>
           <span className="hidden text-right text-body tabular-nums text-ink md:block">
             <span className="sr-only">{t("columnInEstimate")}: </span>
             {formatQuantity(item.quantity, locale)}
@@ -235,7 +230,7 @@ function ItemRow({
                 })}
               </span>
             </span>
-            <span className="contents md:hidden">{state}</span>
+            {state}
           </span>
         </div>
         {!locked && (

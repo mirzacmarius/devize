@@ -88,20 +88,20 @@
    then a band inside a card. Text is off-white, so nothing glares. */
 .dark {
   --shell: 60 3.7% 5.3%; /* #0e0e0d */
-  --panel: 60 4.2% 9.4%; /* #191917 */
+  --panel: 60 3.6% 11%; /* #1d1d1b: a clear step off the shell */
   --weight-figure: 350;
-  --card: 60 1.5% 12.7%; /* #212120 */
-  --card-border: 60 1.5% 25.5%; /* #424240 */
-  --sunken: 60 2.8% 14.1%; /* #252523: a band, one step off the panel */
+  --card: 60 2.9% 13.7%; /* #242422 */
+  --card-border: 60 2.1% 28.4%; /* #4a4a47: an edge that holds at arm's length */
+  --sunken: 60 3.6% 16.3%; /* #2b2b28: a band, a clear step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
-  --selected: 60 2.2% 26.5%; /* #454542: a segment raised on its rail */
+  --selected: 60 2.7% 29.4%; /* #4d4d49: a segment raised on its rail */
   --nav-active: 60 2.3% 17.3%; /* #2d2d2b */
-  --tile: 60 2.4% 16.5%; /* #2b2b29 */
+  --tile: 60 3.2% 18.2%; /* #30302d: hover, a step past a band */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.6;
 
-  --border: 60 1.5% 25.5%; /* #424240, the same as a card's edge */
+  --border: 60 1.5% 25.5%; /* #424240: a hairline, a step under a card's edge */
   --border-control: 60 2.4% 32.5%; /* #555551 */
   --tick-major: 60 2.6% 37.5%; /* #62625d */
   --ruler: 60 2.6% 37.5%; /* #62625d */
@@ -114,7 +114,7 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.6% 62.2%; /* #a2a29b */
 
-  --action: 60 5% 80.2%; /* #cfcfca: the one bright thing on the page, short of a glare */
+  --action: 60 5.2% 77.3%; /* #c8c8c2: the one bright thing on the page, short of a glare */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 

@@ -231,10 +231,9 @@ export function EstimateList() {
                       client, with the total at its end. */}
                   <TableCell className="max-md:flex max-md:min-w-0 max-md:items-baseline">
                     <EstimateStatusPill status={row.status} />
-                    <span className="min-w-0 truncate text-meta tabular-nums text-ink-3 md:hidden">
+                    {/* The client in full; the number is on the Deviz. */}
+                    <span className="min-w-0 truncate text-meta text-ink-3 md:hidden">
                       {"\u00a0· "}
-                      {estimateCode(row.number, row.revision)}
-                      {" · "}
                       {row.clientName ?? t("noClient")}
                     </span>
                   </TableCell>

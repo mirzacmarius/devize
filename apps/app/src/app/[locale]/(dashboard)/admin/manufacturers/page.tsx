@@ -2,6 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import { toolbarField } from "@devize/ui/input";
 import {
@@ -174,14 +175,16 @@ export default function ManufacturersPage() {
                 <TableHead className={cn("w-8", BOX_CELL)}>
                   <span className="sr-only">{t("selectNew")}</span>
                 </TableHead>
-                {/* The names in the room they need; the rest is spread over
-                    what's said about them. */}
+                {/* Each column the room its words need, one after the other;
+                    what's left ends the row, after the last. */}
                 <TableHead className={cn("w-[20rem]", AFTER_BOX)}>
                   {t("columns.name")}
                 </TableHead>
-                {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
-                <TableHead>{t("columns.status")}</TableHead>
-                <TableHead>{t("columns.norms")}</TableHead>
+                {stages > 1 && (
+                  <TableHead className="w-20">{t("columns.wave")}</TableHead>
+                )}
+                <TableHead className="w-48">{t("columns.status")}</TableHead>
+                <TableHead className="w-36">{t("columns.norms")}</TableHead>
                 <TableHead>{t("columns.confidence")}</TableHead>
               </TableRow>
             </TableHeader>
@@ -205,11 +208,12 @@ export default function ManufacturersPage() {
                       data-stack="wide"
                       className="band-start band-end font-medium"
                     >
-                      <span className="flex items-baseline justify-between gap-3">
+                      {/* How many beside the name, as a section's title says it. */}
+                      <span className="flex items-baseline gap-2">
                         {group.name}
-                        <span className="font-normal tabular-nums text-ink-2">
+                        <Count tone="plain" className="font-normal">
                           {group.rows.length}
-                        </span>
+                        </Count>
                       </span>
                     </TableCell>
                   </TableGroupRow>

@@ -22,7 +22,8 @@ export default async function Page() {
   // each with its own address and backend, only the emailed code works.
   const withGoogle = env.VERCEL_ENV !== "preview";
   return (
-    // Both halves share the page's rows, so the form starts on the headline's line.
+    // Both halves share the page's rows: the form stands level with the headline
+    // and the sample, in the middle of its panel.
     <div className="grid min-h-screen w-full bg-shell xl:grid-cols-2 xl:grid-rows-[1fr_auto_1fr] xl:gap-y-8">
       <aside className="hidden min-w-0 justify-items-center px-12 py-10 xl:row-span-3 xl:grid xl:grid-rows-subgrid">
         <Wordmark className="w-full max-w-[520px] self-start text-xl" />
@@ -35,18 +36,19 @@ export default async function Page() {
         </div>
       </aside>
       <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:row-span-3 xl:py-10 xl:m-2 xl:ml-0 xl:grid xl:grid-rows-subgrid xl:justify-normal xl:justify-items-center xl:rounded-2xl xl:shadow-panel">
-        <div className="grid w-full max-w-[400px] gap-6 xl:row-start-2 xl:self-start">
+        <div className="grid w-full max-w-[400px] gap-6 xl:row-start-2 xl:self-center">
           <Wordmark className="text-xl xl:hidden" />
+          {/* A screen's title: the headline is the page's one display line. */}
           <div className="grid gap-1.5">
-            <h1 className="m-0 text-title-page text-ink">{t("heading")}</h1>
+            <h1 className="m-0 text-title-screen text-ink">{t("heading")}</h1>
             <p className="m-0 text-body text-ink-2">{t("description")}</p>
           </div>
           <SignInOptions withGoogle={withGoogle} />
+          {/* Right under the buttons it's about. */}
+          <p className="m-0 mt-2 text-meta text-ink-3">
+            {t("legal", { terms: links.terms, privacy: links.privacy })}
+          </p>
         </div>
-        {/* Under the form; beside the headline, at the panel's foot. */}
-        <p className="m-0 mt-6 w-full max-w-[400px] text-meta text-ink-3 xl:row-start-3 xl:mt-0 xl:self-end">
-          {t("legal", { terms: links.terms, privacy: links.privacy })}
-        </p>
       </main>
     </div>
   );

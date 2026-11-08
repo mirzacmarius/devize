@@ -93,7 +93,7 @@ export function RoomsCard({
           <CardTitle>{t("title")}</CardTitle>
           {rooms.length > 0 && <Count tone="plain">{rooms.length}</Count>}
           {onlyLevel && (
-            <span className="ml-1 text-meta text-ink-3">{onlyLevel}</span>
+            <span className="text-meta text-ink-3">· {onlyLevel}</span>
           )}
         </div>
         {!locked && rooms.length > 0 && (

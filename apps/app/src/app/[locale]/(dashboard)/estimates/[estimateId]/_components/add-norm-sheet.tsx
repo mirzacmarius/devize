@@ -204,14 +204,8 @@ function AddNorm({
         />
       ) : (
         <>
-          <div className="grid gap-2 sm:grid-cols-[14rem_minmax(0,1fr)]">
-            <NormCategorySelect
-              label={t("addNorm.categories")}
-              allLabel={t("addNorm.allCategories")}
-              value={categoryKey}
-              onChange={setCategoryKey}
-              className={cn("max-sm:order-last", toolbarField)}
-            />
+          {/* As on every list: the search first, then what narrows it. */}
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_14rem]">
             <SearchInput
               quiet
               value={text}
@@ -219,6 +213,13 @@ function AddNorm({
               placeholder={t("addNorm.searchPlaceholder")}
               aria-label={t("addNorm.searchPlaceholder")}
               autoFocus
+            />
+            <NormCategorySelect
+              label={t("addNorm.categories")}
+              allLabel={t("addNorm.allCategories")}
+              value={categoryKey}
+              onChange={setCategoryKey}
+              className={toolbarField}
             />
           </div>
           {!search && !category ? (

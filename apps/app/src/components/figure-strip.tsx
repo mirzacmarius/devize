@@ -1,7 +1,6 @@
 import { Card } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import type { ReactNode } from "react";
-import { Amount } from "@/components/amount";
 
 /**
  * The figures a page is about, side by side in one card, with a note under it.
@@ -34,8 +33,7 @@ export function FigureStrip({
 /**
  * One figure of a FigureStrip: what it is, how much, and in what. The rows are
  * the strip's, so the figures share a baseline whatever their size; `lead` is
- * the one the page comes down to, and the only one with its bani a step back:
- * the rest are one tone, so a strip doesn't read as five two-tone objects.
+ * the one the page comes down to, set larger. Every figure is whole, in ink.
  */
 export function Figure({
   label,
@@ -63,7 +61,7 @@ export function Figure({
             lead ? "text-stat sm:text-hero" : "text-figure",
           )}
         >
-          {lead && typeof value === "string" ? <Amount value={value} /> : value}
+          {value}
         </span>
         {unit && <span className="text-meta text-ink-3">{unit}</span>}
       </div>

@@ -31,6 +31,10 @@ import { signedMoney } from "./prices-view";
 import { ThresholdControl } from "./threshold-control";
 import type { AlertList, PriceAlert } from "./types";
 
+// What it was, then what it is now: the old figure and the arrow a step back,
+// the new one in ink, in a slot of its own so the arrows line up.
+const OUTCOME = "inline-block min-w-[5.5rem] text-right font-medium text-ink";
+
 /**
  * The firm's sent and accepted devize whose total today's prices move past
  * its threshold, biggest change first, with a check on demand.
@@ -210,40 +214,47 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 {" · "}
                 {dearer ? t("up", { percent }) : t("down", { percent })}
               </dt>
-              <dd className="m-0 text-body tabular-nums text-ink-2">
+              <dd className="m-0 text-body tabular-nums text-ink-3">
                 {t("fromTo", {
                   from: money(alert.sentTotal),
-                  to: money(alert.currentTotal),
+                  to: (
+                    <span className={OUTCOME}>{money(alert.currentTotal)}</span>
+                  ),
                 })}
-                <span className="text-ink-3">{"\u00a0"}lei</span>
+                {"\u00a0"}lei
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-body text-ink-2">{t("direct")}</dt>
-              <dd className="m-0 text-body tabular-nums text-ink-2">
+              <dd className="m-0 text-body tabular-nums text-ink-3">
                 {t("fromTo", {
                   from: money(alert.sentDirect),
-                  to: money(alert.currentDirect),
+                  to: (
+                    <span className={OUTCOME}>
+                      {money(alert.currentDirect)}
+                    </span>
+                  ),
                 })}
-                <span className="text-ink-3">{"\u00a0"}lei</span>
+                {"\u00a0"}lei
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-body text-ink-2">{t("profit")}</dt>
-              <dd className="m-0 text-body tabular-nums text-ink-2">
+              <dd className="m-0 text-body tabular-nums text-ink-3">
                 {t("fromTo", {
                   from: money(alert.sentProfit),
                   to: (
                     <span
-                      className={
-                        alert.profitLeft < 0 ? "text-danger" : undefined
-                      }
+                      className={cn(
+                        OUTCOME,
+                        alert.profitLeft < 0 && "text-danger",
+                      )}
                     >
                       {money(alert.profitLeft)}
                     </span>
                   ),
                 })}
-                <span className="text-ink-3">{"\u00a0"}lei</span>
+                {"\u00a0"}lei
               </dd>
             </div>
           </dl>
@@ -264,10 +275,14 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   <dt className="col-start-1 row-start-1 text-ink-2">
                     {change.name}
                   </dt>
-                  <dd className="col-start-1 row-start-2 m-0 whitespace-nowrap text-meta tabular-nums text-ink-2 sm:col-start-2 sm:row-start-1 sm:text-right">
+                  <dd className="col-start-1 row-start-2 m-0 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
                     {t("change", {
                       from: money(change.oldPrice),
-                      to: money(change.newPrice),
+                      to: (
+                        <span className="text-ink-2 sm:inline-block sm:min-w-[2.75rem] sm:text-right">
+                          {money(change.newPrice)}
+                        </span>
+                      ),
                       unit: formatUnit(change.unit, locale),
                     })}
                   </dd>

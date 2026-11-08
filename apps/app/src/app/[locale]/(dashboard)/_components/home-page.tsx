@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
-import { Amount, Lei } from "@/components/amount";
+import { Lei } from "@/components/amount";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
 import { FootAction } from "@/components/foot-action";
@@ -232,8 +232,8 @@ function Kpi({
               : "text-base leading-6 text-ink sm:text-figure",
           )}
         >
-          {/* One figure leads; the others are one tone. */}
-          {lead ? <Amount value={value} /> : value}
+          {/* One figure leads, larger; every one is whole, in ink. */}
+          {value}
         </span>
         {unit && (
           <span
@@ -405,12 +405,10 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
         text = t("alert", { code });
       } else {
         const down = item.profitChange < 0;
-        // The words say which way it went.
+        // The words say which way it went, so the figure has no sign.
         text = t(down ? "alertDown" : "alertUp", { code });
         figure = (
-          <Lei
-            value={`${down ? "−" : "+"}${formatMoney(Math.abs(item.profitChange), locale)}`}
-          />
+          <Lei value={formatMoney(Math.abs(item.profitChange), locale)} />
         );
         figureClass = down
           ? "font-medium text-ink"

@@ -76,6 +76,13 @@ function matches(norm: NormRow, words: readonly string[]) {
 // width with a column for it.
 const TABLET_ONLY = "hidden md:inline xl:hidden";
 
+// A cost and what it's per, "70,88 lei/mp": the unit in a slot of its own after
+// the figure, so the figures line up whatever they're per, and the head stands
+// over the figures.
+const PER_UNIT =
+  "ml-1.5 inline-block min-w-[3rem] text-left text-meta text-ink-3";
+const OVER_FIGURES = "last:pr-[54px]";
+
 /**
  * The catalog: the public norms (the producers', then Devize's base norms by
  * category of work), and the firm's own norms with their drafts. Both search by
@@ -376,14 +383,8 @@ function NormsTable({
                 {t("columns.code")}
               </TableHead>
             )}
-            {/* At most 36rem where there's room, the unit taking the rest:
-                with a source and a state beside it, what's left. */}
-            <TableHead
-              className={cn(
-                "md:max-xl:pl-0",
-                !(showSource && showState) && "xl:w-[36rem]",
-              )}
-            >
+            {/* The rest of the row: the cost ends it, on the edge. */}
+            <TableHead className="md:max-xl:pl-0">
               {t("columns.norm")}
             </TableHead>
             {showSource && (
@@ -402,10 +403,10 @@ function NormsTable({
                 {t("columns.updated")}
               </TableHead>
             )}
-            <TableHead className="hidden w-14 md:table-cell xl:w-auto xl:text-center">
-              {t("columns.unit")}
-            </TableHead>
-            <TableHead className="w-32 text-right" title={t("costNote")}>
+            <TableHead
+              className={cn("w-40 text-right", OVER_FIGURES)}
+              title={t("costNote")}
+            >
               {t("columns.cost")}
             </TableHead>
           </TableRow>
@@ -564,21 +565,18 @@ function NormsTable({
                       {formatDay(norm.updatedAt, locale)}
                     </TableCell>
                   )}
-                  <TableCell className="hidden whitespace-nowrap md:table-cell xl:text-center">
-                    <span className="text-meta text-ink-3">
-                      {formatUnit(norm.unit, locale)}
-                    </span>
-                  </TableCell>
                   <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top">
                     {norm.referenceCost === undefined ? (
-                      <StatusPill tone="warning">{t("noCost")}</StatusPill>
+                      // Where the figures end, as the head does.
+                      <StatusPill tone="warning" className="mr-[54px]">
+                        {t("noCost")}
+                      </StatusPill>
                     ) : (
                       <>
                         <span className="font-medium">
                           {formatMoney(norm.referenceCost, locale)}
                         </span>
-                        {/* A phone has no heads to say it. */}
-                        <span className="ml-2 text-meta text-ink-3 md:hidden">
+                        <span className={PER_UNIT}>
                           lei/{formatUnit(norm.unit, locale)}
                         </span>
                       </>
