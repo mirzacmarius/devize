@@ -34,9 +34,11 @@ import type { Item, Room, Section, Takeoff, Target } from "./types";
 type Grouped = Item & { totals: { total: number } };
 
 // A group's heading, as on the Deviz: a band over the titles, and what it comes
-// to, here how many of its Articole are measured, at the end.
+// to, here how many of its Articole are measured, at the end. Square, with the
+// head's and the rows' rules running as far, as every banded table's do.
 const bandClass =
-  "-mx-[var(--card-pad)] flex min-h-9 items-center justify-between gap-4 rounded-md bg-sunken py-1 pl-[calc(var(--card-pad)+1.75rem)] pr-[var(--card-pad)] text-body font-medium text-ink";
+  "-mx-[var(--card-pad)] flex min-h-9 items-center justify-between gap-4 bg-sunken py-1 pl-[calc(var(--card-pad)+1.75rem)] pr-[var(--card-pad)] text-body font-medium text-ink";
+const RULED = "md:-mx-[var(--card-pad)] md:px-[var(--card-pad)]";
 
 /**
  * The Articole of a Deviz with their Antemăsurători: each measured from the
@@ -110,9 +112,10 @@ export function ItemsCard({
             <li
               aria-hidden
               className={cn(
-                "hidden pb-2.5 text-head text-ink-2 md:grid",
+                // Its rule over a band too, as every table's head keeps.
+                "hidden !border-b border-rule pb-2.5 text-head text-ink-2 md:grid",
                 COLUMNS,
-                groups.loose.length > 0 && "border-b border-rule",
+                RULED,
               )}
             >
               <span className="w-4 text-right">#</span>
@@ -201,7 +204,12 @@ function ItemRow({
   );
 
   return (
-    <li className="grid gap-1.5 border-b border-border py-3 last:border-0 md:py-2">
+    <li
+      className={cn(
+        "grid gap-1.5 border-b border-border py-3 last:border-0 md:py-2",
+        RULED,
+      )}
+    >
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div
           className={cn(

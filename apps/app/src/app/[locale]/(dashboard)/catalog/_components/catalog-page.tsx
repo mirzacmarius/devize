@@ -566,10 +566,11 @@ function NormsTable({
                   )}
                   <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top">
                     {norm.referenceCost === undefined ? (
-                      // Under the head, where the figures end.
-                      <StatusPill tone="warning" className="mr-[54px]">
+                      // Under the head, where the figures end: a fact, quiet, since
+                      // nobody here can act on it.
+                      <span className="mr-[54px] text-meta text-ink-3">
                         {t("noCost")}
-                      </StatusPill>
+                      </span>
                     ) : (
                       <>
                         <span className="text-ink">

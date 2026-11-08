@@ -571,29 +571,10 @@
       margin-top: -24px;
     }
   }
-  /* A bar at the screen's foot: a layer over the list, with its own rule. */
+  /* A bar at the screen's foot: a layer over the list, with its own rule. What
+     passes under it ends on the rule, cleanly, never half faded above it. */
   .foot-bar {
     border-top: 1px solid hsl(var(--border));
-  }
-  .foot-bar::before {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    bottom: calc(100% + 1px);
-    /* From the rule, 12 px of the page and then a soft end: what passes under
-       it is gone before it could be half read. */
-    height: 28px;
-    background: linear-gradient(
-      to top,
-      hsl(var(--panel)) 12px,
-      hsl(var(--panel) / 0.92) 15px,
-      hsl(var(--panel) / 0.72) 18px,
-      hsl(var(--panel) / 0.44) 20.5px,
-      hsl(var(--panel) / 0.19) 23.5px,
-      hsl(var(--panel) / 0.03) 26.5px,
-      hsl(var(--panel) / 0) 28px
-    );
-    pointer-events: none;
   }
   /* A page's main action stands among its buttons; on a phone it's in a bar at
      the screen's foot, under the thumb, and the page scrolls out from under it. */
@@ -809,6 +790,16 @@
     .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:first-child::before,
     .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:last-child::after {
       border-bottom-color: hsl(var(--rule));
+    }
+    /* The totals' double rule, as far. */
+    .table-bleed > tbody > tr[data-total] > td:first-child::before,
+    .table-bleed > tbody > tr[data-total] > td:last-child::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      width: var(--band-hang, var(--card-pad));
+      border-top: 3px double hsl(var(--rule));
+      pointer-events: none;
     }
     .table-bleed > :is(thead, tbody) > tr > :first-child::before {
       right: 100%;
