@@ -4600,7 +4600,7 @@ export default {
       now: "Today",
       impact: "Impact",
       estimate: "The estimate",
-      profitLeft: "Profit left: {amount} lei",
+      profitLeft: "{amount} lei left",
       changes: "Biggest changes",
       more: "And {count} more resources with a new price.",
       checked: "Checked {date}",

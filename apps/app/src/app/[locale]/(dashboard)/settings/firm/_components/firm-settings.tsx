@@ -26,6 +26,7 @@ import { Switch } from "@devize/ui/switch";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
+import { Upload } from "lucide-react";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { Field } from "@/components/field";
 import { useFirm } from "@/components/firm-provider";
@@ -199,7 +200,12 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
               disabled={busy}
               onClick={() => document.getElementById(inputId)?.click()}
             >
-              {busy && <Icons.Loader className="animate-spin" aria-hidden />}
+              {/* With its mark, as every outlined button that does something. */}
+              {busy ? (
+                <Icons.Loader className="animate-spin" aria-hidden />
+              ) : (
+                <Upload aria-hidden />
+              )}
               {firm.logoUrl ? t("changeLogo") : t("uploadLogo")}
             </Button>
             <input

@@ -92,7 +92,7 @@ export function AddNormSheet({
           </SheetDescription>
         </SheetHeader>
         {/* The list scrolls; what's in the Deviz by now, and the way out, stay. */}
-        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-1 [mask-image:linear-gradient(to_top,transparent_0_8px,rgb(0_0_0/0.3)_18px,rgb(0_0_0/0.7)_28px,#000_40px)]">
+        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-1">
           {open && (
             <AddNorm
               estimate={estimate}

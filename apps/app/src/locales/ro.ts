@@ -4598,7 +4598,7 @@ export default {
       now: "Azi",
       impact: "Impact",
       estimate: "Devizul",
-      profitLeft: "Profit rămas: {amount} lei",
+      profitLeft: "Rămân {amount} lei",
       changes: "Cele mai mari schimbări",
       more: "Și încă {count} resurse cu prețul schimbat.",
       checked: "Verificat {date}",

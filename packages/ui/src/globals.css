@@ -773,8 +773,20 @@
      edge, its bands', its head's and its rows' alike. */
   @media (min-width: 768px) {
     .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:is(:first-child, :last-child),
-    .table-bleed > tbody > tr:not([data-band]) > td:is(:first-child, :last-child) {
+    /* A row's end is its last cell, or the one before a last cell that's only
+       for a phone. */
+    .table-bleed > tbody > tr:not([data-band]) > td:is(:first-child, :last-child),
+    .table-bleed > tbody > tr:not([data-band]) > td:has(+ td[class~="md:hidden"]:last-child) {
       position: relative;
+    }
+    .table-bleed > tbody > tr:not([data-band], :last-child, :has(+ [data-group])) > td:has(+ td[class~="md:hidden"]:last-child)::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 100%;
+      width: var(--band-hang, var(--card-pad));
+      border-bottom: 1px solid hsl(var(--border));
+      pointer-events: none;
     }
     .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:first-child::before,
     .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:last-child::after,

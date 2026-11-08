@@ -92,8 +92,9 @@ export function RoomsCard({
         <div className="flex items-baseline gap-2 pt-1">
           <CardTitle>{t("title")}</CardTitle>
           {rooms.length > 0 && <Count tone="plain">{rooms.length}</Count>}
+          {/* In the note's place, as "sume în lei" stands elsewhere. */}
           {onlyLevel && (
-            <span className="text-meta text-ink-3">· {onlyLevel}</span>
+            <span className="ml-1 text-meta text-ink-3">{onlyLevel}</span>
           )}
         </div>
         {!locked && rooms.length > 0 && (
