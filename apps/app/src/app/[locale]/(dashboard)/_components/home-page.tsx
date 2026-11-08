@@ -353,7 +353,8 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
                   icon={FileClock}
                   tone="danger"
                   text={t("anaf")}
-                  sub={t("anafSub")}
+                  // Late, in the words and the red Facturi says it in.
+                  sub={<StatusPill tone="danger">{t("anafSub")}</StatusPill>}
                   figure={t("anafCount", { count: late.late })}
                   figureClass="font-medium text-ink"
                 />
@@ -478,7 +479,7 @@ function TodoLine({
   icon: LucideIcon;
   tone: keyof typeof todoTones;
   text: string;
-  sub: string;
+  sub: ReactNode;
   note?: string;
   figure?: ReactNode;
   figureClass: string;

@@ -2,6 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -90,7 +91,11 @@ export function ItemsCard({
   return (
     <Card id="items" className="scroll-mt-4">
       <CardHeader className="grid justify-items-start gap-1">
-        <CardTitle>{t("title")}</CardTitle>
+        {/* Its name and how many, as Camere says it above. */}
+        <div className="flex items-center gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          {items.length > 0 && <Count tone="plain">{items.length}</Count>}
+        </div>
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -147,8 +152,13 @@ export function ItemsCard({
   );
 }
 
-/** From a tablet up: a row's number, title, state and quantity in the Deviz. */
-const COLUMNS = "md:grid-cols-[1.75rem_minmax(0,1fr)_11rem_7rem]";
+/**
+ * From a tablet up: a row's number, title, state and quantity in the Deviz. On
+ * a wide page the title takes at most 36rem and the state and the quantity
+ * share the rest, so neither stands far from the title it belongs to.
+ */
+const COLUMNS =
+  "md:grid-cols-[1.75rem_minmax(0,1fr)_11rem_7rem] xl:grid-cols-[1.75rem_minmax(0,36rem)_minmax(11rem,1fr)_minmax(7rem,1fr)]";
 
 function ItemRow({
   item,

@@ -6,7 +6,6 @@ import { Button } from "@devize/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useState } from "react";
-import { Amount } from "@/components/amount";
 import { EurAmount } from "@/components/eur-amount";
 import { useTriggerWords } from "@/components/payment-schedule";
 import { formatMoney, formatPercent } from "@/lib/format";
@@ -133,7 +132,7 @@ export function PriceCard({
               {hasVat ? t("total") : t("totalNoVat")}
             </dt>
             <dd className="m-0 text-figure tabular-nums text-ink">
-              <Amount value={formatMoney(totals.total, locale)} />{" "}
+              {formatMoney(totals.total, locale)}{" "}
               <span className="text-meta text-ink-3">lei</span>
             </dd>
           </div>

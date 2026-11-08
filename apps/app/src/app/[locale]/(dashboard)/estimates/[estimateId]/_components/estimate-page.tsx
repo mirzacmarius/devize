@@ -253,7 +253,9 @@ export function EstimatePage() {
           />
         </div>
       </div>
-      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11">
+      {/* The Articole's bands hang 12px past it: the rail keeps 44px from
+          them. */}
+      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-14">
         <div className="grid min-w-0 gap-6">
           {/* Level with the rail's top: the two things the page comes down to. */}
           <div ref={hero}>

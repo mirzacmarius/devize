@@ -163,21 +163,26 @@ export default function ManufacturersPage() {
         ) : rows.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (
-          <Table bleed className="min-w-[42rem]">
+          <Table
+            bleed
+            // Every cell on its row's first line, as Facturi has them: a note
+            // under a state doesn't move the name beside it.
+            className="min-w-[42rem] [&>tbody>tr:not([data-group])>td]:py-[11px] [&>tbody>tr:not([data-group])>td]:align-baseline"
+          >
             <TableHeader>
               <TableRow>
                 <TableHead className={cn("w-8", BOX_CELL)}>
                   <span className="sr-only">{t("selectNew")}</span>
                 </TableHead>
-                <TableHead className={cn("w-[56%]", AFTER_BOX)}>
+                {/* The names in the room they need; the rest is spread over
+                    what's said about them. */}
+                <TableHead className={cn("w-[20rem]", AFTER_BOX)}>
                   {t("columns.name")}
                 </TableHead>
                 {stages > 1 && <TableHead>{t("columns.wave")}</TableHead>}
-                <TableHead className="w-[16%]">{t("columns.status")}</TableHead>
-                <TableHead className="w-[14%]">{t("columns.norms")}</TableHead>
-                <TableHead className="w-[14%]">
-                  {t("columns.confidence")}
-                </TableHead>
+                <TableHead>{t("columns.status")}</TableHead>
+                <TableHead>{t("columns.norms")}</TableHead>
+                <TableHead>{t("columns.confidence")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

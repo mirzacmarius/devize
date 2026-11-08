@@ -129,7 +129,26 @@ export function EstimateList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          <ListToolbar>
+          {/* As on every list: the search first, where the table starts,
+              then what filters it. */}
+          <ListToolbar className="sm:justify-start">
+            <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
+              <SearchInput
+                quiet
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="w-full sm:w-80"
+              />
+              <Button
+                variant="outline"
+                className="h-11 shrink-0 sm:hidden"
+                onClick={() => setBrowsing(true)}
+              >
+                {tt("open")}
+              </Button>
+            </div>
             <SegmentedControl
               label={t("filterLabel")}
               className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center sm:p-0.5"
@@ -143,23 +162,6 @@ export function EstimateList() {
                 label: t(`filters.${value}`),
               }))}
             />
-            <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1 sm:justify-end">
-              <SearchInput
-                quiet
-                value={text}
-                onChange={(event) => setText(event.target.value)}
-                placeholder={t("searchPlaceholder")}
-                aria-label={t("searchPlaceholder")}
-                className="w-full sm:max-w-xs"
-              />
-              <Button
-                variant="outline"
-                className="h-11 shrink-0 sm:hidden"
-                onClick={() => setBrowsing(true)}
-              >
-                {tt("open")}
-              </Button>
-            </div>
           </ListToolbar>
           <Table stack twoLine="below-xl">
             <TableHeader>
@@ -213,12 +215,10 @@ export function EstimateList() {
                       <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
                         {row.title}
                       </span>
-                      <span className="truncate text-meta tabular-nums text-ink-3 xl:hidden">
+                      {/* Below xl the number has no column; on a phone it's
+                          on the state's line. */}
+                      <span className="truncate text-meta tabular-nums text-ink-3 max-md:hidden xl:hidden">
                         {estimateCode(row.number, row.revision)}
-                        <span className="md:hidden">
-                          {" · "}
-                          {row.clientName ?? t("noClient")}
-                        </span>
                       </span>
                     </Link>
                   </TableCell>
@@ -227,8 +227,16 @@ export function EstimateList() {
                       <span className="text-ink-3">{t("noClient")}</span>
                     )}
                   </TableCell>
-                  <TableCell>
+                  {/* On a phone a row's second line: its state, number and
+                      client, with the total at its end. */}
+                  <TableCell className="max-md:flex max-md:min-w-0 max-md:items-baseline">
                     <EstimateStatusPill status={row.status} />
+                    <span className="min-w-0 truncate text-meta tabular-nums text-ink-3 md:hidden">
+                      {"\u00a0· "}
+                      {estimateCode(row.number, row.revision)}
+                      {" · "}
+                      {row.clientName ?? t("noClient")}
+                    </span>
                   </TableCell>
                   <TableCell className="text-right text-body font-medium tabular-nums">
                     {formatMoney(row.total, locale)}

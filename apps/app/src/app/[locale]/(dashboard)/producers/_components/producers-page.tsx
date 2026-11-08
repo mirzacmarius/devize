@@ -94,15 +94,16 @@ export function ProducersPage() {
                   <TableHead className="md:w-[18rem]">
                     {t("columns.name")}
                   </TableHead>
-                  {/* Words, in the room the row has; the counts end it, on the
-                      edge where every list ends its figures. */}
-                  <TableHead className="hidden md:table-cell">
+                  {/* Words, in the room they need where there's room; the
+                      counts share the rest and end the row, on the edge where
+                      every list ends its figures. */}
+                  <TableHead className="hidden md:table-cell xl:w-[22rem]">
                     {t("columns.categories")}
                   </TableHead>
-                  <TableHead className="w-20 text-right">
+                  <TableHead className="text-right">
                     {t("columns.edition")}
                   </TableHead>
-                  <TableHead className="w-20 text-right">
+                  <TableHead className="text-right">
                     {t("columns.norms")}
                   </TableHead>
                 </TableRow>

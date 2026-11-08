@@ -184,7 +184,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
           Both sides share one set of rows, so their rules fall on one line and
           they end together. */}
       <div className="grid gap-x-12 gap-y-5 xl:grid-cols-2 xl:gap-y-0">
-        <div className="grid content-start xl:row-span-5 xl:grid-rows-subgrid">
+        <div className="grid content-start xl:row-span-6 xl:grid-rows-subgrid">
           <div className="grid gap-1 pb-3 xl:row-span-2 xl:gap-px xl:pb-1">
             <p className="m-0 text-meta text-ink-2">
               {profitChange < 0 ? t("profitDown") : t("profitUp")}
@@ -210,41 +210,33 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 {" · "}
                 {dearer ? t("up", { percent }) : t("down", { percent })}
               </dt>
-              <dd className="m-0 text-body tabular-nums text-ink-3">
+              <dd className="m-0 text-body tabular-nums text-ink-2">
                 {t("fromTo", {
                   from: money(alert.sentTotal),
-                  to: (
-                    <span className="text-ink">
-                      {money(alert.currentTotal)}
-                    </span>
-                  ),
+                  to: money(alert.currentTotal),
                 })}
                 <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-body text-ink-2">{t("direct")}</dt>
-              <dd className="m-0 text-body tabular-nums text-ink-3">
+              <dd className="m-0 text-body tabular-nums text-ink-2">
                 {t("fromTo", {
                   from: money(alert.sentDirect),
-                  to: (
-                    <span className="text-ink">
-                      {money(alert.currentDirect)}
-                    </span>
-                  ),
+                  to: money(alert.currentDirect),
                 })}
                 <span className="text-ink-3">{"\u00a0"}lei</span>
               </dd>
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5">
               <dt className="text-body text-ink-2">{t("profit")}</dt>
-              <dd className="m-0 text-body tabular-nums text-ink-3">
+              <dd className="m-0 text-body tabular-nums text-ink-2">
                 {t("fromTo", {
                   from: money(alert.sentProfit),
                   to: (
                     <span
                       className={
-                        alert.profitLeft < 0 ? "text-danger" : "text-ink"
+                        alert.profitLeft < 0 ? "text-danger" : undefined
                       }
                     >
                       {money(alert.profitLeft)}
@@ -258,8 +250,11 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         </div>
 
         {alert.changes.length > 0 && (
-          <div className="grid content-start xl:row-span-5 xl:grid-rows-subgrid">
-            <p className="m-0 pb-2 text-meta text-ink-2">{t("changes")}</p>
+          <div className="grid content-start xl:row-span-6 xl:grid-rows-subgrid">
+            {/* Down to the rule both halves' rows start under. */}
+            <p className="m-0 pb-2 text-meta text-ink-2 xl:row-span-2 xl:self-end">
+              {t("changes")}
+            </p>
             <dl className="contents">
               {alert.changes.map((change) => (
                 <div
@@ -269,14 +264,10 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   <dt className="col-start-1 row-start-1 text-ink-2">
                     {change.name}
                   </dt>
-                  <dd className="col-start-1 row-start-2 m-0 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
+                  <dd className="col-start-1 row-start-2 m-0 whitespace-nowrap text-meta tabular-nums text-ink-2 sm:col-start-2 sm:row-start-1 sm:text-right">
                     {t("change", {
                       from: money(change.oldPrice),
-                      to: (
-                        <span className="text-ink">
-                          {money(change.newPrice)}
-                        </span>
-                      ),
+                      to: money(change.newPrice),
                       unit: formatUnit(change.unit, locale),
                     })}
                   </dd>

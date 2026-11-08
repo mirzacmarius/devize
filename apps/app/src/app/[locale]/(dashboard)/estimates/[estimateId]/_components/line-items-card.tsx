@@ -578,7 +578,8 @@ function ItemRows({
   const unit = formatUnit(item.unit, locale);
   const price = formatMoney(unitPrice(item), locale);
   // A price the shops have changed since, while it can still be updated: a dot
-  // by the price, wherever it shows; the rail says it in words, once.
+  // by the price and the price in the warning's colour, wherever it shows; the
+  // rail says it in words, once.
   const stale = editable && newPrice && (
     <StaleMark label={t("tags.oldPrice")} />
   );
@@ -659,7 +660,9 @@ function ItemRows({
                 ))}
               <span className={MID_ONLY}>
                 {" · "}
-                <span className="whitespace-nowrap">
+                <span
+                  className={cn("whitespace-nowrap", stale && "text-warning")}
+                >
                   {stale}
                   {t("items.pricePerUnit", { price, unit })}
                 </span>
@@ -675,7 +678,7 @@ function ItemRows({
                 NARROW_ONLY,
               )}
             >
-              <span>
+              <span className={cn(stale && "text-warning")}>
                 {stale}
                 {t("items.quantityTimesPrice", {
                   quantity: formatQuantity(item.quantity, locale),
@@ -740,6 +743,7 @@ function ItemRows({
           className={cn(
             "text-right align-top tabular-nums text-ink-2",
             FROM_WIDE,
+            stale && "text-warning",
           )}
         >
           {stale}

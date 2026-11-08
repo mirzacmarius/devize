@@ -1,7 +1,6 @@
 import { Card } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import type { Metadata } from "next";
-import { Amount } from "@/components/amount";
 import { Wordmark } from "@/components/wordmark";
 import { env } from "@/env.mjs";
 import { formatMoney } from "@/lib/format";
@@ -91,7 +90,7 @@ async function SampleEstimate() {
           <dt>{t("total")}</dt>
           {/* In lei, as the card's line says, so its digits end with theirs. */}
           <dd className="m-0 text-figure tabular-nums">
-            <Amount value={formatMoney(39916.16, locale)} />
+            {formatMoney(39916.16, locale)}
           </dd>
         </div>
       </dl>

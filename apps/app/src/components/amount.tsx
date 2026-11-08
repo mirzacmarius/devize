@@ -1,6 +1,8 @@
 /**
- * A sum shown large: the lei at full strength and the bani a step back, so the
- * eye reads the figure at once and the exact amount is still there.
+ * A sum shown large on a working page: the lei at full strength and the bani a
+ * step back, so the eye reads the figure at once and the exact amount is still
+ * there. A document's total (Deviz, Factură, offer) is shown whole, in ink: there
+ * the bani are part of what's agreed.
  */
 export function Amount({ value }: { value: string }) {
   const match = /^(.*)([.,]\d{2})$/.exec(value);

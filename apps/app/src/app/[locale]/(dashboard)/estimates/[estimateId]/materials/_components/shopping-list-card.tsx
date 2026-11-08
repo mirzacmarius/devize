@@ -33,6 +33,10 @@ import type { ListRow, ShoppingList } from "./types";
 
 // Over the number, not over the unit in its own slot after it.
 const UNIT_SLOT = "ml-2 inline-block w-7 text-left text-ink-3";
+// A count in a slot of its own, right-aligned, and what it counts after it as a
+// unit is: "24 × pachet de 2,22 mp", "5 buc".
+const PACKAGE_LINE =
+  "grid grid-cols-[2rem_auto] justify-start gap-x-2 [&>:first-child]:text-right";
 // What's needed and what's left have columns from a tablet up, and a line under
 // the material on a phone.
 const ROOMY_HEAD = "hidden pr-[48px] text-right md:table-cell";
@@ -217,7 +221,8 @@ function Packages({ row }: { row: ListRow }) {
   const unit = formatUnit(row.unit, locale);
   const { purchase } = row;
   if (!purchase || !row.package) {
-    return <span className="text-ink-2">{t("bulk")}</span>;
+    // Nothing to count: it starts where what's counted does, past the slot.
+    return <span className="block pl-10 text-ink-2">{t("bulk")}</span>;
   }
   // One piece at a time needs no package: "5 buc", not "5 × bucată de 1 buc".
   if (
@@ -226,8 +231,9 @@ function Packages({ row }: { row: ListRow }) {
       purchase.counts.every((entry) => entry.size === 1))
   ) {
     return (
-      <span>
-        {t("pieces", { count: formatCount(purchase.packages, locale), unit })}
+      <span className={PACKAGE_LINE}>
+        <span>{formatCount(purchase.packages, locale)}</span>
+        <span className="text-ink-3">{unit}</span>
       </span>
     );
   }
@@ -235,13 +241,15 @@ function Packages({ row }: { row: ListRow }) {
   return (
     <div className="grid">
       {purchase.counts.map((entry) => (
-        <span key={entry.size}>
-          {t("packageOf", {
-            count: formatCount(entry.count, locale),
-            kind,
-            size: formatInputNumber(entry.size, locale),
-            unit,
-          })}
+        <span key={entry.size} className={PACKAGE_LINE}>
+          <span>{formatCount(entry.count, locale)}</span>
+          <span className="text-ink-3">
+            {t("packageOf", {
+              kind,
+              size: formatInputNumber(entry.size, locale),
+              unit,
+            })}
+          </span>
         </span>
       ))}
     </div>

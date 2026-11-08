@@ -401,9 +401,9 @@ function RowsTable({
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
-          {/* Over the numbers, not over the unit that follows them; the
-              rule under it, in ink, marks the column being filled in. */}
-          <TableHead className="relative w-[140px] pr-[57px] text-right font-medium text-ink xl:before:absolute xl:before:inset-x-0 xl:before:-bottom-px xl:before:h-0.5 xl:before:bg-ink">
+          {/* Over the numbers, not over the unit that follows them; in ink,
+              over the column being filled in, whose cells are fields. */}
+          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -558,14 +558,12 @@ function RowsTable({
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
                         "-my-1 h-7 w-20",
-                        // What's still to fill in is a field like any other. Once
-                        // filled in it's a number under the column's ink rule, a
-                        // field again when pointed at; without the rule, always one.
+                        // What's still to fill in is a field like any other, and
+                        // so is what's been filled in: the column reads as the
+                        // one being filled in.
                         fillable &&
                           !spent &&
-                          (row.quantity === 0
-                            ? "border-input border-b-edge bg-field"
-                            : "md:max-xl:border-input md:max-xl:border-b-edge md:max-xl:bg-field"),
+                          "border-input border-b-edge bg-field",
                         fillable && "hover:bg-field focus:bg-field",
                         row.quantity === 0
                           ? "text-ink-3 placeholder:text-ink-3/60 md:placeholder:text-transparent"

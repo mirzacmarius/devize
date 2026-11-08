@@ -339,16 +339,16 @@ function InvitationsCard() {
                   >
                     {t(`emailStatus.${invitation.emailStatus}`)}
                   </StatusPill>
+                  {invitation.emailStatus === "not_sent" &&
+                    ` · ${t("sendLinkHint")}`}
+                </span>
+                {/* What the invitation is, on a line of its own. */}
+                <span className="text-meta text-ink-3">
+                  {tFirm(`roles.${invitation.role}`)}
                   {" · "}
-                  {[
-                    invitation.emailStatus === "not_sent" && t("sendLinkHint"),
-                    tFirm(`roles.${invitation.role}`),
-                    t("expires", {
-                      date: formatDay(invitation.expiresAt, locale),
-                    }),
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
+                  {t("expires", {
+                    date: formatDay(invitation.expiresAt, locale),
+                  })}
                 </span>
               </div>
               {/* In the column the members' menus are in. */}

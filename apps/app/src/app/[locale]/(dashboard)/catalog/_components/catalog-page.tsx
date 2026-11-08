@@ -179,7 +179,11 @@ export function CatalogPage() {
 
   return (
     <>
-      <PageHeader title={t("title")} actions={actions} />
+      <PageHeader
+        title={t("title")}
+        description={t("costNote")}
+        actions={actions}
+      />
       <section className="grid min-w-0 gap-3 sm:[--card-pad:12px] md:gap-6">
         <TabsNav aria-label={t("views.label")}>
           <TabsNavLink asChild active={!isOwn}>
@@ -193,8 +197,17 @@ export function CatalogPage() {
             </Link>
           </TabsNavLink>
         </TabsNav>
-        {/* What narrows the list, under the tabs: filter left, search right. */}
-        <ListToolbar>
+        {/* What narrows the list, under the tabs, as on every list: the
+            search first, where the table starts, then the filter. */}
+        <ListToolbar className="sm:justify-start">
+          <SearchInput
+            quiet
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            placeholder={t("searchPlaceholder")}
+            aria-label={t("searchPlaceholder")}
+            className="w-full sm:max-w-xs"
+          />
           {!isOwn && (
             <NormCategorySelect
               label={t("categories.label")}
@@ -204,16 +217,6 @@ export function CatalogPage() {
               className={cn("w-full sm:w-56", toolbarField)}
             />
           )}
-          <div className="flex w-full min-w-0 sm:w-auto sm:flex-1 sm:justify-end">
-            <SearchInput
-              quiet
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-full sm:max-w-xs"
-            />
-          </div>
         </ListToolbar>
         <div className="grid min-w-0 gap-6">
           {isOwn && !search && own?.length === 0 ? (
@@ -373,7 +376,14 @@ function NormsTable({
                 {t("columns.code")}
               </TableHead>
             )}
-            <TableHead className="md:max-xl:pl-0">
+            {/* At most 36rem where there's room, the unit taking the rest:
+                with a source and a state beside it, what's left. */}
+            <TableHead
+              className={cn(
+                "md:max-xl:pl-0",
+                !(showSource && showState) && "xl:w-[36rem]",
+              )}
+            >
               {t("columns.norm")}
             </TableHead>
             {showSource && (
@@ -392,7 +402,7 @@ function NormsTable({
                 {t("columns.updated")}
               </TableHead>
             )}
-            <TableHead className="hidden w-14 md:table-cell">
+            <TableHead className="hidden w-14 md:table-cell xl:w-auto xl:text-center">
               {t("columns.unit")}
             </TableHead>
             <TableHead className="w-32 text-right" title={t("costNote")}>
@@ -554,7 +564,7 @@ function NormsTable({
                       {formatDay(norm.updatedAt, locale)}
                     </TableCell>
                   )}
-                  <TableCell className="hidden whitespace-nowrap md:table-cell">
+                  <TableCell className="hidden whitespace-nowrap md:table-cell xl:text-center">
                     <span className="text-meta text-ink-3">
                       {formatUnit(norm.unit, locale)}
                     </span>

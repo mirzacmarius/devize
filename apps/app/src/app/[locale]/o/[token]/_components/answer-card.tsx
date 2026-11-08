@@ -7,7 +7,7 @@ import { Icons } from "@devize/ui/icons";
 import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { Download } from "lucide-react";
-import { Amount, Lei } from "@/components/amount";
+import { Lei } from "@/components/amount";
 import { Fact, FactList } from "@/components/fact-list";
 import { SignatureImage } from "@/components/signature/signature-image";
 import {
@@ -95,7 +95,7 @@ export function TotalBlock({
           updating && "opacity-60",
         )}
       >
-        <Amount value={formatMoney(total, locale)} />{" "}
+        {formatMoney(total, locale)}{" "}
         <span className="text-meta text-ink-3">lei</span>
       </span>
       <FactList className="empty:hidden">
