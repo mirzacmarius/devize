@@ -192,7 +192,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
             <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
               <span
                 className={cn(
-                  "text-lead tabular-nums",
+                  "text-figure tabular-nums",
                   profitChange < 0 ? "text-warning" : "text-success",
                 )}
               >

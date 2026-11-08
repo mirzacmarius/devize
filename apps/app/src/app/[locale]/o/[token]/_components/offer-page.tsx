@@ -273,7 +273,7 @@ function OfferHero({
   ].filter(Boolean);
   return (
     <div className="grid gap-2">
-      <div className="flex min-w-0 items-baseline justify-between gap-3">
+      <div className="flex min-w-0 items-center justify-between gap-3">
         <span className="text-caption text-ink-3">
           {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
         </span>

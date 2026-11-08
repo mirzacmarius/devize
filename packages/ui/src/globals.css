@@ -95,7 +95,7 @@
   --sunken: 60 2.8% 14.1%; /* #252523: a band, one step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
-  --selected: 60 2.7% 22.2%; /* #3a3a37: a segment raised on its rail */
+  --selected: 60 2.2% 26.5%; /* #454542: a segment raised on its rail */
   --nav-active: 60 2.3% 17.3%; /* #2d2d2b */
   --tile: 60 2.4% 16.5%; /* #2b2b29 */
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
@@ -114,7 +114,7 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.6% 62.2%; /* #a2a29b */
 
-  --action: 60 5.2% 87%; /* #e0e0dc: the one bright thing on the page */
+  --action: 60 5% 80.2%; /* #cfcfca: the one bright thing on the page, short of a glare */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
@@ -503,10 +503,9 @@
       line-height: 18px;
       font-weight: 430;
     }
-    /* The summary's frame is the first label's rule. */
+    /* Right under the summary's frame, the first label needs no room above. */
     .rail-list > [data-rail-label]:first-child {
-      margin-block: 0;
-      border-top-width: 0;
+      margin-top: 0;
     }
   }
   /* A rail's values end on one edge, where a row's chevron starts. */
@@ -581,13 +580,18 @@
     position: absolute;
     inset-inline: 0;
     bottom: calc(100% + 1px);
-    height: 16px;
+    /* From the rule, a slow start and a soft end: what passes under it fades
+       out without a cut. */
+    height: 28px;
     background: linear-gradient(
       to top,
-      hsl(var(--panel)) 0 3px,
-      hsl(var(--panel) / 0.65) 7px,
-      hsl(var(--panel) / 0.25) 11px,
-      hsl(var(--panel) / 0) 16px
+      hsl(var(--panel)),
+      hsl(var(--panel) / 0.92) 5px,
+      hsl(var(--panel) / 0.72) 10px,
+      hsl(var(--panel) / 0.44) 15px,
+      hsl(var(--panel) / 0.19) 20px,
+      hsl(var(--panel) / 0.03) 25px,
+      hsl(var(--panel) / 0) 28px
     );
     pointer-events: none;
   }
@@ -746,12 +750,15 @@
       top: 100%;
       left: 0;
       right: 0;
-      height: 16px;
+      height: 28px;
       background: linear-gradient(
-        hsl(var(--card)) 0 3px,
-        hsl(var(--card) / 0.65) 7px,
-        hsl(var(--card) / 0.25) 11px,
-        hsl(var(--card) / 0) 16px
+        hsl(var(--card)),
+        hsl(var(--card) / 0.92) 5px,
+        hsl(var(--card) / 0.72) 10px,
+        hsl(var(--card) / 0.44) 15px,
+        hsl(var(--card) / 0.19) 20px,
+        hsl(var(--card) / 0.03) 25px,
+        hsl(var(--card) / 0) 28px
       );
       pointer-events: none;
     }

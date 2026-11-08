@@ -121,17 +121,18 @@ export function ProducersPage() {
             <Table stack className="md:[&>tbody>tr>td]:h-14">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="md:w-[22rem]">
+                  <TableHead className="md:w-[18rem]">
                     {t("columns.name")}
                   </TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    {t("columns.categories")}
-                  </TableHead>
-                  <TableHead className="w-24 text-right">
+                  <TableHead className="w-20 text-right">
                     {t("columns.norms")}
                   </TableHead>
-                  <TableHead className="w-24 text-right">
+                  <TableHead className="w-20 text-right">
                     {t("columns.edition")}
+                  </TableHead>
+                  {/* Words, ending where they end: the row reads in one go. */}
+                  <TableHead className="hidden md:table-cell md:pl-10">
+                    {t("columns.categories")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -167,11 +168,6 @@ export function ProducersPage() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 md:table-cell md:max-w-0">
-                      <span className="block truncate">
-                        {producer.categories.join(" · ")}
-                      </span>
-                    </TableCell>
                     {/* A phone has no heads: the two say what they are. */}
                     <TableCell className="text-meta tabular-nums text-ink-3 max-md:!pl-12 md:hidden">
                       {producer.moreNorms
@@ -186,6 +182,11 @@ export function ProducersPage() {
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
                       {producer.edition}
+                    </TableCell>
+                    <TableCell className="hidden text-ink-2 md:table-cell md:max-w-0 md:pl-10">
+                      <span className="block truncate">
+                        {producer.categories.join(" · ")}
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}

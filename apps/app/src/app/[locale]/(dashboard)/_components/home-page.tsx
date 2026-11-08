@@ -355,7 +355,7 @@ function TodoCard({ todo }: { todo: Overview["todo"] | undefined }) {
                   text={t("anaf")}
                   sub={t("anafSub")}
                   figure={t("anafCount", { count: late.late })}
-                  figureClass="font-medium text-danger"
+                  figureClass="font-medium text-ink"
                 />
               ),
             )}
@@ -390,7 +390,7 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   let text: string;
   let figure: ReactNode;
   let figureClass = "text-ink-2";
-  // The icon's colour says what the figure's says, and only then.
+  // What can't wait has its tile's colour, once; its figure stays in ink.
   let tone: keyof typeof todoTones = "quiet";
   let note: string | undefined;
   switch (item.kind) {
@@ -410,7 +410,9 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
             value={`${down ? "−" : "+"}${formatMoney(Math.abs(item.profitChange), locale)}`}
           />
         );
-        figureClass = cn("font-medium", down ? "text-warning" : "text-success");
+        figureClass = down
+          ? "font-medium text-ink"
+          : "font-medium text-success";
         tone = down ? "warning" : "quiet";
         note = t("alertLeft", { left: formatMoney(item.profitLeft, locale) });
       }
@@ -430,7 +432,7 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
       break;
   }
   if ((item.kind === "deadline" || item.kind === "expiring") && isNow(item)) {
-    figureClass = "font-medium text-warning";
+    figureClass = "font-medium text-ink";
     tone = "warning";
   }
 

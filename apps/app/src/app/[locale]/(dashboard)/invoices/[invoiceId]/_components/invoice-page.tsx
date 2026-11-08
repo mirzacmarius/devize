@@ -19,9 +19,10 @@ import { BuyerCard } from "./buyer-card";
 import { ChecksCard } from "./checks-card";
 import { DetailsCard } from "./details-card";
 import { EfacturaCard, EfacturaDetails } from "./efactura-card";
+import { HistoryCard } from "./history-card";
 import { InvoiceActions } from "./invoice-actions";
 import { LinesCard } from "./lines-card";
-import { PaymentsCard, PaymentsFold } from "./payments-card";
+import { PaymentsCard } from "./payments-card";
 
 /**
  * A Factură: its lines and totals, the client it names, its dates and, while
@@ -55,7 +56,6 @@ export function InvoicePage() {
 
   const draft = invoice.status === "draft";
   const live = invoice.status === "issued" || invoice.status === "paid";
-  const paid = invoice.status === "paid";
   const title = invoice.code ?? t("page.draft");
   const overdue = invoice.status === "issued" && invoice.dueDate < todayInput();
 
@@ -90,7 +90,8 @@ export function InvoicePage() {
             })}
           />
           <LinesCard invoice={invoice} />
-          {!draft && !paid && <PaymentsCard invoice={invoice} />}
+          {invoice.status === "issued" && <PaymentsCard invoice={invoice} />}
+          {!draft && <HistoryCard invoice={invoice} />}
         </div>
         <Rail>
           <RailSummary>
@@ -101,7 +102,6 @@ export function InvoicePage() {
             {live && <EfacturaDetails invoice={invoice} />}
             <BuyerCard invoice={invoice} />
             <DetailsCard invoice={invoice} />
-            {paid && <PaymentsFold invoice={invoice} />}
             {live && (
               <LinkCard
                 title={t("efactura.settings")}

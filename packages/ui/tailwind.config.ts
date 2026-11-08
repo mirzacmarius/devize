@@ -196,7 +196,7 @@ const config = {
       },
       spacing: {
         sidebar: "256px",
-        rail: "280px",
+        rail: "300px",
       },
       keyframes: {
         "accordion-down": {

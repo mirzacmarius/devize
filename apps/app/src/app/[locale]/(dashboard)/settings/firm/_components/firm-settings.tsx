@@ -79,14 +79,14 @@ function TermsCard({ terms }: { terms: FirmDetails["terms"] }) {
     <Card>
       <CardHeader className="grid justify-stretch gap-1">
         <CardTitle>{t("termsTitle")}</CardTitle>
-        <CardDescription>
-          {t("termsDescription", {
-            terms: <LegalLink document="terms" />,
-            dpa: <LegalLink document="dpa" />,
-          })}
-        </CardDescription>
+        <CardDescription>{t("termsDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-2 text-meta text-ink-3">
+        {/* The documents, ahead of who accepted them. */}
+        <p className="m-0 flex flex-wrap gap-x-5 gap-y-1 text-body text-ink">
+          <LegalLink document="terms" />
+          <LegalLink document="dpa" />
+        </p>
         {terms ? (
           <p className="m-0">
             {terms.acceptedBy

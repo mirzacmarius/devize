@@ -87,7 +87,7 @@ export default {
     },
     sample: {
       title: "Bathroom renovation",
-      meta: "Apartment, 8 Teilor St. · 14 line items",
+      meta: "Apartment, 8 Teilor St. · 14 line items · amounts in lei",
       total: "Total with VAT",
       materials: "Materials",
       labour: "Labour",
@@ -453,7 +453,7 @@ export default {
       recap: "Summary",
       checks: "Checks",
       offer: "Offer",
-      progress: "Executed",
+      progress: "State of the works",
       invoices: "Invoices",
       toInvoice: "To invoice, without VAT",
       noStatements: "No statements",
@@ -2429,8 +2429,7 @@ export default {
       phonePlaceholder: "e.g. 0722 123 456",
       saved: "The company details were saved.",
       termsTitle: "Devize terms",
-      termsDescription:
-        "The company's contract with Devize: the {terms} and the {dpa}.",
+      termsDescription: "The company's contract with Devize.",
       termsAccepted:
         "{name} accepted the version of {version} on the company's behalf on {date}.",
       termsAcceptedFormer:
@@ -4500,7 +4499,6 @@ export default {
     },
     payments: {
       title: "Payments",
-      none: "No payments yet.",
       add: "Add a payment",
       date: "Date",
       amount: "Amount (lei)",
@@ -4520,9 +4518,17 @@ export default {
       paid: "Paid",
       remaining: "Left to pay",
       settled: "The invoice is paid in full.",
-      lead: "In full, {date}",
       invalidAmount: "Enter a positive amount.",
       invalidDate: "Enter a valid date.",
+    },
+    history: {
+      title: "History",
+      issued: "Issued",
+      uploaded: "Sent to ANAF",
+      accepted: "Accepted by ANAF",
+      rejected: "Rejected by ANAF",
+      payment: "Payment",
+      storno: "Reversed by {code}",
     },
     fromStatement: {
       issue: "Issue the invoice",
@@ -4940,7 +4946,6 @@ export default {
     },
     rooms: {
       title: "Rooms",
-      description: "Dimensions and perimeter in metres, areas in sqm.",
       add: "Add a room",
       emptyTitle: "No rooms yet",
       emptyDescription:
@@ -4954,6 +4959,14 @@ export default {
         floor: "Floor",
         walls: "Walls",
         perimeter: "Perimeter",
+      },
+      heads: {
+        length: "Length, m",
+        width: "Width, m",
+        height: "Height, m",
+        floor: "Floor, sqm",
+        walls: "Walls, sqm",
+        perimeter: "Perimeter, m",
       },
       openings: {
         door: "{count} door",
@@ -5662,7 +5675,7 @@ export default {
     card: {
       title: "Execution",
       executed: "{percent} executed",
-      executedLabel: "Executed",
+      executedLabel: "State of the works",
       approved: "Confirmed",
       noStatements: "No progress statement yet.",
       outstanding: "Guarantee to recover",

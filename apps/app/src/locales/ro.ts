@@ -86,7 +86,7 @@ export default {
     },
     sample: {
       title: "Renovare baie",
-      meta: "Apartament, str. Teilor 8 · 14 articole",
+      meta: "Apartament, str. Teilor 8 · 14 articole · sume în lei",
       total: "Total cu TVA",
       materials: "Materiale",
       labour: "Manoperă",
@@ -452,7 +452,7 @@ export default {
       recap: "Recapitulație",
       checks: "Verificări",
       offer: "Ofertă",
-      progress: "Executat",
+      progress: "Stadiul lucrărilor",
       invoices: "Facturi",
       toInvoice: "De facturat, fără TVA",
       noStatements: "Fără situații",
@@ -2427,7 +2427,7 @@ export default {
       phonePlaceholder: "ex. 0722 123 456",
       saved: "Datele firmei au fost salvate.",
       termsTitle: "Termenii Devize",
-      termsDescription: "Contractul firmei cu Devize: {terms} și {dpa}.",
+      termsDescription: "Contractul firmei cu Devize.",
       termsAccepted:
         "Versiunea din {version} a acceptat-o {name}, pe {date}, în numele firmei.",
       termsAcceptedFormer:
@@ -4497,7 +4497,6 @@ export default {
     },
     payments: {
       title: "Încasări",
-      none: "Nicio încasare încă.",
       add: "Adaugă încasare",
       date: "Data",
       amount: "Suma (lei)",
@@ -4517,9 +4516,17 @@ export default {
       paid: "Încasat",
       remaining: "Rest de încasat",
       settled: "Factura e încasată integral.",
-      lead: "Integral, {date}",
       invalidAmount: "Scrie o sumă pozitivă.",
       invalidDate: "Scrie o dată validă.",
+    },
+    history: {
+      title: "Istoric",
+      issued: "Emisă",
+      uploaded: "Trimisă la ANAF",
+      accepted: "Acceptată de ANAF",
+      rejected: "Respinsă de ANAF",
+      payment: "Încasare",
+      storno: "Stornată prin {code}",
     },
     fromStatement: {
       issue: "Emite factura",
@@ -4936,7 +4943,6 @@ export default {
     },
     rooms: {
       title: "Camere",
-      description: "Dimensiunile și perimetrul în metri, suprafețele în mp.",
       add: "Adaugă o cameră",
       emptyTitle: "Nicio cameră încă",
       emptyDescription:
@@ -4950,6 +4956,14 @@ export default {
         floor: "Pardoseală",
         walls: "Pereți",
         perimeter: "Perimetru",
+      },
+      heads: {
+        length: "Lungime, m",
+        width: "Lățime, m",
+        height: "Înălțime, m",
+        floor: "Pardoseală, mp",
+        walls: "Pereți, mp",
+        perimeter: "Perimetru, m",
       },
       openings: {
         door: "{count} ușă",
@@ -5656,7 +5670,7 @@ export default {
     card: {
       title: "Execuție",
       executed: "{percent} executat",
-      executedLabel: "Executat",
+      executedLabel: "Stadiul lucrărilor",
       approved: "Confirmat",
       noStatements: "Nicio situație de lucrări încă.",
       outstanding: "Garanție de recuperat",

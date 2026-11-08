@@ -4,13 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import type { OpeningKind } from "@devize/backend/convex/takeoffs/measures";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,15 +86,12 @@ export function RoomsCard({
   return (
     <Card>
       <CardHeader className="flex-wrap">
-        <div className="grid gap-1">
-          <CardTitle>
-            {t("title")}
-            {onlyLevel && (
-              <span className="font-normal text-ink-3"> · {onlyLevel}</span>
-            )}
-          </CardTitle>
-          <CardDescription className="m-0">{t("description")}</CardDescription>
-        </div>
+        <CardTitle>
+          {t("title")}
+          {onlyLevel && (
+            <span className="font-normal text-ink-3"> · {onlyLevel}</span>
+          )}
+        </CardTitle>
         {!locked && rooms.length > 0 && (
           <Button variant="secondary" size="sm" onClick={onAdd}>
             <Plus aria-hidden />
@@ -142,22 +133,22 @@ export function RoomsCard({
                   {t("columns.openings")}
                 </TableHead>
                 <TableHead className="hidden text-right xl:table-cell xl:w-[10%]">
-                  {t("columns.length")}
+                  {t("heads.length")}
                 </TableHead>
                 <TableHead className="hidden text-right xl:table-cell xl:w-[10%]">
-                  {t("columns.width")}
+                  {t("heads.width")}
                 </TableHead>
                 <TableHead className="hidden text-right xl:table-cell xl:w-[10%]">
-                  {t("columns.height")}
+                  {t("heads.height")}
                 </TableHead>
                 <TableHead className="text-right xl:w-[10%]">
-                  {t("columns.floor")}
+                  {t("heads.floor")}
                 </TableHead>
                 <TableHead className="text-right xl:w-[10%]">
-                  {t("columns.walls")}
+                  {t("heads.walls")}
                 </TableHead>
                 <TableHead className="text-right xl:w-[9%]">
-                  {t("columns.perimeter")}
+                  {t("heads.perimeter")}
                 </TableHead>
                 {!locked && <TableHead className="w-8" />}
               </TableRow>

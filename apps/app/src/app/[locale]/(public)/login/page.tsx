@@ -90,9 +90,9 @@ async function SampleEstimate() {
         {/* The accountant's double rule, under what everything adds to. */}
         <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-rule pt-2 font-medium text-ink">
           <dt>{t("total")}</dt>
+          {/* In lei, as the card's line says, so its digits end with theirs. */}
           <dd className="m-0 text-figure tabular-nums">
-            <Amount value={formatMoney(39916.16, locale)} />{" "}
-            <span className="text-meta font-normal text-ink-3">lei</span>
+            <Amount value={formatMoney(39916.16, locale)} />
           </dd>
         </div>
       </dl>

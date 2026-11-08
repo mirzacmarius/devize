@@ -14,35 +14,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@devize/ui/select";
-import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { Trash2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
-import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import {
-  formatCalendarDate,
-  formatCalendarDay,
   formatInputNumber,
   formatMoney,
   parseDecimal,
   todayInput,
 } from "@/lib/format";
-import { uniqueKeys } from "@/lib/keys";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Invoice } from "./types";
 
 type Method = Doc<"invoices">["payments"][number]["method"];
 const methods: readonly Method[] = ["transfer", "cash", "card", "other"];
 
-/** What the client paid on the invoice, and the form for the next payment. */
+/**
+ * What is left to collect on an issued invoice, and the form for the next
+ * payment. The payments that came in are in its history.
+ */
 export function PaymentsCard({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.payments");
   const locale = useCurrentLocale();
   const remaining = roundLei(invoice.totals.total - invoice.paidAmount);
-  const open = invoice.status === "issued" || invoice.status === "paid";
+  const open = invoice.status === "issued";
 
   return (
     <Card>
@@ -56,108 +53,16 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
           </span>
         </div>
       </CardHeader>
-      <CardContent>
-        {invoice.payments.length === 0 ? (
-          <p className="m-0 text-body text-ink-3">{t("none")}</p>
-        ) : (
-          <PaymentRows invoice={invoice} />
-        )}
-        {open && remaining > 0 && (
+      {open && remaining > 0 && (
+        <CardContent>
           <PaymentForm
             key={`${invoice.paidAmount}-${invoice.payments.length}`}
             invoice={invoice}
             remaining={remaining}
           />
-        )}
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
-  );
-}
-
-/**
- * Once the invoice is paid in full, what came in is looked at now and then: a
- * row of the rail that opens on the payments.
- */
-export function PaymentsFold({ invoice }: { invoice: Invoice }) {
-  const t = useScopedI18n("invoices.payments");
-  const locale = useCurrentLocale();
-  // Dates are calendar days, which sort as text.
-  const last = invoice.payments.reduce(
-    (latest, payment) => (payment.date > latest ? payment.date : latest),
-    "",
-  );
-  return (
-    <FoldCard
-      title={t("title")}
-      lead={
-        last ? t("lead", { date: formatCalendarDay(last, locale) }) : undefined
-      }
-    >
-      <PaymentRows invoice={invoice} className="border-t-0" />
-    </FoldCard>
-  );
-}
-
-/** Each payment: when, how, and what it brought in. */
-function PaymentRows({
-  invoice,
-  className,
-}: {
-  invoice: Invoice;
-  className?: string;
-}) {
-  const t = useScopedI18n("invoices.payments");
-  const locale = useCurrentLocale();
-  const run = useRun();
-  const removePayment = useMutation(api.invoices.invoices.removePayment);
-  const open = invoice.status === "issued" || invoice.status === "paid";
-  const keys = uniqueKeys(
-    invoice.payments,
-    (payment) => `${payment.date}|${payment.amount}|${payment.method}`,
-  );
-  return (
-    <ul
-      className={cn("m-0 grid list-none border-t border-border p-0", className)}
-    >
-      {invoice.payments.map((payment, index) => (
-        <li
-          key={keys[index]}
-          className="group/row flex min-h-11 items-center gap-3 border-b border-border py-1.5 last:border-0"
-        >
-          <span className="min-w-0 flex-1 text-body text-ink-2">
-            {[
-              formatCalendarDate(payment.date, locale),
-              t(`methods.${payment.method}`),
-              payment.note,
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </span>
-          {open && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-8 text-ink-3 focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
-              aria-label={t("remove")}
-              onClick={() =>
-                run(
-                  () => removePayment({ invoiceId: invoice._id, index }),
-                  t("removed"),
-                )
-              }
-            >
-              <Trash2 aria-hidden />
-            </Button>
-          )}
-          {/* On the edge where the lines above end their amounts, as
-                    quiet as the line: the total above is what it pays. */}
-          <span className="shrink-0 text-body tabular-nums text-ink-2">
-            {formatMoney(payment.amount, locale)}
-          </span>
-        </li>
-      ))}
-    </ul>
   );
 }
 
