@@ -95,8 +95,9 @@ export function PaymentsCard({ invoice }: { invoice: Invoice }) {
                     <Trash2 aria-hidden />
                   </Button>
                 )}
-                {/* On the edge where the lines above end their amounts. */}
-                <span className="shrink-0 text-body font-medium tabular-nums text-ink">
+                {/* On the edge where the lines above end their amounts, as
+                    quiet as the line: the total above is what it pays. */}
+                <span className="shrink-0 text-body tabular-nums text-ink-2">
                   {formatMoney(payment.amount, locale)}
                 </span>
               </li>

@@ -80,33 +80,20 @@ export function ProducersPage() {
                 .join(" · ")
             : " "
         }
-        actions={
-          producers?.length !== 0 && (
-            <SearchInput
-              quiet
-              tall
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-48 max-sm:hidden md:w-64 xl:w-80"
-            />
-          )
-        }
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {/* From a tablet up it stands in the page's head. */}
-          <ListToolbar className="sm:hidden">
+          {/* What narrows the list, on its own line, as on Devize. */}
+          <ListToolbar className="sm:justify-end">
             <SearchInput
               quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full"
+              className="w-full sm:max-w-xs"
             />
           </ListToolbar>
           {rows === undefined && (
@@ -121,16 +108,12 @@ export function ProducersPage() {
             <Table stack className="md:[&>tbody>tr>td]:h-14">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[40%]">{t("columns.name")}</TableHead>
+                  <TableHead>{t("columns.name")}</TableHead>
                   <TableHead className="w-24 text-right">
                     {t("columns.norms")}
                   </TableHead>
                   <TableHead className="w-24 text-right">
                     {t("columns.edition")}
-                  </TableHead>
-                  {/* Last, at the list's edge: the one most rows leave empty. */}
-                  <TableHead className="text-right">
-                    {t("columns.profile")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -147,8 +130,20 @@ export function ProducersPage() {
                         >
                           {producer.name}
                         </Link>
-                        <span className="min-w-0 truncate text-meta text-ink-3">
-                          {producer.categories.join(" · ")}
+                        {/* A managed profile is said beside what it makes. */}
+                        <span className="flex min-w-0 items-baseline gap-3">
+                          <span className="min-w-0 truncate text-meta text-ink-3">
+                            {producer.categories.join(" · ")}
+                          </span>
+                          {producer.claimed && (
+                            <StatusPill
+                              tone="success"
+                              title={t("managed")}
+                              className="shrink-0"
+                            >
+                              {t("managedShort")}
+                            </StatusPill>
+                          )}
                         </span>
                       </div>
                     </TableCell>
@@ -166,13 +161,6 @@ export function ProducersPage() {
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
                       {producer.edition}
-                    </TableCell>
-                    <TableCell className="max-md:empty:hidden md:text-right">
-                      {producer.claimed && (
-                        <StatusPill tone="success" title={t("managed")}>
-                          {t("managedShort")}
-                        </StatusPill>
-                      )}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -3278,7 +3278,6 @@ export default {
       name: "Producător",
       norms: "Norme",
       edition: "Ediție",
-      profile: "Profil",
     },
     noResults: "Niciun producător nu se potrivește cu „{text}”.",
     breadcrumb: "Unde ești",

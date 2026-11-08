@@ -74,7 +74,7 @@ export function RailStat({
             className="group grid rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <div className="flex items-center justify-between gap-3">
-              <h3 className="m-0 text-meta text-ink-2 transition-colors group-hover:text-ink">
+              <h3 className="m-0 text-body text-ink-2 transition-colors group-hover:text-ink">
                 {label}
               </h3>
               <ChevronRight
@@ -86,7 +86,7 @@ export function RailStat({
           </Link>
         ) : (
           <>
-            <h3 className="m-0 text-meta text-ink-2">{label}</h3>
+            <h3 className="m-0 text-body text-ink-2">{label}</h3>
             {figure}
           </>
         )}

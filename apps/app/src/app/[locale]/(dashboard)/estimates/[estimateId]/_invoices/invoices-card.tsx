@@ -6,6 +6,7 @@ import { useQuery } from "convex/react";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Lei } from "@/components/amount";
+import { Fact, FactList } from "@/components/fact-list";
 import { FoldCard } from "@/components/fold-card";
 import { InvoiceStatusPill } from "@/components/invoice-status";
 import { RailStat } from "@/components/rail-stat";
@@ -41,14 +42,11 @@ export function InvoicesCard({ estimate }: { estimate: Estimate }) {
       value={formatMoney(billing.remainingNet ?? 0, locale)}
       unit="lei"
       before={
-        <div className="mb-2 flex items-baseline justify-between gap-3">
-          <h3 className="m-0 text-body font-medium text-ink">
-            {t("card.invoiced")}
-          </h3>
-          <span className="text-body font-medium tabular-nums text-ink">
+        <FactList className="-mt-1.5 mb-0.5">
+          <Fact label={t("card.invoiced")}>
             <Lei value={formatMoney(billing.invoicedNet, locale)} />
-          </span>
-        </div>
+          </Fact>
+        </FactList>
       }
     >
       {next && (

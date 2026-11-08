@@ -356,7 +356,9 @@ function NormsTable({
   const showSource = !isOwn && !plain;
   const showState = !isOwn && !allUnconfirmed && !baseOnly && part !== "base";
   const heading = useRef<HTMLDivElement>(null);
-  const stuck = useScrolledPast(heading, part !== undefined);
+  // The heads stick 4 px after the title has gone: they rise 8 px into the
+  // 12 px between them, and stop 8 px from the top.
+  const stuck = useScrolledPast(heading, part !== undefined, 4);
   let lastGroup: string | undefined;
 
   return (

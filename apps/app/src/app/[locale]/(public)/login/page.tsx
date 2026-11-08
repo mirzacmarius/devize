@@ -1,4 +1,5 @@
 import { Card } from "@devize/ui/card";
+import { cn } from "@devize/ui/utils";
 import type { Metadata } from "next";
 import { Amount } from "@/components/amount";
 import { Wordmark } from "@/components/wordmark";
@@ -22,8 +23,9 @@ export default async function Page() {
   // each with its own address and backend, only the emailed code works.
   const withGoogle = env.VERCEL_ENV !== "preview";
   return (
-    <div className="grid min-h-screen w-full bg-shell xl:grid-cols-2">
-      <aside className="hidden min-w-0 grid-rows-[1fr_auto_1fr] justify-items-center gap-8 px-12 py-10 xl:grid">
+    // Both halves share the page's rows, so the form starts on the headline's line.
+    <div className="grid min-h-screen w-full bg-shell xl:grid-cols-2 xl:grid-rows-[1fr_auto_1fr] xl:gap-y-8">
+      <aside className="hidden min-w-0 justify-items-center px-12 py-10 xl:row-span-3 xl:grid xl:grid-rows-subgrid">
         <Wordmark className="w-full max-w-[520px] self-start text-xl" />
         <div className="grid w-full max-w-[520px] gap-8">
           <p className="m-0 text-display text-ink [text-wrap:balance]">
@@ -33,24 +35,27 @@ export default async function Page() {
           <SampleEstimate />
         </div>
       </aside>
-      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:m-2 xl:ml-0 xl:rounded-2xl xl:shadow-panel">
-        <div className="grid w-full max-w-[400px] gap-6">
+      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:row-span-3 xl:m-2 xl:ml-0 xl:grid xl:grid-rows-subgrid xl:justify-normal xl:justify-items-center xl:rounded-2xl xl:shadow-panel">
+        <div className="grid w-full max-w-[400px] gap-6 xl:row-start-2 xl:self-start">
           <Wordmark className="text-xl xl:hidden" />
           <div className="grid gap-1.5">
             <h1 className="m-0 text-title-page text-ink">{t("heading")}</h1>
             <p className="m-0 text-body text-ink-2">{t("description")}</p>
           </div>
           <SignInOptions withGoogle={withGoogle} />
+          <p className="m-0 text-meta text-ink-3">
+            {t("legal", { terms: links.terms, privacy: links.privacy })}
+          </p>
         </div>
-        <p className="m-0 mt-6 w-full max-w-[400px] text-meta text-ink-3">
-          {t("legal", { terms: links.terms, privacy: links.privacy })}
-        </p>
       </main>
     </div>
   );
 }
 
-/** What the product makes, shown with the app's own card: the numbers lead. */
+/**
+ * What the product makes, shown as the app's own recap: the total leads, and
+ * the rows under it add up to it.
+ */
 async function SampleEstimate() {
   const t = await getScopedI18n("login.sample");
   const locale = await getCurrentLocale();
@@ -58,7 +63,7 @@ async function SampleEstimate() {
     { label: t("materials"), value: 21480.3 },
     { label: t("labour"), value: 9204.26 },
     { label: t("equipment"), value: 2304 },
-    { label: t("subtotal"), value: 32988.56 },
+    { label: t("subtotal"), value: 32988.56, sum: true },
     { label: t("vat"), value: 6927.6 },
   ];
   return (
@@ -80,18 +85,17 @@ async function SampleEstimate() {
         {rows.map((row) => (
           <div
             key={row.label}
-            className="flex justify-between gap-4 border-t border-border py-1.5"
+            className={cn(
+              "flex justify-between gap-4 py-1.5",
+              row.sum && "border-t border-border font-medium",
+            )}
           >
-            <dt className="text-ink-2">{row.label}</dt>
+            <dt className={row.sum ? "text-ink" : "text-ink-2"}>{row.label}</dt>
             <dd className="m-0 tabular-nums text-ink">
               {formatMoney(row.value, locale)}
             </dd>
           </div>
         ))}
-        <div className="flex justify-between gap-4 border-t-[3px] border-double border-rule pt-1.5 font-medium text-ink">
-          <dt>{t("total")}</dt>
-          <dd className="m-0 tabular-nums">{formatMoney(39916.16, locale)}</dd>
-        </div>
       </dl>
     </Card>
   );

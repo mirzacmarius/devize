@@ -123,7 +123,7 @@
   --success: 142 28.3% 58.4%; /* #77b38d: below the secondary text, as in light */
   --success-soft: 145.7 25.9% 15.9%; /* #1e3327 */
   --success-dot: 146 46.8% 56.5%; /* #5cc489 */
-  --warning: 38.9 59.8% 60%; /* #d6ab5c */
+  --warning: 38.5 48.9% 63.1%; /* #cfae73 */
   --warning-soft: 36 32.5% 15.1%; /* #33291a */
   --warning-dot: 36.8 74.9% 59.4%; /* #e5a94a */
   --danger: 9.4 63.1% 65.7%; /* #e0806f */
@@ -688,11 +688,9 @@
     .items-table {
       --head-rule: var(--rule);
     }
-    .items-table:has(> tbody > tr[data-band]:first-child) {
+    /* Over a band it needs no rule, until the rows pass under it. */
+    .items-table:not([data-stuck]):has(> tbody > tr[data-band]:first-child) {
       --head-rule: 0 0% 0% / 0;
-    }
-    [data-past-hero] .items-table:has(> tbody > tr[data-band]:first-child) {
-      --head-rule: var(--rule);
     }
     .items-table > thead th {
       position: sticky;
@@ -710,22 +708,51 @@
       width: var(--card-pad);
       background: hsl(var(--card));
     }
-    /* Stuck, the shadow is as wide as the bands passing under; the rule stays
-       with the rows. */
-    [data-past-hero] .items-table > thead th {
-      box-shadow:
-        inset 0 -1px 0 hsl(var(--head-rule)),
-        0 6px 6px -6px hsl(var(--scrim));
-    }
-    [data-past-hero] .items-table > thead th:first-child::before,
-    [data-past-hero] .items-table > thead th:last-child::after {
-      box-shadow: 0 6px 6px -6px hsl(var(--scrim));
-    }
     .items-table > thead th:first-child::before {
       right: 100%;
     }
     .items-table > thead th:last-child::after {
       left: 100%;
+    }
+    /* A narrower card hides the numbers' column, so the next head starts the row. */
+    @container (max-width: 37.99rem) {
+      .items-table > thead th:first-child + th::before {
+        content: "";
+        position: absolute;
+        inset-block: 0;
+        right: 100%;
+        width: var(--card-pad);
+        background: hsl(var(--card));
+      }
+      .items-table[data-stuck] > thead th:first-child + th::after {
+        left: calc(-1 * var(--card-pad));
+      }
+    }
+  }
+  /* Stuck, the rows fade as they pass under the heads, as they do under a bar
+     at the screen's foot, as wide as the bands passing under. */
+  @media (min-width: 768px) {
+    :is(.sticky-head, .items-table)[data-stuck] > thead th:not(:last-child)::after,
+    :is(.sticky-head, .items-table)[data-stuck] > thead th:last-child::before {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      height: 24px;
+      background: linear-gradient(hsl(var(--card)), hsl(var(--card) / 0));
+      pointer-events: none;
+    }
+    :is(.sticky-head, .items-table)[data-stuck] > thead th:first-child::after {
+      left: calc(-1 * var(--card-pad));
+    }
+    :is(.sticky-head, .items-table)[data-stuck] > thead th:last-child::before {
+      right: calc(-1 * var(--card-pad));
+    }
+  }
+  @media screen and (min-width: 768px) and (max-width: 1279px) {
+    .sticky-head[data-stuck] > thead th[class~="hidden"]:first-child + th::after {
+      left: calc(-1 * var(--card-pad));
     }
   }
   /* A group row of a table inside a card: the band runs to the card's edges

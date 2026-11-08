@@ -30,10 +30,11 @@ import {
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
-import { Fragment, type ReactNode, useState } from "react";
+import { Fragment, type ReactNode, useRef, useState } from "react";
 import { InlineNumber } from "@/components/inline-number";
 import { useNormSource } from "@/components/norm-source";
 import { useRun } from "@/components/use-run";
+import { useScrolledPast } from "@/components/use-scrolled-past";
 import {
   formatMoney,
   formatQuantity,
@@ -108,6 +109,10 @@ export function LineItemsCard({
   const groups = groupLines(estimate.sections, estimate.lineItems);
   const count = estimate.lineItems.length;
   const isEmpty = count === 0 && estimate.sections.length === 0;
+  // The heads stick once the header has gone under the page's bar: its 44 px
+  // and the 6 px the heads rise into the header.
+  const header = useRef<HTMLDivElement>(null);
+  const stuck = useScrolledPast(header, !isEmpty, 50);
   const newNorms = new Set(updates?.normUpdates.map((u) => u.lineItemId));
   const newPrices = new Set(updates?.priceChanges.map((c) => c.lineItemId));
   // The last item of each section, so an item moved there goes to its end.
@@ -181,7 +186,7 @@ export function LineItemsCard({
 
   return (
     <Card>
-      <CardHeader className="flex-wrap">
+      <CardHeader ref={header} className="flex-wrap">
         <div className="flex items-center gap-2">
           <CardTitle>{t("items.title")}</CardTitle>
           <Count tone="plain">{count}</Count>
@@ -299,7 +304,7 @@ export function LineItemsCard({
             }
           />
         ) : (
-          <Table bleed className="items-table">
+          <Table bleed className="items-table" data-stuck={stuck || undefined}>
             <TableHeader>
               <TableRow>
                 <TableHead className={cn("w-7 text-right", FROM_MID)}>

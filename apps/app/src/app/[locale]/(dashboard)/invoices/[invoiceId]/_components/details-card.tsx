@@ -23,6 +23,7 @@ import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
+  formatCalendarDay,
   formatInputNumber,
   formatMoney,
   formatPercent,
@@ -160,7 +161,7 @@ function DetailsList({ invoice }: { invoice: Invoice }) {
   return (
     <FoldCard
       title={t("title")}
-      lead={t("lead", { date: formatCalendarDate(invoice.dueDate, locale) })}
+      lead={t("lead", { date: formatCalendarDay(invoice.dueDate, locale) })}
     >
       <FactRows rows={rows} />
       {invoice.notes && (

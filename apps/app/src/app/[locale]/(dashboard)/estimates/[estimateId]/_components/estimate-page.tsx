@@ -115,7 +115,7 @@ export function EstimatePage() {
     total: formatMoney(estimate.totals.subtotal, locale),
   });
   const { status } = estimate;
-  const statusPill = <EstimateStatusPill status={status} />;
+  const statusPill = <EstimateStatusPill long status={status} />;
   // Since when it stands where it stands, once it has moved at all.
   const statusDay =
     status === "sent"
@@ -245,10 +245,7 @@ export function EstimatePage() {
           />
         </div>
       </div>
-      <div
-        data-past-hero={pastHero || undefined}
-        className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11"
-      >
+      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11">
         <div className="grid min-w-0 gap-6">
           {/* Level with the rail's top: the two things the page comes down to. */}
           <div ref={hero}>

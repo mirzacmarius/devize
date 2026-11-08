@@ -3280,7 +3280,6 @@ export default {
       name: "Manufacturer",
       norms: "Norms",
       edition: "Edition",
-      profile: "Profile",
     },
     noResults: "No manufacturer matches “{text}”.",
     breadcrumb: "You are here",
