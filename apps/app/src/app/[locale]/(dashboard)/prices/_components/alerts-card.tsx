@@ -178,7 +178,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() =>
               run(() => dismiss({ alertId: alert._id }), t("dismissed"))
@@ -202,17 +202,18 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
           <span
             className={cn(
               "text-stat tabular-nums",
-              // The mark says it's a warning; the figure stays in ink.
-              profitChange < 0 ? "text-ink" : "text-success",
+              // What the firm stands to lose, in the warning's own colour.
+              profitChange < 0 ? "text-warning" : "text-success",
             )}
           >
             {/* The label over it says which way it went. */}
             {money(Math.abs(profitChange))}
           </span>
           <span className="text-meta text-ink-3">lei</span>
-          <span className="ml-2 text-meta text-ink-2">
-            {t("profitLeft", { amount: money(alert.profitLeft) })}
-          </span>
+        </p>
+        {/* What it keeps, on a line of its own under it. */}
+        <p className="m-0 text-meta tabular-nums text-ink-2">
+          {t("profitLeft", { amount: money(alert.profitLeft) })}
         </p>
       </div>
 

@@ -410,8 +410,9 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
         figure = (
           <Lei value={formatMoney(Math.abs(item.profitChange), locale)} />
         );
+        // What the firm stands to lose, in the warning's colour.
         figureClass = down
-          ? "font-medium text-ink"
+          ? "font-medium text-warning"
           : "font-medium text-success";
         tone = down ? "warning" : "quiet";
         note = t("alertLeft", { left: formatMoney(item.profitLeft, locale) });
@@ -459,12 +460,12 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   );
 }
 
-// One neutral tile for every line, in either theme; what can't wait colours
-// its mark, and its words say why.
+// Only what can't wait has a tile, in its state's colour; the rest is its mark
+// alone, so the urgent lines lead the list.
 const todoTones = {
-  danger: "bg-sunken text-danger",
-  warning: "bg-sunken text-warning",
-  quiet: "bg-sunken text-ink-3",
+  danger: "bg-danger-soft text-danger",
+  warning: "bg-warning-soft text-warning",
+  quiet: "text-ink-3",
 };
 
 /**

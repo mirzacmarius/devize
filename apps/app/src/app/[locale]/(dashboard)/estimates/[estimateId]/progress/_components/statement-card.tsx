@@ -57,6 +57,10 @@ const ROOMY_HEAD = "hidden text-right xl:table-cell";
 const ROOMY_CELL =
   "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell";
 
+// The column being filled in, from its head down: a faint wash where there's
+// room for the columns.
+const WORKING = "md:bg-sunken/60";
+
 // A quantity for reference, quieter than what's being filled in and what it
 // comes to, on the row's baseline.
 function Reference({ children }: { children: ReactNode }) {
@@ -403,8 +407,14 @@ function RowsTable({
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
-          {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] pr-[57px] text-right">
+          {/* Over the numbers, not over the unit that follows them; the column
+              being filled in leads, in ink on a faint wash. */}
+          <TableHead
+            className={cn(
+              "w-[140px] pr-[57px] text-right font-medium text-ink",
+              WORKING,
+            )}
+          >
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -539,6 +549,7 @@ function RowsTable({
                 <TableCell
                   className={cn(
                     "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left",
+                    WORKING,
                     // Nothing in it and nothing to put in it: a phone skips the line.
                     !fillable && row.quantity === 0 && "max-md:hidden",
                   )}
@@ -566,10 +577,11 @@ function RowsTable({
                       className={cn(
                         // Up by the field's padding, level with the row's first line.
                         "-my-1 h-7 w-20",
-                        // What's still to fill in has a field's lower edge at
-                        // rest, and its whole frame when pointed at or typed in:
-                        // the column reads as the one being filled in, quietly.
-                        fillable && !spent && "border-b-edge",
+                        // What's still to fill in is a field like any other, at
+                        // rest too: the column reads as the one being filled in.
+                        fillable &&
+                          !spent &&
+                          "border-input border-b-edge bg-field",
                         fillable && "hover:bg-field focus:bg-field",
                         row.quantity === 0
                           ? "text-ink-3 placeholder:text-ink-3/60 md:placeholder:text-transparent"

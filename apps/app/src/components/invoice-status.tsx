@@ -66,13 +66,11 @@ export function EfacturaPill({
         {named ? t("efacturaLateNamed") : t("efacturaLate")}
       </StatusPill>
     );
-    // The day on a line of its own, under the word and past the dot.
+    // The day after the word, on its line, a step back: the row stays one line.
     return deadline ? (
-      <span className="grid justify-items-start gap-0.5">
+      <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
         {pill}
-        <span className="pl-3.5 text-meta tabular-nums text-ink-3">
-          {deadline}
-        </span>
+        <span className="text-meta tabular-nums text-ink-3">· {deadline}</span>
       </span>
     ) : (
       pill
