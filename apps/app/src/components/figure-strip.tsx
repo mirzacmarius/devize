@@ -3,7 +3,10 @@ import { cn } from "@devize/ui/utils";
 import type { ReactNode } from "react";
 import { Amount } from "@/components/amount";
 
-/** The figures a page is about, side by side in one card, with a note under it. */
+/**
+ * The figures a page is about, side by side in one card, with a note under it.
+ * The lead takes a third of the row, as on Home; the rest share what's left.
+ */
 export function FigureStrip({
   hint,
   className,
@@ -17,7 +20,7 @@ export function FigureStrip({
     <section className="grid min-w-0 gap-2 sm:-mt-1">
       <Card
         className={cn(
-          "grid grid-cols-2 xl:auto-cols-[minmax(0,1fr)] xl:grid-flow-col xl:grid-cols-[minmax(0,1.25fr)]",
+          "grid grid-cols-2 xl:auto-cols-[minmax(0,1fr)] xl:grid-flow-col xl:grid-cols-[calc((100%_-_48px)/3_+_12px)]",
           className,
         )}
       >

@@ -340,17 +340,18 @@ function DetailsForm({
                 />
               </Field>
             </div>
-            <div className="grid gap-5 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-              <Field label={t("address")} htmlFor="firm-address">
-                <Input
-                  id="firm-address"
-                  value={address}
-                  onChange={(event) => setAddress(event.target.value)}
-                  placeholder={t("addressPlaceholder")}
-                  autoComplete="street-address"
-                  maxLength={500}
-                />
-              </Field>
+            <Field label={t("address")} htmlFor="firm-address">
+              <Input
+                id="firm-address"
+                value={address}
+                onChange={(event) => setAddress(event.target.value)}
+                placeholder={t("addressPlaceholder")}
+                autoComplete="street-address"
+                maxLength={500}
+              />
+            </Field>
+            {/* On the form's two columns, like the rows around it. */}
+            <div className="grid gap-5 sm:grid-cols-2">
               <Field label={tFirm("county")} htmlFor="firm-county">
                 <Select value={county} onValueChange={setCounty}>
                   <SelectTrigger id="firm-county">

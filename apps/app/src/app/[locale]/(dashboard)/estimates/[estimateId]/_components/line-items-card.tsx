@@ -68,8 +68,8 @@ const TITLE_CELL = "pl-7 [@container(min-width:38rem)]:pl-0";
 const NESTED_TITLE_CELL = "pl-10 [@container(min-width:38rem)]:pl-4";
 
 /**
- * A property of a row, on its quietest line: a dot and a word. What can wait has
- * its colour on the dot alone: several rows may say it, and the rail says it too.
+ * A property of a row, on its quietest line: a dot and a word, both in the
+ * state's colour, as everywhere else.
  */
 function RowTag({
   tone,
@@ -78,14 +78,7 @@ function RowTag({
   tone: "danger" | "warning" | "ai";
   children: ReactNode;
 }) {
-  return (
-    <StatusPill
-      tone={tone}
-      className={tone === "warning" ? "text-ink-3" : undefined}
-    >
-      {children}
-    </StatusPill>
-  );
+  return <StatusPill tone={tone}>{children}</StatusPill>;
 }
 
 /** Lei for one unit of a line item, all kinds of resources together. */

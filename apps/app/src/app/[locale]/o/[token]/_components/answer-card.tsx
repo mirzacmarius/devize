@@ -356,6 +356,7 @@ export function MobileAnswerBar({
           disabled={offer.preview || updating}
           onClick={onAccept}
         >
+          <Icons.Check aria-hidden />
           {t("decide.accept")}
         </Button>
         {/* While there's room, the other answers stay in reach too. */}

@@ -569,9 +569,7 @@ function NormsTable({
                   </TableCell>
                   <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top">
                     {norm.referenceCost === undefined ? (
-                      <StatusPill tone="warning" className="text-ink-3">
-                        {t("noCost")}
-                      </StatusPill>
+                      <StatusPill tone="warning">{t("noCost")}</StatusPill>
                     ) : (
                       <>
                         <span className="font-medium">

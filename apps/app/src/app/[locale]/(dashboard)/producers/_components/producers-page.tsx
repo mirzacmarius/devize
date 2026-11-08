@@ -121,14 +121,17 @@ export function ProducersPage() {
             <Table stack className="md:[&>tbody>tr>td]:h-14">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-1/2">{t("columns.name")}</TableHead>
-                  <TableHead className="w-20 text-right">
+                  <TableHead>{t("columns.name")}</TableHead>
+                  <TableHead className="w-24 text-right">
                     {t("columns.norms")}
                   </TableHead>
-                  <TableHead className="w-28 pl-8">
+                  <TableHead className="w-24 text-right">
                     {t("columns.edition")}
                   </TableHead>
-                  <TableHead>{t("columns.profile")}</TableHead>
+                  {/* Last, at the list's edge: the one most rows leave empty. */}
+                  <TableHead className="w-48 text-right">
+                    {t("columns.profile")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -161,10 +164,10 @@ export function ProducersPage() {
                       {producer.normCount}
                       {producer.moreNorms && "+"}
                     </TableCell>
-                    <TableCell className="hidden pl-8 tabular-nums text-ink-2 md:table-cell">
+                    <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
                       {producer.edition}
                     </TableCell>
-                    <TableCell className="max-md:empty:hidden">
+                    <TableCell className="max-md:empty:hidden md:text-right">
                       {producer.claimed && (
                         <StatusPill tone="success" title={t("managed")}>
                           {t("managedShort")}

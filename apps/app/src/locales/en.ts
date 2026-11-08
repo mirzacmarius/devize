@@ -4308,7 +4308,7 @@ export default {
     efacturaDue: "By {date}",
     card: {
       invoiced: "Invoiced",
-      remaining: "Left to invoice, without VAT",
+      remaining: "To invoice, without VAT",
       list: "Invoice list",
       advance: "Advance invoice {percent}",
       final: "Final invoice",

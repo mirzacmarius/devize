@@ -26,7 +26,7 @@
   --scrim: 60 4% 12% / 0.2; /* behind whatever comes forward: a dialog, a sheet */
 
   /* Lines */
-  --border: 60 8.2% 88%; /* #e3e3de */
+  --border: 60 6.7% 85.3%; /* #dcdcd7 */
   --border-control: 60 4.3% 72.9%; /* #bdbdb7: outlined buttons and the sides of a field */
   --border-field: 60 3.1% 55.9%; /* #92928b: a field's lower edge, 3:1 on the panel */
   --tick: 60 5.9% 83.3%; /* #d7d7d2 */
@@ -529,11 +529,11 @@
   .rail-summary:empty {
     display: none;
   }
-  /* No frame for the rows to line up with inside: they run the rail's width. */
+  /* No frame above them: the rows keep the inset they have under one, and
+     come up to the page's first line. */
   @media screen and (min-width: 1280px) {
     .rail-summary:empty + .rail-list {
       margin-top: -7px;
-      padding-inline: 0;
     }
   }
   .app-main .rail-summary > [data-slot="card"] {
@@ -575,6 +575,15 @@
   /* A bar at the screen's foot: a layer over the list, with its own rule. */
   .foot-bar {
     border-top: 1px solid hsl(var(--border));
+  }
+  .foot-bar::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: calc(100% + 1px);
+    height: 24px;
+    background: linear-gradient(to top, hsl(var(--panel)), hsl(var(--panel) / 0));
+    pointer-events: none;
   }
   /* A page's main action stands among its buttons; on a phone it's in a bar at
      the screen's foot, under the thumb, and the page scrolls out from under it. */

@@ -263,13 +263,14 @@ export default function ManufacturersPage() {
                           {row.message &&
                             row.message.status !== "approved" &&
                             row.message.status !== "sent" && (
+                              // The email's own state is a note to the producer's, not a second state.
                               <Pill
+                                dot={false}
                                 tone={
-                                  row.message.status !== "draft"
-                                    ? "neutral"
-                                    : row.message.blocked
-                                      ? "danger"
-                                      : "draft"
+                                  row.message.status === "draft" &&
+                                  row.message.blocked
+                                    ? "danger"
+                                    : "draft"
                                 }
                               >
                                 {t("emailState", {

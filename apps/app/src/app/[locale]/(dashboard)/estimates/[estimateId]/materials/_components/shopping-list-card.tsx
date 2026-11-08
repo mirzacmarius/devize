@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@devize/ui/card";
+import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
@@ -119,9 +120,16 @@ function MaterialRow({
         <div className="grid justify-items-start gap-0.5">
           <span className="text-ink">{keepUnits(row.name)}</span>
           <span className="flex min-h-[18px] items-center gap-1 text-meta">
-            <span className="text-ink-3" title={pkg?.label}>
-              {source ?? tSources("none")}
-            </span>
+            {/* A package nobody has confirmed is one to check. */}
+            {pkg?.source === "typical" ? (
+              <StatusPill tone="warning" title={pkg.label}>
+                {source}
+              </StatusPill>
+            ) : (
+              <span className="text-ink-3" title={pkg?.label}>
+                {source ?? tSources("none")}
+              </span>
+            )}
             {pkg?.source !== "counted" && (
               <Button
                 type="button"

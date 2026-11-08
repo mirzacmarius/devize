@@ -4305,7 +4305,7 @@ export default {
     efacturaDue: "Până la {date}",
     card: {
       invoiced: "Facturat",
-      remaining: "Rest de facturat, fără TVA",
+      remaining: "De facturat, fără TVA",
       list: "Lista facturilor",
       advance: "Factură de avans {percent}",
       final: "Factură finală",
