@@ -61,8 +61,8 @@ async function SampleEstimate() {
     { label: t("materials"), value: 21480.3 },
     { label: t("labour"), value: 9204.26 },
     { label: t("equipment"), value: 2304 },
-    { label: t("subtotal"), value: 32988.56, sum: true },
-    { label: t("vat"), value: 6927.6 },
+    { label: t("subtotal"), value: 32988.56, sum: true, rule: true },
+    { label: t("vat"), value: 6927.6, sum: true },
   ];
   return (
     <Card aria-hidden className="grid gap-5 p-5">
@@ -76,10 +76,12 @@ async function SampleEstimate() {
             key={row.label}
             className={cn(
               "flex justify-between gap-4 py-1.5",
-              row.sum && "border-t border-border font-medium",
+              row.rule && "border-t border-border",
             )}
           >
-            <dt className={row.sum ? "text-ink" : "text-ink-2"}>{row.label}</dt>
+            <dt className={row.sum ? "text-ink-3" : "text-ink-2"}>
+              {row.label}
+            </dt>
             <dd className="m-0 tabular-nums text-ink">
               {formatMoney(row.value, locale)}
             </dd>

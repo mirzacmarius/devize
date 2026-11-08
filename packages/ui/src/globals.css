@@ -140,7 +140,7 @@
 
   --shadow-raised: 0 0 0 1px rgb(255 255 255 / 0.06), 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-card: none;
-  --shadow-panel: 0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-panel: 0 0 0 1px rgb(255 255 255 / 0.1);
   --shadow-overlay: 0 0 0 1px rgb(255 255 255 / 0.08), 0 16px 40px -6px rgb(0 0 0 / 0.6);
 
   --chart-1: 220 70% 50%;
@@ -581,13 +581,13 @@
     position: absolute;
     inset-inline: 0;
     bottom: calc(100% + 1px);
-    height: 40px;
+    height: 16px;
     background: linear-gradient(
       to top,
-      hsl(var(--panel)) 0 8px,
-      hsl(var(--panel) / 0.7) 18px,
-      hsl(var(--panel) / 0.3) 28px,
-      hsl(var(--panel) / 0) 40px
+      hsl(var(--panel)) 0 3px,
+      hsl(var(--panel) / 0.65) 7px,
+      hsl(var(--panel) / 0.25) 11px,
+      hsl(var(--panel) / 0) 16px
     );
     pointer-events: none;
   }
@@ -746,12 +746,12 @@
       top: 100%;
       left: 0;
       right: 0;
-      height: 40px;
+      height: 16px;
       background: linear-gradient(
-        hsl(var(--card)) 0 8px,
-        hsl(var(--card) / 0.7) 18px,
-        hsl(var(--card) / 0.3) 28px,
-        hsl(var(--card) / 0) 40px
+        hsl(var(--card)) 0 3px,
+        hsl(var(--card) / 0.65) 7px,
+        hsl(var(--card) / 0.25) 11px,
+        hsl(var(--card) / 0) 16px
       );
       pointer-events: none;
     }

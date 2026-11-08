@@ -33,7 +33,7 @@ function ProducerMark({ name }: { name: string }) {
   return (
     <span
       aria-hidden
-      className="row-span-2 grid size-9 place-items-center self-center rounded-md bg-muted text-meta font-medium text-ink-2"
+      className="row-span-2 grid size-9 place-items-center self-center rounded-md bg-card text-meta font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))] md:row-span-1"
     >
       {initials}
     </span>
@@ -121,7 +121,12 @@ export function ProducersPage() {
             <Table stack className="md:[&>tbody>tr>td]:h-14">
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("columns.name")}</TableHead>
+                  <TableHead className="md:w-[22rem]">
+                    {t("columns.name")}
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    {t("columns.categories")}
+                  </TableHead>
                   <TableHead className="w-24 text-right">
                     {t("columns.norms")}
                   </TableHead>
@@ -134,20 +139,17 @@ export function ProducersPage() {
                 {rows.map((producer) => (
                   <TableRow key={producer._id} className="relative">
                     <TableCell data-stack="wide" className="md:max-w-0">
-                      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-0.5">
+                      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5">
                         <ProducerMark name={producer.name} />
-                        {/* The whole row opens the profile. */}
-                        <Link
-                          href={`/producers/${producer._id}`}
-                          className="min-w-0 truncate rounded-xs text-body font-medium text-ink before:absolute before:inset-0 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-md:text-body-lg"
-                        >
-                          {producer.name}
-                        </Link>
-                        {/* A managed profile is said beside what it makes. */}
+                        {/* A managed profile is said beside the name. */}
                         <span className="flex min-w-0 items-baseline gap-3">
-                          <span className="min-w-0 truncate text-meta text-ink-3">
-                            {producer.categories.join(" · ")}
-                          </span>
+                          {/* The whole row opens the profile. */}
+                          <Link
+                            href={`/producers/${producer._id}`}
+                            className="min-w-0 truncate rounded-xs text-body font-medium text-ink before:absolute before:inset-0 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-md:text-body-lg"
+                          >
+                            {producer.name}
+                          </Link>
                           {producer.claimed && (
                             <StatusPill
                               tone="success"
@@ -158,7 +160,17 @@ export function ProducersPage() {
                             </StatusPill>
                           )}
                         </span>
+                        {/* A phone has no column for what it makes: it goes under
+                            the name. */}
+                        <span className="min-w-0 truncate text-meta text-ink-3 md:hidden">
+                          {producer.categories.join(" · ")}
+                        </span>
                       </div>
+                    </TableCell>
+                    <TableCell className="hidden text-ink-2 md:table-cell md:max-w-0">
+                      <span className="block truncate">
+                        {producer.categories.join(" · ")}
+                      </span>
                     </TableCell>
                     {/* A phone has no heads: the two say what they are. */}
                     <TableCell className="text-meta tabular-nums text-ink-3 max-md:!pl-12 md:hidden">

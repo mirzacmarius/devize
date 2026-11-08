@@ -3278,6 +3278,7 @@ export default {
     searchPlaceholder: "Search manufacturers",
     columns: {
       name: "Manufacturer",
+      categories: "Categories",
       norms: "Norms",
       edition: "Edition",
     },
@@ -4519,6 +4520,7 @@ export default {
       paid: "Paid",
       remaining: "Left to pay",
       settled: "The invoice is paid in full.",
+      lead: "In full, {date}",
       invalidAmount: "Enter a positive amount.",
       invalidDate: "Enter a valid date.",
     },
@@ -4822,8 +4824,8 @@ export default {
     },
     table: {
       title: "Shopping list",
-      description:
-        "Rounded to whole packages, in the cheapest mix. Amounts in lei, without VAT.",
+      description: "Rounded to whole packages, in the cheapest mix.",
+      inLei: "amounts in lei, without VAT",
       material: "Material",
       need: "Needed",
       buy: "You buy",

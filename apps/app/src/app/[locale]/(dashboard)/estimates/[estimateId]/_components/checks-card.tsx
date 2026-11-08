@@ -92,7 +92,7 @@ export function ChecksCard({
             type="button"
             aria-expanded={showPassed}
             onClick={() => setShowPassed((value) => !value)}
-            className="flex w-fit items-center gap-[5px] rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex w-fit items-center gap-[5px] rounded-xs text-meta text-ink-3 transition-colors hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ChevronRight
               aria-hidden

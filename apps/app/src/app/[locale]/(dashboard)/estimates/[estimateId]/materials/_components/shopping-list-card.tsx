@@ -56,7 +56,10 @@ export function ShoppingListCard({
   return (
     <Card>
       <CardHeader className="grid justify-items-start gap-1">
-        <CardTitle>{t("title")}</CardTitle>
+        <div className="flex items-baseline gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          <span className="ml-1 text-meta text-ink-3">{t("inLei")}</span>
+        </div>
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>

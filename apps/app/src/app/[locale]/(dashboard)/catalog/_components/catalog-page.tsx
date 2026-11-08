@@ -180,7 +180,7 @@ export function CatalogPage() {
   return (
     <>
       <PageHeader title={t("title")} actions={actions} />
-      <section className="grid min-w-0 gap-3 sm:[--card-pad:12px] md:gap-5">
+      <section className="grid min-w-0 gap-3 sm:[--card-pad:12px] md:gap-6">
         <TabsNav aria-label={t("views.label")}>
           <TabsNavLink asChild active={!isOwn}>
             <Link replace href="/catalog" onClick={() => setText("")}>
@@ -350,13 +350,13 @@ function NormsTable({
   const showSource = !isOwn && !plain;
   const showState = !isOwn && !allUnconfirmed && !baseOnly && part !== "base";
   const heading = useRef<HTMLDivElement>(null);
-  // The heads stick 4 px after the title has gone: they rise 8 px into the
-  // 12 px between them, and stop 8 px from the top.
-  const stuck = useScrolledPast(heading, part !== undefined, 4);
+  // The heads stick as the title goes: they rise 8 px into the 16 px between
+  // them, and stop 8 px from the top.
+  const stuck = useScrolledPast(heading, part !== undefined, 0);
   let lastGroup: string | undefined;
 
   return (
-    <div className="grid min-w-0 gap-3">
+    <div className="grid min-w-0 gap-4">
       {part && (
         <div ref={heading}>
           <PartTitle part={part} allUnconfirmed={allUnconfirmed} />

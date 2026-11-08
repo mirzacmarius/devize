@@ -304,19 +304,15 @@ export function MobileAnswerBar({
   offer,
   updating,
   showTotal,
-  downloading,
   onAccept,
   onDecline,
-  onDownload,
 }: {
   offer: OpenOfferView;
   updating: boolean;
   // Once the total at the top has scrolled away.
   showTotal: boolean;
-  downloading: boolean;
   onAccept: () => void;
   onDecline: () => void;
-  onDownload: () => void;
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
@@ -350,6 +346,19 @@ export function MobileAnswerBar({
             </span>
           </div>
         )}
+        {/* While there's room, the other answer is in reach too: a button,
+            as on a computer, beside the wider filled one. */}
+        {!showTotal && (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 shrink-0 px-4"
+            disabled={offer.preview}
+            onClick={onDecline}
+          >
+            {t("decide.decline")}
+          </Button>
+        )}
         <Button
           type="button"
           className={cn("h-11", !showTotal && "flex-1")}
@@ -359,38 +368,6 @@ export function MobileAnswerBar({
           <Icons.Check aria-hidden />
           {t("decide.accept")}
         </Button>
-        {/* While there's room, the other answers stay in reach too, as words
-            beside the one filled button. */}
-        {!showTotal && (
-          <>
-            <Button
-              type="button"
-              variant="ghost"
-              className="h-11 shrink-0 px-3 text-ink-2"
-              disabled={offer.preview}
-              onClick={onDecline}
-            >
-              {t("decide.decline")}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="h-11 shrink-0 gap-1.5 px-3 text-ink-2"
-              aria-label={t("decide.download")}
-              disabled={downloading}
-              onClick={onDownload}
-            >
-              {downloading ? (
-                <Icons.Loader className="animate-spin" aria-hidden />
-              ) : (
-                <Download aria-hidden />
-              )}
-              <span aria-hidden className="max-[359px]:hidden">
-                {t("decide.pdfShort")}
-              </span>
-            </Button>
-          </>
-        )}
       </div>
     </div>
   );

@@ -3276,6 +3276,7 @@ export default {
     searchPlaceholder: "Caută un producător",
     columns: {
       name: "Producător",
+      categories: "Categorii",
       norms: "Norme",
       edition: "Ediție",
     },
@@ -4516,6 +4517,7 @@ export default {
       paid: "Încasat",
       remaining: "Rest de încasat",
       settled: "Factura e încasată integral.",
+      lead: "Integral, {date}",
       invalidAmount: "Scrie o sumă pozitivă.",
       invalidDate: "Scrie o dată validă.",
     },
@@ -4819,7 +4821,8 @@ export default {
     table: {
       title: "Lista de cumpărături",
       description:
-        "Rotunjit la ambalaje întregi, în cea mai ieftină combinație. Sume în lei, fără TVA.",
+        "Rotunjit la ambalaje întregi, în cea mai ieftină combinație.",
+      inLei: "sume în lei, fără TVA",
       material: "Material",
       need: "Necesar",
       buy: "Cumperi",

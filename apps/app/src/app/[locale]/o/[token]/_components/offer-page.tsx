@@ -2,9 +2,12 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { Button } from "@devize/ui/button";
 import { Card, CardContent } from "@devize/ui/card";
+import { Icons } from "@devize/ui/icons";
 import { StatusPill } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { type RefObject, useEffect, useRef, useState } from "react";
 import { useRouteParam } from "@/components/use-route-param";
@@ -162,7 +165,14 @@ export function OpenOffer({
       <OfferHeader firm={offer.firm} preview={offer.preview} />
       <div className="flex-1 bg-panel sm:mx-2 sm:mb-2 sm:rounded-2xl sm:shadow-panel">
         <main className="offer-main mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 max-sm:gap-4 max-sm:pt-5 sm:px-6 lg:pb-16">
-          <OfferHero offer={offer} updating={updating} totalRef={heroTotal} />
+          <OfferHero
+            offer={offer}
+            updating={updating}
+            totalRef={heroTotal}
+            download={
+              open ? { busy: downloading, onClick: download } : undefined
+            }
+          />
           <hr aria-hidden className="tick-rule m-0 border-0 max-sm:hidden" />
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] lg:gap-x-11">
             <div className="grid min-w-0 gap-6">
@@ -216,10 +226,8 @@ export function OpenOffer({
             offer={offer}
             updating={updating}
             showTotal={pastTotal}
-            downloading={downloading}
             onAccept={() => setDialog("accept")}
             onDecline={() => setDialog("decline")}
-            onDownload={download}
           />
           <AcceptDialog
             token={token}
@@ -244,10 +252,13 @@ function OfferHero({
   offer,
   updating,
   totalRef,
+  download,
 }: {
   offer: OpenOfferView;
   updating: boolean;
   totalRef: RefObject<HTMLDivElement | null>;
+  // Under the desktop width, where no answer card stands beside the works.
+  download?: { busy: boolean; onClick: () => void };
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
@@ -262,9 +273,29 @@ function OfferHero({
   ].filter(Boolean);
   return (
     <div className="grid gap-2">
-      <span className="text-caption text-ink-3">
-        {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
-      </span>
+      <div className="flex min-w-0 items-baseline justify-between gap-3">
+        <span className="text-caption text-ink-3">
+          {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
+        </span>
+        {download && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="-my-2 -mr-2 h-9 shrink-0 gap-1.5 px-2 text-meta text-ink-2 lg:hidden"
+            aria-label={t("decide.download")}
+            disabled={download.busy}
+            onClick={download.onClick}
+          >
+            {download.busy ? (
+              <Icons.Loader className="animate-spin" aria-hidden />
+            ) : (
+              <Download aria-hidden />
+            )}
+            {t("decide.pdfShort")}
+          </Button>
+        )}
+      </div>
       <h1 className="m-0 text-title-screen text-ink [text-wrap:balance] max-sm:text-[22px] max-sm:leading-7 sm:text-title-page">
         {offer.title}
       </h1>

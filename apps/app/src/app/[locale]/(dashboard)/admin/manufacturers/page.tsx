@@ -284,16 +284,7 @@ export default function ManufacturersPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={cn(
-                            "text-meta",
-                            row.normsStatus === "received"
-                              ? "text-ink"
-                              : row.normsStatus === "existing"
-                                ? "text-ink-2"
-                                : "text-ink-3",
-                          )}
-                        >
+                        <span className="text-meta text-ink-2">
                           {tAdmin(`status.norms.${row.normsStatus}`)}
                         </span>
                       </TableCell>
