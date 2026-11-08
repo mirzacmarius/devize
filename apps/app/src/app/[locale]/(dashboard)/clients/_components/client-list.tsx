@@ -70,12 +70,25 @@ export function ClientList() {
             : `${t("count", { count: clients.length })} · ${tc("inLeiLower")}`
         }
         actions={
-          <FootAction>
-            <Button onClick={() => edit(null)}>
-              <Plus aria-hidden />
-              {t("new")}
-            </Button>
-          </FootAction>
+          <>
+            {!isEmpty && (
+              <SearchInput
+                quiet
+                tall
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="w-48 max-sm:hidden md:w-64 xl:w-80"
+              />
+            )}
+            <FootAction>
+              <Button onClick={() => edit(null)}>
+                <Plus aria-hidden />
+                {t("new")}
+              </Button>
+            </FootAction>
+          </>
         }
       />
       {isEmpty ? (
@@ -91,15 +104,15 @@ export function ClientList() {
         />
       ) : (
         <section className="grid min-w-0 gap-3">
-          {/* What narrows the list, on its own line, as on Devize. */}
-          <ListToolbar className="sm:justify-end">
+          {/* From a tablet up it stands in the page's head. */}
+          <ListToolbar className="sm:hidden">
             <SearchInput
               quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:max-w-xs"
+              className="w-full"
             />
           </ListToolbar>
           <Table stack twoLine>

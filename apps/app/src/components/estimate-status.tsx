@@ -10,7 +10,7 @@ const tones: Record<EstimateStatus, StatusPillProps["tone"]> = {
   draft: "draft",
   sent: "active",
   accepted: "success",
-  rejected: "danger",
+  rejected: "declined",
   archived: "neutral",
 };
 

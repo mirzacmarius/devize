@@ -175,7 +175,7 @@ export default {
       "anafCount#other": "{count} invoices",
       now: "Now",
       next: "Coming up",
-      showAll: "See all {count}",
+      showAll: "All ({count})",
       today: "today",
       tomorrow: "tomorrow",
       inDays: "in {days} days",

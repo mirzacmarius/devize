@@ -101,7 +101,7 @@ export function TotalBlock({
       <FactList className="empty:hidden">
         {deposit !== undefined && (
           <Fact
-            label={t(inCard ? "depositInCard" : "depositLabel", {
+            label={t("depositInCard", {
               percent: formatPercent(deposit, locale),
             })}
             title={t("depositLabel", {
@@ -239,7 +239,7 @@ export function AnswerCard({
       <Card data-framed>
         <CardContent className="gap-4 pt-5">
           <div className="grid gap-2">
-            <StatusPill tone="danger" className="justify-self-start">
+            <StatusPill tone="declined" className="justify-self-start">
               {t("declined.title")}
             </StatusPill>
             {declined?.at !== undefined && (
@@ -359,13 +359,14 @@ export function MobileAnswerBar({
           <Icons.Check aria-hidden />
           {t("decide.accept")}
         </Button>
-        {/* While there's room, the other answers stay in reach too. */}
+        {/* While there's room, the other answers stay in reach too, as words
+            beside the one filled button. */}
         {!showTotal && (
           <>
             <Button
               type="button"
-              variant="outline"
-              className="h-11 shrink-0 px-4"
+              variant="ghost"
+              className="h-11 shrink-0 px-3 text-ink-2"
               disabled={offer.preview}
               onClick={onDecline}
             >
@@ -373,8 +374,8 @@ export function MobileAnswerBar({
             </Button>
             <Button
               type="button"
-              variant="outline"
-              className="h-11 shrink-0 gap-1.5 px-3"
+              variant="ghost"
+              className="h-11 shrink-0 gap-1.5 px-3 text-ink-2"
               aria-label={t("decide.download")}
               disabled={downloading}
               onClick={onDownload}

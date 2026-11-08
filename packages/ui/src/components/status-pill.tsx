@@ -25,8 +25,11 @@ const statusPillVariants = cva(
         success: "text-ink-2 before:bg-success-dot",
         // Needs attention soon: Prețuri de actualizat
         warning: "text-warning before:bg-warning-dot",
-        // Blocks the next step: Verificare eșuată, Respins
+        // Blocks the next step, or is overdue: Verificare eșuată, Termen depășit
         danger: "text-danger before:bg-current",
+        // A final no that asks nothing more: Respins, Refuzată, Anulată. The
+        // dot says how it ended; the word stays as quiet as Acceptat's.
+        declined: "text-ink-2 before:bg-danger",
         // Proposed by AI, not applied yet
         ai: "text-ai before:bg-ai",
       },

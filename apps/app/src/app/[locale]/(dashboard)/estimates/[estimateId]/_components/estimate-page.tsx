@@ -2,12 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
 import { PageHeader } from "@devize/ui/page-header";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
@@ -189,8 +184,6 @@ export function EstimatePage() {
               <BreadcrumbLink asChild>
                 <Link href="/estimates">{t("breadcrumbList")}</Link>
               </BreadcrumbLink>
-              <BreadcrumbSeparator />
-              <BreadcrumbPage>{code}</BreadcrumbPage>
             </Breadcrumb>
           }
           title={estimate.title}
@@ -208,6 +201,8 @@ export function EstimatePage() {
           }
           description={
             <>
+              <span className="whitespace-nowrap">{code}</span>
+              {" · "}
               {estimate.client?.name ?? t("noClient")}
               {/* A phone keeps the line to one row; the Deviz's data has the date. */}
               <span className="max-sm:hidden">

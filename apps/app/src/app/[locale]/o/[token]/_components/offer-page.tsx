@@ -290,7 +290,7 @@ function OfferHero({
       {/* On a phone the answer is at the bottom, so its outcome shows here too. */}
       {offer.state !== "open" && (
         <StatusPill
-          tone={offer.state === "accepted" ? "success" : "danger"}
+          tone={offer.state === "accepted" ? "success" : "declined"}
           className="justify-self-start lg:hidden"
         >
           {offer.state === "accepted"

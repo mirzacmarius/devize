@@ -35,7 +35,7 @@ export default async function Page() {
           <SampleEstimate />
         </div>
       </aside>
-      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:row-span-3 xl:m-2 xl:ml-0 xl:grid xl:grid-rows-subgrid xl:justify-normal xl:justify-items-center xl:rounded-2xl xl:shadow-panel">
+      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:row-span-3 xl:py-10 xl:m-2 xl:ml-0 xl:grid xl:grid-rows-subgrid xl:justify-normal xl:justify-items-center xl:rounded-2xl xl:shadow-panel">
         <div className="grid w-full max-w-[400px] gap-6 xl:row-start-2 xl:self-start">
           <Wordmark className="text-xl xl:hidden" />
           <div className="grid gap-1.5">
@@ -43,19 +43,17 @@ export default async function Page() {
             <p className="m-0 text-body text-ink-2">{t("description")}</p>
           </div>
           <SignInOptions withGoogle={withGoogle} />
-          <p className="m-0 text-meta text-ink-3">
-            {t("legal", { terms: links.terms, privacy: links.privacy })}
-          </p>
         </div>
+        {/* Under the form; beside the headline, at the panel's foot. */}
+        <p className="m-0 mt-6 w-full max-w-[400px] text-meta text-ink-3 xl:row-start-3 xl:mt-0 xl:self-end">
+          {t("legal", { terms: links.terms, privacy: links.privacy })}
+        </p>
       </main>
     </div>
   );
 }
 
-/**
- * What the product makes, shown as the app's own recap: the total leads, and
- * the rows under it add up to it.
- */
+/** What the product makes, shown as the app's own recap: rows that add up. */
 async function SampleEstimate() {
   const t = await getScopedI18n("login.sample");
   const locale = await getCurrentLocale();
@@ -67,19 +65,10 @@ async function SampleEstimate() {
     { label: t("vat"), value: 6927.6 },
   ];
   return (
-    <Card aria-hidden className="grid gap-5 p-6">
+    <Card aria-hidden className="grid gap-5 p-5">
       <div className="grid gap-0.5">
         <span className="text-title-card text-ink">{t("title")}</span>
         <span className="text-meta text-ink-3">{t("meta")}</span>
-      </div>
-      <div className="grid">
-        <span className="text-meta text-ink-2">{t("total")}</span>
-        <span className="flex items-baseline gap-2">
-          <span className="text-lead tabular-nums text-ink">
-            <Amount value={formatMoney(39916.16, locale)} />
-          </span>
-          <span className="text-meta text-ink-3">lei</span>
-        </span>
       </div>
       <dl className="m-0 grid text-body">
         {rows.map((row) => (
@@ -96,6 +85,14 @@ async function SampleEstimate() {
             </dd>
           </div>
         ))}
+        {/* The accountant's double rule, under what everything adds to. */}
+        <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-rule pt-2 font-medium text-ink">
+          <dt>{t("total")}</dt>
+          <dd className="m-0 text-figure tabular-nums">
+            <Amount value={formatMoney(39916.16, locale)} />{" "}
+            <span className="text-meta font-normal text-ink-3">lei</span>
+          </dd>
+        </div>
       </dl>
     </Card>
   );

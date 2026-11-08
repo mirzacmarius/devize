@@ -91,7 +91,7 @@
   --panel: 60 4.2% 9.4%; /* #191917 */
   --weight-figure: 350;
   --card: 60 1.5% 12.7%; /* #212120 */
-  --card-border: 60 1.8% 22.4%; /* #3a3a38 */
+  --card-border: 60 1.5% 25.5%; /* #424240 */
   --sunken: 60 2.8% 14.1%; /* #252523: a band, one step off the panel */
   --muted: 60 2.1% 18.8%; /* #31312f */
   --field: 60 2.3% 8.4%; /* #161615 */
@@ -101,7 +101,7 @@
   --backdrop: 60 2.4% 16.5%; /* #2b2b29 */
   --scrim: 0 0% 0% / 0.6;
 
-  --border: 60 1.8% 22.4%; /* #3a3a38, the same as a card's edge */
+  --border: 60 1.5% 25.5%; /* #424240, the same as a card's edge */
   --border-control: 60 2.4% 32.5%; /* #555551 */
   --tick-major: 60 2.6% 37.5%; /* #62625d */
   --ruler: 60 2.6% 37.5%; /* #62625d */
@@ -112,7 +112,7 @@
 
   --ink: 60 7.9% 85.1%; /* #dcdcd6 */
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
-  --ink-3: 60 3.2% 57.5%; /* #96968f: 6.9:1 on the panel */
+  --ink-3: 60 3.6% 62.2%; /* #a2a29b */
 
   --action: 60 5.2% 87%; /* #e0e0dc: the one bright thing on the page */
   --on-action: 60 4.2% 9.4%; /* #191917 */
@@ -581,8 +581,14 @@
     position: absolute;
     inset-inline: 0;
     bottom: calc(100% + 1px);
-    height: 24px;
-    background: linear-gradient(to top, hsl(var(--panel)), hsl(var(--panel) / 0));
+    height: 40px;
+    background: linear-gradient(
+      to top,
+      hsl(var(--panel)) 0 8px,
+      hsl(var(--panel) / 0.7) 18px,
+      hsl(var(--panel) / 0.3) 28px,
+      hsl(var(--panel) / 0) 40px
+    );
     pointer-events: none;
   }
   /* A page's main action stands among its buttons; on a phone it's in a bar at
@@ -604,8 +610,9 @@
     .foot-action > * {
       height: 44px !important;
     }
+    /* The bar and its fade: the last row stops clear of both. */
     .app-main:has(.foot-action) {
-      padding-bottom: 6rem;
+      padding-bottom: 7rem;
     }
   }
   /* A heading starts a group: the row before it needs no rule of its own, and
@@ -739,8 +746,13 @@
       top: 100%;
       left: 0;
       right: 0;
-      height: 24px;
-      background: linear-gradient(hsl(var(--card)), hsl(var(--card) / 0));
+      height: 40px;
+      background: linear-gradient(
+        hsl(var(--card)) 0 8px,
+        hsl(var(--card) / 0.7) 18px,
+        hsl(var(--card) / 0.3) 28px,
+        hsl(var(--card) / 0) 40px
+      );
       pointer-events: none;
     }
     :is(.sticky-head, .items-table)[data-stuck] > thead th:first-child::after {

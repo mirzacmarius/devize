@@ -71,7 +71,7 @@ export const manufacturerTone: Record<string, Tone> = {
   contacted: "active",
   replied: "success",
   norms_received: "success",
-  declined: "danger",
+  declined: "declined",
   excluded: "neutral",
 };
 

@@ -92,7 +92,7 @@ export function AddNormSheet({
           </SheetDescription>
         </SheetHeader>
         {/* The list scrolls; what's in the Deviz by now, and the way out, stay. */}
-        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-1 [mask-image:linear-gradient(to_top,transparent,#000_24px)]">
+        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-1 [mask-image:linear-gradient(to_top,transparent_0_8px,rgb(0_0_0/0.3)_18px,rgb(0_0_0/0.7)_28px,#000_40px)]">
           {open && (
             <AddNorm
               estimate={estimate}
@@ -314,15 +314,16 @@ function AddNorm({
                             unit: formatUnit(norm.unit, locale),
                           })}
                     </span>
-                    {/* One square throughout: outlined at rest, filled when its row is
-                        reached for, green once the norm is in the Deviz. */}
+                    {/* One square throughout: a bare + at rest (outlined to a thumb,
+                        which has no hover), filled when its row is reached for, green
+                        once the norm is in the Deviz. */}
                     <span
                       aria-hidden
                       className={cn(
                         "col-start-2 row-span-2 row-start-1 -my-1.5 grid size-8 place-items-center rounded-md border transition-colors sm:col-start-3 sm:row-span-1",
                         inEstimate.has(norm._id)
                           ? "border-transparent bg-success-soft text-success"
-                          : "border-control text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
+                          : "border-control text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground [@media(hover:hover)]:border-transparent",
                       )}
                     >
                       {inEstimate.has(norm._id) ? (

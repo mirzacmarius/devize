@@ -126,7 +126,7 @@ export function Rail({
  */
 export function RailSummary({ children }: { children: ReactNode }) {
   return (
-    <div className="rail-summary grid min-w-0 rounded-lg border border-card-border p-4">
+    <div className="rail-summary grid min-w-0 rounded-lg border border-card-border p-5">
       {children}
     </div>
   );
@@ -139,6 +139,6 @@ export function RailSummary({ children }: { children: ReactNode }) {
  */
 export function RailList({ children }: { children: ReactNode }) {
   return (
-    <div className="rail-list contents xl:block xl:px-[17px]">{children}</div>
+    <div className="rail-list contents xl:block xl:px-[21px]">{children}</div>
   );
 }

@@ -37,6 +37,7 @@ import {
 } from "react";
 import { useFirm } from "@/components/firm-provider";
 import { FootAction } from "@/components/foot-action";
+import { ListToolbar } from "@/components/list-toolbar";
 import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { NormStatusPill } from "@/components/norm-status";
@@ -180,47 +181,40 @@ export function CatalogPage() {
     <>
       <PageHeader title={t("title")} actions={actions} />
       <section className="grid min-w-0 gap-3 sm:[--card-pad:12px] md:gap-5">
-        {/* From a tablet up, what narrows the list stands on the tabs' rail. */}
-        <div className="grid min-w-0 gap-3 md:flex md:min-h-11 md:items-center md:justify-between md:gap-6 md:border-b md:border-border">
-          <TabsNav
-            aria-label={t("views.label")}
-            className="md:h-[43px] md:shrink-0 md:border-b-0"
-          >
-            <TabsNavLink asChild active={!isOwn}>
-              <Link replace href="/catalog" onClick={() => setText("")}>
-                {t("views.catalog")}
-              </Link>
-            </TabsNavLink>
-            <TabsNavLink asChild active={isOwn}>
-              <Link
-                replace
-                href="/catalog?view=own"
-                onClick={() => setText("")}
-              >
-                {t("views.own")}
-              </Link>
-            </TabsNavLink>
-          </TabsNav>
-          <div className="grid min-w-0 gap-2 sm:flex sm:items-center sm:gap-3 md:justify-end">
-            {!isOwn && (
-              <NormCategorySelect
-                label={t("categories.label")}
-                allLabel={t("categories.all")}
-                value={category?.key ?? null}
-                onChange={changeCategory}
-                className={cn("w-full sm:w-56 md:w-48 xl:w-56", toolbarField)}
-              />
-            )}
+        <TabsNav aria-label={t("views.label")}>
+          <TabsNavLink asChild active={!isOwn}>
+            <Link replace href="/catalog" onClick={() => setText("")}>
+              {t("views.catalog")}
+            </Link>
+          </TabsNavLink>
+          <TabsNavLink asChild active={isOwn}>
+            <Link replace href="/catalog?view=own" onClick={() => setText("")}>
+              {t("views.own")}
+            </Link>
+          </TabsNavLink>
+        </TabsNav>
+        {/* What narrows the list, under the tabs: filter left, search right. */}
+        <ListToolbar>
+          {!isOwn && (
+            <NormCategorySelect
+              label={t("categories.label")}
+              allLabel={t("categories.all")}
+              value={category?.key ?? null}
+              onChange={changeCategory}
+              className={cn("w-full sm:w-56", toolbarField)}
+            />
+          )}
+          <div className="flex w-full min-w-0 sm:w-auto sm:flex-1 sm:justify-end">
             <SearchInput
               quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full md:w-60 xl:w-80"
+              className="w-full sm:max-w-xs"
             />
           </div>
-        </div>
+        </ListToolbar>
         <div className="grid min-w-0 gap-6">
           {isOwn && !search && own?.length === 0 ? (
             <EmptyState

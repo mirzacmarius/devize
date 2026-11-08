@@ -11,7 +11,7 @@ const statusTones: Record<InvoiceStatus, StatusPillProps["tone"]> = {
   draft: "draft",
   issued: "active",
   paid: "success",
-  cancelled: "danger",
+  cancelled: "declined",
 };
 
 /**

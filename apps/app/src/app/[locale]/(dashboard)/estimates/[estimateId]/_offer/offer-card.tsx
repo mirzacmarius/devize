@@ -40,7 +40,7 @@ const tones: Record<Offer["status"], StatusPillProps["tone"]> = {
   sent: "neutral",
   viewed: "neutral",
   accepted: "success",
-  declined: "danger",
+  declined: "declined",
   expired: "warning",
   withdrawn: "neutral",
 };

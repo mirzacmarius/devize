@@ -174,7 +174,7 @@ export default {
       "anafCount#other": "{count} de facturi",
       now: "Acum",
       next: "Urmează",
-      showAll: "Vezi toate cele {count}",
+      showAll: "Toate ({count})",
       today: "azi",
       tomorrow: "mâine",
       inDays: "în {days} zile",
