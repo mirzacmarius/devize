@@ -190,7 +190,7 @@ export function CatalogPage() {
         description={t("costNote")}
         actions={actions}
       />
-      <section className="grid min-w-0 gap-3 sm:[--card-pad:12px] md:gap-6">
+      <section className="grid min-w-0 gap-3 sm:[--card-pad:12px] md:gap-5">
         <TabsNav aria-label={t("views.label")}>
           <TabsNavLink asChild active={!isOwn}>
             <Link replace href="/catalog" onClick={() => setText("")}>
@@ -313,9 +313,9 @@ function PartTitle({
 }) {
   const t = useScopedI18n("catalog");
   return (
-    <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+    <div className="grid min-w-0 gap-0.5">
       <h2 className="m-0 text-title-card text-ink">{t(`parts.${part}`)}</h2>
-      {/* Beside the title, as a section's "sume în lei": a note, not a line. */}
+      {/* Under the title, a step back: a note on where they come from. */}
       {part === "producers" && allUnconfirmed && (
         <p className="m-0 text-meta text-ink-3">
           {t("parts.producersNoteFull")}

@@ -4316,7 +4316,7 @@ export default {
     card: {
       title: "Facturare",
       invoiced: "Facturat, fără TVA",
-      remaining: "De facturat",
+      remaining: "De facturat, fără TVA",
       list: "Lista facturilor",
       advance: "Factură de avans {percent}",
       final: "Factură finală",

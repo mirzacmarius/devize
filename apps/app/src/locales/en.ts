@@ -4318,7 +4318,7 @@ export default {
     card: {
       title: "Invoicing",
       invoiced: "Invoiced, without VAT",
-      remaining: "To invoice",
+      remaining: "To invoice, without VAT",
       list: "Invoice list",
       advance: "Advance invoice {percent}",
       final: "Final invoice",

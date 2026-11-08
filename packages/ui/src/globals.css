@@ -652,6 +652,7 @@
       inset-block: 0;
       width: var(--card-pad);
       background: hsl(var(--card));
+      box-shadow: inset 0 -1px 0 hsl(var(--head-rule));
     }
     .sticky-head > thead th:first-child::before {
       right: 100%;
@@ -669,6 +670,7 @@
       right: 100%;
       width: var(--card-pad);
       background: hsl(var(--card));
+      box-shadow: inset 0 -1px 0 hsl(var(--head-rule));
     }
   }
   @media (min-width: 1024px) {
@@ -707,6 +709,7 @@
       inset-block: 0;
       width: var(--card-pad);
       background: hsl(var(--card));
+      box-shadow: inset 0 -1px 0 hsl(var(--head-rule));
     }
     .items-table > thead th:first-child::before {
       right: 100%;
@@ -723,6 +726,7 @@
         right: 100%;
         width: var(--card-pad);
         background: hsl(var(--card));
+        box-shadow: inset 0 -1px 0 hsl(var(--head-rule));
       }
       .items-table[data-stuck] > thead th:first-child + th::after {
         left: calc(-1 * var(--card-pad));
@@ -777,24 +781,46 @@
     width: var(--band-hang, var(--card-pad));
     background: hsl(var(--sunken));
   }
+  /* Square, so its ends meet the rules that hang as far. */
   .band-start::before {
     right: 100%;
-    border-radius: 6px 0 0 6px;
   }
   .band-end::after {
     left: 100%;
-    border-radius: 0 6px 6px 0;
+  }
+  /* Where the bands hang past the rows, the rules hang as far: a table has one
+     edge, its bands', its head's and its rows' alike. */
+  @media (min-width: 768px) {
+    .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:is(:first-child, :last-child),
+    .table-bleed > tbody > tr:not([data-band]) > td:is(:first-child, :last-child) {
+      position: relative;
+    }
+    .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:first-child::before,
+    .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:last-child::after,
+    .table-bleed > tbody > tr:not([data-band], :last-child, :has(+ [data-group])) > td:first-child::before,
+    .table-bleed > tbody > tr:not([data-band], :last-child, :has(+ [data-group])) > td:last-child::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      width: var(--band-hang, var(--card-pad));
+      border-bottom: 1px solid hsl(var(--border));
+      pointer-events: none;
+    }
+    .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:first-child::before,
+    .table-bleed:not(.sticky-head, .items-table) > thead > tr > th:last-child::after {
+      border-bottom-color: hsl(var(--rule));
+    }
+    .table-bleed > :is(thead, tbody) > tr > :first-child::before {
+      right: 100%;
+    }
+    .table-bleed > :is(thead, tbody) > tr > :last-child::after {
+      left: 100%;
+    }
   }
   /* The Articole on a wider card: columns that don't move with their contents. */
   @container (min-width: 38rem) {
     .items-table {
       table-layout: fixed;
-    }
-  }
-  @media (max-width: 639.98px) {
-    .band-start::before,
-    .band-end::after {
-      border-radius: 0;
     }
   }
   /* The Articole on a narrow card: each row is its text, end to end. */

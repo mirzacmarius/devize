@@ -75,7 +75,7 @@ export function WorksCard({
         "flex items-baseline justify-between gap-3 py-2",
         nested
           ? "border-b border-border"
-          : "-mx-[var(--card-pad)] bg-sunken px-[var(--card-pad)] sm:rounded-md",
+          : "-mx-[var(--card-pad)] bg-sunken px-[var(--card-pad)]",
       )}
     >
       {/* Over the titles, past the numbers. */}
@@ -148,7 +148,8 @@ function ItemRow({
   const switchId = `${id}-include`;
   const dimmed = !included && "opacity-60";
   return (
-    <li className="grid gap-2 border-b border-border py-4 last:border-b-0">
+    // From a tablet up its rule runs as far as the bands do: one edge for both.
+    <li className="grid gap-2 border-b border-border py-4 last:border-b-0 sm:-mx-[var(--card-pad)] sm:px-[var(--card-pad)]">
       <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-start gap-x-2 max-sm:items-baseline max-sm:gap-y-1 sm:grid-cols-[1.75rem_minmax(0,1fr)_auto] sm:gap-x-3">
         <span className="w-4 text-right text-body tabular-nums text-ink-3">
           {index}

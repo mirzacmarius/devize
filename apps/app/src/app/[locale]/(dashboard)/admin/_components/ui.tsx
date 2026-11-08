@@ -68,7 +68,10 @@ export function Confidence({
 }) {
   const bars = level === "high" ? 3 : level === "medium" ? 2 : 1;
   return (
+    // The word, then the bars: in a right-aligned column the bars line up on
+    // its edge, under its head, whatever the word.
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap text-meta text-ink-2">
+      {children}
       {level && (
         <span
           aria-hidden
@@ -86,10 +89,6 @@ export function Confidence({
           ))}
         </span>
       )}
-      {/* A slot as wide as the longest word, so the bars line up down a column. */}
-      <span className={cn(level && "min-w-[2.25rem] text-left")}>
-        {children}
-      </span>
     </span>
   );
 }

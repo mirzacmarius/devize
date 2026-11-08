@@ -32,6 +32,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
         className={cn(
           "w-full caption-bottom border-collapse text-body",
           stack && "table-stack",
+          bleed && "table-bleed",
           twoLine === true &&
             "md:[&>tbody>tr:not([data-group])>td]:h-14 md:[&>tbody>tr:not([data-group])>td]:py-2 md:[&>tbody>tr:not([data-group])>td]:align-baseline",
           twoLine === "below-xl" &&

@@ -192,30 +192,27 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
         </div>
       </div>
 
-      {/* What it does to the profit first, on a line of its own: it's what
-          the firm stands to lose, and what it keeps. */}
-      <div className="grid gap-1">
-        <p className="m-0 text-meta text-ink-2">
+      {/* What it does to the profit first, in one line: what the firm stands
+          to lose, at a strip's figure size, and what it keeps. */}
+      <p className="m-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+        <span className="mr-1 text-body text-ink-2">
           {profitChange < 0 ? t("profitDown") : t("profitUp")}
-        </p>
-        <p className="m-0 flex flex-wrap items-baseline gap-x-1.5">
-          <span
-            className={cn(
-              "text-stat tabular-nums",
-              // What the firm stands to lose, in the warning's own colour.
-              profitChange < 0 ? "text-warning" : "text-success",
-            )}
-          >
-            {/* The label over it says which way it went. */}
-            {money(Math.abs(profitChange))}
-          </span>
-          <span className="text-meta text-ink-3">lei</span>
-        </p>
-        {/* What it keeps, on a line of its own under it. */}
-        <p className="m-0 text-meta tabular-nums text-ink-2">
+        </span>
+        <span
+          className={cn(
+            "text-figure tabular-nums",
+            // What the firm stands to lose, in the warning's own colour.
+            profitChange < 0 ? "text-warning" : "text-success",
+          )}
+        >
+          {/* The words before it say which way it went. */}
+          {money(Math.abs(profitChange))}
+        </span>
+        <span className="text-meta text-ink-3">lei</span>
+        <span className="ml-3 text-meta tabular-nums text-ink-2">
           {t("profitLeft", { amount: money(alert.profitLeft) })}
-        </p>
-      </div>
+        </span>
+      </p>
 
       {/* Under it, the offer against today's prices: both halves' heads on one
           line and their rows on one set of rules, so they end together. */}
