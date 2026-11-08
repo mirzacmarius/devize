@@ -5,7 +5,6 @@ import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { Button } from "@devize/ui/button";
@@ -108,8 +107,6 @@ function Comparison() {
           <BreadcrumbLink asChild>
             <Link href={`/estimates/${estimateId}`}>{code}</Link>
           </BreadcrumbLink>
-          <BreadcrumbSeparator />
-          <BreadcrumbPage>{t("breadcrumb")}</BreadcrumbPage>
         </Breadcrumb>
       }
       title={t("title")}
@@ -126,17 +123,12 @@ function Comparison() {
           : current.title
       }
       actions={
-        <>
-          <Button variant="outline" asChild>
-            <Link href={`/estimates/${estimateId}`}>{t("backToEstimate")}</Link>
+        comparison && (
+          <Button type="button" onClick={copy}>
+            <Icons.Copy aria-hidden />
+            {t("copy")}
           </Button>
-          {comparison && (
-            <Button type="button" onClick={copy}>
-              <Icons.Copy aria-hidden />
-              {t("copy")}
-            </Button>
-          )}
-        </>
+        )
       }
     />
   );
@@ -178,7 +170,7 @@ function Comparison() {
       {comparison === undefined ? (
         <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
       ) : (
-        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
           <div className="grid min-w-0 gap-6">
             <RecapCompareCard comparison={comparison} />
             <LinesCard comparison={comparison} />

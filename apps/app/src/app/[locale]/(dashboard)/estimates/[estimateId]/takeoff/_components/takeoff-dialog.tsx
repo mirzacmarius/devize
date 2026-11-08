@@ -218,7 +218,7 @@ function TakeoffForm({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[38rem] border-collapse text-body">
           <thead>
-            <tr className="text-label uppercase text-ink-3">
+            <tr className="text-caption text-ink-3">
               <th className="pb-1 text-left font-medium">
                 {t("columns.label")}
               </th>

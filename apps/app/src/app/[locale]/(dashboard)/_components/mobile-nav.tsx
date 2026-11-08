@@ -3,6 +3,7 @@
 import type { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
+import { Logo } from "@devize/ui/logo";
 import {
   Sheet,
   SheetContent,
@@ -13,12 +14,11 @@ import type { Preloaded } from "convex/react";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Wordmark } from "@/components/wordmark";
 import { useScopedI18n } from "@/locales/client";
 import { useOpenCommandMenu } from "./command-menu";
 import { SidebarContent } from "./sidebar-content";
 
-/** Under 768px: the mark, and a button that opens the sidebar as a drawer. */
+/** Under 1024px: the mark, and a button that opens the sidebar as a drawer. */
 export function MobileNav({
   preloadedUser,
   isSuperAdmin,
@@ -31,18 +31,25 @@ export function MobileNav({
   const [open, setOpen] = useState(false);
   const openSearch = useOpenCommandMenu();
   return (
-    <div className="-ml-2 flex items-center gap-1 md:hidden">
+    // Out by the buttons' padding, so their icons sit on the page's edge.
+    <div className="-mx-[14px] -mb-4 -mt-4 flex h-14 items-center gap-1 lg:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={t("openMenu")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-11 [&_svg]:size-[22px]"
+            aria-label={t("openMenu")}
+          >
             <Icons.Menu />
           </Button>
         </SheetTrigger>
         <SheetContent
           side="left"
           closeLabel={t("closeMenu")}
+          closeClassName="right-4 top-4"
           aria-describedby={undefined}
-          className="w-sidebar gap-3 bg-shell px-3 py-4"
+          className="gap-2 bg-shell px-3 py-3"
         >
           <SheetTitle className="sr-only">{t("main")}</SheetTitle>
           <SidebarContent
@@ -54,14 +61,14 @@ export function MobileNav({
       </Sheet>
       <Link
         href="/"
-        className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <Wordmark />
+        <Logo className="size-7" />
       </Link>
       <Button
         variant="ghost"
         size="icon"
-        className="ml-auto"
+        className="ml-auto size-11 [&_svg]:size-[22px]"
         aria-label={tc("title")}
         onClick={openSearch}
       >

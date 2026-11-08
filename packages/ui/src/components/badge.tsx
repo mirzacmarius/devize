@@ -15,7 +15,7 @@ const tones = {
 // Tag: a property of a row, after its name ("Preț vechi", "Fără normă",
 // "Normă producător"). At most two per table row.
 const badgeVariants = cva(
-  "inline-flex h-[22px] items-center gap-1 whitespace-nowrap rounded-xs px-2 align-middle text-pill [&_svg]:size-3.5 [&_svg]:shrink-0",
+  "inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-full px-2 align-middle text-[12px] leading-4 [&_svg]:size-3 [&_svg]:shrink-0",
   {
     variants: { tone: tones },
     defaultVariants: { tone: "neutral" },
@@ -32,7 +32,7 @@ function Badge({ className, tone, ...props }: BadgeProps) {
 
 // Count: how many ("Probleme 3", "Articole 24"). `plain` inside tabs and titles.
 const countVariants = cva(
-  "inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-sm px-2 text-pill tabular-nums",
+  "inline-flex h-5 min-w-5 items-center justify-center rounded-sm px-1.5 text-meta tabular-nums",
   {
     variants: {
       tone: {

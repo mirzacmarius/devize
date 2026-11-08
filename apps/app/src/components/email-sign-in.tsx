@@ -117,8 +117,12 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
             onChange={(event) => setEmail(event.target.value)}
             placeholder={t("emailPlaceholder")}
             aria-invalid={error !== undefined}
-            aria-describedby={error ? "sign-in-error" : undefined}
+            aria-describedby={error ? "sign-in-error" : "sign-in-hint"}
+            className="h-10"
           />
+          <p id="sign-in-hint" className="m-0 text-meta text-ink-3">
+            {t("emailHint")}
+          </p>
         </div>
         {error && (
           <p
@@ -129,7 +133,7 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
             {error}
           </p>
         )}
-        <Button type="submit" disabled={busy} className="w-full">
+        <Button type="submit" size="lg" disabled={busy} className="w-full">
           {busy && <Icons.Loader className="animate-spin" aria-hidden />}
           {t("sendCode")}
         </Button>
@@ -153,7 +157,7 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
           value={code}
           onChange={(event) => setCode(event.target.value)}
           placeholder="12345678"
-          className="font-mono tracking-[0.2em]"
+          className="h-10 font-mono tracking-[0.2em]"
           aria-invalid={error !== undefined}
           aria-describedby={error ? "sign-in-error" : undefined}
           autoFocus
@@ -168,7 +172,7 @@ export function EmailSignIn({ next = "/" }: { next?: string }) {
           {error}
         </p>
       )}
-      <Button type="submit" disabled={busy} className="w-full">
+      <Button type="submit" size="lg" disabled={busy} className="w-full">
         {busy && <Icons.Loader className="animate-spin" aria-hidden />}
         {t("verify")}
       </Button>

@@ -6,7 +6,7 @@ export interface PageHeaderProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "title"> {
   // The identifier (DVZ-0142) or the name, never a sentence.
   title: React.ReactNode;
-  // A StatusPill after the title.
+  // A StatusPill or the steps, where the line under the title starts.
   status?: React.ReactNode;
   // The line under the title: 3–4 facts joined by " · " on a detail page
   // ("Renovare baie · Maria Ionescu · 39.916,16 lei cu TVA"), one sentence
@@ -35,7 +35,7 @@ function PageHeader({
   ...props
 }: PageHeaderProps) {
   return (
-    <header className={cn("grid min-w-0 gap-6", className)} {...props}>
+    <header className={cn("grid min-w-0 gap-3", className)} {...props}>
       {(breadcrumb || tools) && (
         <div className="flex min-w-0 items-center justify-between gap-4">
           {breadcrumb ?? <span />}
@@ -46,7 +46,7 @@ function PageHeader({
           )}
         </div>
       )}
-      <div className="flex min-w-0 flex-wrap items-start gap-4">
+      <div className="flex min-w-0 flex-wrap items-start gap-x-4 gap-y-3">
         {thumb && (
           <span
             aria-hidden
@@ -55,19 +55,27 @@ function PageHeader({
             {thumb}
           </span>
         )}
-        <div className="grid min-w-0 flex-1 basis-64 gap-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="m-0 text-title-page text-ink">{title}</h1>
-            {status}
-          </div>
-          {description && (
-            <p className="m-0 text-body-lg text-ink-2 tabular-nums">
+        <div className="grid min-w-0 flex-1 basis-auto gap-0.5 sm:basis-64">
+          <h1 className="m-0 text-title-screen text-ink [text-wrap:balance] max-sm:text-[22px] max-sm:leading-7">
+            {title}
+          </h1>
+          {(status || description) && (
+            // Facts after a status are a line, not a sentence: it has no measure.
+            <div
+              className={cn(
+                "m-0 text-body tabular-nums text-ink-2 [text-wrap:pretty] [&_[data-slot=status-pill]]:text-body",
+                !status && "max-w-[72ch]",
+              )}
+            >
+              {status}
+              {status && description && " · "}
               {description}
-            </p>
+            </div>
           )}
         </div>
         {actions && (
-          <div className="flex shrink-0 flex-wrap items-center gap-3 pt-1">
+          // Level with the title's line, and no taller than it.
+          <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2 max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 sm:-my-0.5">
             {actions}
           </div>
         )}

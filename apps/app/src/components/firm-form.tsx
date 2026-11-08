@@ -123,7 +123,6 @@ export function FirmForm({
             onChange={(event) => setCui(event.target.value)}
             placeholder={t("cuiPlaceholder")}
             inputMode="numeric"
-            className="font-mono"
             aria-invalid={errors.cui !== undefined}
           />
         </Field>
@@ -142,7 +141,7 @@ export function FirmForm({
           </Select>
         </Field>
       </div>
-      <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
+      <div className="flex items-start justify-between gap-4 border-t border-border pt-4">
         <div className="grid gap-0.5">
           <label htmlFor="firm-vat" className="text-body font-medium text-ink">
             {t("vatPayer")}
@@ -184,11 +183,7 @@ export function FirmForm({
           </p>
         )}
       </div>
-      <Button
-        type="submit"
-        disabled={submitting}
-        className="justify-self-start"
-      >
+      <Button type="submit" disabled={submitting} className="w-full">
         {submitting && <Icons.Loader className="animate-spin" aria-hidden />}
         {t("create")}
       </Button>

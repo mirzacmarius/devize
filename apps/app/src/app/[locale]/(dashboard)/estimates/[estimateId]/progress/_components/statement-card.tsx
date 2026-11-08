@@ -3,13 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader } from "@devize/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,14 +15,24 @@ import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { StatusPill } from "@devize/ui/status-pill";
 import { Switch } from "@devize/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableGroupRow,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
 import { Textarea } from "@devize/ui/textarea";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Pencil } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Download, Paperclip } from "lucide-react";
+import { Fragment, type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { DocumentsFormat } from "@/components/documents/use-download-documents";
 import { InlineNumber } from "@/components/inline-number";
+import { Nil } from "@/components/nil";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
@@ -47,7 +51,25 @@ import { statementTone } from "./statement-status";
 import type { Statement, StatementRow, Works } from "./types";
 import { useDownloadProgress } from "./use-download-progress";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+// Where there's room the table has all its columns. Where there isn't, an
+// Articol says them on a line of its own, and the quantity to fill in stays.
+const ROOMY_HEAD = "hidden text-right xl:table-cell";
+const ROOMY_CELL =
+  "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell";
+
+// The column being filled in, from its head down: a faint wash where there's
+// room for the columns.
+const WORKING = "md:bg-sunken/60";
+
+// A quantity for reference, quieter than what's being filled in and what it
+// comes to, on the row's baseline.
+function Reference({ children }: { children: ReactNode }) {
+  return (
+    <span className="block">
+      <span className="text-meta">{children}</span>
+    </span>
+  );
+}
 
 /**
  * One Situație de lucrări: every Articol of the contract with what was
@@ -57,10 +79,13 @@ const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
 export function StatementCard({
   statementId,
   works,
+  picker,
   onDeleted,
 }: {
   statementId: Id<"workStatements">;
   works: Works;
+  /** The card's title, which also leads to the Deviz's other statements. */
+  picker: ReactNode;
   onDeleted: () => void;
 }) {
   const t = useScopedI18n("progress.statement");
@@ -133,7 +158,9 @@ export function StatementCard({
       start: formatCalendarDate(statement.periodStart, locale),
       end: formatCalendarDate(statement.periodEnd, locale),
     }),
-    t("date", { date: formatCalendarDate(statement.date, locale) }),
+    // Usually the day the period ends: said only when it isn't.
+    statement.date !== statement.periodEnd &&
+      t("date", { date: formatCalendarDate(statement.date, locale) }),
     statement.status === "sent" &&
       statement.sentAt !== undefined &&
       t("sentOn", { date: formatDay(statement.sentAt, locale) }),
@@ -145,19 +172,48 @@ export function StatementCard({
             date: formatDay(statement.approvedAt, locale),
           })
         : t("approvedOn", { date: formatDay(statement.approvedAt, locale) })),
+    !editable && !statement.latest && t("notLatest"),
   ].filter(Boolean);
 
   return (
     <Card>
-      <CardHeader className="grid gap-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <CardTitle>{t("title", { number })}</CardTitle>
+      <CardHeader className="grid justify-stretch gap-1 sm:!pb-3">
+        {/* Its name, what it comes to and what to do with it on one line;
+            where it stands on a line of its own under them. */}
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <div className="order-1 min-w-0">{picker}</div>
+          <p className="order-3 m-0 basis-full text-meta tabular-nums text-ink-3 sm:order-4">
             <StatusPill tone={statementTone[statement.status]}>
               {tStatus(statement.status)}
             </StatusPill>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
+            {" · "}
+            {facts.join(" · ")}
+          </p>
+          <p className="order-2 m-0 flex items-baseline gap-1.5 text-meta text-ink-3 xl:ml-auto">
+            <span className="sr-only">{t("thisValue")}</span>
+            <span className="text-figure tabular-nums text-ink">
+              {formatMoney(statement.period.subtotal, locale)}
+            </span>
+            {t("thisValueUnit")}
+          </p>
+          <div className="order-4 flex flex-wrap items-center gap-2 sm:order-3 sm:ml-auto xl:ml-2">
+            {/* Its label is on the line's baseline, with the words before it. */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="flex-wrap content-center items-baseline [&_svg]:self-center"
+              aria-label={t("downloadLabel.pdf")}
+              disabled={downloading !== undefined}
+              onClick={() => download("pdf")}
+            >
+              {downloading === "pdf" ? (
+                <Icons.Loader className="animate-spin" aria-hidden />
+              ) : (
+                <Download aria-hidden />
+              )}
+              {t("downloadPdf")}
+            </Button>
             {statement.status === "draft" && statement.latest && (
               <Button
                 type="button"
@@ -168,11 +224,10 @@ export function StatementCard({
                 {t("send")}
               </Button>
             )}
-            {statement.status !== "approved" && statement.latest && (
+            {statement.status === "sent" && statement.latest && (
               <Button
                 type="button"
                 size="sm"
-                variant={statement.status === "sent" ? "default" : "outline"}
                 disabled={busy}
                 onClick={() => setDialog("approve")}
               >
@@ -188,12 +243,19 @@ export function StatementCard({
                   type="button"
                   variant="ghost"
                   size="icon"
+                  // The dots end on the page's edge, not the button's.
+                  className="-mr-2 size-8"
                   aria-label={tc("actions")}
                 >
                   <Icons.More aria-hidden />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-56">
+                {statement.status === "draft" && statement.latest && (
+                  <DropdownMenuItem onSelect={() => setDialog("approve")}>
+                    {t("approve")}
+                  </DropdownMenuItem>
+                )}
                 {editable && (
                   <>
                     <DropdownMenuItem onSelect={() => setDialog("edit")}>
@@ -226,15 +288,15 @@ export function StatementCard({
             </DropdownMenu>
           </div>
         </div>
-        <p className="m-0 text-meta text-ink-2">{facts.join(" · ")}</p>
-        {!editable && (
-          <p className="m-0 text-meta text-ink-3">
-            {statement.latest ? t("locked") : t("notLatest")}
+        {/* Nothing leaves from here: the firm sends it and notes what happened.
+            Said once, on the first statement. */}
+        {number === 1 && statement.status !== "approved" && (
+          <p className="m-0 text-meta text-ink-2">
+            {statement.status === "draft" ? t("nextDraft") : t("nextSent")}
           </p>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <RowsTable
           statement={statement}
           onAttachment={setAttachmentRow}
@@ -321,118 +383,133 @@ function RowsTable({
   const run = useRun();
   const setQuantity = useMutation(api.progress.statements.setQuantity);
   const { editable } = statement;
+  const fillable = editable && !busy;
   let group: string | undefined;
   let periodValue = 0;
+  // What a group's Articole come to in the period, for its band.
+  const groupValues = new Map<StatementRow["group"], number>();
+  for (const row of statement.rows) {
+    groupValues.set(row.group, (groupValues.get(row.group) ?? 0) + row.value);
+  }
+
+  // What's not there is a quiet dash, so the period's figures stand out.
+  const ifAny = (value: number, shown: string) =>
+    value === 0 ? <Nil /> : shown;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[60rem] border-collapse text-body">
-        <thead>
-          <tr>
-            <th className="pb-2 text-left text-label uppercase text-ink-3">
-              {t("article")}
-            </th>
-            <th className="pb-2 pl-3 text-center text-label uppercase text-ink-3">
-              {t("unit")}
-            </th>
-            <th className={headClass}>{t("unitPrice")}</th>
-            <th className={headClass}>{t("contract")}</th>
-            <th className={headClass}>{t("previous")}</th>
-            <th className={headClass}>{t("quantity")}</th>
-            <th className={headClass}>{t("cumulative")}</th>
-            <th className={headClass}>{t("percent")}</th>
-            <th className={headClass}>{t("remaining")}</th>
-            <th className={headClass}>{t("value")}</th>
-            <th className="pb-2 pl-3" />
-          </tr>
-        </thead>
-        <tbody>
-          {statement.rows.map((row) => {
-            const heading = row.group !== group ? row.group : undefined;
-            group = row.group;
-            periodValue += row.value;
-            const lines = row.attachment.length;
-            const differs =
-              lines > 0 &&
-              Math.abs(row.attachmentTotal - row.quantity) > 0.0005;
-            return (
-              <Fragment key={row._id}>
-                {heading && (
-                  <tr className="border-t border-border">
-                    <td
-                      colSpan={11}
-                      className="pt-3 pb-1 text-label uppercase text-ink-3"
-                    >
-                      {heading}
-                    </td>
-                  </tr>
-                )}
-                <tr className="border-t border-border">
-                  <td className="py-2 align-top">
-                    <div className="grid justify-items-start">
-                      <span className="text-ink">
-                        {row.position}. {row.title}
-                      </span>
-                      <span className="font-mono text-code text-ink-3">
-                        {row.code}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-2 pl-3 text-center align-top text-ink-2">
-                    {formatUnit(row.unit, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatMoney(row.unitPrice, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatQuantity(row.contractQuantity, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums text-ink-2">
-                    {formatQuantity(row.previousQuantity, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-1 pl-3 text-right align-top">
-                    <InlineNumber
-                      value={row.quantity}
-                      format={(value) => formatQuantity(value, locale)}
-                      label={t("quantityLabel", { title: row.title })}
-                      disabled={!editable || busy}
-                      onCommit={(quantity) =>
-                        void run(() =>
-                          setQuantity({ rowId: row._id, quantity }),
-                        )
-                      }
-                      className={cn(
-                        "w-24",
-                        row.quantity !== 0 && "font-medium",
-                      )}
-                    />
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatQuantity(row.cumulativeQuantity, locale)}
-                  </td>
-                  <td
-                    className={cn(
-                      "whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums",
-                      row.over ? "text-warning" : "text-ink-2",
-                    )}
-                    title={row.over ? t("over") : undefined}
+    <Table bleed stack className="xl:min-w-[50rem]">
+      <TableHeader>
+        <TableRow>
+          {/* Over the positions and the titles. */}
+          <TableHead>
+            <span className="inline-block w-4 text-right">#</span>
+            <span className="ml-3">{t("article")}</span>
+          </TableHead>
+          <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
+          <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
+          {/* Over the numbers, not over the unit that follows them; the column
+              being filled in leads, in ink on a faint wash. */}
+          <TableHead
+            className={cn(
+              "w-[140px] pr-[57px] text-right font-medium text-ink",
+              WORKING,
+            )}
+          >
+            {t("quantity")}
+          </TableHead>
+          <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
+          <TableHead className={ROOMY_HEAD}>{t("remaining")}</TableHead>
+          <TableHead className="text-right">{t("value")}</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {statement.rows.map((row) => {
+          const heading = row.group !== group ? row.group : undefined;
+          group = row.group;
+          periodValue += row.value;
+          const lines = row.attachment.length;
+          const differs =
+            lines > 0 && Math.abs(row.attachmentTotal - row.quantity) > 0.0005;
+          const unit = formatUnit(row.unit, locale);
+          // All of it is done and nothing's typed in for this period.
+          const spent = row.quantity === 0 && row.remainingQuantity <= 0;
+          return (
+            <Fragment key={row._id}>
+              {heading && (
+                <TableGroupRow className="max-md:py-0">
+                  {/* A span can't follow which columns show. */}
+                  <TableCell
+                    colSpan={6}
+                    className="band-start hidden font-medium first:pl-7 xl:table-cell"
                   >
-                    {formatPercent(row.percent, locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums text-ink-2">
-                    {formatQuantity(Math.max(0, row.remainingQuantity), locale)}
-                  </td>
-                  <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-                    {formatMoney(row.value, locale)}
-                  </td>
-                  <td className="py-1 pl-3 text-right align-top">
+                    {heading}
+                  </TableCell>
+                  <TableCell
+                    colSpan={2}
+                    className="band-start font-medium !pl-7 max-md:flex max-md:items-center xl:hidden"
+                  >
+                    {heading}
+                  </TableCell>
+                  <TableCell className="band-end whitespace-nowrap text-right font-medium tabular-nums max-md:flex max-md:items-center">
+                    {ifAny(
+                      groupValues.get(row.group) ?? 0,
+                      formatMoney(
+                        Math.round((groupValues.get(row.group) ?? 0) * 100) /
+                          100,
+                        locale,
+                      ),
+                    )}
+                  </TableCell>
+                </TableGroupRow>
+              )}
+              <TableRow className="group/row md:[&>td]:h-14">
+                <TableCell data-stack="wide" className="relative align-top">
+                  <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 pr-6 xl:min-w-64">
+                    <span className="w-4 text-right tabular-nums text-ink-3">
+                      {row.position}
+                    </span>
+                    <span>{row.title}</span>
+                    <span className="col-start-2 text-meta tabular-nums text-ink-3">
+                      <span className="tabular-nums">{row.code}</span>
+                      {" · "}
+                      {t("pricePerUnit", {
+                        price: formatMoney(row.unitPrice, locale),
+                        unit,
+                      })}
+                      {/* A state, as the takeoff says "Nemăsurat". */}
+                      {row.remainingQuantity <= 0 && (
+                        <span>
+                          {" · "}
+                          {t("complete")}
+                        </span>
+                      )}
+                    </span>
+                    <span className="col-start-2 text-meta tabular-nums text-ink-3 xl:hidden">
+                      {t("contract")}{" "}
+                      {formatQuantity(row.contractQuantity, locale)} {unit}
+                      {row.previousQuantity !== 0 &&
+                        ` · ${t("previous")} ${formatQuantity(row.previousQuantity, locale)}`}
+                      {row.remainingQuantity > 0 &&
+                        ` · ${t("remaining")} ${formatQuantity(row.remainingQuantity, locale)}`}
+                      {row.over && (
+                        <span className="text-warning">
+                          {" · "}
+                          {t("over")}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="absolute right-1 top-1">
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "h-8 whitespace-nowrap",
-                        differs ? "text-warning" : "text-ink-3",
+                        "h-8 gap-1 px-2",
+                        differs ? "text-warning" : "text-ink-2",
+                        // An empty one shows on the row it belongs to.
+                        lines === 0 &&
+                          "focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0",
                       )}
                       aria-label={t("attachmentLabel", { title: row.title })}
                       title={
@@ -442,34 +519,154 @@ function RowsTable({
                                 row.attachmentTotal,
                                 locale,
                               ),
-                              unit: formatUnit(row.unit, locale),
+                              unit,
                             })
-                          : undefined
+                          : t("attachment")
                       }
                       onClick={() => onAttachment(row)}
                     >
-                      <Pencil aria-hidden />
-                      {lines > 0
-                        ? t("attachmentLines", { count: lines })
-                        : t("attachment")}
+                      <Paperclip aria-hidden />
+                      {lines > 0 && (
+                        <span className="tabular-nums">{lines}</span>
+                      )}
                     </Button>
-                  </td>
-                </tr>
-              </Fragment>
-            );
-          })}
-          <tr className="border-t border-border">
-            <td colSpan={9} className="pt-2 text-right font-medium text-ink">
-              {t("direct")}
-            </td>
-            <td className="whitespace-nowrap pt-2 pl-3 text-right font-medium tabular-nums text-ink">
-              {formatMoney(Math.round(periodValue * 100) / 100, locale)}
-            </td>
-            <td />
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                  </div>
+                </TableCell>
+                <TableCell className={ROOMY_CELL}>
+                  <Reference>
+                    {formatQuantity(row.contractQuantity, locale)}
+                  </Reference>
+                </TableCell>
+                <TableCell className={ROOMY_CELL}>
+                  <Reference>
+                    {ifAny(
+                      row.previousQuantity,
+                      formatQuantity(row.previousQuantity, locale),
+                    )}
+                  </Reference>
+                </TableCell>
+                {/* The column being filled in. */}
+                <TableCell
+                  className={cn(
+                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left",
+                    WORKING,
+                    // Nothing in it and nothing to put in it: a phone skips the line.
+                    !fillable && row.quantity === 0 && "max-md:hidden",
+                  )}
+                >
+                  <div className="flex items-baseline justify-end max-md:items-center max-md:justify-start max-md:gap-2">
+                    {/* On a phone its head is gone, so it says what it is. */}
+                    <span className="text-meta text-ink-3 md:hidden">
+                      {t("quantity")}
+                    </span>
+                    <InlineNumber
+                      fixed
+                      value={row.quantity}
+                      format={(value) =>
+                        value !== 0 ? formatQuantity(value, locale) : ""
+                      }
+                      // A thumb can't point at a blank cell to find the field.
+                      placeholder={spent && fillable ? "–" : undefined}
+                      label={t("quantityLabel", { title: row.title })}
+                      disabled={!fillable}
+                      onCommit={(quantity) =>
+                        void run(() =>
+                          setQuantity({ rowId: row._id, quantity }),
+                        )
+                      }
+                      className={cn(
+                        // Up by the field's padding, level with the row's first line.
+                        "-my-1 h-7 w-20",
+                        // What's still to fill in is a field like any other, at
+                        // rest too: the column reads as the one being filled in.
+                        fillable &&
+                          !spent &&
+                          "border-input border-b-edge bg-field",
+                        fillable && "hover:bg-field focus:bg-field",
+                        row.quantity === 0
+                          ? "text-ink-3 placeholder:text-ink-3/60 md:placeholder:text-transparent"
+                          : "text-ink",
+                        // A thumb needs room, and has nothing to point with.
+                        fillable && !spent
+                          ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-24 max-md:border-input max-md:border-b-edge max-md:bg-field"
+                          : fillable
+                            ? "max-md:my-0 max-md:mr-0 max-md:h-10 max-md:w-12 max-md:px-0 max-md:text-left"
+                            : "max-md:my-0 max-md:h-auto max-md:w-auto",
+                      )}
+                    />
+                    {/* What's being typed in, as on the Deviz. */}
+                    <span
+                      className={cn(
+                        "text-meta text-ink-3 md:ml-[17px] md:w-7 md:text-left md:text-body",
+                        spent && "invisible",
+                      )}
+                    >
+                      {unit}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className={ROOMY_CELL}>
+                  <div className="grid justify-items-end gap-0.5">
+                    <Reference>
+                      {ifAny(
+                        row.cumulativeQuantity,
+                        formatQuantity(row.cumulativeQuantity, locale),
+                      )}
+                    </Reference>
+                    {/* What's left says how far it got; more than all of it
+                        wants saying. */}
+                    {row.over && (
+                      <span
+                        className="text-meta text-warning"
+                        title={t("over")}
+                      >
+                        {formatPercent(row.percent, locale)}
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell className={ROOMY_CELL}>
+                  <Reference>
+                    {/* All of it done is a dash here, and said under the title. */}
+                    {row.remainingQuantity <= 0 ? (
+                      <Nil />
+                    ) : (
+                      formatQuantity(row.remainingQuantity, locale)
+                    )}
+                  </Reference>
+                </TableCell>
+                <TableCell
+                  className={cn(
+                    "whitespace-nowrap text-right align-top tabular-nums text-ink",
+                    !fillable && row.quantity === 0 && "max-md:hidden",
+                  )}
+                >
+                  {ifAny(row.value, formatMoney(row.value, locale))}
+                </TableCell>
+              </TableRow>
+            </Fragment>
+          );
+        })}
+        <TableRow className="hover:bg-transparent">
+          {/* A span can't follow which columns show. */}
+          <TableCell
+            colSpan={6}
+            className="hidden text-right font-medium xl:table-cell"
+          >
+            {t("direct")}
+          </TableCell>
+          <TableCell
+            colSpan={2}
+            className="text-right font-medium max-md:text-left xl:hidden"
+          >
+            {t("direct")}
+          </TableCell>
+          <TableCell className="whitespace-nowrap text-right font-medium tabular-nums">
+            {formatMoney(Math.round(periodValue * 100) / 100, locale)}
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
   );
 }
 
@@ -503,7 +700,7 @@ function Recap({ statement }: { statement: Statement }) {
   ];
   return (
     <div className="grid content-start gap-2">
-      <span className="text-label uppercase text-ink-3">{t("title")}</span>
+      <span className="text-caption text-ink-3">{t("title")}</span>
       <dl className="m-0 grid gap-1.5">
         {lines.map((line) => (
           <div
@@ -551,7 +748,7 @@ function Notes({ statement }: { statement: Statement }) {
   if (!statement.editable) {
     return (
       <div className="grid content-start gap-2">
-        <span className="text-label uppercase text-ink-3">{t("notes")}</span>
+        <span className="text-caption text-ink-3">{t("notes")}</span>
         <p className="m-0 whitespace-pre-line text-body text-ink-2">
           {notes || "–"}
         </p>
@@ -578,7 +775,7 @@ function Notes({ statement }: { statement: Statement }) {
     <div className="grid content-start gap-2">
       <label
         htmlFor="statement-notes-inline"
-        className="text-label uppercase text-ink-3"
+        className="text-caption text-ink-3"
       >
         {t("notes")}
       </label>

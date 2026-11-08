@@ -11,19 +11,23 @@ export function SegmentedControl<T extends string>({
   value,
   options,
   onChange,
+  compact = false,
   className,
 }: {
   label: string;
   value: T;
   options: readonly { value: T; label: ReactNode }[];
   onChange: (value: T) => void;
+  // Beside a small button: 32 px high, like it.
+  compact?: boolean;
   className?: string;
 }) {
   return (
     <fieldset
       aria-label={label}
       className={cn(
-        "m-0 inline-flex min-w-0 max-w-full items-center gap-0.5 overflow-x-auto rounded-md border-0 bg-sunken p-0.5 [scrollbar-width:none]",
+        "m-0 inline-flex w-fit min-w-0 max-w-full items-center gap-0.5 overflow-x-auto rounded-md border-0 bg-sunken [scrollbar-width:none]",
+        compact ? "p-0.5" : "p-1",
         className,
       )}
     >
@@ -34,9 +38,9 @@ export function SegmentedControl<T extends string>({
           aria-pressed={option.value === value}
           onClick={() => onChange(option.value)}
           className={cn(
-            "inline-flex h-8 shrink-0 items-center gap-2 whitespace-nowrap rounded-sm px-3 text-body text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-4",
+            "inline-flex h-7 shrink-0 items-center gap-2 whitespace-nowrap rounded-sm px-2.5 text-meta max-sm:h-9 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-4",
             option.value === value &&
-              "bg-card font-medium text-ink shadow-raised",
+              "bg-selected font-medium text-ink shadow-raised dark:ring-1 dark:ring-inset dark:ring-edge",
           )}
         >
           {option.label}

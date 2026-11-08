@@ -36,7 +36,10 @@ const config = {
         ],
         departure: ["var(--font-departure-mono)"],
       },
-      // Devize type styles. Big means thin: display, title-page and kpi are 300.
+      // Devize type styles. Big means thin: display and title-page are 300.
+      // Inside the app a screen's title is title-screen and the total of a
+      // document is hero; `lead` leads a working page or a phone, `figure` is
+      // every figure beside them.
       fontSize: {
         display: [
           "60px",
@@ -46,24 +49,58 @@ const config = {
           "34px",
           { lineHeight: "40px", letterSpacing: "-0.015em", fontWeight: "300" },
         ],
-        kpi: [
-          "32px",
-          { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "300" },
+        "title-screen": [
+          "24px",
+          { lineHeight: "32px", letterSpacing: "-0.016em", fontWeight: "400" },
         ],
-        "title-card": ["17px", { lineHeight: "24px", fontWeight: "500" }],
+        hero: [
+          "36px",
+          {
+            lineHeight: "40px",
+            letterSpacing: "-0.01em",
+            fontWeight: "var(--weight-figure)",
+          },
+        ],
+        lead: [
+          "28px",
+          {
+            lineHeight: "36px",
+            letterSpacing: "-0.01em",
+            fontWeight: "var(--weight-figure)",
+          },
+        ],
+        // A strip's lead where a phone's two columns have no room for `lead`.
+        stat: [
+          "24px",
+          { lineHeight: "32px", letterSpacing: "-0.012em", fontWeight: "400" },
+        ],
+        figure: [
+          "20px",
+          { lineHeight: "26px", letterSpacing: "-0.01em", fontWeight: "400" },
+        ],
+        "title-card": [
+          "18px",
+          { lineHeight: "24px", letterSpacing: "-0.01em", fontWeight: "500" },
+        ],
         "body-lg": ["15px", { lineHeight: "22px" }],
         body: ["14px", { lineHeight: "20px" }],
-        meta: ["13px", { lineHeight: "18px" }],
+        meta: ["13px", { lineHeight: "18px", fontWeight: "430" }],
         pill: ["13px", { lineHeight: "20px", fontWeight: "500" }],
+        // The uppercase eyebrow of the marketing site.
         label: [
           "12px",
           { lineHeight: "16px", letterSpacing: "0.06em", fontWeight: "500" },
         ],
+        // A name for what follows, inside the app: table heads, groups, facts.
+        caption: ["13px", { lineHeight: "18px", fontWeight: "450" }],
+        head: ["12px", { lineHeight: "16px", fontWeight: "500" }],
         code: ["13px", { lineHeight: "20px" }],
       },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
+        control: "hsl(var(--border-control))",
+        edge: "hsl(var(--border-field))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -102,9 +139,13 @@ const config = {
         sunken: "hsl(var(--sunken))",
         field: "hsl(var(--field))",
         selected: "hsl(var(--selected))",
+        "nav-active": "hsl(var(--nav-active))",
+        scrim: "hsl(var(--scrim))",
         tile: "hsl(var(--tile))",
         backdrop: "hsl(var(--backdrop))",
         tick: "hsl(var(--tick))",
+        rule: "hsl(var(--rule))",
+        meter: "hsl(var(--meter))",
         ink: {
           DEFAULT: "hsl(var(--ink))",
           2: "hsl(var(--ink-2))",
@@ -132,6 +173,7 @@ const config = {
           border: "hsl(var(--danger-border))",
         },
         "neutral-dot": "hsl(var(--neutral-dot))",
+        "active-dot": "hsl(var(--active-dot))",
         ai: {
           DEFAULT: "hsl(var(--ai))",
           soft: "hsl(var(--ai-soft))",
@@ -142,18 +184,19 @@ const config = {
         xs: "4px",
         sm: "6px",
         md: "8px",
-        lg: "14px",
-        xl: "18px",
-        "2xl": "20px",
+        lg: "12px",
+        xl: "14px",
+        "2xl": "16px",
       },
       boxShadow: {
         raised: "var(--shadow-raised)",
         card: "var(--shadow-card)",
         panel: "var(--shadow-panel)",
+        overlay: "var(--shadow-overlay)",
       },
       spacing: {
         sidebar: "256px",
-        rail: "360px",
+        rail: "300px",
       },
       keyframes: {
         "accordion-down": {

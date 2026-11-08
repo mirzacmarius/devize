@@ -4,13 +4,7 @@ import { api } from "@devize/backend/convex/_generated/api";
 import type { Doc } from "@devize/backend/convex/_generated/dataModel";
 import { roundLei } from "@devize/backend/convex/estimates/recap";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
 import {
@@ -21,101 +15,53 @@ import {
   SelectValue,
 } from "@devize/ui/select";
 import { useMutation } from "convex/react";
-import { Trash2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
 import { useRun } from "@/components/use-run";
 import {
-  formatCalendarDate,
   formatInputNumber,
   formatMoney,
   parseDecimal,
   todayInput,
 } from "@/lib/format";
-import { uniqueKeys } from "@/lib/keys";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Invoice } from "./types";
 
 type Method = Doc<"invoices">["payments"][number]["method"];
 const methods: readonly Method[] = ["transfer", "cash", "card", "other"];
 
-/** What the client paid on the invoice, and the form for the next payment. */
+/**
+ * What is left to collect on an issued invoice, and the form for the next
+ * payment. The payments that came in are in its history.
+ */
 export function PaymentsCard({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.payments");
   const locale = useCurrentLocale();
-  const run = useRun();
-  const removePayment = useMutation(api.invoices.invoices.removePayment);
   const remaining = roundLei(invoice.totals.total - invoice.paidAmount);
-  const open = invoice.status === "issued" || invoice.status === "paid";
-  const keys = uniqueKeys(
-    invoice.payments,
-    (payment) => `${payment.date}|${payment.amount}|${payment.method}`,
-  );
+  const open = invoice.status === "issued";
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <span className="text-meta text-ink-3 tabular-nums">
-          {remaining > 0
-            ? `${t("remaining")}: ${formatMoney(remaining, locale)}`
-            : t("settled")}
-        </span>
+        <div className="grid min-w-0 gap-1">
+          <CardTitle>{t("title")}</CardTitle>
+          <span className="text-meta text-ink-3 tabular-nums">
+            {remaining > 0
+              ? `${t("remaining")}: ${formatMoney(remaining, locale)}`
+              : t("settled")}
+          </span>
+        </div>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
-        {invoice.payments.length === 0 ? (
-          <p className="m-0 text-body text-ink-3">{t("none")}</p>
-        ) : (
-          <ul className="m-0 grid list-none gap-2 p-0">
-            {invoice.payments.map((payment, index) => (
-              <li
-                key={keys[index]}
-                className="flex items-center justify-between gap-3 rounded-md border border-border bg-sunken px-3 py-2"
-              >
-                <div className="grid min-w-0 gap-0.5">
-                  <span className="text-body font-medium text-ink tabular-nums">
-                    {formatMoney(payment.amount, locale)} lei
-                  </span>
-                  <span className="text-meta text-ink-3">
-                    {[
-                      formatCalendarDate(payment.date, locale),
-                      t(`methods.${payment.method}`),
-                      payment.note,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </span>
-                </div>
-                {open && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label={t("remove")}
-                    onClick={() =>
-                      run(
-                        () => removePayment({ invoiceId: invoice._id, index }),
-                        t("removed"),
-                      )
-                    }
-                  >
-                    <Trash2 aria-hidden />
-                  </Button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-        {open && remaining > 0 && (
+      {open && remaining > 0 && (
+        <CardContent>
           <PaymentForm
             key={`${invoice.paidAmount}-${invoice.payments.length}`}
             invoice={invoice}
             remaining={remaining}
           />
-        )}
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }

@@ -69,7 +69,7 @@ export function SignaturePad({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-md border border-input bg-field",
+        "relative overflow-hidden rounded-md border border-input border-b-edge bg-field",
         invalid && "border-danger",
       )}
     >

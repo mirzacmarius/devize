@@ -4,8 +4,8 @@ import * as React from "react";
 import { cn } from "../utils";
 
 // The app frame: the sidebar on `shell`, the page on a `panel` inset by 12px.
-// Under 768px the sidebar leaves the frame; show its content in a Sheet
-// opened from the page instead.
+// Under 1024px the sidebar leaves the frame, so a tablet's page has the whole
+// width; show its content in a Sheet opened from the page instead.
 const AppShell = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -13,7 +13,7 @@ const AppShell = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "grid min-h-screen bg-shell text-ink md:grid-cols-[theme(spacing.sidebar)_minmax(0,1fr)]",
+      "grid min-h-screen bg-shell text-ink lg:grid-cols-[theme(spacing.sidebar)_minmax(0,1fr)]",
       className,
     )}
     {...props}
@@ -30,7 +30,7 @@ const AppSidebar = React.forwardRef<
   <aside
     ref={ref}
     className={cn(
-      "sticky top-0 hidden h-screen flex-col gap-3 overflow-y-auto px-3 py-4 md:flex",
+      "sticky top-0 hidden h-screen flex-col gap-2 overflow-y-auto px-3 py-3 lg:flex",
       className,
     )}
     {...props}
@@ -39,6 +39,8 @@ const AppSidebar = React.forwardRef<
 AppSidebar.displayName = "AppSidebar";
 
 // The page itself. Its children stack 24px apart: PageHeader, then sections.
+// On a very wide window the content stops growing and stays centred. Under
+// 1024px there is no sidebar to set it apart from, so it fills the screen.
 const AppMain = React.forwardRef<
   HTMLElement,
   React.HTMLAttributes<HTMLElement>
@@ -46,7 +48,7 @@ const AppMain = React.forwardRef<
   <main
     ref={ref}
     className={cn(
-      "m-3 grid min-w-0 content-start gap-6 rounded-2xl bg-panel px-4 pb-8 pt-4 shadow-panel md:ml-0 md:px-8 md:pt-6",
+      "app-main grid min-w-0 grid-cols-[minmax(0,1472px)] content-start justify-center gap-4 bg-panel px-4 pb-10 pt-4 sm:gap-6 md:px-8 lg:m-2 lg:ml-0 lg:rounded-2xl lg:pt-7",
       className,
     )}
     {...props}
@@ -69,10 +71,7 @@ function SidebarNavLabel({
 }: React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={cn(
-        "px-3 pb-2 pt-4 text-label uppercase text-ink-3",
-        className,
-      )}
+      className={cn("px-2 pb-1 pt-4 text-caption text-ink-3", className)}
       {...props}
     />
   );
@@ -86,7 +85,7 @@ export interface SidebarNavItemProps
 }
 
 // One destination: an icon, the name and an optional Count after it
-// (`className="ml-auto"`). The current page is raised on `selected`.
+// (`className="ml-auto"`). The current page sits on `nav-active`.
 const SidebarNavItem = React.forwardRef<HTMLAnchorElement, SidebarNavItemProps>(
   ({ className, active, asChild, ...props }, ref) => {
     const Comp = asChild ? Slot : "a";
@@ -95,8 +94,8 @@ const SidebarNavItem = React.forwardRef<HTMLAnchorElement, SidebarNavItemProps>(
         ref={ref}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex h-9 items-center gap-3 rounded-md px-3 text-body-lg text-ink-2 transition-colors hover:bg-tile hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&>svg]:size-[18px] [&>svg]:shrink-0",
-          active && "bg-selected text-ink shadow-raised hover:bg-selected",
+          "flex h-8 items-center gap-2.5 rounded-md px-2 text-body text-ink-2 transition-colors hover:bg-nav-active/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&>svg]:mx-1.5 [&>svg]:size-4 [&>svg]:shrink-0",
+          active && "bg-nav-active font-medium text-ink hover:bg-nav-active",
           className,
         )}
         {...props}

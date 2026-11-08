@@ -3,23 +3,20 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import { withdrawalDeadline } from "@devize/backend/convex/offers/consumer";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
 import { toast } from "@devize/ui/sonner";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { ExternalLink, Mail, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { type ReactNode, useState } from "react";
+import { Lei } from "@/components/amount";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { useScheduleWords } from "@/components/payment-schedule";
+import { Fact, FactList } from "@/components/fact-list";
+import { FoldCard } from "@/components/fold-card";
+import { PaymentStages } from "@/components/payment-schedule";
 import { SignatureImage } from "@/components/signature/signature-image";
 import { useRun } from "@/components/use-run";
 import {
@@ -30,7 +27,6 @@ import {
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
-import { OfferDialog } from "./offer-dialog";
 import { copyText, offerUrl, useOrigin, whatsappNumber } from "./offer-link";
 import { OfferQuestions } from "./offer-questions";
 import { OfferVariants } from "./variants-sheet";
@@ -44,7 +40,7 @@ const tones: Record<Offer["status"], StatusPillProps["tone"]> = {
   sent: "neutral",
   viewed: "neutral",
   accepted: "success",
-  declined: "danger",
+  declined: "declined",
   expired: "warning",
   withdrawn: "neutral",
 };
@@ -54,12 +50,18 @@ const tones: Record<Offer["status"], StatusPillProps["tone"]> = {
  * sending it, the client's visits and what they look at, and their answer
  * with the signature.
  */
-export function OfferCard({ estimate }: { estimate: Estimate }) {
+export function OfferCard({
+  estimate,
+  onCreate,
+}: {
+  estimate: Estimate;
+  onCreate: () => void;
+}) {
   const t = useScopedI18n("offer");
+  const locale = useCurrentLocale();
   const offer = useQuery(api.offers.offers.forEstimate, {
     estimateId: estimate._id,
   });
-  const [creating, setCreating] = useState(false);
   if (offer === undefined) {
     return null;
   }
@@ -72,8 +74,9 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
         <Button
           type="button"
           variant="outline"
+          size="sm"
           disabled={empty}
-          onClick={() => setCreating(true)}
+          onClick={onCreate}
           className="justify-self-start"
         >
           {label}
@@ -88,9 +91,12 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
   if (offer === null) {
     body = (
       <>
-        <p className="m-0 text-body text-ink-2">{t("hint")}</p>
+        <p className="m-0 text-meta text-ink-2">
+          {estimate.status === "draft" && empty ? t("empty") : t("hint")}
+        </p>
+        {/* A draft has it in its header; one already marked sent only here. */}
+        {estimate.status !== "draft" && createButton(t("create"))}
         <OfferVariants estimate={estimate} />
-        {createButton(t("create"))}
       </>
     );
   } else if (offer.status === "sent" || offer.status === "viewed") {
@@ -113,8 +119,27 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
     );
   }
 
+  // Nothing to follow yet on a draft, and nothing left to follow once signed:
+  // the row says so and the rest stays a click away.
+  const signedAt = offer?.signature?.signedAt ?? offer?.decidedAt;
+  const lead =
+    offer === null && estimate.status === "draft"
+      ? t("notCreated")
+      : offer?.status === "accepted"
+        ? signedAt === undefined
+          ? t("status.accepted")
+          : t("acceptedLead", { date: formatDay(signedAt, locale) })
+        : undefined;
+  if (lead) {
+    return (
+      <FoldCard id="offer" title={t("row")} lead={lead}>
+        {body}
+      </FoldCard>
+    );
+  }
+
   return (
-    <Card>
+    <Card id="offer" className="scroll-mt-4">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
         {offer && (
@@ -123,29 +148,53 @@ export function OfferCard({ estimate }: { estimate: Estimate }) {
           </StatusPill>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">{body}</CardContent>
-      <OfferDialog
-        estimate={estimate}
-        open={creating}
-        onClose={() => setCreating(false)}
-      />
+      <CardContent>{body}</CardContent>
     </Card>
   );
 }
 
-/** The stages of payment in one line: "Avans: 30% la semnare (1.200,00 lei); …". */
-function useScheduleLine() {
-  const words = useScheduleWords();
-  return (offer: Offer) =>
-    words(offer.paymentSchedule, offer.choice.totals.total).join("; ");
+/** How the client pays the offer's choice, stage by stage. */
+function OfferPayment({
+  offer,
+  folded = false,
+}: {
+  offer: Offer;
+  folded?: boolean;
+}) {
+  const t = useScopedI18n("offer");
+  if (offer.paymentSchedule.length === 0) {
+    return null;
+  }
+  if (folded) {
+    return (
+      <details>
+        <summary className="text-meta text-ink-2 hover:text-ink">
+          {t("paymentStages", { count: offer.paymentSchedule.length })}
+        </summary>
+        <div className="mt-2">
+          <PaymentStages
+            stages={offer.paymentSchedule}
+            total={offer.choice.totals.total}
+          />
+        </div>
+      </details>
+    );
+  }
+  return (
+    <div className="grid gap-1.5">
+      <p className="m-0 text-meta text-ink-3">{t("payment")}</p>
+      <PaymentStages
+        stages={offer.paymentSchedule}
+        total={offer.choice.totals.total}
+      />
+    </div>
+  );
 }
 
 /** A link the client can still open: sharing it and following the visits. */
 function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
   const t = useScopedI18n("offer");
   const locale = useCurrentLocale();
-  const scheduleLine = useScheduleLine();
   const run = useRun();
   const withdraw = useMutation(api.offers.offers.withdraw);
   const firm = useQuery(api.accounts.organizations.get, {
@@ -201,10 +250,9 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
     t("sentOn", { date: formatDay(offer.sentAt, locale) }),
     offer.expiresAt !== undefined &&
       t("expiresOn", { date: formatDay(offer.expiresAt, locale) }),
-    offer.paymentSchedule.length > 0
-      ? t("payment", { schedule: scheduleLine(offer) })
-      : offer.depositPercent !== undefined &&
-        t("deposit", { percent: formatPercent(offer.depositPercent, locale) }),
+    offer.paymentSchedule.length === 0 &&
+      offer.depositPercent !== undefined &&
+      t("deposit", { percent: formatPercent(offer.depositPercent, locale) }),
     offer.consumer && t("consumer"),
     offer.createdByName && t("madeBy", { name: offer.createdByName }),
   ].filter(Boolean);
@@ -234,7 +282,7 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
           </Button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" asChild>
           <a href={whatsapp} target="_blank" rel="noreferrer">
             <MessageCircle aria-hidden />
@@ -247,15 +295,15 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
             {t("email")}
           </a>
         </Button>
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="link" className="text-meta" asChild>
           <a href={`/o/${offer.token}`} target="_blank" rel="noreferrer">
-            <ExternalLink aria-hidden />
             {t("openAsClient")}
           </a>
         </Button>
       </div>
+      <OfferPayment offer={offer} folded />
       <div className="grid gap-1 text-meta text-ink-2">
-        <span>{facts.join(" · ")}</span>
+        <span>{facts.join("\u00a0· ")}</span>
         <span>
           {offer.viewCount === 0 || offer.lastViewedAt === undefined
             ? t("notViewed")
@@ -272,9 +320,8 @@ function LiveOffer({ estimate, offer }: { estimate: Estimate; offer: Offer }) {
       <OfferQuestions offerId={offer._id} assistant={offer.assistant} live />
       <Button
         type="button"
-        variant="ghost"
-        size="sm"
-        className="justify-self-start"
+        variant="link"
+        className="justify-self-start text-meta text-ink-2"
         onClick={() => setConfirming(true)}
       >
         {t("withdraw")}
@@ -300,27 +347,26 @@ function ChoiceBox({ label, offer }: { label?: string; offer: Offer }) {
   const { choice } = offer;
   const total = formatMoney(choice.totals.total, locale);
   return (
-    <div className="grid gap-0.5 rounded-md border border-border bg-sunken px-3 py-2.5">
-      {label && <span className="text-meta text-ink-3">{label}</span>}
-      <span className="text-body text-ink">
-        {choice.variantName
-          ? t("variant", { name: choice.variantName })
-          : offer.variants.length > 0 && offer.baseLabel
-            ? t("variant", { name: offer.baseLabel })
-            : t("defaultChoice")}
-      </span>
+    <div className="grid gap-1">
+      {label && <p className="m-0 text-meta text-ink-3">{label}</p>}
+      <FactList>
+        <Fact label={t("choice")}>
+          {choice.variantName ??
+            (offer.variants.length > 0 && offer.baseLabel
+              ? offer.baseLabel
+              : t("defaultChoice"))}
+        </Fact>
+        <Fact label={choice.totals.vat !== 0 ? t("total") : t("totalNoVat")}>
+          <Lei value={total} />
+        </Fact>
+      </FactList>
       {choice.excluded.length > 0 && (
-        <span className="text-meta text-ink-2">
+        <p className="m-0 text-meta text-ink-3">
           {t("without", {
             items: choice.excluded.map((item) => item.title).join(", "),
           })}
-        </span>
+        </p>
       )}
-      <span className="text-meta tabular-nums text-ink-2">
-        {choice.totals.vat !== 0
-          ? t("total", { total })
-          : t("totalNoVat", { total })}
-      </span>
     </div>
   );
 }
@@ -335,7 +381,6 @@ function AcceptedOffer({
 }) {
   const t = useScopedI18n("offer");
   const locale = useCurrentLocale();
-  const scheduleLine = useScheduleLine();
   const { signature } = offer;
   const signedAt = signature?.signedAt ?? offer.decidedAt;
   const name = signature?.name ?? estimate.client?.name ?? "";
@@ -350,24 +395,14 @@ function AcceptedOffer({
           })}
         </p>
       )}
-      <ChoiceBox offer={offer} />
-      {offer.paymentSchedule.length > 0 && (
-        <p className="m-0 text-meta text-ink-2">
-          {t("payment", { schedule: scheduleLine(offer) })}
-        </p>
+      {/* The total is the Deviz's own unless the client chose among some. */}
+      {(offer.variants.length > 0 || offer.optionalItems.length > 0) && (
+        <ChoiceBox offer={offer} />
       )}
-      {signature &&
-        (signature.path ? (
-          <div className="rounded-md border border-border bg-card px-2">
-            <SignatureImage
-              path={signature.path}
-              label={t("signatureLabel", { name: signature.name })}
-            />
-          </div>
-        ) : (
-          <p className="m-0 text-meta text-ink-3">{t("typedSignature")}</p>
-        ))}
-      <SigningEvidence estimate={estimate} offer={offer} />
+      <div className="grid gap-2">
+        <OfferPayment offer={offer} folded />
+        <SigningEvidence estimate={estimate} offer={offer} />
+      </div>
       <OfferQuestions
         offerId={offer._id}
         assistant={offer.assistant}
@@ -390,6 +425,7 @@ function SigningEvidence({
   offer: Offer;
 }) {
   const t = useScopedI18n("offer.evidence");
+  const tOffer = useScopedI18n("offer");
   const locale = useCurrentLocale();
   const { signature } = offer;
   if (!signature) {
@@ -412,10 +448,22 @@ function SigningEvidence({
       : !estimate.client?.email && t("noConfirmation"),
   ].filter((fact): fact is string => typeof fact === "string");
   return (
-    <details className="rounded-md border border-border bg-sunken px-3 py-2">
-      <summary className="cursor-pointer text-meta font-medium text-ink-2">
+    <details>
+      <summary className="text-meta text-ink-2 hover:text-ink">
         {t("title")}
       </summary>
+      {signature.path ? (
+        <div className="mt-2 rounded-md border border-border px-2">
+          <SignatureImage
+            path={signature.path}
+            label={tOffer("signatureLabel", { name: signature.name })}
+          />
+        </div>
+      ) : (
+        <p className="m-0 mt-2 text-meta text-ink-3">
+          {tOffer("typedSignature")}
+        </p>
+      )}
       <ul className="m-0 mt-2 grid list-none gap-1 p-0 text-meta text-ink-2">
         {signature.contentHash && (
           <li className="break-all font-mono text-code">
@@ -475,9 +523,8 @@ function EndedOffer({ offer, action }: { offer: Offer; action: ReactNode }) {
 function ClientViewLink({ token }: { token: string }) {
   const t = useScopedI18n("offer");
   return (
-    <Button variant="ghost" size="sm" className="justify-self-start" asChild>
+    <Button variant="link" className="justify-self-start text-meta" asChild>
       <a href={`/o/${token}`} target="_blank" rel="noreferrer">
-        <ExternalLink aria-hidden />
         {t("openAsClient")}
       </a>
     </Button>

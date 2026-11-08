@@ -20,15 +20,13 @@ import {
 const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
 export default function AdminSettingsPage() {
-  const t = useScopedI18n("admin.settings");
   const settings = useQuery(api.manufacturers.outreach.getSettings);
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <h1 className="text-3xl font-medium text-primary/80">{t("title")}</h1>
       <ClaudeStatus />
       {settings === undefined ? (
-        <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
+        <Loader2 className="h-5 w-5 animate-spin text-ink-3" />
       ) : (
         <>
           <SenderForm settings={settings} />
@@ -52,9 +50,7 @@ function ClaudeStatus() {
       {status && (
         <p
           className={
-            status.hasApiKey
-              ? "text-sm text-primary/80"
-              : "text-sm text-red-700 dark:text-red-300"
+            status.hasApiKey ? "text-body text-ink-2" : "text-body text-danger"
           }
         >
           {status.hasApiKey
@@ -62,9 +58,9 @@ function ClaudeStatus() {
             : t("missing")}
         </p>
       )}
-      <p className="text-sm text-primary/60">{t("model")}</p>
+      <p className="text-body text-ink-3">{t("model")}</p>
       {costs && (
-        <p className="text-sm text-primary/60">
+        <p className="text-body text-ink-3">
           {t("costs", {
             jobs: costs.jobs,
             failed: costs.failed,
@@ -133,7 +129,7 @@ function SenderForm({ settings }: { settings: Settings }) {
             aria-describedby="sender_email_hint"
             onChange={(event) => setSenderEmail(event.target.value)}
           />
-          <p id="sender_email_hint" className="text-xs text-primary/50">
+          <p id="sender_email_hint" className="text-meta text-ink-3">
             {t("senderEmailHint")}
           </p>
         </Field>
@@ -141,9 +137,7 @@ function SenderForm({ settings }: { settings: Settings }) {
           <Button type="submit" size="sm" disabled={pending}>
             {t("save")}
           </Button>
-          {saved && (
-            <span className="text-sm text-primary/60">{t("saved")}</span>
-          )}
+          {saved && <span className="text-body text-ink-3">{t("saved")}</span>}
           <ErrorText error={error} />
         </div>
       </form>
@@ -171,7 +165,7 @@ function DomainCheck({ email }: { email: string }) {
   return (
     <div className="flex flex-col gap-3 border-t border-border pt-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-primary/70">{t("intro", { email })}</p>
+        <p className="text-body text-ink-2">{t("intro", { email })}</p>
         <Button
           size="sm"
           variant="outline"
@@ -184,17 +178,17 @@ function DomainCheck({ email }: { email: string }) {
       </div>
       <ErrorText error={error} />
       {result?.outcome === "provider" && (
-        <p className="text-sm text-primary/70">
+        <p className="text-body text-ink-2">
           {t("provider", { domain: result.domain })}
         </p>
       )}
       {result?.outcome === "unavailable" && (
-        <p className="text-sm text-primary/70">
+        <p className="text-body text-ink-2">
           {t("unavailable", { domain: result.domain })}
         </p>
       )}
       {result?.outcome === "checked" && (
-        <ul className="flex flex-col gap-2 text-sm">
+        <ul className="flex flex-col gap-2 text-body">
           <DomainRow ok={result.spf} label="SPF">
             {result.spf ? t("spfOk") : t("spfMissing")}
           </DomainRow>
@@ -227,7 +221,7 @@ function DomainRow({
       <Pill tone={ok ? "success" : "warning"}>
         {label} · {ok ? t("ok") : t("missing")}
       </Pill>
-      <span className="text-primary/70">{children}</span>
+      <span className="text-ink-2">{children}</span>
     </li>
   );
 }
@@ -323,7 +317,7 @@ function PrivacyForm({ settings }: { settings: Settings }) {
             aria-describedby="privacy_url_hint"
             onChange={(event) => setPrivacyUrl(event.target.value)}
           />
-          <p id="privacy_url_hint" className="text-xs text-primary/50">
+          <p id="privacy_url_hint" className="text-meta text-ink-3">
             {t("urlHint")}
           </p>
         </Field>
@@ -331,9 +325,7 @@ function PrivacyForm({ settings }: { settings: Settings }) {
           <Button type="submit" size="sm" disabled={pending}>
             {t("save")}
           </Button>
-          {saved && (
-            <span className="text-sm text-primary/60">{t("saved")}</span>
-          )}
+          {saved && <span className="text-body text-ink-3">{t("saved")}</span>}
           <ErrorText error={error} />
         </div>
       </form>
@@ -386,18 +378,18 @@ function SuppressionList() {
       </form>
       <ErrorText error={error} />
       {rows && rows.length === 0 && (
-        <p className="text-sm text-primary/60">{t("empty")}</p>
+        <p className="text-body text-ink-3">{t("empty")}</p>
       )}
       {rows && rows.length > 0 && (
-        <ul className="flex flex-col divide-y divide-border text-sm">
+        <ul className="flex flex-col divide-y divide-border text-body">
           {rows.map((row) => (
             <li
               key={row._id}
               className="flex flex-wrap items-center justify-between gap-3 py-2"
             >
               <div className="flex flex-col">
-                <span className="font-medium text-primary">{row.value}</span>
-                <span className="text-xs text-primary/50">
+                <span className="font-medium text-ink">{row.value}</span>
+                <span className="text-meta text-ink-3">
                   {format.date(row._creationTime)}
                   {row.reason && ` · ${row.reason}`}
                 </span>

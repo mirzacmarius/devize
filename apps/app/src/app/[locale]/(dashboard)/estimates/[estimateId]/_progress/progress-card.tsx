@@ -1,17 +1,12 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
 import { useQuery } from "convex/react";
-import Link from "next/link";
+import { Lei } from "@/components/amount";
+import { Fact, FactList } from "@/components/fact-list";
+import { LinkCard } from "@/components/fold-card";
+import { RailStat } from "@/components/rail-stat";
 import { formatCalendarDate, formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
@@ -36,6 +31,7 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
     return null;
   }
   const percent = Math.round(overview.executed.percent * 10) / 10;
+  const progress = `/estimates/${estimate._id}/progress`;
   const receptionState = (kind: "completion" | "final") => {
     const reception = guarantee.receptions[kind];
     if (!reception) {
@@ -52,65 +48,49 @@ export function ProgressCard({ estimate }: { estimate: Estimate }) {
       : tReceptions("draft");
   };
 
+  if (overview.statements.length === 0) {
+    return (
+      <LinkCard title={t("title")} lead={t("noStatements")} href={progress} />
+    );
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
-        {overview.statements.length === 0 ? (
-          <p className="m-0 text-body text-ink-2">{t("noStatements")}</p>
-        ) : (
-          <>
-            <div className="grid gap-2">
-              <span className="text-body font-medium tabular-nums text-ink">
-                {t("executed", { percent: formatPercent(percent, locale) })}
-              </span>
-              <TickBar
-                thin
-                value={percent}
-                tone={percent > 100 ? "warning" : "action"}
-                label={t("executed", {
-                  percent: formatPercent(percent, locale),
-                })}
-              />
-            </div>
-            <div className="grid gap-1 text-meta text-ink-2">
-              <span>
-                {t("statements", { count: overview.statements.length })}
-              </span>
-              {overview.approved && (
-                <span>
-                  {t("approved", {
-                    amount: formatMoney(overview.approved.subtotal, locale),
-                  })}
-                </span>
-              )}
-              {guarantee.guarantee && guarantee.outstanding > 0 && (
-                <span>
-                  {t("outstanding", {
-                    amount: formatMoney(guarantee.outstanding, locale),
-                  })}
-                </span>
-              )}
-            </div>
-          </>
+    <RailStat
+      id="progress"
+      label={t("executedLabel")}
+      value={formatPercent(percent, locale)}
+      href={progress}
+      row
+    >
+      <MeterBar
+        ruled
+        value={percent}
+        tone={percent > 100 ? "warning" : "action"}
+        label={t("executed", {
+          percent: formatPercent(percent, locale),
+        })}
+        className="mb-1 mt-1.5"
+      />
+      <FactList>
+        {overview.approved && (
+          <Fact label={t("approved")}>
+            <Lei value={formatMoney(overview.approved.subtotal, locale)} />
+          </Fact>
         )}
-        <div className="grid gap-1 text-meta text-ink-2">
-          {(["completion", "final"] as const).map((kind) => (
-            <span key={kind}>
-              {t("reception", {
-                name: tStages(kind),
-                state: receptionState(kind),
-              })}
-            </span>
+        {guarantee.guarantee && guarantee.outstanding > 0 && (
+          <Fact label={t("outstanding")}>
+            <Lei value={formatMoney(guarantee.outstanding, locale)} />
+          </Fact>
+        )}
+        {/* A reception says something once the work is done or one is begun. */}
+        {(["completion", "final"] as const)
+          .filter((kind) => percent >= 100 || guarantee.receptions[kind])
+          .map((kind) => (
+            <Fact key={kind} label={tStages(kind)}>
+              {receptionState(kind)}
+            </Fact>
           ))}
-        </div>
-        <Button variant="outline" className="justify-self-start" asChild>
-          <Link href={`/estimates/${estimate._id}/progress`}>{t("open")}</Link>
-        </Button>
-      </CardContent>
-    </Card>
+      </FactList>
+    </RailStat>
   );
 }

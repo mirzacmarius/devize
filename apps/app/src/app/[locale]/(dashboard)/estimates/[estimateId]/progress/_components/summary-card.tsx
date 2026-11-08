@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardHeader,
-  CardTitle,
-} from "@devize/ui/card";
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
+import { Figure, FigureStrip } from "@/components/figure-strip";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Overview } from "./types";
@@ -17,54 +11,43 @@ export function SummaryCard({ overview }: { overview: Overview }) {
   const t = useScopedI18n("progress.summary");
   const locale = useCurrentLocale();
   const percent = Math.round(overview.executed.percent * 10) / 10;
-  const lei = (value: number) => `${formatMoney(value, locale)} lei`;
-  const rows = [
-    { label: t("contract"), value: lei(overview.contract.subtotal) },
-    { label: t("executedValue"), value: lei(overview.executed.subtotal) },
-    {
-      label: t("approved"),
-      value: overview.approved
-        ? `${lei(overview.approved.subtotal)} · ${formatPercent(
-            Math.round(overview.approved.percent * 10) / 10,
-            locale,
-          )}`
-        : t("noApproved"),
-    },
-    { label: t("remaining"), value: lei(overview.remainingSubtotal) },
-  ];
+  const executed = formatPercent(percent, locale);
   return (
-    <CardFrame>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-2">
-            <span className="text-title-card tabular-nums text-ink">
-              {t("executed", { percent: formatPercent(percent, locale) })}
-            </span>
-            <TickBar
-              value={percent}
-              tone={percent > 100 ? "warning" : "action"}
-              label={t("executed", { percent: formatPercent(percent, locale) })}
-            />
-          </div>
-          <dl className="m-0 grid gap-2">
-            {rows.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-baseline justify-between gap-3"
-              >
-                <dt className="text-body text-ink-2">{row.label}</dt>
-                <dd className="m-0 text-right text-body font-medium tabular-nums text-ink">
-                  {row.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p className="m-0 text-meta text-ink-3">{t("hint")}</p>
-        </CardContent>
-      </Card>
-    </CardFrame>
+    <FigureStrip>
+      <Figure lead label={t("title")} value={executed}>
+        <MeterBar
+          ruled
+          className="mt-1.5"
+          value={percent}
+          tone={percent > 100 ? "warning" : "action"}
+          label={t("executed", { percent: executed })}
+        />
+      </Figure>
+      <Figure
+        label={t("contract")}
+        value={formatMoney(overview.contract.subtotal, locale)}
+        unit="lei"
+      />
+      <Figure
+        label={t("executedValue")}
+        value={formatMoney(overview.executed.subtotal, locale)}
+        unit="lei"
+      />
+      <Figure
+        label={t("approved")}
+        value={
+          overview.approved
+            ? formatMoney(overview.approved.subtotal, locale)
+            : "–"
+        }
+        unit={overview.approved && "lei"}
+        note={overview.approved ? undefined : t("noApproved")}
+      />
+      <Figure
+        label={t("remaining")}
+        value={formatMoney(overview.remainingSubtotal, locale)}
+        unit="lei"
+      />
+    </FigureStrip>
   );
 }

@@ -14,7 +14,7 @@ export function LegalLink({ document }: { document: LegalDocument }) {
       href={legalPaths[document]}
       target="_blank"
       rel="noreferrer"
-      className="underline underline-offset-2"
+      className="underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current"
     >
       {t(document)}
     </a>

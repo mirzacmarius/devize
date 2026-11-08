@@ -3,27 +3,39 @@ import * as React from "react";
 
 import { cn } from "../utils";
 
-// The state of an object (deviz, price, invoice, sync): a dot and a word on a
-// soft fill. The word carries the meaning; the dot is decorative.
+// The state of an object (deviz, price, invoice, sync): a dot and a word, the
+// same form in every list, with colour only for a state that means something
+// (good, needs attention, blocks, AI). The word carries the meaning; the dot is
+// decorative.
 const statusPillVariants = cva(
-  "inline-flex h-6 items-center gap-2 whitespace-nowrap rounded-full pl-2 pr-3 text-pill before:size-1.5 before:shrink-0 before:rounded-full before:content-['']",
+  // An empty ::before would set the baseline of the row it stands in, so the
+  // dot is centred on its own and the text keeps the line it shares.
+  "inline-flex items-baseline gap-1.5 whitespace-nowrap text-meta before:size-2 before:shrink-0 before:self-center before:rounded-full before:content-['']",
   {
     variants: {
       tone: {
-        // In progress or finished, nothing to do: Ciornă, Trimis clientului, Decontat
-        neutral: "bg-muted text-ink-2 before:bg-neutral-dot",
+        // Not out in the world yet: Ciornă. An open dot.
+        draft:
+          "text-ink-3 before:shadow-[inset_0_0_0_1.5px_hsl(var(--active-dot))]",
+        // Out and moving, waiting on someone: Trimis clientului, Emisă
+        active: "text-ink-2 before:bg-active-dot",
+        // Finished or set aside, nothing to do: Decontat, Expirat
+        neutral: "text-ink-2 before:bg-neutral-dot",
         // A good result just reached: Acceptat de client, Sincronizat
-        success: "bg-success-soft text-success before:bg-success-dot",
+        success: "text-ink-2 before:bg-success-dot",
         // Needs attention soon: Prețuri de actualizat
-        warning: "bg-warning-soft text-warning before:bg-warning-dot",
-        // Blocks the next step: Verificare eșuată, Respins
-        danger: "bg-danger-soft text-danger before:bg-danger-solid",
+        warning: "text-warning before:bg-warning-dot",
+        // Blocks the next step, or is overdue: Verificare eșuată, Termen depășit
+        danger: "text-danger before:bg-current",
+        // A final no that asks nothing more: Respins, Refuzată, Anulată. The
+        // dot says how it ended; the word stays as quiet as Acceptat's.
+        declined: "text-ink-2 before:bg-danger",
         // Proposed by AI, not applied yet
-        ai: "bg-ai-soft text-ai before:bg-ai",
+        ai: "text-ai before:bg-ai",
       },
       dot: {
         true: "",
-        false: "pl-3 before:hidden",
+        false: "before:hidden",
       },
     },
     defaultVariants: {
@@ -41,6 +53,7 @@ const StatusPill = React.forwardRef<HTMLSpanElement, StatusPillProps>(
   ({ className, tone, dot, ...props }, ref) => (
     <span
       ref={ref}
+      data-slot="status-pill"
       className={cn(statusPillVariants({ tone, dot }), className)}
       {...props}
     />

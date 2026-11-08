@@ -44,7 +44,6 @@
     "./sheet": "./src/components/sheet.tsx",
     "./sonner": "./src/components/sonner.tsx",
     "./status-pill": "./src/components/status-pill.tsx",
-    "./stepper": "./src/components/stepper.tsx",
     "./switch": "./src/components/switch.tsx",
     "./table": "./src/components/table.tsx",
     "./tabs-nav": "./src/components/tabs-nav.tsx",

@@ -3,10 +3,9 @@
 import type { ReactNode } from "react";
 import { useScopedI18n } from "@/locales/client";
 import {
-  confidenceTone,
+  Confidence,
   ExternalLink,
   Panel,
-  Pill,
   useFormat,
 } from "../../../_components/ui";
 import type { Manufacturer, ManufacturerData } from "./types";
@@ -14,8 +13,8 @@ import type { Manufacturer, ManufacturerData } from "./types";
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <>
-      <dt className="text-primary/50">{label}</dt>
-      <dd className="min-w-0 text-primary/80">{children}</dd>
+      <dt className="text-ink-3">{label}</dt>
+      <dd className="min-w-0 text-ink-2">{children}</dd>
     </>
   );
 }
@@ -36,7 +35,7 @@ export function FindingsPanel({
   if (!manufacturer.researchedAt) {
     return (
       <Panel title={t("title")}>
-        <p className="text-sm text-primary/60">{t("none")}</p>
+        <p className="text-body text-ink-3">{t("none")}</p>
       </Panel>
     );
   }
@@ -60,20 +59,20 @@ export function FindingsPanel({
       })}
       actions={
         manufacturer.confidence && (
-          <Pill tone={confidenceTone[manufacturer.confidence]}>
+          <Confidence level={manufacturer.confidence}>
             {tAdmin(`confidence.${manufacturer.confidence}`)}
-          </Pill>
+          </Confidence>
         )
       }
     >
       {manufacturer.needsReview && (
-        <p className="rounded-md bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
+        <p className="rounded-md bg-amber-500/10 p-3 text-body text-amber-900 dark:text-amber-200">
           <span className="font-medium">{t("needsReview")}: </span>
           {manufacturer.needsReview}
         </p>
       )}
 
-      <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm">
+      <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-2 text-body">
         {facts.map(
           ([label, value]) =>
             value && (
@@ -102,7 +101,7 @@ export function FindingsPanel({
                 <li key={norm.url}>
                   <ExternalLink href={norm.url}>{norm.title}</ExternalLink>
                   {[norm.edition, norm.author].filter(Boolean).length > 0 && (
-                    <span className="text-primary/50">
+                    <span className="text-ink-3">
                       {" "}
                       ({[norm.edition, norm.author].filter(Boolean).join(", ")})
                     </span>
@@ -140,22 +139,22 @@ export function FindingsPanel({
       </dl>
 
       {reportDeletedAt !== undefined && (
-        <p className="text-sm text-primary/60">
+        <p className="text-body text-ink-3">
           {t("reportDeleted", { date: format.date(reportDeletedAt) })}
         </p>
       )}
       {research && (
         <>
-          <details className="text-sm">
-            <summary className="cursor-pointer font-medium text-primary/80">
+          <details className="text-body">
+            <summary className="cursor-pointer font-medium text-ink-2">
               {t("report")}
             </summary>
-            <p className="mt-2 whitespace-pre-wrap text-primary/70">
+            <p className="mt-2 whitespace-pre-wrap text-ink-2">
               {research.report}
             </p>
           </details>
-          <details className="text-sm">
-            <summary className="cursor-pointer font-medium text-primary/80">
+          <details className="text-body">
+            <summary className="cursor-pointer font-medium text-ink-2">
               {t("sources", { count: research.sources.length })}
             </summary>
             <ul className="mt-2 flex flex-col gap-1">

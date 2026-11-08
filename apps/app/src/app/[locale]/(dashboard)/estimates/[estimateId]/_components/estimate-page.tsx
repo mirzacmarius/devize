@@ -2,25 +2,34 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
 import { PageHeader } from "@devize/ui/page-header";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Lei } from "@/components/amount";
 import { DocumentsCard } from "@/components/documents/documents-card";
 import { EstimateStatusPill } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { RailGroup, RailLabel } from "@/components/fold-card";
+import { Rail, RailList, RailSummary } from "@/components/rail-stat";
+import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
-import { estimateCode, formatCalendarDate, formatMoney } from "@/lib/format";
+import { useScrolledPast } from "@/components/use-scrolled-past";
+import {
+  estimateCode,
+  formatCalendarDate,
+  formatDay,
+  formatMoney,
+  formatPercent,
+} from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
-import { InvoicesCard } from "../_invoices/invoices-card";
+import { InvoicesCard, InvoicesRow } from "../_invoices/invoices-card";
 import { PackagingCard } from "../_materials/packaging-card";
 import { OfferCard } from "../_offer/offer-card";
+import { OfferDialog } from "../_offer/offer-dialog";
 import { ProgressCard } from "../_progress/progress-card";
 import { OmissionsSheet } from "../_proposal/omissions-sheet";
 import { ProposalBanner } from "../_proposal/proposal-banner";
@@ -34,7 +43,6 @@ import { CustomItemDialog } from "./custom-item-dialog";
 import { DetailsCard } from "./details-card";
 import { DetailsSheet } from "./details-sheet";
 import { EstimateActions } from "./estimate-actions";
-import { EstimateStepper } from "./estimate-stepper";
 import { ItemDialog } from "./item-dialog";
 import { LineItemsCard } from "./line-items-card";
 import { MarkupsDialog } from "./markups-dialog";
@@ -42,7 +50,7 @@ import { RecapCard } from "./recap-card";
 import { RevisionsCard } from "./revisions-card";
 import { SectionDialog } from "./section-dialog";
 import { TargetPriceDialog } from "./target-dialog";
-import type { Panel } from "./types";
+import type { Estimate, Panel } from "./types";
 
 /**
  * A Deviz: its line items by section, the Recapitulație and, on the right,
@@ -66,6 +74,8 @@ export function EstimatePage() {
   const setActive = useMutation(api.accounts.organizations.setActive);
   const [panel, setPanel] = useState<Panel | null>(null);
   const synced = useRef<string | null>(null);
+  const hero = useRef<HTMLDivElement>(null);
+  const pastHero = useScrolledPast(hero, estimate !== undefined);
 
   // A link to a Deviz of another of the user's firms switches to that firm,
   // once, so the clients and rates offered here are the Deviz's own.
@@ -94,45 +104,168 @@ export function EstimatePage() {
     vatPayer: details?.vatPayer,
     updates,
   });
+  // How far the checks got, said the same in the rail and in the links.
+  const checksPassed = checks.filter(
+    (check) => check.state === "passed",
+  ).length;
+  const checksScore =
+    checksPassed === checks.length
+      ? t("checks.score", { passed: checksPassed, total: checks.length })
+      : checks.length - checksPassed === 1
+        ? t("checks.leftOne", { total: checks.length })
+        : t("checks.left", {
+            left: checks.length - checksPassed,
+            total: checks.length,
+          });
   const close = () => setPanel(null);
+  const total = formatMoney(estimate.totals.total, locale);
+  const withoutVat = t("summary.withoutVat", {
+    total: formatMoney(estimate.totals.subtotal, locale),
+  });
+  const { status } = estimate;
+  const statusPill = <EstimateStatusPill long status={status} />;
+  // Since when it stands where it stands, once it has moved at all.
+  const statusDay =
+    status === "sent"
+      ? estimate.lockedAt
+      : status === "accepted" || status === "rejected"
+        ? estimate.updatedAt
+        : undefined;
+
+  // The rail leads with what comes next for where this Deviz is at.
+  const rail = {
+    checks: (
+      <ChecksCard
+        key="checks"
+        estimate={estimate}
+        checks={checks}
+        updates={updates}
+        editable={editable}
+        open={setPanel}
+        folded={status !== "draft"}
+      />
+    ),
+    offer: (
+      <OfferCard
+        key="offer"
+        estimate={estimate}
+        onCreate={() => setPanel({ kind: "offer" })}
+      />
+    ),
+    progress: <ProgressCard key="progress" estimate={estimate} />,
+    invoices: <InvoicesCard key="invoices" estimate={estimate} />,
+  };
+  const preparation = (
+    <>
+      <CompatibilityCard estimate={estimate} editable={editable} />
+      <TakeoffCard estimate={estimate} />
+    </>
+  );
+  const packaging = <PackagingCard estimateId={estimate._id} />;
+  const records = (
+    <>
+      <DocumentsCard estimate={estimate} />
+      <DetailsCard estimate={estimate} editable={editable} open={setPanel} />
+      <RevisionsCard estimate={estimate} />
+    </>
+  );
+  // What the Deviz is at first; the rest in a quiet list of rows.
+  const railLead = (
+    <RailSummary>
+      {status === "accepted"
+        ? rail.progress
+        : status === "draft"
+          ? rail.checks
+          : rail.offer}
+      {rail.invoices}
+    </RailSummary>
+  );
 
   return (
     <>
-      <PageHeader
-        breadcrumb={
-          <Breadcrumb aria-label={t("breadcrumb")}>
-            <BreadcrumbLink asChild>
-              <Link href="/estimates">{t("breadcrumbList")}</Link>
-            </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{code}</BreadcrumbPage>
-          </Breadcrumb>
-        }
-        title={code}
-        status={<EstimateStatusPill status={estimate.status} />}
-        description={[
-          estimate.title,
-          estimate.client?.name ?? t("noClient"),
-          t("totalWithVat", {
-            total: formatMoney(estimate.totals.total, locale),
-          }),
-          t("pricesOf", {
-            date: formatCalendarDate(estimate.priceDate, locale),
-          }),
-        ].join(" · ")}
-        actions={
+      <ScrolledBar
+        shown={pastHero}
+        code={code}
+        title={estimate.title}
+        total={total}
+        unit={t("summary.unit")}
+      />
+      <div className="grid min-w-0 gap-x-4 gap-y-3 sm:gap-y-5 md:grid-cols-[minmax(0,1fr)_auto]">
+        <PageHeader
+          breadcrumb={
+            <Breadcrumb aria-label={t("breadcrumb")}>
+              <BreadcrumbLink asChild>
+                <Link href="/estimates">{t("breadcrumbList")}</Link>
+              </BreadcrumbLink>
+            </Breadcrumb>
+          }
+          title={estimate.title}
+          // The line opens with where it stands and since when.
+          status={
+            <>
+              {statusPill}
+              {statusDay !== undefined && (
+                <span className="max-sm:hidden">
+                  {" "}
+                  {formatDay(statusDay, locale)}
+                </span>
+              )}
+            </>
+          }
+          description={
+            <>
+              <span className="whitespace-nowrap">{code}</span>
+              {" · "}
+              {estimate.client?.name ?? t("noClient")}
+              {/* A phone keeps the line to one row; the Deviz's data has the date. */}
+              <span className="max-sm:hidden">
+                {" · "}
+                <span className="whitespace-nowrap">
+                  {t("pricesOf", {
+                    date: formatCalendarDate(estimate.priceDate, locale),
+                  })}
+                </span>
+              </span>
+            </>
+          }
+        />
+        {/* Beside the title; on a phone, in a bar at the screen's foot, with the
+            total once the one above has scrolled away. */}
+        <div className="flex flex-wrap items-center gap-2 max-sm:foot-bar max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-40 max-sm:flex-nowrap max-sm:[&>*]:h-11 max-sm:[&>*]:min-w-11 max-sm:bg-card max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 sm:order-last md:order-none md:self-start md:pt-7">
+          {pastHero && (
+            <div className="min-w-0 flex-1 max-sm:!h-auto sm:hidden">
+              <p className="m-0 truncate text-body-lg font-medium tabular-nums text-ink">
+                {total}{" "}
+                <span className="text-meta font-normal text-ink-3">lei</span>
+              </p>
+              <p className="m-0 truncate text-meta tabular-nums text-ink-3">
+                {withoutVat}
+              </p>
+            </div>
+          )}
           <EstimateActions
             estimate={estimate}
             failedChecks={
               checks.filter((check) => check.state === "failed").length
             }
             open={setPanel}
+            fill={!pastHero}
           />
-        }
-      />
-      <EstimateStepper estimate={estimate} />
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+        </div>
+      </div>
+      {/* The Articole's bands hang 12px past it: the rail keeps 44px from
+          them. */}
+      <div className="grid items-start gap-6 max-sm:pb-20 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-14">
         <div className="grid min-w-0 gap-6">
+          {/* Level with the rail's top: the two things the page comes down to. */}
+          <div ref={hero}>
+            <TotalHero
+              label={t("summary.total")}
+              total={total}
+              note={withoutVat}
+            />
+          </div>
+          <SectionLinks estimate={estimate} checksScore={checksScore} />
           {editable && (
             <ProposalBanner
               estimateId={estimate._id}
@@ -147,35 +280,45 @@ export function EstimatePage() {
           />
           <RecapCard estimate={estimate} editable={editable} open={setPanel} />
         </div>
-        <div className="grid min-w-0 gap-6">
-          <ChecksCard
-            estimate={estimate}
-            checks={checks}
-            updates={updates}
-            editable={editable}
-            open={setPanel}
-          />
-          <CompatibilityCard estimate={estimate} editable={editable} />
-          <TakeoffCard estimate={estimate} />
-          <OfferCard estimate={estimate} />
-          {estimate.status === "accepted" && (
-            <ProgressCard estimate={estimate} />
-          )}
-          <InvoicesCard estimate={estimate} />
-          <DocumentsCard estimate={estimate} />
-          <PackagingCard estimateId={estimate._id} />
-          <DetailsCard
-            estimate={estimate}
-            editable={editable}
-            open={setPanel}
-          />
-          <RevisionsCard estimate={estimate} />
-        </div>
+        {/* Stays in sight beside a long Deviz, under the bar that keeps the total. */}
+        <Rail sticky>
+          {railLead}
+          {/* While it's a draft, its preparation is the work; once it has left,
+              one row under the same label. */}
+          <RailList>
+            {status === "draft" ? (
+              <>
+                <RailLabel>{t("rail.preparation")}</RailLabel>
+                {preparation}
+                {packaging}
+                <RailLabel>{t("rail.records")}</RailLabel>
+              </>
+            ) : (
+              <>
+                <RailLabel>{t("rail.preparation")}</RailLabel>
+                <RailGroup title={t("rail.preparationRow")} lead={checksScore}>
+                  {rail.checks}
+                  {preparation}
+                  {packaging}
+                </RailGroup>
+                <RailLabel>{t("rail.records")}</RailLabel>
+              </>
+            )}
+            <InvoicesRow estimate={estimate} />
+            {(status === "draft" || status === "accepted") && rail.offer}
+            {records}
+          </RailList>
+        </Rail>
       </div>
 
       <DetailsSheet
         estimate={estimate}
         open={panel?.kind === "details"}
+        onClose={close}
+      />
+      <OfferDialog
+        estimate={estimate}
+        open={panel?.kind === "offer"}
         onClose={close}
       />
       <MarkupsDialog
@@ -225,5 +368,143 @@ export function EstimatePage() {
         onClose={close}
       />
     </>
+  );
+}
+
+/**
+ * Once the total has scrolled away, the line that keeps it in sight: a long
+ * Deviz is read a long way below its header. A phone has its bar at the foot.
+ */
+function ScrolledBar({
+  shown,
+  code,
+  title,
+  total,
+  unit,
+}: {
+  shown: boolean;
+  code: string;
+  title: string;
+  total: string;
+  // The rows under it are without TVA, so it says what this one is.
+  unit: string;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        "fixed inset-x-0 top-0 z-30 border-b border-border bg-panel transition-opacity duration-150 ease-out max-sm:hidden lg:left-sidebar lg:right-2 lg:top-2",
+        shown ? "opacity-100" : "pointer-events-none opacity-0",
+      )}
+    >
+      <div className="mx-auto flex h-11 max-w-[1536px] items-center justify-between gap-6 px-4 md:px-8">
+        <p className="m-0 min-w-0 truncate text-body">
+          <span className="tabular-nums text-ink-3">{code}</span>
+          <span className="ml-2 font-medium text-ink">{title}</span>
+        </p>
+        <p className="m-0 shrink-0 text-body-lg tabular-nums text-ink">
+          {total} <span className="text-meta text-ink-3">{unit}</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Until the rail sits beside the Articole it comes after them all: the way to
+ * what's down there, by what the Deviz is at, and, once it's in execution, how
+ * far along each part is.
+ */
+function SectionLinks({
+  estimate,
+  checksScore,
+}: {
+  estimate: Estimate;
+  checksScore: string;
+}) {
+  const t = useScopedI18n("estimate");
+  const tOffer = useScopedI18n("offer");
+  const locale = useCurrentLocale();
+  const accepted = estimate.status === "accepted";
+  const offer = useQuery(api.offers.offers.forEstimate, {
+    estimateId: estimate._id,
+  });
+  const work = useQuery(
+    api.progress.statements.forEstimate,
+    accepted ? { estimateId: estimate._id } : "skip",
+  );
+  const billing = useQuery(
+    api.invoices.invoices.forEstimate,
+    accepted ? { estimateId: estimate._id } : "skip",
+  );
+  const sections = accepted
+    ? (["progress", "invoices", "offer", "documents"] as const)
+    : estimate.status === "draft"
+      ? (["checks", "recap", "offer", "documents"] as const)
+      : (["offer", "recap", "checks", "documents"] as const);
+  const signedAt = offer?.signature?.signedAt ?? offer?.decidedAt;
+  // Every cell says the same two things: what it is and where it stands.
+  const cells: Record<
+    (typeof sections)[number],
+    { label?: string; value?: ReactNode }
+  > = {
+    progress: {
+      value:
+        work && work.statements.length > 0
+          ? formatPercent(Math.round(work.executed.percent * 10) / 10, locale)
+          : t("jump.noStatements"),
+    },
+    invoices: {
+      label: billing?.accepted ? t("jump.toInvoice") : undefined,
+      value: billing?.accepted ? (
+        <Lei value={formatMoney(billing.remainingNet ?? 0, locale)} />
+      ) : (
+        "–"
+      ),
+    },
+    checks: {
+      label: estimate.status === "draft" ? t("checks.beforeOffer") : undefined,
+      value: checksScore,
+    },
+    recap: { value: t("jump.recapValue") },
+    offer: {
+      value:
+        offer === null || offer === undefined
+          ? tOffer("notCreated")
+          : offer.status === "accepted" && signedAt !== undefined
+            ? tOffer("acceptedLead", { date: formatDay(signedAt, locale) })
+            : tOffer(`status.${offer.status}`),
+    },
+    documents: { value: t("jump.documentsValue") },
+  };
+  return (
+    <nav
+      aria-label={t("jump.label")}
+      className="grid grid-cols-2 border-t border-border max-sm:-mx-4 max-sm:-mb-6 max-sm:-mt-3 sm:-mt-1 md:grid-cols-4 md:border-b xl:hidden"
+    >
+      {sections.map((section) => {
+        const cell = cells[section];
+        return (
+          <a
+            key={section}
+            href={`#${section}`}
+            className="flex min-h-14 min-w-0 items-center justify-between gap-2 border-border px-4 py-2 transition-colors max-sm:min-h-[52px] max-sm:py-1.5 hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring max-md:[&:nth-child(even)]:border-l max-md:[&:nth-child(n+3)]:border-t sm:max-md:[&:nth-child(even)]:pr-0 sm:max-md:[&:nth-child(odd)]:pl-0 md:gap-1 md:px-3 md:first:pl-0 md:last:pr-0 md:[&:not(:first-child)]:border-l"
+          >
+            <span className="grid min-w-0">
+              <span className="truncate text-meta text-ink-3">
+                {cell.label ?? t(`jump.${section}`)}
+              </span>
+              <span className="truncate text-body tabular-nums text-ink">
+                {cell.value}
+              </span>
+            </span>
+            <ChevronRight
+              aria-hidden
+              className="-mr-[5px] size-4 shrink-0 text-ink-3"
+            />
+          </a>
+        );
+      })}
+    </nav>
   );
 }

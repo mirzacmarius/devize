@@ -65,7 +65,7 @@ export function SidebarContent({
         <Icon aria-hidden />
         {label}
         {count && count.value > 0 && (
-          <Count tone="warning" className="ml-auto" aria-label={count.label}>
+          <Count className="ml-auto bg-ink/[0.07]" aria-label={count.label}>
             {count.value}
           </Count>
         )}
@@ -81,7 +81,7 @@ export function SidebarContent({
           onClick={onNavigate}
           className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Wordmark />
+          <Wordmark className="gap-2.5" />
         </Link>
       </div>
       <FirmSwitcher onNavigate={onNavigate} />

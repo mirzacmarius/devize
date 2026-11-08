@@ -111,7 +111,7 @@ function TemplatesPanel({ onUse }: { onUse: (choice: StartFrom) => void }) {
   return (
     <div className="grid gap-6">
       <section className="grid gap-2" aria-labelledby="templates-firm">
-        <h3 id="templates-firm" className="m-0 text-label uppercase text-ink-3">
+        <h3 id="templates-firm" className="m-0 text-caption text-ink-3">
           {t("sheet.firm")}
         </h3>
         {data.templates.length === 0 ? (
@@ -194,10 +194,7 @@ function TemplatesPanel({ onUse }: { onUse: (choice: StartFrom) => void }) {
       </section>
 
       <section className="grid gap-2" aria-labelledby="templates-starters">
-        <h3
-          id="templates-starters"
-          className="m-0 text-label uppercase text-ink-3"
-        >
+        <h3 id="templates-starters" className="m-0 text-caption text-ink-3">
           {t("sheet.starters")}
         </h3>
         <ul className="m-0 grid list-none gap-2 p-0">

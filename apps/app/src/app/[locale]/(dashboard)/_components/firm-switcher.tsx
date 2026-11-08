@@ -57,22 +57,22 @@ export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
       <DropdownMenu modal={false}>
-        <DropdownMenuTrigger className="grid w-full grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-3 rounded-md bg-selected px-2 py-2 text-left shadow-raised transition-colors hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <DropdownMenuTrigger className="grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-nav-active/60 data-[state=open]:bg-nav-active/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <span
             aria-hidden
-            className="relative grid size-8 place-items-center rounded-sm bg-muted text-[12px] font-semibold tracking-[0.02em] text-ink-2"
+            className="relative grid size-7 place-items-center rounded-sm bg-panel text-[11px] font-semibold tracking-[0.02em] text-ink-2 shadow-raised"
           >
             {initials(firm.name)}
             {invitations.length > 0 && (
               // An invitation waits in the menu.
-              <span className="absolute -right-1 -top-1 size-2.5 rounded-full bg-brand ring-2 ring-selected" />
+              <span className="absolute -right-1 -top-1 size-2.5 rounded-full bg-brand ring-2 ring-shell" />
             )}
           </span>
           <span className="grid min-w-0">
             <span className="truncate text-body font-medium text-ink">
               {firm.name}
             </span>
-            <span className="truncate text-meta text-ink-2">
+            <span className="truncate text-meta text-ink-3">
               {t(`kinds.${firm.kind}`)} · {t(`roles.${firm.role}`)}
             </span>
           </span>
@@ -84,7 +84,7 @@ export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" sideOffset={6} className="w-60">
-          <DropdownMenuLabel className="text-label uppercase text-ink-3">
+          <DropdownMenuLabel className="text-caption text-ink-3">
             {t("yourFirms")}
           </DropdownMenuLabel>
           {firms.map((item) => (
@@ -98,7 +98,7 @@ export function FirmSwitcher({ onNavigate }: { onNavigate?: () => void }) {
           {invitations.length > 0 && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-label uppercase text-ink-3">
+              <DropdownMenuLabel className="text-caption text-ink-3">
                 {tInvite("menuLabel")}
               </DropdownMenuLabel>
               {invitations.map((invitation) => (

@@ -3,7 +3,6 @@
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { Icons } from "@devize/ui/icons";
@@ -48,8 +47,6 @@ export function ProducerHeader({
             <BreadcrumbLink asChild>
               <Link href="/producers">{t("title")}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{profile.name}</BreadcrumbPage>
           </Breadcrumb>
         }
         thumb={

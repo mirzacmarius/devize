@@ -33,19 +33,24 @@ type EstimateSummary = {
 // money moving, a tender's deadline, an Ofertă about to expire, one unread.
 type Todo = { estimate: EstimateSummary } & (
   | { kind: "question"; count: number }
-  | { kind: "alert"; percent: number }
+  | { kind: "alert"; profitChange: number; profitLeft: number }
   | { kind: "deadline"; date: string; days: number }
   | { kind: "expiring"; days: number }
   | { kind: "unread"; days: number }
 );
 
+// Money moving first, then someone waiting, then what runs out soonest.
 const todoOrder: Record<Todo["kind"], number> = {
-  question: 0,
-  alert: 1,
+  alert: 0,
+  question: 1,
   deadline: 2,
-  expiring: 3,
-  unread: 4,
+  expiring: 2,
+  unread: 3,
 };
+
+function daysLeft(todo: Todo): number {
+  return todo.kind === "deadline" || todo.kind === "expiring" ? todo.days : 0;
+}
 
 async function byStatus(
   ctx: QueryCtx,
@@ -181,7 +186,8 @@ export const overview = query({
           title: alert.estimate.title,
           clientName: alert.estimate.clientName,
         },
-        percent: alert.percent,
+        profitChange: alert.profitLeft - alert.sentProfit,
+        profitLeft: alert.profitLeft,
       });
     }
 
@@ -202,7 +208,10 @@ export const overview = query({
         });
       }
     }
-    todo.sort((a, b) => todoOrder[a.kind] - todoOrder[b.kind]);
+    todo.sort(
+      (a, b) =>
+        todoOrder[a.kind] - todoOrder[b.kind] || daysLeft(a) - daysLeft(b),
+    );
 
     const recentRows = await ctx.db
       .query("estimates")

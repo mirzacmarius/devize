@@ -24,6 +24,7 @@ import { Field } from "@/components/field";
 import { InlineNumber } from "@/components/inline-number";
 import { useNormSource } from "@/components/norm-source";
 import { useRun } from "@/components/use-run";
+import { WarningNote } from "@/components/warning-note";
 import {
   formatConsumption,
   formatPercent,
@@ -190,9 +191,9 @@ export function ProposalReview({
       )}
       {tender && <Issues issues={proposal.progress?.issues ?? []} />}
       {proposal.matchError && (
-        <p className="m-0 text-meta text-warning">
+        <WarningNote>
           {tender ? t("tender.matchFailed") : t("review.matchFailed")}
-        </p>
+        </WarningNote>
       )}
 
       {proposal.items.length === 0 ? (
@@ -248,7 +249,7 @@ export function ProposalReview({
                   {object.chapters.map((chapter) => (
                     <div key={chapter.key} className="grid gap-2">
                       {chapter.chapter && (
-                        <h4 className="m-0 text-label uppercase text-ink-3">
+                        <h4 className="m-0 text-caption text-ink-3">
                           {sectionLabel(chapter.chapter)}
                         </h4>
                       )}
@@ -263,7 +264,7 @@ export function ProposalReview({
               ))
             : byChapter(proposal.items).map((chapter) => (
                 <section key={chapter.name} className="grid gap-2">
-                  <h3 className="m-0 text-label uppercase text-ink-3">
+                  <h3 className="m-0 text-caption text-ink-3">
                     {chapter.name}
                   </h3>
                   <ul className="m-0 grid list-none gap-2 p-0">
@@ -345,7 +346,7 @@ function Notes({
   return (
     <div className="grid content-start gap-1.5">
       <div className="flex items-center justify-between gap-2">
-        <p className="m-0 text-label uppercase text-ink-3">{title}</p>
+        <p className="m-0 text-caption text-ink-3">{title}</p>
         {copyable && (
           <Button
             variant="ghost"
@@ -473,7 +474,7 @@ function ReviewItem({ item }: { item: ProposalItem }) {
               {tender.code && (
                 <>
                   {" · "}
-                  <span className="font-mono text-code">{tender.code}</span>
+                  <span className="tabular-nums">{tender.code}</span>
                 </>
               )}
             </span>
@@ -484,7 +485,7 @@ function ReviewItem({ item }: { item: ProposalItem }) {
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3">
             {item.norm ? (
               <>
-                <span className="font-mono text-code">{item.norm.code}</span>
+                <span className="tabular-nums">{item.norm.code}</span>
                 {tender && (
                   <span className="min-w-0 text-ink-2">{item.norm.title}</span>
                 )}
@@ -535,9 +536,7 @@ function ReviewItem({ item }: { item: ProposalItem }) {
           </div>
         )}
         {item.unitMismatch && (
-          <p className="m-0 text-meta text-warning">
-            {t("review.unitMismatch")}
-          </p>
+          <WarningNote>{t("review.unitMismatch")}</WarningNote>
         )}
         {item.note && <p className="m-0 text-meta text-ink-2">{item.note}</p>}
         {item.basis.length > 0 && (
@@ -548,9 +547,9 @@ function ReviewItem({ item }: { item: ProposalItem }) {
           </p>
         )}
         {item.duplicateOf && (
-          <p className="m-0 text-meta text-warning">
+          <WarningNote>
             {t("omissions.review.duplicate", { title: item.duplicateOf })}
-          </p>
+          </WarningNote>
         )}
         <Button
           variant="link"
@@ -587,9 +586,7 @@ function Details({ id, item }: { id: string; item: ProposalItem }) {
       {/* A long position's text, cut in the list. */}
       {item.tender && details.text.length > item.title.length && (
         <div className="grid gap-1">
-          <p className="m-0 text-label uppercase text-ink-3">
-            {t("tender.fullText")}
-          </p>
+          <p className="m-0 text-caption text-ink-3">{t("tender.fullText")}</p>
           <p className="m-0 whitespace-pre-line text-meta text-ink-2">
             {details.text}
           </p>
@@ -675,9 +672,7 @@ function Takeoff({
   const numbered = rows.map((row, position) => ({ ...row, position }));
   return (
     <div className="grid gap-1.5 rounded-md border border-border bg-sunken px-3 py-2.5">
-      <p className="m-0 text-label uppercase text-ink-3">
-        {t("review.takeoff")}
-      </p>
+      <p className="m-0 text-caption text-ink-3">{t("review.takeoff")}</p>
       <ul className="m-0 grid list-none gap-1 p-0 text-meta">
         {numbered.map((row) => (
           <li
@@ -729,7 +724,7 @@ function Recipe({
   }));
   return (
     <div className="grid gap-1.5">
-      <p className="m-0 text-label uppercase text-ink-3">
+      <p className="m-0 text-caption text-ink-3">
         {t("review.recipe", { unit: formatUnit(item.unit, locale) })}
       </p>
       <ul className="m-0 grid list-none gap-1 p-0">

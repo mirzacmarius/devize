@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { FileText } from "lucide-react";
@@ -17,7 +16,7 @@ import { useScopedI18n } from "@/locales/client";
 import type { Norm } from "./types";
 
 const linkClass =
-  "rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
  * The technical data sheet Devize AI drafted the norm from, for the producer
@@ -104,8 +103,7 @@ export function DatasheetCard({
         </div>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-5 pt-4">
+      <CardContent className="gap-5">
         <dl className="m-0 grid gap-3">
           {rows.map((row) => (
             <div
@@ -121,9 +119,7 @@ export function DatasheetCard({
         </dl>
         {datasheet.conditions.length > 0 && (
           <section className="grid gap-2">
-            <h4 className="m-0 text-label font-normal uppercase text-ink-3">
-              {t("conditions")}
-            </h4>
+            <h4 className="m-0 text-caption text-ink-3">{t("conditions")}</h4>
             <ul className="m-0 grid list-none gap-2 p-0">
               {datasheet.conditions.map((condition) => (
                 <li key={condition.text} className="text-body text-ink-2">

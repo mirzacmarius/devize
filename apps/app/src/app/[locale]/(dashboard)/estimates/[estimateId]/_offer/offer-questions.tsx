@@ -57,7 +57,13 @@ export function OfferQuestions({
   const waiting = questions.filter((q) => q.status === "waiting").length;
 
   return (
-    <div className="grid gap-2.5 rounded-md border border-border px-3 py-2.5">
+    <div
+      className={cn(
+        "grid gap-2.5 rounded-md bg-sunken px-3 py-2.5",
+        // What's asked of you comes before the link, which is already out.
+        waiting > 0 && "order-first",
+      )}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-body font-medium text-ink">{t("title")}</span>
         {waiting > 0 && (
@@ -66,11 +72,14 @@ export function OfferQuestions({
           </StatusPill>
         )}
       </div>
-      <span className="text-meta text-ink-2">
-        {questions.length === 0
-          ? t("none")
-          : t("count", { count: questions.length })}
-      </span>
+      {/* When all of them are waiting, the line above has said how many. */}
+      {waiting < questions.length || questions.length === 0 ? (
+        <span className="text-meta text-ink-2">
+          {questions.length === 0
+            ? t("none")
+            : t("count", { count: questions.length })}
+        </span>
+      ) : null}
       {questions.length > 0 && (
         <Button
           type="button"

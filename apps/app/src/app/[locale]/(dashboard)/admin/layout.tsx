@@ -1,5 +1,6 @@
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { api } from "@devize/backend/convex/_generated/api";
+import { PageHeader } from "@devize/ui/page-header";
 import { fetchQuery } from "convex/nextjs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -26,8 +27,10 @@ async function StaffOnly({ children }: { children: React.ReactNode }) {
   if (!(await isStaff())) {
     notFound();
   }
+  const t = await getScopedI18n("admin");
   return (
     <>
+      <PageHeader title={t("title")} />
       <AdminNav />
       {children}
     </>

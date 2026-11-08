@@ -23,8 +23,10 @@ import {
 } from "@devize/ui/select";
 import { toast } from "@devize/ui/sonner";
 import { Switch } from "@devize/ui/switch";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
+import { Upload } from "lucide-react";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { Field } from "@/components/field";
 import { useFirm } from "@/components/firm-provider";
@@ -43,7 +45,7 @@ const LOGO_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_LOGO_BYTES = 5 * 1024 * 1024;
 
 // A settings card's footer: a hint on the left, the card's action on the right.
-const footer = "justify-between gap-4 border-t bg-sunken py-3";
+const footer = "justify-between gap-4 border-t bg-card py-3 sm:mt-5";
 
 /**
  * The Firmă's logo and the details its devize, offers and official forms
@@ -78,14 +80,14 @@ function TermsCard({ terms }: { terms: FirmDetails["terms"] }) {
     <Card>
       <CardHeader className="grid justify-stretch gap-1">
         <CardTitle>{t("termsTitle")}</CardTitle>
-        <CardDescription>
-          {t("termsDescription", {
-            terms: <LegalLink document="terms" />,
-            dpa: <LegalLink document="dpa" />,
-          })}
-        </CardDescription>
+        <CardDescription>{t("termsDescription")}</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-2 text-body text-ink-2">
+      <CardContent className="grid gap-2 text-meta text-ink-3">
+        {/* The documents, ahead of who accepted them. */}
+        <p className="m-0 flex flex-wrap gap-x-5 gap-y-1 text-body text-ink">
+          <LegalLink document="terms" />
+          <LegalLink document="dpa" />
+        </p>
         {terms ? (
           <p className="m-0">
             {terms.acceptedBy
@@ -148,37 +150,36 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
   };
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="items-start">
-        <div className="grid gap-1">
-          <CardTitle>{t("logoTitle")}</CardTitle>
-          <CardDescription>{t("logoDescription")}</CardDescription>
-        </div>
-        <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
+    <Card>
+      <CardHeader className="grid justify-stretch gap-1">
+        <CardTitle>{t("logoTitle")}</CardTitle>
+        <CardDescription>
+          {t("logoDescription")}
+          {canEdit && ` ${t("logoHint")}`}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-wrap items-center gap-4">
+        <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-card">
           {firm.logoUrl ? (
             <img
               src={firm.logoUrl}
               alt={t("logoAlt", { firm: firm.name })}
-              className="size-full object-contain p-1.5"
+              className="size-full object-contain p-1"
             />
           ) : (
             <span
               aria-hidden
-              className="text-[22px] font-semibold tracking-[0.02em] text-ink-3"
+              className="text-body font-semibold tracking-[0.02em] text-ink-3"
             >
               {initials(firm.name)}
             </span>
           )}
         </div>
-      </CardHeader>
-      {canEdit && (
-        <CardFooter className={footer}>
-          <p className="m-0 text-meta text-ink-3">{t("logoHint")}</p>
+        {canEdit && (
           <div className="flex shrink-0 gap-2">
             {firm.logoUrl && (
               <Button
                 type="button"
-                size="sm"
                 variant="ghost"
                 disabled={busy}
                 onClick={() =>
@@ -192,14 +193,19 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
                 {t("removeLogo")}
               </Button>
             )}
+            {/* As tall as the form's fields. */}
             <Button
               type="button"
-              size="sm"
               variant="outline"
               disabled={busy}
               onClick={() => document.getElementById(inputId)?.click()}
             >
-              {busy && <Icons.Loader className="animate-spin" aria-hidden />}
+              {/* With its mark, as every outlined button that does something. */}
+              {busy ? (
+                <Icons.Loader className="animate-spin" aria-hidden />
+              ) : (
+                <Upload aria-hidden />
+              )}
               {firm.logoUrl ? t("changeLogo") : t("uploadLogo")}
             </Button>
             <input
@@ -212,8 +218,8 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
               onChange={upload}
             />
           </div>
-        </CardFooter>
-      )}
+        )}
+      </CardContent>
     </Card>
   );
 }
@@ -244,6 +250,15 @@ function DetailsForm({
     email?: string;
   }>({});
   const [saving, setSaving] = useState(false);
+  const changed =
+    name !== firm.name ||
+    cui !== (firm.cui ?? "") ||
+    tradeRegister !== (firm.tradeRegister ?? "") ||
+    address !== (firm.address ?? "") ||
+    county !== (firm.county ?? "") ||
+    email !== (firm.email ?? "") ||
+    phone !== (firm.phone ?? "") ||
+    vatPayer !== firm.vatPayer;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -286,7 +301,7 @@ function DetailsForm({
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <form onSubmit={submit} noValidate>
         <CardHeader className="grid justify-stretch gap-1">
           <CardTitle>{t("detailsTitle")}</CardTitle>
@@ -317,7 +332,6 @@ function DetailsForm({
                   onChange={(event) => setCui(event.target.value)}
                   placeholder={tFirm("cuiPlaceholder")}
                   inputMode="numeric"
-                  className="font-mono"
                   aria-invalid={errors.cui !== undefined}
                 />
               </Field>
@@ -327,12 +341,13 @@ function DetailsForm({
                   value={tradeRegister}
                   onChange={(event) => setTradeRegister(event.target.value)}
                   placeholder={t("tradeRegisterPlaceholder")}
-                  className="font-mono"
                   maxLength={50}
                 />
               </Field>
             </div>
-            <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_200px]">
+            {/* The county after the address, on one line, as a postal line
+                reads, on the halves the rows above stand on. */}
+            <div className="grid gap-5 sm:grid-cols-2">
               <Field label={t("address")} htmlFor="firm-address">
                 <Input
                   id="firm-address"
@@ -359,6 +374,17 @@ function DetailsForm({
               </Field>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
+              <Field label={t("phone")} htmlFor="firm-phone">
+                <Input
+                  id="firm-phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  placeholder={t("phonePlaceholder")}
+                  autoComplete="tel"
+                  maxLength={50}
+                />
+              </Field>
               <Field
                 label={t("email")}
                 htmlFor="firm-email"
@@ -375,53 +401,65 @@ function DetailsForm({
                   aria-invalid={errors.email !== undefined}
                 />
               </Field>
-              <Field label={t("phone")} htmlFor="firm-phone">
-                <Input
-                  id="firm-phone"
-                  type="tel"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  placeholder={t("phonePlaceholder")}
-                  autoComplete="tel"
-                  maxLength={50}
-                />
-              </Field>
             </div>
-            <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
+            <div className="flex items-start gap-3 pt-1">
+              <Switch
+                id="firm-vat"
+                checked={vatPayer}
+                onCheckedChange={setVatPayer}
+              />
               <div className="grid gap-0.5">
-                <label
-                  htmlFor="firm-vat"
-                  className="text-body font-medium text-ink"
-                >
+                <label htmlFor="firm-vat" className="text-body text-ink">
                   {tFirm("vatPayer")}
                 </label>
                 <p className="m-0 text-meta text-ink-3">
                   {tFirm("vatPayerHint")}
                 </p>
               </div>
-              <Switch
-                id="firm-vat"
-                checked={vatPayer}
-                onCheckedChange={setVatPayer}
-              />
             </div>
           </fieldset>
+          {/* Its place stays while there's something to save, so the page
+              doesn't move under the one typing. */}
+          {canEdit && (
+            <span
+              aria-hidden
+              className={cn(
+                "flex items-center justify-end gap-1 text-meta text-ink-3",
+                (changed || saving) && "invisible",
+              )}
+            >
+              <Icons.Check className="size-3.5" />
+              {t("allSaved")}
+            </span>
+          )}
         </CardContent>
-        <CardFooter className={footer}>
-          {canEdit ? (
-            <>
-              <span />
-              <Button type="submit" size="sm" disabled={saving}>
+        {canEdit && (
+          <span className="sr-only" aria-live="polite">
+            {changed || saving ? t("unsaved") : t("allSaved")}
+          </span>
+        )}
+        {/* Only unsaved changes need a line, and it stays in sight. */}
+        {canEdit ? (
+          (changed || saving) && (
+            <CardFooter
+              className={cn(footer, "sticky bottom-0 z-10 lg:bottom-2")}
+            >
+              <span aria-hidden className="text-meta text-ink-3">
+                {t("unsaved")}
+              </span>
+              <Button type="submit" disabled={saving}>
                 {saving && (
                   <Icons.Loader className="animate-spin" aria-hidden />
                 )}
                 {tc("save")}
               </Button>
-            </>
-          ) : (
+            </CardFooter>
+          )
+        ) : (
+          <CardFooter className={footer}>
             <p className="m-0 text-meta text-ink-3">{t("readOnly")}</p>
-          )}
-        </CardFooter>
+          </CardFooter>
+        )}
       </form>
     </Card>
   );

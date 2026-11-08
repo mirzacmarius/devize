@@ -2,171 +2,129 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Lei } from "@/components/amount";
+import { Fact, FactList } from "@/components/fact-list";
+import { FoldCard } from "@/components/fold-card";
 import { InvoiceStatusPill } from "@/components/invoice-status";
-import { useRun } from "@/components/use-run";
-import { formatMoney, formatPercent, todayInput } from "@/lib/format";
+import { RailStat } from "@/components/rail-stat";
+import { formatMoney, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { Estimate } from "../_components/types";
+import { useInvoiceActions } from "./use-invoice-actions";
 
 /**
- * The Deviz's Facturi: what the client accepted, what is billed so far, and
- * the next invoice one click away: the advance the Ofertă asked, then the
- * final invoice with the advances deducted.
+ * What is left to bill of what the client accepted, and the next invoice to
+ * make. Once the work is done that's the header's main action too; while it
+ * goes on, only here and in the menu.
  */
 export function InvoicesCard({ estimate }: { estimate: Estimate }) {
   const t = useScopedI18n("invoices");
   const locale = useCurrentLocale();
-  const router = useRouter();
-  const run = useRun();
   const billing = useQuery(api.invoices.invoices.forEstimate, {
     estimateId: estimate._id,
   });
-  const createAdvance = useMutation(api.invoices.invoices.createAdvance);
-  const createFinal = useMutation(api.invoices.invoices.createFinal);
-  const [busy, setBusy] = useState(false);
-  if (billing === undefined) {
+  const invoicing = useInvoiceActions(
+    estimate._id,
+    estimate.status === "accepted",
+  );
+  const next = invoicing.actions[0];
+  // Nothing to bill until the client accepts.
+  if (!billing?.accepted) {
     return null;
   }
-  const { accepted } = billing;
-  const today = todayInput();
-
-  const create = async (action: () => Promise<string>) => {
-    setBusy(true);
-    const result = await run(action, t("card.created"));
-    setBusy(false);
-    if (result.ok) {
-      router.push(`/invoices/${result.value}`);
-    }
-  };
-
-  const facts =
-    accepted === null
-      ? []
-      : [
-          { label: t("card.accepted"), value: accepted.net },
-          { label: t("card.invoiced"), value: billing.invoicedNet },
-          { label: t("card.remaining"), value: billing.remainingNet ?? 0 },
-        ];
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("card.title")}</CardTitle>
-        {billing.invoices.length > 0 && (
-          <Button variant="link" asChild>
-            <Link href="/invoices">{t("card.all")}</Link>
-          </Button>
-        )}
-      </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
-        {accepted === null && billing.invoices.length === 0 ? (
-          <p className="m-0 text-body text-ink-2">{t("card.noOffer")}</p>
-        ) : (
-          <>
-            {facts.length > 0 && (
-              <dl className="m-0 grid gap-1.5">
-                {facts.map((fact) => (
-                  <div
-                    key={fact.label}
-                    className="flex items-baseline justify-between gap-4"
-                  >
-                    <dt className="text-body text-ink-3">{fact.label}</dt>
-                    <dd className="m-0 text-body font-medium text-ink tabular-nums">
-                      {formatMoney(fact.value, locale)} lei{" "}
-                      <span className="font-normal text-ink-3">
-                        {t("card.withoutVat")}
-                      </span>
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-            {billing.invoices.length > 0 && (
-              <ul className="m-0 grid list-none gap-2 border-t border-border p-0 pt-3">
-                {billing.invoices.map((invoice) => (
-                  <li key={invoice._id}>
-                    <Link
-                      href={`/invoices/${invoice._id}`}
-                      className="group flex items-center justify-between gap-3 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <span className="grid min-w-0 gap-0.5">
-                        <span className="font-mono text-code text-ink-3">
-                          {invoice.code ?? t("draftCode")}
-                        </span>
-                        <span className="truncate text-body font-medium text-ink group-hover:underline">
-                          {t(`kind.${invoice.kind}`)}
-                        </span>
-                      </span>
-                      <span className="flex shrink-0 items-center gap-3">
-                        <InvoiceStatusPill
-                          status={invoice.status}
-                          overdue={invoice.dueDate < today}
-                        />
-                        <span className="text-body tabular-nums text-ink">
-                          {formatMoney(invoice.total, locale)}
-                        </span>
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {(billing.canAdvance || billing.canFinal) && (
-              <div className="grid gap-2 border-t border-border pt-3">
-                <div className="flex flex-wrap gap-2">
-                  {billing.canAdvance && accepted?.depositPercent != null && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={busy}
-                      onClick={() =>
-                        create(() =>
-                          createAdvance({ estimateId: estimate._id }),
-                        )
-                      }
-                    >
-                      {t("card.advance", {
-                        percent: formatPercent(accepted.depositPercent, locale),
-                      })}
-                    </Button>
-                  )}
-                  {billing.canFinal && (
-                    <Button
-                      type="button"
-                      variant={billing.canAdvance ? "ghost" : "outline"}
-                      size="sm"
-                      disabled={busy}
-                      onClick={() =>
-                        create(() => createFinal({ estimateId: estimate._id }))
-                      }
-                    >
-                      {t("card.final")}
-                    </Button>
-                  )}
-                </div>
-                {billing.canFinal && billing.openAdvances > 0 && (
-                  <p className="m-0 text-meta text-ink-3">
-                    {t("card.finalHint")}
-                  </p>
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+    <RailStat
+      id="invoices"
+      label={t("card.remaining")}
+      value={formatMoney(billing.remainingNet ?? 0, locale)}
+      unit="lei"
+      before={
+        // Under the progress, a part of its own, named as that one is.
+        <>
+          <h3 className="m-0 text-body font-medium text-ink">
+            {t("card.title")}
+          </h3>
+          <FactList className="mb-0.5">
+            <Fact label={t("card.invoiced")}>
+              <Lei value={formatMoney(billing.invoicedNet, locale)} />
+            </Fact>
+          </FactList>
+        </>
+      }
+    >
+      {next && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-3 w-full"
+          disabled={invoicing.busy}
+          onClick={next.run}
+        >
+          <Plus aria-hidden />
+          {next.label}
+        </Button>
+      )}
+    </RailStat>
+  );
+}
+
+/** The invoices made from a Deviz, among the other rows of its rail. */
+export function InvoicesRow({ estimate }: { estimate: Estimate }) {
+  const t = useScopedI18n("invoices");
+  const locale = useCurrentLocale();
+  const billing = useQuery(api.invoices.invoices.forEstimate, {
+    estimateId: estimate._id,
+  });
+  if (billing === undefined || billing.invoices.length === 0) {
+    return null;
+  }
+  const today = todayInput();
+  return (
+    <FoldCard
+      // Without an accepted offer there's no sum to bill, only this.
+      id={billing.accepted ? undefined : "invoices"}
+      title={t("card.list")}
+      lead={billing.invoices.length}
+      attention={billing.accepted === null}
+    >
+      <ul className="m-0 grid list-none gap-3 p-0">
+        {billing.invoices.map((invoice) => (
+          <li key={invoice._id}>
+            <Link
+              href={`/invoices/${invoice._id}`}
+              className="group grid gap-1 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span className="flex items-baseline justify-between gap-3">
+                <span className="min-w-0 text-body text-ink group-hover:underline">
+                  {t(`kind.${invoice.kind}`)}
+                </span>
+                <span className="shrink-0 text-body tabular-nums text-ink">
+                  {formatMoney(invoice.total, locale)}
+                </span>
+              </span>
+              <span className="flex items-center justify-between gap-3">
+                <span className="text-meta tabular-nums text-ink-3">
+                  {invoice.code ?? t("draftCode")}
+                </span>
+                <InvoiceStatusPill
+                  status={invoice.status}
+                  overdue={invoice.dueDate < today}
+                />
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {billing.canFinal && billing.openAdvances > 0 && (
+        <p className="m-0 text-meta text-ink-3">{t("card.finalHint")}</p>
+      )}
+      <Button variant="link" className="justify-self-start" asChild>
+        <Link href="/invoices">{t("card.all")}</Link>
+      </Button>
+    </FoldCard>
   );
 }

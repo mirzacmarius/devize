@@ -12,7 +12,7 @@ import { formatMoney, formatQuantity, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { type Comparison, type LineChange, signedMoney } from "./types";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+const headClass = "pb-2 pl-3 text-right text-caption text-ink-3";
 
 /**
  * The articles added, removed and changed, each with its quantity and unit
@@ -54,7 +54,7 @@ export function LinesCard({ comparison }: { comparison: Comparison }) {
             >
               <h3
                 id={`compare-${group.key}`}
-                className="m-0 text-label uppercase text-ink-2"
+                className="m-0 text-caption text-ink-2"
               >
                 {group.title}
               </h3>
@@ -64,7 +64,7 @@ export function LinesCard({ comparison }: { comparison: Comparison }) {
                     <tr>
                       <th
                         scope="col"
-                        className="pb-2 text-left text-label uppercase text-ink-3"
+                        className="pb-2 text-left text-caption text-ink-3"
                       >
                         {t("item")}
                       </th>
@@ -125,7 +125,7 @@ function ChangeRow({ change }: { change: LineChange }) {
       <td className="py-2 pr-3 align-top">
         <div className="grid min-w-0">
           <span className="text-ink">{shown.title}</span>
-          <span className="font-mono text-code text-ink-3">
+          <span className="tabular-nums text-ink-3">
             {shown.code}
             {shown.section ? (
               <span className="font-sans"> · {shown.section}</span>

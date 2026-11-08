@@ -2,7 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import { Badge } from "@devize/ui/badge";
+import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import {
   Card,
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@devize/ui/select";
+import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -31,6 +32,13 @@ import { groupLines } from "../../_components/groups";
 import type { Item, Room, Section, Takeoff, Target } from "./types";
 
 type Grouped = Item & { totals: { total: number } };
+
+// A group's heading, as on the Deviz: a band over the titles, and what it comes
+// to, here how many of its Articole are measured, at the end. Square, with the
+// head's and the rows' rules running as far, as every banded table's do.
+const bandClass =
+  "-mx-[var(--card-pad)] flex min-h-9 items-center justify-between gap-4 bg-sunken py-1 pl-[calc(var(--card-pad)+1.75rem)] pr-[var(--card-pad)] text-body font-medium text-ink";
+const RULED = "md:-mx-[var(--card-pad)] md:px-[var(--card-pad)]";
 
 /**
  * The Articole of a Deviz with their Antemăsurători: each measured from the
@@ -61,6 +69,14 @@ export function ItemsCard({
   );
   const sectionName = (section: Section) =>
     section.code ? `${section.code} ${section.name}` : section.name;
+  const measuredCount = (list: readonly { item: Grouped }[]) => (
+    <span className="shrink-0 whitespace-nowrap font-normal tabular-nums text-ink-2">
+      {t("sectionCount", {
+        measured: list.filter(({ item }) => item.takeoffs.length > 0).length,
+        total: list.length,
+      })}
+    </span>
+  );
   const rows = (list: readonly { item: Grouped; index: number }[]) =>
     list.map(({ item, index }) => (
       <ItemRow
@@ -75,9 +91,13 @@ export function ItemsCard({
     ));
 
   return (
-    <Card>
+    <Card id="items" className="scroll-mt-4">
       <CardHeader className="grid justify-items-start gap-1">
-        <CardTitle>{t("title")}</CardTitle>
+        {/* Its name and how many, as Camere says it above. */}
+        <div className="flex items-baseline gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          {items.length > 0 && <Count tone="plain">{items.length}</Count>}
+        </div>
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -88,18 +108,36 @@ export function ItemsCard({
             description={t("emptyDescription")}
           />
         ) : (
-          <ul className="m-0 grid list-none gap-2 p-0">
+          <ul className="m-0 grid list-none p-0">
+            <li
+              aria-hidden
+              className={cn(
+                // Its rule over a band too, as every table's head keeps.
+                "hidden !border-b border-rule pb-2.5 text-head text-ink-2 md:grid",
+                COLUMNS,
+                RULED,
+              )}
+            >
+              <span className="w-4 text-right">#</span>
+              <span>{t("columnItem")}</span>
+              <span className="text-right">{t("columnInEstimate")}</span>
+            </li>
             {rows(groups.loose)}
             {groups.sections.map((group) => (
               <Fragment key={group.section._id}>
-                <li className="pt-2 text-meta font-medium uppercase text-ink-3">
+                <li data-group className={bandClass}>
                   {sectionName(group.section)}
+                  {measuredCount([
+                    ...group.items,
+                    ...group.chapters.flatMap((chapter) => chapter.items),
+                  ])}
                 </li>
                 {rows(group.items)}
                 {group.chapters.map((chapter) => (
                   <Fragment key={chapter.section._id}>
-                    <li className="pl-3 pt-1 text-meta font-medium uppercase text-ink-3">
+                    <li data-group className={cn(bandClass, "font-normal")}>
                       {sectionName(chapter.section)}
+                      {measuredCount(chapter.items)}
                     </li>
                     {rows(chapter.items)}
                   </Fragment>
@@ -115,6 +153,13 @@ export function ItemsCard({
     </Card>
   );
 }
+
+/**
+ * From a tablet up: a row's number, title and quantity in the Deviz, on the
+ * edge as every quantity is. Its state goes on the line under the title, with
+ * its code, as on a phone.
+ */
+const COLUMNS = "md:grid-cols-[1.75rem_minmax(0,1fr)_8rem]";
 
 function ItemRow({
   item,
@@ -140,45 +185,64 @@ function ItemRow({
   const measured = item.takeoffs.length > 0;
   const unchecked = item.takeoffs.some((takeoff) => takeoff.unchecked);
   const canMeasureRooms = item.measures.length > 0;
+  const state = (
+    <>
+      {measured ? (
+        <StatusPill tone={item.differs ? "warning" : "success"}>
+          {item.differs
+            ? t("differs")
+            : t("measured", {
+                measured: formatQuantity(item.measured, locale),
+                unit,
+              })}
+        </StatusPill>
+      ) : (
+        <StatusPill tone="draft">{t("unmeasured")}</StatusPill>
+      )}
+      {unchecked && <StatusPill tone="ai">{t("unchecked")}</StatusPill>}
+    </>
+  );
 
   return (
     <li
       className={cn(
-        "grid gap-2 rounded-md border border-border px-3 py-3",
-        !measured && "bg-sunken",
+        "grid gap-1.5 border-b border-border py-3 last:border-0 md:py-2",
+        RULED,
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <div className="grid min-w-0 flex-1 basis-64 gap-0.5">
-          <span className="text-body text-ink">
-            <span className="text-ink-3 tabular-nums">{index}.</span>{" "}
-            {item.title}
+        <div
+          className={cn(
+            "grid min-w-0 flex-1 basis-64 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 md:basis-full md:items-baseline md:gap-x-0",
+            COLUMNS,
+          )}
+        >
+          <span className="w-4 text-right text-body tabular-nums text-ink-3">
+            {index}
           </span>
-          <span className="flex flex-wrap items-center gap-2 text-meta text-ink-3">
-            <span>{item.code}</span>
-            <span>
-              {t("inEstimate", {
-                quantity: formatQuantity(item.quantity, locale),
-                unit,
-              })}
+          <span className="text-body text-ink md:pr-4">{item.title}</span>
+          <span className="hidden text-right text-body tabular-nums text-ink md:block">
+            <span className="sr-only">{t("columnInEstimate")}: </span>
+            {formatQuantity(item.quantity, locale)}
+            {/* Last in the row, the unit ends it, on the table's edge. */}
+            <span className="ml-1 text-ink-3">{unit}</span>
+          </span>
+          <span className="col-start-2 flex flex-wrap items-center gap-2 text-meta text-ink-3">
+            <span className="tabular-nums">
+              {item.code}
+              <span className="md:hidden">
+                {" · "}
+                {t("inEstimate", {
+                  quantity: formatQuantity(item.quantity, locale),
+                  unit,
+                })}
+              </span>
             </span>
-            {measured ? (
-              <Badge tone={item.differs ? "warning" : "success"}>
-                {item.differs
-                  ? t("differs")
-                  : t("measured", {
-                      measured: formatQuantity(item.measured, locale),
-                      unit,
-                    })}
-              </Badge>
-            ) : (
-              <Badge>{t("unmeasured")}</Badge>
-            )}
-            {unchecked && <Badge tone="ai">{t("unchecked")}</Badge>}
+            {state}
           </span>
         </div>
         {!locked && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 md:pl-7">
             {item.differs && (
               <Button
                 variant="secondary"
@@ -218,7 +282,7 @@ function ItemRow({
         )}
       </div>
       {item.takeoffs.length > 0 && (
-        <ul className="m-0 grid list-none gap-1 p-0">
+        <ul className="m-0 grid list-none p-0">
           {item.takeoffs.map((takeoff) => (
             <TakeoffLine
               key={takeoff._id}
@@ -271,9 +335,9 @@ function TakeoffLine({
     .filter(Boolean)
     .join(", ");
   return (
-    <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-sm bg-sunken px-3 py-1.5 text-meta">
-      <span className="min-w-0 flex-1 basis-56 text-ink-2">
-        <span className="text-ink">
+    <li className="flex min-h-7 flex-wrap items-center justify-between gap-x-3 text-meta">
+      <span className="min-w-0 flex-1 basis-56 text-ink-3">
+        <span className="text-ink-2">
           <TakeoffName takeoff={takeoff} />
         </span>
         {" · "}
@@ -287,7 +351,7 @@ function TakeoffLine({
             : t("rows", { count: takeoff.rows.length })}
       </span>
       <span className="flex items-center gap-1">
-        <span className="tabular-nums text-ink">
+        <span className="tabular-nums text-ink-2">
           {formatQuantity(takeoff.total, locale)}{" "}
           {formatUnit(takeoff.unit, locale)}
         </span>

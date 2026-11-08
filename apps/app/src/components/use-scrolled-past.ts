@@ -1,0 +1,26 @@
+import { type RefObject, useEffect, useState } from "react";
+
+/**
+ * Whether an element has scrolled away above the screen, or under the `offset`
+ * px a bar keeps at its top.
+ */
+export function useScrolledPast(
+  target: RefObject<HTMLElement | null>,
+  ready: boolean,
+  offset = 44,
+) {
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    const element = target.current;
+    if (!ready || !element) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => setPast(entry ? !entry.isIntersecting : false),
+      { rootMargin: `-${offset}px 0px 0px 0px` },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [target, ready, offset]);
+  return past;
+}

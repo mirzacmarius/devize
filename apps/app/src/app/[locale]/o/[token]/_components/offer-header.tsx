@@ -12,7 +12,7 @@ export function FirmMark({ firm }: { firm: OfferFirm }) {
       <img
         src={firm.logoUrl}
         alt=""
-        className="size-10 shrink-0 rounded-md border border-border bg-card object-contain p-1"
+        className="size-10 shrink-0 rounded-lg border border-border bg-card object-contain p-1 sm:size-14"
       />
     );
   }
@@ -25,7 +25,7 @@ export function FirmMark({ firm }: { firm: OfferFirm }) {
   return (
     <span
       aria-hidden
-      className="grid size-10 shrink-0 place-items-center rounded-md bg-tile text-body font-medium text-ink-2"
+      className="grid size-10 shrink-0 place-items-center rounded-lg bg-card text-body font-medium text-ink-2 shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:size-14 sm:text-body-lg"
     >
       {initials}
     </span>
@@ -51,7 +51,16 @@ export function ContactLinks({
   return (
     <div className="flex shrink-0 flex-wrap justify-center gap-2">
       {phone && (
-        <Button variant="outline" size="sm" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className={
+            compact
+              ? "max-sm:size-11 max-sm:p-0 max-sm:[&_svg]:size-5"
+              : undefined
+          }
+          asChild
+        >
           <a href={`tel:${phone}`}>
             <Phone aria-hidden />
             <span className={compact ? "sr-only sm:not-sr-only" : undefined}>
@@ -61,7 +70,16 @@ export function ContactLinks({
         </Button>
       )}
       {firm.email && (
-        <Button variant="outline" size="sm" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className={
+            compact
+              ? "max-sm:size-11 max-sm:p-0 max-sm:[&_svg]:size-5"
+              : undefined
+          }
+          asChild
+        >
           <a href={`mailto:${firm.email}`}>
             <Mail aria-hidden />
             <span className={compact ? "sr-only sm:not-sr-only" : undefined}>
@@ -88,12 +106,12 @@ export function OfferHeader({
   const t = useScopedI18n("offerPage");
   const details = [firm.cui && `CUI ${firm.cui}`, firm.county].filter(Boolean);
   return (
-    <header className="border-b border-border bg-card">
+    <header className="max-sm:border-b max-sm:border-border">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <FirmMark firm={firm} />
           <div className="grid min-w-0">
-            <span className="truncate text-body font-medium text-ink">
+            <span className="truncate text-[17px] leading-6 tracking-[-0.005em] text-ink [font-weight:550]">
               {firm.name}
             </span>
             {details.length > 0 && (
@@ -108,7 +126,7 @@ export function OfferHeader({
       {preview && (
         <p
           role="note"
-          className="m-0 border-t border-border bg-sunken px-4 py-2 text-center text-meta text-ink-2"
+          className="m-0 border-t border-border bg-sunken px-4 py-2 text-center text-meta text-ink-2 sm:mx-2 sm:mb-2 sm:rounded-lg sm:border-t-0"
         >
           {t("preview")}
         </p>

@@ -16,7 +16,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -366,7 +365,6 @@ export function NormForm({
                   value={code}
                   onChange={(event) => setCode(event.target.value)}
                   placeholder={t("form.codePlaceholder")}
-                  className="font-mono"
                   maxLength={40}
                   aria-invalid={errors.code !== undefined}
                   autoFocus={!norm}
@@ -417,8 +415,7 @@ export function NormForm({
             <CardTitle>{t("form.resources")}</CardTitle>
             <CardDescription>{t("form.resourcesHint")}</CardDescription>
           </CardHeader>
-          <TickRule />
-          <CardContent className="pt-4">
+          <CardContent>
             {rows.length === 0 ? (
               <p className="m-0 text-body text-ink-3">
                 {t("form.noResources")}
@@ -602,8 +599,7 @@ export function NormForm({
           <CardHeader>
             <CardTitle>{t("form.scope")}</CardTitle>
           </CardHeader>
-          <TickRule />
-          <CardContent className="gap-5 pt-4">
+          <CardContent className="gap-5">
             <Field label={t("form.includes")} htmlFor={`${ids}-includes`}>
               <Textarea
                 id={`${ids}-includes`}

@@ -62,13 +62,13 @@ export function ClaimPanel({
         </Button>
       }
     >
-      <div className="flex flex-col gap-1 text-sm">
-        <p className="text-primary/80">
+      <div className="flex flex-col gap-1 text-body">
+        <p className="text-ink-2">
           {data.holder
             ? t("claimedBy", { name: data.holder.name })
             : t("unclaimed")}
         </p>
-        {!data.visible && <p className="text-primary/60">{t("notVisible")}</p>}
+        {!data.visible && <p className="text-ink-3">{t("notVisible")}</p>}
       </div>
       <Domains manufacturerId={manufacturerId} domains={data.domains} />
       <Links manufacturerId={manufacturerId} links={data.links} />
@@ -89,8 +89,8 @@ function Section({
   return (
     <section className="flex flex-col gap-2 border-t border-border pt-4">
       <div className="flex flex-col gap-0.5">
-        <h3 className="text-sm font-medium text-primary">{title}</h3>
-        {hint && <p className="text-xs text-primary/60">{hint}</p>}
+        <h3 className="text-body font-medium text-ink">{title}</h3>
+        {hint && <p className="text-meta text-ink-3">{hint}</p>}
       </div>
       {children}
     </section>
@@ -127,19 +127,19 @@ function Domains({
   return (
     <Section title={t("domains")} hint={t("domainsHint")}>
       {domains.length === 0 ? (
-        <p className="text-sm text-primary/60">{t("noDomains")}</p>
+        <p className="text-body text-ink-3">{t("noDomains")}</p>
       ) : (
         <ul className="flex flex-wrap gap-2">
           {domains.map((row) => (
             <li
               key={row._id}
-              className="flex items-center gap-1 rounded-full bg-primary/5 py-0.5 pl-3 pr-1 text-sm text-primary/80"
+              className="flex items-center gap-1 rounded-full bg-muted py-0.5 pl-3 pr-1 text-body text-ink-2"
             >
               <span className="font-mono">{row.domain}</span>
               <button
                 type="button"
                 aria-label={t("removeDomain", { domain: row.domain })}
-                className="rounded-full p-1 text-primary/60 hover:bg-primary/10 hover:text-primary"
+                className="rounded-full p-1 text-ink-3 hover:bg-muted hover:text-ink"
                 onClick={() => run(() => removeDomain({ domainId: row._id }))}
               >
                 <X className="h-3.5 w-3.5" aria-hidden />
@@ -213,7 +213,7 @@ function Links({
   return (
     <Section title={t("links")} hint={t("linksHint")}>
       {links.length === 0 ? (
-        <p className="text-sm text-primary/60">{t("noLinks")}</p>
+        <p className="text-body text-ink-3">{t("noLinks")}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {links.map((link) => {
@@ -225,10 +225,8 @@ function Links({
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-col">
-                    <span className="text-sm text-primary/80">
-                      {link.email}
-                    </span>
-                    <span className="text-xs text-primary/60">
+                    <span className="text-body text-ink-2">{link.email}</span>
+                    <span className="text-meta text-ink-3">
                       {link.usedAt !== undefined
                         ? t("linkUsed", { date: format.date(link.usedAt) })
                         : open
@@ -252,7 +250,7 @@ function Links({
                     <button
                       type="button"
                       aria-label={t("revoke", { email: link.email })}
-                      className="rounded-full p-1.5 text-primary/60 hover:bg-primary/10 hover:text-primary"
+                      className="rounded-full p-1.5 text-ink-3 hover:bg-muted hover:text-ink"
                       onClick={() =>
                         run(() => revokeLink({ linkId: link._id }))
                       }
@@ -262,7 +260,7 @@ function Links({
                   </div>
                 </div>
                 {open && (
-                  <span className="select-all break-all font-mono text-xs text-primary/60">
+                  <span className="select-all break-all font-mono text-meta text-ink-3">
                     {urlOf(link)}
                   </span>
                 )}
@@ -299,15 +297,15 @@ function Requests({ data }: { data: ClaimData }) {
   return (
     <Section title={t("requests")}>
       {data.claims.length === 0 && data.removals.length === 0 ? (
-        <p className="text-sm text-primary/60">{t("noRequests")}</p>
+        <p className="text-body text-ink-3">{t("noRequests")}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {data.claims.map((claim) => (
             <li
               key={claim._id}
-              className="flex flex-wrap items-center justify-between gap-2 text-sm"
+              className="flex flex-wrap items-center justify-between gap-2 text-body"
             >
-              <span className="text-primary/80">
+              <span className="text-ink-2">
                 {[
                   claim.name ?? claim.email ?? t("deletedAccount"),
                   t(`methods.${claim.method}`),
@@ -322,9 +320,9 @@ function Requests({ data }: { data: ClaimData }) {
           {data.removals.map((request) => (
             <li
               key={request._id}
-              className="flex flex-wrap items-center justify-between gap-2 text-sm"
+              className="flex flex-wrap items-center justify-between gap-2 text-body"
             >
-              <span className="text-primary/80">
+              <span className="text-ink-2">
                 {[t("removal"), request.email, format.date(request.createdAt)]
                   .filter(Boolean)
                   .join(" · ")}
@@ -339,7 +337,7 @@ function Requests({ data }: { data: ClaimData }) {
       {waiting && (
         <Link
           href="/admin/claims"
-          className="w-fit text-sm text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary"
+          className="w-fit text-body text-ink underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current"
         >
           {t("queue")}
         </Link>

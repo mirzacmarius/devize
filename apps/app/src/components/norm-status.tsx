@@ -7,7 +7,7 @@ import { useScopedI18n } from "@/locales/client";
 export type NormStatus = Doc<"norms">["status"];
 
 const tones: Record<NormStatus, StatusPillProps["tone"]> = {
-  draft: "neutral",
+  draft: "draft",
   review: "warning",
   published: "success",
   superseded: "neutral",

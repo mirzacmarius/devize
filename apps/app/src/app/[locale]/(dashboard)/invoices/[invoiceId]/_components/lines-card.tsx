@@ -13,7 +13,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -25,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
 import { Plus, Trash2 } from "lucide-react";
 import { type ReactNode, useState } from "react";
@@ -68,6 +68,7 @@ export function LinesCard({ invoice }: { invoice: Invoice }) {
 
 function LinesTable({ invoice }: { invoice: Invoice }) {
   const t = useScopedI18n("invoices.lines");
+  const tLei = useScopedI18n("common");
   const locale = useCurrentLocale();
   const keys = uniqueKeys(
     invoice.lines,
@@ -76,19 +77,23 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          <span className="ml-1 text-meta text-ink-3">
+            {tLei("inLeiLower")}
+          </span>
+        </div>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent className="gap-0">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>{t("columns.description")}</TableHead>
-              <TableHead className="hidden sm:table-cell">
-                {t("columns.unit")}
-              </TableHead>
-              <TableHead className="text-right">
+              <TableHead className="text-right sm:pr-1.5">
                 {t("columns.quantity")}
+              </TableHead>
+              <TableHead className="hidden pl-0 sm:table-cell">
+                <span className="sr-only">{t("columns.unit")}</span>
               </TableHead>
               <TableHead className="hidden text-right md:table-cell">
                 {t("columns.unitPrice")}
@@ -102,20 +107,22 @@ function LinesTable({ invoice }: { invoice: Invoice }) {
           <TableBody>
             {invoice.lines.map((line, index) => (
               <TableRow key={keys[index]}>
-                <TableCell className="text-ink">{line.description}</TableCell>
-                <TableCell className="hidden text-ink-2 sm:table-cell">
-                  {formatUnit(line.unit, locale)}
+                <TableCell className="align-top text-ink">
+                  {line.description}
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
+                <TableCell className="text-right align-top tabular-nums sm:pr-1.5">
                   {formatQuantity(line.quantity, locale)}
                 </TableCell>
-                <TableCell className="hidden text-right tabular-nums md:table-cell">
+                <TableCell className="hidden pl-0 align-top text-ink-3 sm:table-cell">
+                  {formatUnit(line.unit, locale)}
+                </TableCell>
+                <TableCell className="hidden text-right align-top tabular-nums md:table-cell">
                   {formatMoney(line.unitPrice, locale)}
                 </TableCell>
-                <TableCell className="hidden text-right text-ink-2 tabular-nums sm:table-cell">
+                <TableCell className="hidden text-right align-top text-ink-2 tabular-nums sm:table-cell">
                   {formatPercent(line.vatRate, locale)}
                 </TableCell>
-                <TableCell className="text-right font-medium tabular-nums">
+                <TableCell className="text-right align-top tabular-nums text-ink">
                   {formatMoney(line.net, locale)}
                 </TableCell>
               </TableRow>
@@ -167,31 +174,42 @@ function Totals({
   }
   return (
     <dl className="m-0 grid justify-end gap-1.5 border-t border-border pt-3">
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="flex items-baseline justify-between gap-6 sm:justify-end"
-        >
-          <dt
-            className={
-              row.strong
-                ? "text-body font-medium text-ink"
-                : "text-body text-ink-3"
-            }
+      {rows.map((row, index) => {
+        // What's finally owed closes the sum, as in the Deviz's recap.
+        const closes = index === rows.length - 1;
+        return (
+          <div
+            key={row.label}
+            className={cn(
+              "flex items-baseline justify-between gap-6 sm:justify-end",
+              closes && "mt-0.5 border-t-[3px] border-double border-rule pt-2",
+            )}
           >
-            {row.label}
-          </dt>
-          <dd
-            className={`m-0 min-w-32 text-right tabular-nums ${
-              row.strong
-                ? "text-body-lg font-semibold text-ink"
-                : "text-body text-ink"
-            }`}
-          >
-            {formatMoney(row.value, locale)} lei
-          </dd>
-        </div>
-      ))}
+            <dt
+              className={
+                row.strong
+                  ? "text-body font-medium text-ink"
+                  : "text-body text-ink-3"
+              }
+            >
+              {row.label}
+            </dt>
+            <dd
+              className={cn(
+                "m-0 min-w-[118px] text-right tabular-nums text-ink",
+                row.strong || closes ? "text-body font-medium" : "text-body",
+              )}
+            >
+              {formatMoney(row.value, locale)}
+              {/* The column above says lei; a phone's sum stands alone. */}
+              <span className="text-meta font-normal text-ink-3 sm:hidden">
+                {" "}
+                lei
+              </span>
+            </dd>
+          </div>
+        );
+      })}
     </dl>
   );
 }
@@ -326,8 +344,7 @@ function LinesEditor({ invoice }: { invoice: Invoice }) {
           </span>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <div className="hidden grid-cols-[minmax(0,1fr)_72px_88px_112px_72px_104px_32px] gap-2 text-meta text-ink-3 md:grid">
           <span>{t("columns.description")}</span>
           <span>{t("columns.unit")}</span>
@@ -417,7 +434,7 @@ function LinesEditor({ invoice }: { invoice: Invoice }) {
                   )}
                 </div>
                 <div className="flex items-center justify-between gap-2 md:contents">
-                  <span className="text-body font-medium text-ink tabular-nums md:text-right">
+                  <span className="text-body text-ink tabular-nums md:text-right">
                     {line
                       ? formatMoney(
                           priceLine(line, invoice.seller.vatRegistered).net,

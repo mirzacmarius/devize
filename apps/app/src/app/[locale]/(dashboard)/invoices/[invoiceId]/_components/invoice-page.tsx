@@ -2,25 +2,24 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
 import { PageHeader } from "@devize/ui/page-header";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useFirm } from "@/components/firm-provider";
+import { LinkCard } from "@/components/fold-card";
 import { InvoiceStatusPill } from "@/components/invoice-status";
+import { Rail, RailList, RailSummary } from "@/components/rail-stat";
+import { TotalHero } from "@/components/total-hero";
 import { useRouteParam } from "@/components/use-route-param";
 import { formatMoney, todayInput } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { BuyerCard } from "./buyer-card";
 import { ChecksCard } from "./checks-card";
 import { DetailsCard } from "./details-card";
-import { EfacturaCard } from "./efactura-card";
+import { EfacturaCard, EfacturaDetails } from "./efactura-card";
+import { HistoryCard } from "./history-card";
 import { InvoiceActions } from "./invoice-actions";
 import { LinesCard } from "./lines-card";
 import { PaymentsCard } from "./payments-card";
@@ -68,8 +67,6 @@ export function InvoicePage() {
             <BreadcrumbLink asChild>
               <Link href="/invoices">{t("page.breadcrumbList")}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{title}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={title}
@@ -77,26 +74,42 @@ export function InvoicePage() {
         description={[
           t(`kind.${invoice.kind}`),
           invoice.buyer.name || tc("notSet"),
-          t("page.totalWithVat", {
-            total: formatMoney(invoice.totals.total, locale),
-          }),
           invoice.estimate && t("page.deviz", { code: invoice.estimate.code }),
         ]
           .filter(Boolean)
           .join(" · ")}
         actions={<InvoiceActions invoice={invoice} />}
       />
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-11">
         <div className="grid min-w-0 gap-6">
+          <TotalHero
+            label={t("page.total")}
+            total={formatMoney(invoice.totals.total, locale)}
+            note={t("page.withoutVat", {
+              total: formatMoney(invoice.totals.net, locale),
+            })}
+          />
           <LinesCard invoice={invoice} />
-          {!draft && <PaymentsCard invoice={invoice} />}
+          {invoice.status === "issued" && <PaymentsCard invoice={invoice} />}
+          {!draft && <HistoryCard invoice={invoice} />}
         </div>
-        <div className="grid min-w-0 gap-6">
-          {draft && <ChecksCard invoice={invoice} />}
-          {live && <EfacturaCard invoice={invoice} />}
-          <BuyerCard invoice={invoice} />
-          <DetailsCard invoice={invoice} />
-        </div>
+        <Rail>
+          <RailSummary>
+            {draft && <ChecksCard invoice={invoice} />}
+            {live && <EfacturaCard invoice={invoice} />}
+          </RailSummary>
+          <RailList>
+            {live && <EfacturaDetails invoice={invoice} />}
+            <BuyerCard invoice={invoice} />
+            <DetailsCard invoice={invoice} />
+            {live && (
+              <LinkCard
+                title={t("efactura.settings")}
+                href="/settings/billing"
+              />
+            )}
+          </RailList>
+        </Rail>
       </div>
     </>
   );

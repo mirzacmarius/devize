@@ -2,13 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { normalizeText } from "@devize/backend/convex/lib/text";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@devize/ui/breadcrumb";
-import { Card, CardContent, CardHeader, TickRule } from "@devize/ui/card";
+import { Breadcrumb, BreadcrumbLink } from "@devize/ui/breadcrumb";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -24,12 +18,14 @@ import {
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
+import { ListToolbar } from "@/components/list-toolbar";
 import { SearchInput } from "@/components/search-input";
 import { useScopedI18n } from "@/locales/client";
 
 /**
- * The Producători whose norms are in the catalog, each opening its profile:
- * the norms and products it publishes and whether it runs the profile itself.
+ * The Producători whose norms are in the catalog, as a directory: each row says
+ * what it covers and opens its profile, with the norms and products it publishes
+ * and whether it runs the profile itself.
  */
 export function ProducersPage() {
   const t = useScopedI18n("producers");
@@ -39,6 +35,7 @@ export function ProducersPage() {
   const [text, setText] = useState("");
   const search = useDeferredValue(text.trim());
   const words = normalizeText(search).split(" ").filter(Boolean);
+  const managed = producers?.filter((producer) => producer.claimed).length ?? 0;
   const rows = producers?.filter((producer) => {
     const name = normalizeText(producer.name);
     return words.every((word) => name.includes(word));
@@ -52,79 +49,123 @@ export function ProducersPage() {
             <BreadcrumbLink asChild>
               <Link href="/catalog">{tCatalog("title")}</Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description")}
+        description={
+          producers && producers.length > 0
+            ? [
+                t("count", { count: producers.length }),
+                managed > 0 && t("managedCount", { count: managed }),
+              ]
+                .filter(Boolean)
+                .join(" · ")
+            : " "
+        }
       />
       {producers?.length === 0 ? (
         <EmptyState icon={<Icons.Producers />} title={t("empty")} />
       ) : (
-        <Card>
-          <CardHeader className="flex-wrap">
+        <section className="grid min-w-0 gap-3">
+          {/* What narrows the list, under the head as on every list; with
+              nothing to filter, the search starts where the table does. */}
+          <ListToolbar>
             <SearchInput
+              quiet
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full max-w-xs"
+              className="w-full sm:max-w-xs"
             />
-          </CardHeader>
-          <TickRule />
-          <CardContent className="pt-4">
-            <Table>
+          </ListToolbar>
+          {rows === undefined && (
+            <p className="m-0 text-body text-ink-3">{tc("loading")}</p>
+          )}
+          {rows?.length === 0 && (
+            <p className="m-0 text-body text-ink-3">
+              {t("noResults", { text: search })}
+            </p>
+          )}
+          {rows && rows.length > 0 && (
+            // The page's width, as every list is: what it makes takes what's
+            // left, and the counts end each row on the edge.
+            <Table stack>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("columns.name")}</TableHead>
-                  <TableHead>{t("columns.profile")}</TableHead>
-                  <TableHead className="hidden sm:table-cell">
+                  <TableHead className="md:w-[22rem]">
+                    {t("columns.name")}
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    {t("columns.categories")}
+                  </TableHead>
+                  {/* The counts end the row, on the edge. */}
+                  <TableHead className="w-24 text-right">
                     {t("columns.edition")}
+                  </TableHead>
+                  <TableHead className="w-24 text-right">
+                    {t("columns.norms")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows === undefined && (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-ink-3">
-                      {tc("loading")}
+                {rows.map((producer) => (
+                  <TableRow key={producer._id} className="relative">
+                    <TableCell data-stack="wide">
+                      <div className="grid min-w-0 gap-y-0.5">
+                        {/* A managed profile is said beside the name. */}
+                        <span className="flex min-w-0 items-baseline gap-3">
+                          {/* The whole row opens the profile. */}
+                          <Link
+                            href={`/producers/${producer._id}`}
+                            className="min-w-0 truncate rounded-xs text-body font-medium text-ink before:absolute before:inset-0 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-md:text-body-lg"
+                          >
+                            {producer.name}
+                          </Link>
+                          {producer.claimed && (
+                            <StatusPill
+                              tone="success"
+                              title={t("managed")}
+                              className="shrink-0"
+                            >
+                              {t("managedShort")}
+                            </StatusPill>
+                          )}
+                        </span>
+                        {/* A phone has no column for what it makes: it goes under
+                            the name. */}
+                        <span className="min-w-0 truncate text-meta text-ink-3 md:hidden">
+                          {producer.categories.join(" · ")}
+                        </span>
+                      </div>
                     </TableCell>
-                  </TableRow>
-                )}
-                {rows?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-ink-3">
-                      {t("noResults", { text: search })}
+                    {/* A phone has no heads: the two say what they are. */}
+                    <TableCell className="text-meta tabular-nums text-ink-3 md:hidden">
+                      {producer.moreNorms
+                        ? t("normCountMore", { count: producer.normCount })
+                        : t("normCount", { count: producer.normCount })}
+                      {" · "}
+                      {t("edition", { edition: producer.edition })}
                     </TableCell>
-                  </TableRow>
-                )}
-                {rows?.map((producer) => (
-                  <TableRow key={producer._id}>
-                    <TableCell>
-                      <Link
-                        href={`/producers/${producer._id}`}
-                        className="rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      >
-                        {producer.name}
-                      </Link>
+                    {/* It gives way to the counts: what doesn't fit is cut. */}
+                    <TableCell className="hidden text-ink-2 md:table-cell md:max-w-0">
+                      <span className="block truncate">
+                        {producer.categories.join(" · ")}
+                      </span>
                     </TableCell>
-                    <TableCell>
-                      <StatusPill
-                        tone={producer.claimed ? "success" : "neutral"}
-                      >
-                        {producer.claimed ? t("claimed") : t("unclaimed")}
-                      </StatusPill>
+                    <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
+                      {producer.edition}
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 sm:table-cell">
-                      {producer.edition ?? "—"}
+                    <TableCell className="hidden text-right tabular-nums md:table-cell">
+                      {producer.normCount}
+                      {producer.moreNorms && "+"}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
+          )}
+        </section>
       )}
     </>
   );

@@ -2,18 +2,33 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { normalizeText } from "@devize/backend/convex/lib/text";
+import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
+import { toolbarField } from "@devize/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableGroupRow,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useDeferredValue, useState } from "react";
+import { ListToolbar } from "@/components/list-toolbar";
+import { Nil } from "@/components/nil";
+import { SearchInput } from "@/components/search-input";
 import { useScopedI18n } from "@/locales/client";
 import {
-  confidenceTone,
+  Confidence,
   ErrorText,
   Field,
   manufacturerTone,
-  messageTone,
   NativeSelect,
   Panel,
   Pill,
@@ -34,14 +49,39 @@ const statuses = [
 
 type Status = (typeof statuses)[number];
 
+// What needs someone first, what waits on others next, what's over last.
+const groups = [
+  { key: "action", statuses: ["new", "review", "replied"] },
+  { key: "waiting", statuses: ["approved", "contacted"] },
+  { key: "closed", statuses: ["norms_received", "declined", "excluded"] },
+] as const satisfies readonly { key: string; statuses: readonly Status[] }[];
+
+// With a mouse, the boxes wait in the page's margin until a row is pointed at,
+// so the names start on the table's edge, under their group's label. To a thumb
+// they're always there, in a column of their own.
+const BOX_CELL =
+  "md:[@media(hover:hover)]:relative md:[@media(hover:hover)]:w-0 md:[@media(hover:hover)]:p-0";
+const AFTER_BOX = "md:[@media(hover:hover)]:pl-0";
+
 export default function ManufacturersPage() {
   const t = useScopedI18n("admin.manufacturers");
   const tAdmin = useScopedI18n("admin");
+  const tAdd = useScopedI18n("admin.manufacturers.add");
+  const [adding, setAdding] = useState(false);
   const [status, setStatus] = useState<Status | "all">("all");
-  const rows = useQuery(
+  const listed = useQuery(
     api.manufacturers.admin.list,
     status === "all" ? {} : { status },
   );
+  const [text, setText] = useState("");
+  const search = useDeferredValue(text.trim());
+  const words = normalizeText(search).split(" ").filter(Boolean);
+  const rows = listed?.filter((row) => {
+    const name = normalizeText(row.name);
+    return words.every((word) => name.includes(word));
+  });
+  // A single stage says nothing, so its column goes.
+  const stages = new Set(listed?.map((row) => row.wave)).size;
   const [selected, setSelected] = useState<Set<Id<"manufacturers">>>(new Set());
   const [started, setStarted] = useState<number | null>(null);
   const startResearchMany = useMutation(
@@ -67,24 +107,28 @@ export default function ManufacturersPage() {
     });
 
   return (
-    <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-medium text-primary/80">{t("title")}</h1>
-        <p className="text-base text-primary/60">{t("description")}</p>
-      </div>
+    <>
+      {adding && <AddManufacturers />}
 
-      <AddManufacturers />
-
-      <Panel
-        title={t("title")}
-        actions={
-          <>
+      <section className="grid min-w-0 gap-3 [--card-pad:16px] md:[--band-hang:12px] md:[--card-pad:32px]">
+        {/* The search first and the filter after it, as on every list; the
+            tab's own actions at the other end. */}
+        <ListToolbar>
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              className="w-full sm:w-80"
+            />
             <label htmlFor="status_filter" className="sr-only">
               {t("columns.status")}
             </label>
             <NativeSelect
               id="status_filter"
-              className="w-48"
+              className={cn("w-full sm:w-48", toolbarField)}
               value={status}
               onChange={(event) =>
                 setStatus(event.target.value as Status | "all")
@@ -97,9 +141,11 @@ export default function ManufacturersPage() {
                 </option>
               ))}
             </NativeSelect>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() =>
                 setSelected(
                   new Set(
@@ -112,118 +158,190 @@ export default function ManufacturersPage() {
             >
               {t("selectNew")}
             </Button>
+            {selected.size > 0 && (
+              <Button size="sm" disabled={pending} onClick={research}>
+                {t("research", { count: selected.size })}
+              </Button>
+            )}
+            {/* One main action at a time: the research, once there's a choice. */}
             <Button
+              variant={selected.size > 0 ? "outline" : "default"}
               size="sm"
-              disabled={selected.size === 0 || pending}
-              onClick={research}
+              onClick={() => setAdding(!adding)}
             >
-              {t("research", { count: selected.size })}
+              <Plus aria-hidden />
+              {tAdd("title")}
             </Button>
-          </>
-        }
-      >
+          </div>
+        </ListToolbar>
         <ErrorText error={error} />
         {started !== null && (
-          <p className="text-sm text-primary/70">
+          <p className="m-0 text-body text-ink-2">
             {t("researchStarted", { count: started })}
           </p>
         )}
         {rows === undefined ? (
-          <Loader2 className="h-5 w-5 animate-spin text-primary/40" />
+          <Loader2 className="size-5 animate-spin text-ink-3" />
         ) : rows.length === 0 ? (
-          <p className="text-sm text-primary/60">{t("empty")}</p>
+          <p className="m-0 text-body text-ink-3">
+            {search ? t("noResults", { text: search }) : t("empty")}
+          </p>
         ) : (
-          <div className="-mx-6 overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-border text-xs uppercase tracking-wide text-primary/50">
-                <tr>
-                  <th className="w-10 px-6 py-2">
-                    <span className="sr-only">{t("selectNew")}</span>
-                  </th>
-                  <th className="py-2 pr-4">{t("columns.name")}</th>
-                  <th className="py-2 pr-4">{t("columns.wave")}</th>
-                  <th className="py-2 pr-4">{t("columns.status")}</th>
-                  <th className="py-2 pr-4">{t("columns.norms")}</th>
-                  <th className="py-2 pr-4">{t("columns.confidence")}</th>
-                  <th className="py-2 pr-6">{t("columns.email")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...rows]
+          <Table
+            bleed
+            // Every cell on its row's first line, as Facturi has them: a note
+            // under a state doesn't move the name beside it.
+            className="min-w-[42rem] [&>tbody>tr:not([data-group])>td]:py-[11px] [&>tbody>tr:not([data-group])>td]:align-baseline"
+          >
+            <TableHeader>
+              <TableRow>
+                <TableHead className={cn("w-8", BOX_CELL)}>
+                  <span className="sr-only">{t("selectNew")}</span>
+                </TableHead>
+                {/* The page's width, as every list is: the name takes what's
+                    left, and the last column ends on the edge. */}
+                <TableHead className={AFTER_BOX}>{t("columns.name")}</TableHead>
+                {stages > 1 && (
+                  <TableHead className="w-20">{t("columns.wave")}</TableHead>
+                )}
+                <TableHead className="w-[200px]">
+                  {t("columns.status")}
+                </TableHead>
+                <TableHead className="w-[140px]">
+                  {t("columns.norms")}
+                </TableHead>
+                <TableHead className="w-[140px] text-right">
+                  {t("columns.confidence")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(status === "all"
+                ? groups.map((group) => ({
+                    key: group.key as string,
+                    name: t(`groups.${group.key}`),
+                    rows: rows.filter((row) =>
+                      (group.statuses as readonly Status[]).includes(
+                        row.status,
+                      ),
+                    ),
+                  }))
+                : [{ key: status as string, name: undefined, rows }]
+              ).flatMap((group) => [
+                group.name && group.rows.length > 0 && (
+                  <TableGroupRow key={group.key}>
+                    <TableCell
+                      colSpan={stages > 1 ? 6 : 5}
+                      data-stack="wide"
+                      className="band-start band-end font-medium"
+                    >
+                      {/* How many beside the name, as a section's title says it. */}
+                      <span className="flex items-baseline gap-2">
+                        {group.name}
+                        <Count tone="plain" className="font-normal">
+                          {group.rows.length}
+                        </Count>
+                      </span>
+                    </TableCell>
+                  </TableGroupRow>
+                ),
+                ...[...group.rows]
                   .sort(
                     (a, b) => a.wave - b.wave || a.name.localeCompare(b.name),
                   )
                   .map((row) => (
-                    <tr
-                      key={row._id}
-                      className="border-b border-border last:border-0 hover:bg-primary/[0.02]"
-                    >
-                      <td className="px-6 py-3">
-                        <input
-                          type="checkbox"
-                          aria-label={row.name}
-                          checked={selected.has(row._id)}
-                          onChange={() => toggle(row._id)}
-                        />
-                      </td>
-                      <td className="py-3 pr-4">
+                    <TableRow key={row._id} className="group/row">
+                      <TableCell className={cn("w-8", BOX_CELL)}>
+                        <span className="flex md:[@media(hover:hover)]:absolute md:[@media(hover:hover)]:inset-y-0 md:[@media(hover:hover)]:right-full md:[@media(hover:hover)]:w-7 md:[@media(hover:hover)]:items-center">
+                          <input
+                            type="checkbox"
+                            aria-label={row.name}
+                            checked={selected.has(row._id)}
+                            onChange={() => toggle(row._id)}
+                            className={cn(
+                              selected.size === 0 &&
+                                "transition-opacity md:[@media(hover:hover)]:opacity-0 md:[@media(hover:hover)]:focus-visible:opacity-100 md:[@media(hover:hover)]:group-hover/row:opacity-100",
+                            )}
+                          />
+                        </span>
+                      </TableCell>
+                      <TableCell className={AFTER_BOX}>
                         <Link
                           href={`/admin/manufacturers/${row._id}`}
-                          className="font-medium text-primary hover:underline"
+                          className="font-medium text-ink hover:underline"
                         >
                           {row.name}
                         </Link>
                         {row.hints && (
-                          <p className="line-clamp-1 max-w-md text-xs text-primary/50">
+                          <p className="m-0 line-clamp-1 max-w-md text-meta text-ink-3">
                             {row.hints}
                           </p>
                         )}
-                      </td>
-                      <td className="py-3 pr-4 text-primary/70">{row.wave}</td>
-                      <td className="py-3 pr-4">
-                        {row.activeJob ? (
-                          <Pill tone="info">
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            {t("working")}
-                          </Pill>
+                      </TableCell>
+                      {stages > 1 && (
+                        <TableCell className="tabular-nums text-ink-2">
+                          {row.wave}
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        {/* The email's state under the producer's, as a note to it. */}
+                        <span className="grid justify-items-start gap-0.5">
+                          {row.activeJob ? (
+                            <Pill tone="active" dot={false}>
+                              <Loader2 className="size-3 animate-spin self-center" />
+                              {t("working")}
+                            </Pill>
+                          ) : (
+                            <Pill tone={manufacturerTone[row.status]}>
+                              {tAdmin(`status.manufacturer.${row.status}`)}
+                            </Pill>
+                          )}
+                          {/* Approved or sent, the producer's own state says so. */}
+                          {row.message &&
+                            row.message.status !== "approved" &&
+                            row.message.status !== "sent" && (
+                              // The email's own state is a note to the producer's, not a second state.
+                              <Pill
+                                dot={false}
+                                tone={
+                                  row.message.status === "draft" &&
+                                  row.message.blocked
+                                    ? "danger"
+                                    : "draft"
+                                }
+                              >
+                                {row.message.status === "rejected"
+                                  ? t("email.rejected")
+                                  : row.message.blocked
+                                    ? t("email.blocked")
+                                    : t("email.draft")}
+                              </Pill>
+                            )}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {/* A word: the dots are Stare's. */}
+                        <span className="text-meta text-ink-2">
+                          {tAdmin(`status.norms.${row.normsStatus}`)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {row.confidence ? (
+                          <Confidence level={row.confidence}>
+                            {tAdmin(`confidenceLevel.${row.confidence}`)}
+                          </Confidence>
                         ) : (
-                          <Pill tone={manufacturerTone[row.status]}>
-                            {tAdmin(`status.manufacturer.${row.status}`)}
-                          </Pill>
+                          <Nil />
                         )}
-                      </td>
-                      <td className="py-3 pr-4 text-primary/70">
-                        {tAdmin(`status.norms.${row.normsStatus}`)}
-                      </td>
-                      <td className="py-3 pr-4">
-                        {row.confidence && (
-                          <Pill tone={confidenceTone[row.confidence]}>
-                            {tAdmin(`confidence.${row.confidence}`)}
-                          </Pill>
-                        )}
-                      </td>
-                      <td className="py-3 pr-6">
-                        {row.message && (
-                          <Pill
-                            tone={
-                              row.message.blocked &&
-                              row.message.status === "draft"
-                                ? "danger"
-                                : messageTone[row.message.status]
-                            }
-                          >
-                            {tAdmin(`status.message.${row.message.status}`)}
-                          </Pill>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+                      </TableCell>
+                    </TableRow>
+                  )),
+              ])}
+            </TableBody>
+          </Table>
         )}
-      </Panel>
-    </div>
+      </section>
+    </>
   );
 }
 
@@ -281,7 +399,7 @@ function AddManufacturers() {
         </div>
         <ErrorText error={error} />
         {result && (
-          <p className="text-sm text-primary/70">
+          <p className="text-body text-ink-2">
             {t("result", { created: result.created })}{" "}
             {result.skipped.length > 0 &&
               t("skipped", { names: result.skipped.join(", ") })}

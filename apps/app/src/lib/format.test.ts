@@ -3,6 +3,7 @@ import {
   estimateCode,
   formatAmount,
   formatCalendarDate,
+  formatCalendarDay,
   formatConsumption,
   formatCount,
   formatFileSize,
@@ -10,9 +11,48 @@ import {
   formatMonth,
   formatPercent,
   formatQuantity,
+  formatToday,
+  keepUnits,
   parseDecimal,
   parseMoney,
 } from "./format";
+
+describe("formatToday", () => {
+  test("names the day and the date apart", () => {
+    const saturday = new Date(2026, 10, 7);
+    expect(formatToday("ro", saturday)).toEqual({
+      weekday: "Sâmbătă",
+      date: "7 noiembrie",
+    });
+    expect(formatToday("en", saturday)).toEqual({
+      weekday: "Saturday",
+      date: "7 November",
+    });
+  });
+});
+
+describe("keepUnits", () => {
+  test("keeps a number on one line with its unit", () => {
+    expect(keepUnits("Termoizolație 50 mm, 12 mp")).toBe(
+      "Termoizolație 50\u00a0mm, 12\u00a0mp",
+    );
+    expect(keepUnits("Beton 2 m³")).toBe("Beton 2\u00a0m³");
+  });
+
+  test("keeps a size together around its ×", () => {
+    expect(keepUnits("Gresie 60 × 120 cm")).toBe(
+      "Gresie 60\u00a0×\u00a0120\u00a0cm",
+    );
+    expect(keepUnits("Grindă 10 × 20 × 30 cm")).toBe(
+      "Grindă 10\u00a0×\u00a020\u00a0×\u00a030\u00a0cm",
+    );
+  });
+
+  test("leaves words that only start like a unit", () => {
+    expect(keepUnits("2 tone de 3 metri")).toBe("2 tone de 3 metri");
+    expect(keepUnits("Ușă 60×120")).toBe("Ușă 60×120");
+  });
+});
 
 describe("formatting", () => {
   test("writes lei with a dot for thousands and two decimals", () => {
@@ -35,6 +75,12 @@ describe("formatting", () => {
 
   test("writes a price date with a short month", () => {
     expect(formatCalendarDate("2026-10-21", "ro")).toBe("21 oct. 2026");
+  });
+
+  test("leaves out the year of a date in this year", () => {
+    const now = new Date("2026-11-06T12:00:00Z");
+    expect(formatCalendarDay("2026-10-21", "ro", now)).toBe("21 oct.");
+    expect(formatCalendarDay("2027-01-15", "ro", now)).toBe("15 ian. 2027");
   });
 
   test("writes the date of the terms with the month in full", () => {

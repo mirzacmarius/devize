@@ -1,22 +1,23 @@
 "use client";
 
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Count } from "@devize/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { StatusPill } from "@devize/ui/status-pill";
 import { Switch } from "@devize/ui/switch";
 import { cn } from "@devize/ui/utils";
+import { ChevronRight } from "lucide-react";
 import { useId, useState } from "react";
 import {
   groupLines,
   type NumberedItem,
 } from "@/app/[locale]/(dashboard)/estimates/[estimateId]/_components/groups";
-import { formatMoney, formatQuantity, formatUnit } from "@/lib/format";
+import {
+  formatMoney,
+  formatQuantity,
+  formatUnit,
+  keepUnits,
+} from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { OfferItem, OpenOfferView } from "./types";
 
@@ -72,19 +73,17 @@ export function WorksCard({
     <div
       className={cn(
         "flex items-baseline justify-between gap-3 py-2",
-        nested ? "border-b border-border" : "-mx-5 bg-sunken px-5",
+        nested
+          ? "border-b border-border"
+          : "-mx-[var(--card-pad)] bg-sunken px-[var(--card-pad)]",
       )}
     >
-      <h3
-        className={cn(
-          "m-0 min-w-0 text-body text-ink",
-          nested ? "font-medium" : "font-semibold",
-        )}
-      >
+      {/* Over the titles, past the numbers. */}
+      <h3 className="m-0 min-w-0 pl-7 text-body font-medium text-ink sm:pl-10">
         {sectionName(section)}
       </h3>
-      <span className="shrink-0 text-meta tabular-nums text-ink-2">
-        {t("lei", { total: formatMoney(total, locale) })}
+      <span className="shrink-0 text-body font-medium tabular-nums text-ink">
+        {formatMoney(total, locale)}
       </span>
     </div>
   );
@@ -92,13 +91,13 @@ export function WorksCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <span className="text-meta text-ink-3">
-          {t("count", { count: offer.items.length })}
-        </span>
+        <div className="flex items-baseline gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          <Count tone="plain">{offer.items.length}</Count>
+          <span className="ml-1 text-meta text-ink-3">{t("amounts")}</span>
+        </div>
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-0 pt-0">
+      <CardContent className="gap-0">
         {groups.loose.length > 0 && list(groups.loose)}
         {groups.sections.map((group) => {
           const chapters = group.chapters.filter(
@@ -147,13 +146,30 @@ function ItemRow({
   const id = useId();
   const materialsId = `${id}-materials`;
   const switchId = `${id}-include`;
+  const dimmed = !included && "opacity-60";
   return (
-    <li className="grid gap-2 border-b border-border py-4 last:border-b-0">
-      <div className="grid grid-cols-[1.75rem_minmax(0,1fr)_auto] items-start gap-x-3">
-        <span className="pt-px text-meta tabular-nums text-ink-3">{index}</span>
-        <div className={cn("grid min-w-0 gap-1", !included && "opacity-60")}>
-          <span className="text-body font-medium text-ink">{item.title}</span>
-          <span className="text-meta tabular-nums text-ink-3">
+    // From a tablet up its rule runs as far as the bands do: one edge for both.
+    <li className="grid gap-2 border-b border-border py-4 last:border-b-0 sm:-mx-[var(--card-pad)] sm:px-[var(--card-pad)]">
+      <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-start gap-x-2 max-sm:items-baseline max-sm:gap-y-1 sm:grid-cols-[1.75rem_minmax(0,1fr)_auto] sm:gap-x-3">
+        <span className="w-4 text-right text-body tabular-nums text-ink-3">
+          {index}
+        </span>
+        {/* On a phone the title has the whole width, and the amount sits on the quantity's line. */}
+        <div className="grid min-w-0 gap-1 max-sm:contents">
+          <span
+            className={cn(
+              "text-body text-ink max-sm:col-span-2 max-sm:col-start-2",
+              dimmed,
+            )}
+          >
+            {keepUnits(item.title)}
+          </span>
+          <span
+            className={cn(
+              "text-meta tabular-nums text-ink-3 max-sm:col-start-2",
+              dimmed,
+            )}
+          >
             {t("line", {
               quantity: formatQuantity(item.quantity, locale),
               unit: formatUnit(item.unit, locale),
@@ -163,16 +179,19 @@ function ItemRow({
           {item.changes.map((change) => (
             <span
               key={`${change.from}:${change.to}`}
-              className="text-meta text-ink-2"
+              className={cn(
+                "text-meta text-ink-2 max-sm:col-span-2 max-sm:col-start-2",
+                dimmed,
+              )}
             >
               {t("changed", change)}
             </span>
           ))}
         </div>
-        <div className="grid justify-items-end gap-1 text-right">
+        <div className="grid justify-items-end gap-1 text-right max-sm:col-start-3 max-sm:row-start-2">
           <span
             className={cn(
-              "text-body font-medium tabular-nums text-ink",
+              "text-body tabular-nums text-ink",
               !included && "text-ink-3 line-through",
             )}
           >
@@ -184,7 +203,7 @@ function ItemRow({
         </div>
       </div>
       {(item.optional || item.materials.length > 0) && (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-[calc(1.75rem+0.75rem)]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-7 sm:pl-10">
           {item.optional && (
             <div className="flex items-center gap-2">
               <Switch
@@ -208,8 +227,15 @@ function ItemRow({
               aria-expanded={showMaterials}
               aria-controls={materialsId}
               onClick={() => setShowMaterials(!showMaterials)}
-              className="rounded-xs text-meta text-ink-2 underline underline-offset-[3px] hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex items-center gap-1.5 rounded-xs text-meta text-ink-2 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
+              <ChevronRight
+                aria-hidden
+                className={cn(
+                  "-ml-[5px] size-3.5 transition-transform",
+                  showMaterials && "rotate-90",
+                )}
+              />
               {showMaterials ? t("hideMaterials") : t("showMaterials")}
             </button>
           )}

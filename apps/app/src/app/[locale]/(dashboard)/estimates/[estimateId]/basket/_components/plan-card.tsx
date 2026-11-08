@@ -80,8 +80,11 @@ export function PlanCard({
         </CardHeader>
         <CardContent>
           <div className="grid gap-1">
-            <p className="m-0 text-kpi tabular-nums text-ink">
-              {t("total", { total: money(plan.total.total) })}
+            <p className="m-0 flex flex-wrap items-baseline gap-x-2">
+              <span className="text-lead tabular-nums text-ink">
+                {money(plan.total.total)}
+              </span>
+              <span className="text-body text-ink-2">{t("totalUnit")}</span>
             </p>
             <p className="m-0 text-meta text-ink-3">
               {t("breakdown", {
@@ -90,14 +93,19 @@ export function PlanCard({
               })}
             </p>
           </div>
-          <ul className="m-0 grid list-none gap-1.5 p-0">
+          <ul className="m-0 grid list-none p-0">
             {used.map(([store, entry]) => (
-              <li key={store} className="text-body text-ink">
-                {t("store", {
-                  store: tStores(store),
-                  count: entry.lines,
-                  total: money(entry.total),
-                })}
+              <li
+                key={store}
+                className="grid grid-cols-[minmax(0,1fr)_auto_6.5rem] items-baseline gap-x-3 border-t border-border py-1.5 text-body"
+              >
+                <span className="truncate text-ink">{tStores(store)}</span>
+                <span className="text-meta text-ink-3">
+                  {t("lines", { count: entry.lines })}
+                </span>
+                <span className="text-right tabular-nums text-ink">
+                  {t("amount", { total: money(entry.total) })}
+                </span>
               </li>
             ))}
           </ul>

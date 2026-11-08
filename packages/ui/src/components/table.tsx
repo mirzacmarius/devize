@@ -2,23 +2,48 @@ import * as React from "react";
 
 import { cn } from "../utils";
 
+export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  // On a phone the rows become stacked blocks instead of squeezed columns:
+  // each cell takes a slot of a two-column grid, `data-stack="wide"` cells take
+  // the whole row. Hide what a phone doesn't need with `max-md:hidden`.
+  stack?: boolean;
+  // Every row has a second line: one height for such lists across the app.
+  // "below-xl": only until there's room to give that line columns of its own;
+  // from there a row is one line.
+  twoLine?: boolean | "below-xl";
+  // Inside a card: it scrolls up to the card's edges, and a group row's band
+  // (`band-start`, `band-end`) can run that far.
+  bleed?: boolean;
+}
+
 // Numbers: put `text-right tabular-nums` on numeric heads and cells, two
-// decimals, dot for thousands (39.916,16). Currency goes in the head, "(lei)".
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full min-w-0 overflow-x-auto">
-    <table
-      ref={ref}
+// decimals, dot for thousands (39.916,16). A table says its currency once, on
+// its section's line ("sume în lei"); a field says it on its label.
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, stack, bleed, twoLine, ...props }, ref) => (
+    <div
       className={cn(
-        "w-full caption-bottom border-collapse text-body",
-        className,
+        "relative min-w-0 overflow-x-auto",
+        bleed ? "-mx-[var(--card-pad)] px-[var(--card-pad)]" : "w-full",
       )}
-      {...props}
-    />
-  </div>
-));
+    >
+      <table
+        ref={ref}
+        className={cn(
+          "w-full caption-bottom border-collapse text-body",
+          stack && "table-stack",
+          bleed && "table-bleed",
+          twoLine === true &&
+            "md:[&>tbody>tr:not([data-group])>td]:h-14 md:[&>tbody>tr:not([data-group])>td]:py-2 md:[&>tbody>tr:not([data-group])>td]:align-baseline",
+          twoLine === "below-xl" &&
+            "md:max-xl:[&>tbody>tr:not([data-group])>td]:h-14 md:max-xl:[&>tbody>tr:not([data-group])>td]:py-2 xl:[&>tbody>tr:not([data-group])>td]:py-[11px] md:[&>tbody>tr:not([data-group])>td]:align-baseline",
+          className,
+        )}
+        {...props}
+      />
+    </div>
+  ),
+);
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<
@@ -60,13 +85,30 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-tile data-[state=selected]:bg-tile [thead_&]:hover:bg-transparent",
+      "border-b transition-colors hover:bg-tile data-[state=selected]:bg-tile [thead_&]:border-b-rule [thead_&]:hover:bg-transparent",
       className,
     )}
     {...props}
   />
 ));
 TableRow.displayName = "TableRow";
+
+// A group's heading row, whatever it groups: the sunken band. In a `bleed` table
+// its first and last cells take `band-start` and `band-end`, and it hangs past
+// the rows, by the card's padding or `--band-hang`.
+const TableGroupRow = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => (
+  <tr
+    ref={ref}
+    data-group
+    data-band
+    className={cn("bg-sunken [&>td]:h-9 [&>td]:py-1", className)}
+    {...props}
+  />
+));
+TableGroupRow.displayName = "TableGroupRow";
 
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
@@ -75,7 +117,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "whitespace-nowrap px-3 pb-3 text-left align-bottom text-label uppercase text-ink-3 first:pl-0 last:pr-0",
+      "whitespace-nowrap px-3 pb-2.5 text-left align-bottom text-head text-ink-2 first:pl-0 last:pr-0",
       className,
     )}
     {...props}
@@ -116,6 +158,7 @@ export {
   TableCaption,
   TableCell,
   TableFooter,
+  TableGroupRow,
   TableHead,
   TableHeader,
   TableRow,

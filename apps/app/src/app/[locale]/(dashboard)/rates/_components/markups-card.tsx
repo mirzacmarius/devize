@@ -91,7 +91,7 @@ function MarkupsForm({
             onChange={setDraft}
             disabled={!canEdit}
             idPrefix="firm-markups"
-            className="sm:grid-cols-1"
+            className="xl:grid-cols-1"
           />
           {!vatPayer && (
             <p className="m-0 text-meta text-ink-3">{t("notVatPayer")}</p>
@@ -103,7 +103,7 @@ function MarkupsForm({
           )}
         </CardContent>
         {canEdit && (
-          <CardFooter>
+          <CardFooter className="pt-5">
             <Button type="submit" variant="secondary" disabled={saving}>
               {saving && <Icons.Loader className="animate-spin" aria-hidden />}
               {tc("save")}

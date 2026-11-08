@@ -3,6 +3,7 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
+import { Card } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
@@ -28,23 +29,25 @@ export default function OnboardingFirm() {
   }
   const invited = invitations.length > 0;
   return (
-    <div className="mx-auto flex min-h-full w-full max-w-[560px] flex-col justify-center gap-8 px-4 py-24">
+    <div className="mx-auto grid w-full max-w-[560px] gap-6">
       {invited && <PendingInvitations invitations={invitations} />}
-      <div className="grid gap-2">
-        {invited ? (
-          <h2 className="m-0 text-title-card text-ink">
-            {tInvite("orCreate")}
-          </h2>
-        ) : (
-          <h1 className="m-0 text-title-page text-ink">
-            {t("onboardingTitle")}
-          </h1>
-        )}
-        <p className="m-0 text-body-lg text-ink-2">
-          {t("onboardingDescription")}
-        </p>
-      </div>
-      <FirmForm onCreated={() => router.push("/estimates")} />
+      <Card className="grid gap-6 p-6 sm:p-8">
+        <div className="grid gap-1.5">
+          {invited ? (
+            <h2 className="m-0 text-title-card text-ink">
+              {tInvite("orCreate")}
+            </h2>
+          ) : (
+            <h1 className="m-0 text-title-screen text-ink">
+              {t("onboardingTitle")}
+            </h1>
+          )}
+          <p className="m-0 text-body text-ink-2">
+            {t("onboardingDescription")}
+          </p>
+        </div>
+        <FirmForm onCreated={() => router.push("/estimates")} />
+      </Card>
     </div>
   );
 }
@@ -72,7 +75,7 @@ function PendingInvitations({ invitations }: { invitations: Invitations }) {
   return (
     <section className="grid gap-4">
       <div className="grid gap-2">
-        <h1 className="m-0 text-title-page text-ink">{t("pendingTitle")}</h1>
+        <h1 className="m-0 text-title-screen text-ink">{t("pendingTitle")}</h1>
         <p className="m-0 text-body-lg text-ink-2">{t("pendingDescription")}</p>
       </div>
       <ul className="m-0 grid list-none gap-3 p-0">

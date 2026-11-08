@@ -37,9 +37,8 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { EstimateStatusPill } from "@/components/estimate-status";
+import { Lei } from "@/components/amount";
 import { useFirm } from "@/components/firm-provider";
-import { InvoiceStatusPill } from "@/components/invoice-status";
 import { estimateCode, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ClientSheet } from "../clients/_components/client-sheet";
@@ -134,6 +133,8 @@ export function CommandMenuProvider({
         <DialogContent
           data-command-menu
           closeLabel={tc("close")}
+          // In the search row, and only where there's no Esc key to press.
+          closeClassName="right-4 top-4 md:hidden"
           onCloseAutoFocus={(event) => {
             const target = returnFocus.current;
             returnFocus.current = null;
@@ -173,6 +174,11 @@ export function CommandMenuProvider({
 
 const noSubscription = () => () => {};
 
+// A key as it's printed on the keyboard: a small cap, the same wherever a key
+// is named.
+const KEYCAP =
+  "inline-grid h-[18px] min-w-[18px] place-items-center rounded-[4px] border border-border px-1 font-sans text-[11px] leading-none text-ink-2";
+
 /** "⌘K" on a Mac, "Ctrl K" elsewhere; "Ctrl K" while rendering on the server. */
 export function useShortcutLabel() {
   const mac = useSyncExternalStore(
@@ -183,7 +189,7 @@ export function useShortcutLabel() {
   return mac ? "⌘K" : "Ctrl K";
 }
 
-/** The sidebar's search button, which looks like a field and opens the menu. */
+/** The sidebar's search: a row like its links, which opens the menu. */
 export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
   const t = useScopedI18n("commandMenu");
   const open = useOpenCommandMenu();
@@ -196,13 +202,11 @@ export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
         open();
       }}
       aria-keyshortcuts="Control+K Meta+K"
-      className="flex h-9 w-full items-center gap-2 rounded-md border border-border bg-background px-2.5 text-left text-meta text-ink-3 transition-colors hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-8 w-full items-center gap-2.5 rounded-md px-2 text-left text-body text-ink-2 transition-colors hover:bg-nav-active/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Search aria-hidden className="size-4 shrink-0" />
+      <Search aria-hidden className="mx-1.5 size-4 shrink-0" />
       <span className="min-w-0 flex-1 truncate">{t("button")}</span>
-      <kbd className="rounded border border-border bg-sunken px-1.5 font-sans text-[11px] leading-5 text-ink-3">
-        {shortcut}
-      </kbd>
+      <kbd className={cn(KEYCAP, "text-ink-3 max-md:hidden")}>{shortcut}</kbd>
     </button>
   );
 }
@@ -222,7 +226,7 @@ type Entry = {
   icon: LucideIcon;
   label: string;
   meta?: string;
-  pill?: ReactNode;
+  amount?: ReactNode;
   /** A page to open; prefetched while the entry is chosen. */
   href?: string;
   run: () => void;
@@ -371,9 +375,14 @@ function CommandSearch({
       ),
     );
 
-    const money = (value: number) => `${formatMoney(value, locale)} lei`;
+    const money = (value: number) => <Lei value={formatMoney(value, locale)} />;
     const results = found?.results;
-    const estimates: Entry[] = (results?.estimates ?? []).map((estimate) => {
+    // Before anything is typed, enough to get back to, and the rest in sight.
+    const estimates: Entry[] = (
+      found?.query
+        ? (results?.estimates ?? [])
+        : (results?.estimates ?? []).slice(0, 3)
+    ).map((estimate) => {
       const href = `/estimates/${estimate._id}`;
       return {
         id: `estimate:${estimate._id}`,
@@ -383,11 +392,10 @@ function CommandSearch({
         meta: [
           estimateCode(estimate.number, estimate.revision),
           estimate.clientName,
-          money(estimate.total),
         ]
           .filter(Boolean)
           .join(" · "),
-        pill: <EstimateStatusPill status={estimate.status} />,
+        amount: money(estimate.total),
         href,
         run: go(href),
       };
@@ -409,8 +417,8 @@ function CommandSearch({
         group: "invoices",
         icon: Icons.Invoice,
         label: t("invoice", { code: invoice.code }),
-        meta: [invoice.buyerName, money(invoice.total)].join(" · "),
-        pill: <InvoiceStatusPill status={invoice.status} />,
+        meta: invoice.buyerName,
+        amount: money(invoice.total),
         href,
         run: go(href),
       };
@@ -526,7 +534,7 @@ function CommandSearch({
 
   return (
     <div className="grid">
-      <div className="flex items-center gap-2 border-b border-border px-4">
+      <div className="flex items-center gap-3 border-b border-border px-4">
         <Search aria-hidden className="size-4 shrink-0 text-ink-3" />
         {/* The dialog focuses it as it opens, the first thing in it. */}
         <input
@@ -546,7 +554,7 @@ function CommandSearch({
           onKeyDown={onKeyDown}
           autoComplete="off"
           spellCheck={false}
-          className="h-12 min-w-0 flex-1 bg-transparent pr-8 text-body text-ink outline-none placeholder:text-ink-3"
+          className="h-12 min-w-0 flex-1 bg-transparent text-body text-ink outline-none placeholder:text-ink-3 max-md:pr-8"
         />
       </div>
       <div
@@ -555,7 +563,8 @@ function CommandSearch({
         aria-label={t("results")}
         aria-busy={!settled}
         hidden={entries.length === 0}
-        className="max-h-[min(60vh,28rem)] overflow-y-auto p-2"
+        // The usual list stops on a row's edge; a longer one fades where it's cut.
+        className="max-h-[min(60vh,416px)] overflow-y-auto p-2 pb-5 [mask-image:linear-gradient(to_top,transparent,#000_16px)]"
       >
         {groups.map(({ group, entries: inGroup }) => (
           // biome-ignore lint/a11y/useSemanticElements: a listbox groups its options with role="group"; a fieldset groups form fields
@@ -563,11 +572,11 @@ function CommandSearch({
             key={group}
             role="group"
             aria-labelledby={`${listId}-${group}`}
-            className="pb-1"
+            className="border-t border-border pb-1 first:border-t-0"
           >
             <div
               id={`${listId}-${group}`}
-              className="px-2 pb-1 pt-2 text-label uppercase text-ink-3"
+              className="px-2 pb-1 pt-2 text-caption text-ink-3"
             >
               {t(`groups.${group}`)}
             </div>
@@ -585,8 +594,8 @@ function CommandSearch({
                   onClick={entry.run}
                   onMouseMove={() => !selected && setActiveId(entry.id)}
                   className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-md px-2 py-2",
-                    selected ? "bg-sunken text-ink" : "text-ink-2",
+                    "flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5",
+                    selected ? "bg-nav-active text-ink" : "text-ink-2",
                   )}
                 >
                   <Icon aria-hidden className="size-4 shrink-0 text-ink-3" />
@@ -598,13 +607,18 @@ function CommandSearch({
                       </span>
                     )}
                   </div>
-                  {entry.pill}
-                  {selected && (
-                    <CornerDownLeft
-                      aria-hidden
-                      className="size-4 shrink-0 text-ink-3"
-                    />
+                  {entry.amount && (
+                    <span className="shrink-0 self-start text-body tabular-nums text-ink">
+                      {entry.amount}
+                    </span>
                   )}
+                  <CornerDownLeft
+                    aria-hidden
+                    className={cn(
+                      "size-4 shrink-0 text-ink-3",
+                      !selected && "invisible",
+                    )}
+                  />
                 </div>
               );
             })}
@@ -626,8 +640,23 @@ function CommandSearch({
             ? t("nothing", { text: text.trim() })
             : t("searching")}
       </p>
-      <p className="m-0 hidden border-t border-border px-4 py-2 text-meta text-ink-3 sm:block">
-        {t("hints")}
+      <p className="m-0 hidden items-center gap-4 border-t border-border px-4 py-2 text-meta text-ink-3 sm:flex">
+        {(
+          [
+            [["↑", "↓"], t("hints.choose")],
+            [["Enter"], t("hints.open")],
+            [["Esc"], t("hints.close")],
+          ] as const
+        ).map(([keys, label]) => (
+          <span key={label} className="inline-flex items-center gap-1.5">
+            {keys.map((key) => (
+              <kbd key={key} className={KEYCAP}>
+                {key}
+              </kbd>
+            ))}
+            {label}
+          </span>
+        ))}
       </p>
     </div>
   );

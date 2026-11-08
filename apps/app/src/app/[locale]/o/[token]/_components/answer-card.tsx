@@ -6,6 +6,9 @@ import { Card, CardContent } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { StatusPill } from "@devize/ui/status-pill";
 import { cn } from "@devize/ui/utils";
+import { Download } from "lucide-react";
+import { Lei } from "@/components/amount";
+import { Fact, FactList } from "@/components/fact-list";
 import { SignatureImage } from "@/components/signature/signature-image";
 import {
   formatDay,
@@ -65,12 +68,16 @@ export function ChoiceSummary({
 }
 
 /** The total the client would accept, large, and the deposit it asks for. */
-function TotalBlock({
+export function TotalBlock({
   offer,
   updating,
+  inCard = false,
 }: {
   offer: OpenOfferView;
   updating: boolean;
+  // Narrow, and the one place to say how long it's valid: a phone says that
+  // under the title.
+  inCard?: boolean;
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
@@ -84,21 +91,35 @@ function TotalBlock({
       <span
         aria-live="polite"
         className={cn(
-          "text-kpi tabular-nums text-ink transition-opacity",
+          "text-lead tabular-nums text-ink transition-opacity sm:text-hero",
           updating && "opacity-60",
         )}
       >
         {formatMoney(total, locale)}{" "}
-        <span className="text-body-lg text-ink-3">lei</span>
+        {/* In proportion to the figure, as the Deviz's own total has it. */}
+        <span className="text-meta text-ink-3 sm:text-body-lg">lei</span>
       </span>
-      {deposit !== undefined && (
-        <span className="text-meta text-ink-2">
-          {t("deposit", {
-            percent: formatPercent(deposit, locale),
-            amount: formatMoney(roundLei((total * deposit) / 100), locale),
-          })}
-        </span>
-      )}
+      <FactList className="empty:hidden">
+        {deposit !== undefined && (
+          <Fact
+            label={t("depositInCard", {
+              percent: formatPercent(deposit, locale),
+            })}
+            title={t("depositLabel", {
+              percent: formatPercent(deposit, locale),
+            })}
+          >
+            <Lei
+              value={formatMoney(roundLei((total * deposit) / 100), locale)}
+            />
+          </Fact>
+        )}
+        {inCard && offer.expiresAt !== undefined && (
+          <Fact label={t("validLabel")}>
+            {formatDay(offer.expiresAt, locale)}
+          </Fact>
+        )}
+      </FactList>
     </div>
   );
 }
@@ -126,14 +147,18 @@ export function AnswerCard({
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
-  const download = (
+  const download = (variant: "outline" | "ghost" = "outline") => (
     <Button
       type="button"
-      variant="outline"
+      variant={variant}
       disabled={downloading}
       onClick={onDownload}
     >
-      {downloading && <Icons.Loader className="animate-spin" aria-hidden />}
+      {downloading ? (
+        <Icons.Loader className="animate-spin" aria-hidden />
+      ) : (
+        <Download aria-hidden />
+      )}
       {t("decide.download")}
     </Button>
   );
@@ -141,7 +166,7 @@ export function AnswerCard({
   if (offer.state === "accepted") {
     const { accepted } = offer;
     return (
-      <Card>
+      <Card data-framed>
         <CardContent className="gap-4 pt-5">
           <div className="grid gap-2">
             <StatusPill tone="success" className="justify-self-start">
@@ -203,7 +228,7 @@ export function AnswerCard({
               )}
             </div>
           )}
-          {download}
+          {download()}
         </CardContent>
       </Card>
     );
@@ -212,10 +237,10 @@ export function AnswerCard({
   if (offer.state === "declined") {
     const { declined } = offer;
     return (
-      <Card>
+      <Card data-framed>
         <CardContent className="gap-4 pt-5">
           <div className="grid gap-2">
-            <StatusPill tone="danger" className="justify-self-start">
+            <StatusPill tone="declined" className="justify-self-start">
               {t("declined.title")}
             </StatusPill>
             {declined?.at !== undefined && (
@@ -233,16 +258,16 @@ export function AnswerCard({
               </p>
             )}
           </div>
-          {download}
+          {download()}
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card data-framed>
       <CardContent className="gap-5 pt-5">
-        <TotalBlock offer={offer} updating={updating} />
+        <TotalBlock offer={offer} updating={updating} inCard />
         <div className="grid gap-2">
           <Button
             type="button"
@@ -253,23 +278,20 @@ export function AnswerCard({
             <Icons.Check aria-hidden />
             {t("decide.accept")}
           </Button>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={offer.preview}
-              onClick={onDecline}
-            >
-              {t("decide.decline")}
-            </Button>
-            {download}
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            disabled={offer.preview}
+            onClick={onDecline}
+          >
+            {t("decide.decline")}
+          </Button>
+          {/* A step back from the answer the page is asking for. */}
+          <div className="-mx-2 flex items-center justify-center [&>button]:px-2 [&>button]:text-ink-2">
+            {download("ghost")}
           </div>
         </div>
-        {offer.expiresAt !== undefined && (
-          <p className="m-0 text-meta text-ink-3">
-            {t("validUntil", { date: formatDay(offer.expiresAt, locale) })}
-          </p>
-        )}
       </CardContent>
     </Card>
   );
@@ -282,36 +304,69 @@ export function AnswerCard({
 export function MobileAnswerBar({
   offer,
   updating,
+  showTotal,
   onAccept,
+  onDecline,
 }: {
   offer: OpenOfferView;
   updating: boolean;
+  // Once the total at the top has scrolled away.
+  showTotal: boolean;
   onAccept: () => void;
+  onDecline: () => void;
 }) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
   const { total, vat } = offer.choice.totals;
+  const deposit = offer.depositPercent;
+  const note = [
+    vat !== 0 && t("withVat"),
+    deposit !== undefined &&
+      t("depositShort", {
+        amount: formatMoney(roundLei((total * deposit) / 100), locale),
+      }),
+  ]
+    .filter(Boolean)
+    .join(" · ");
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur lg:hidden">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-        <div className="grid min-w-0">
-          <span className="text-meta text-ink-3">
-            {vat !== 0 ? t("total") : t("totalNoVat")}
-          </span>
-          <span
-            className={cn(
-              "truncate text-title-card tabular-nums text-ink transition-opacity",
-              updating && "opacity-60",
-            )}
+    <div className="foot-bar fixed inset-x-0 bottom-0 z-40 bg-panel lg:hidden">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+        {showTotal && (
+          <div className="grid min-w-0">
+            <span
+              className={cn(
+                "truncate text-title-card tabular-nums text-ink transition-opacity",
+                updating && "opacity-60",
+              )}
+            >
+              {formatMoney(total, locale)}{" "}
+              <span className="text-meta text-ink-3">lei</span>
+            </span>
+            <span className="truncate text-meta tabular-nums text-ink-3">
+              {note || t("totalNoVat")}
+            </span>
+          </div>
+        )}
+        {/* While there's room, the other answer is in reach too: a button,
+            as on a computer, beside the wider filled one. */}
+        {!showTotal && (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 shrink-0 px-4"
+            disabled={offer.preview}
+            onClick={onDecline}
           >
-            {t("totals.lei", { total: formatMoney(total, locale) })}
-          </span>
-        </div>
+            {t("decide.decline")}
+          </Button>
+        )}
         <Button
           type="button"
+          className={cn("h-11", !showTotal && "flex-1")}
           disabled={offer.preview || updating}
           onClick={onAccept}
         >
+          <Icons.Check aria-hidden />
           {t("decide.accept")}
         </Button>
       </div>

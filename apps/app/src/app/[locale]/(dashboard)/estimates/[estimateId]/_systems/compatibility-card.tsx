@@ -3,17 +3,11 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Check, CircleAlert, Plus, TriangleAlert } from "lucide-react";
 import { useState } from "react";
+import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import { formatQuantity, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -55,90 +49,90 @@ export function CompatibilityCard({
   const shownFindings = showDismissed ? findings : open;
   const shownRest = showDismissed ? rest : openRest;
 
+  const lead =
+    check === undefined || estimate.lineItems.length === 0
+      ? null
+      : errors > 0 || warnings > 0
+        ? [
+            errors > 0 ? t("errors", { count: errors }) : "",
+            warnings > 0 ? t("warnings", { count: warnings }) : "",
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        : openRest.length > 0
+          ? t("rest.lead", { count: openRest.length })
+          : t("clearLead");
+
   return (
-    <Card>
-      <CardHeader className="flex-wrap">
-        <CardTitle>{t("title")}</CardTitle>
-        {check && (errors > 0 || warnings > 0) && (
-          <span className="text-meta text-ink-3">
-            {[
-              errors > 0 ? t("errors", { count: errors }) : "",
-              warnings > 0 ? t("warnings", { count: warnings }) : "",
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </span>
-        )}
-      </CardHeader>
-      <TickRule />
-      <CardContent className="pt-3">
-        {check === undefined ? (
-          <p className="m-0 text-meta text-ink-3">{t("loading")}</p>
-        ) : estimate.lineItems.length === 0 ? (
-          <p className="m-0 text-meta text-ink-3">{t("empty")}</p>
-        ) : (
-          open.length === 0 &&
-          openRest.length === 0 && (
-            <p className="m-0 flex items-center gap-2 text-body text-ink-2">
-              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-success-soft text-success">
-                <Check className="size-3.5" aria-hidden />
-              </span>
-              {t("clear")}
-            </p>
-          )
-        )}
-        {shownFindings.length > 0 && (
+    <FoldCard
+      title={t("title")}
+      lead={lead}
+      attention={errors > 0 || warnings > 0}
+    >
+      {check === undefined ? (
+        <p className="m-0 text-meta text-ink-3">{t("loading")}</p>
+      ) : estimate.lineItems.length === 0 ? (
+        <p className="m-0 text-meta text-ink-3">{t("empty")}</p>
+      ) : (
+        open.length === 0 &&
+        openRest.length === 0 && (
+          <p className="m-0 flex items-center gap-2 text-body text-ink-2">
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-success-soft text-success">
+              <Check className="size-3.5" aria-hidden />
+            </span>
+            {t("clear")}
+          </p>
+        )
+      )}
+      {shownFindings.length > 0 && (
+        <ul className="m-0 grid list-none gap-4 p-0">
+          {shownFindings.map((finding) => (
+            <FindingRow
+              key={finding.key}
+              estimateId={estimate._id}
+              finding={finding}
+              editable={editable}
+            />
+          ))}
+        </ul>
+      )}
+      {shownRest.length > 0 && (
+        <div className="grid gap-3">
+          <h4 className="m-0 text-caption text-ink-3">{t("rest.title")}</h4>
           <ul className="m-0 grid list-none gap-4 p-0">
-            {shownFindings.map((finding) => (
-              <FindingRow
-                key={finding.key}
+            {shownRest.map((suggestion) => (
+              <RestRow
+                key={suggestion.key}
                 estimateId={estimate._id}
-                finding={finding}
+                suggestion={suggestion}
                 editable={editable}
+                onAdd={() => setAdding(suggestion)}
               />
             ))}
           </ul>
-        )}
-        {shownRest.length > 0 && (
-          <div className="grid gap-3">
-            <h4 className="m-0 text-label uppercase text-ink-3">
-              {t("rest.title")}
-            </h4>
-            <ul className="m-0 grid list-none gap-4 p-0">
-              {shownRest.map((suggestion) => (
-                <RestRow
-                  key={suggestion.key}
-                  estimateId={estimate._id}
-                  suggestion={suggestion}
-                  editable={editable}
-                  onAdd={() => setAdding(suggestion)}
-                />
-              ))}
-            </ul>
-          </div>
-        )}
-        {!editable && open.length + openRest.length > 0 && (
-          <p className="m-0 text-meta text-ink-3">{t("locked")}</p>
-        )}
-        {hidden > 0 && (
-          <Button
-            type="button"
-            variant="link"
-            className="justify-self-start text-meta"
-            onClick={() => setShowDismissed((current) => !current)}
-          >
-            {showDismissed
-              ? t("hideDismissed")
-              : t("showDismissed", { count: hidden })}
-          </Button>
-        )}
-      </CardContent>
+        </div>
+      )}
+      {!editable && open.length + openRest.length > 0 && (
+        <p className="m-0 text-meta text-ink-3">{t("locked")}</p>
+      )}
+      {hidden > 0 && (
+        <Button
+          type="button"
+          variant="link"
+          className="justify-self-start text-meta"
+          onClick={() => setShowDismissed((current) => !current)}
+        >
+          {showDismissed
+            ? t("hideDismissed")
+            : t("showDismissed", { count: hidden })}
+        </Button>
+      )}
       <RestDialog
         estimateId={estimate._id}
         suggestion={adding}
         onClose={() => setAdding(null)}
       />
-    </Card>
+    </FoldCard>
   );
 }
 
@@ -293,9 +287,7 @@ function FindingRow({
         </div>
         {editable && !finding.dismissed && finding.alternatives.length > 0 && (
           <div className="mt-2 grid w-full gap-1 rounded-md bg-sunken px-3 py-2">
-            <span className="text-label uppercase text-ink-3">
-              {t("alternatives")}
-            </span>
+            <span className="text-caption text-ink-3">{t("alternatives")}</span>
             <ul className="m-0 grid list-none gap-1 p-0">
               {finding.alternatives.map((alternative) => (
                 <li

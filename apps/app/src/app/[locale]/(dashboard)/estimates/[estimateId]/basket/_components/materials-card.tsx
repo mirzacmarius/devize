@@ -22,7 +22,7 @@ import { useRefreshedMessage } from "../../_components/estimate-actions";
 import { offerAt } from "./basket-view";
 import type { Basket, BasketMaterial, OpenBasketPanel } from "./types";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+const headClass = "pb-2 pl-3 text-right text-caption text-ink-3";
 
 /**
  * The Deviz's materials, one row each, with what every store asks for the
@@ -82,7 +82,7 @@ export function MaterialsCard({
           <table className="w-full min-w-[46rem] border-collapse text-body">
             <thead>
               <tr>
-                <th className="pb-2 text-left text-label uppercase text-ink-3">
+                <th className="pb-2 text-left text-caption text-ink-3">
                   {t("material")}
                 </th>
                 <th className={headClass}>{t("quantity")}</th>
@@ -142,7 +142,7 @@ export function MaterialsCard({
                             open={open}
                           />
                         ) : (
-                          <span className="text-ink-3">—</span>
+                          <span className="text-ink-3">–</span>
                         )}
                       </td>
                     ))}

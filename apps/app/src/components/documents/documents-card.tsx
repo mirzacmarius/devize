@@ -2,16 +2,10 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { useQuery } from "convex/react";
 import { type ReactNode, useState } from "react";
+import { FoldCard } from "@/components/fold-card";
 import { useScopedI18n } from "@/locales/client";
 import type { Estimate } from "./export-data";
 import { FormsSheet } from "./forms-sheet";
@@ -55,17 +49,37 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
-        <ul className="m-0 grid list-none p-0">
+    <FoldCard id="documents" title={t("title")}>
+      <ul className="m-0 grid list-none p-0">
+        <DocumentRow
+          icon={<Icons.Deviz aria-hidden />}
+          title={t("deviz.title")}
+          hint={t("deviz.hint")}
+        >
+          <div className="flex shrink-0 gap-2">
+            {(["pdf", "xlsx"] as const).map((format) => (
+              <Button
+                key={format}
+                type="button"
+                variant="outline"
+                size="sm"
+                aria-label={t(`deviz.download.${format}`)}
+                disabled={empty || downloading !== undefined}
+                onClick={() => downloadDeviz(format)}
+              >
+                {downloading === `DEVIZ:${format}` && (
+                  <Icons.Loader className="animate-spin" aria-hidden />
+                )}
+                {t(`deviz.formats.${format}`)}
+              </Button>
+            ))}
+          </div>
+        </DocumentRow>
+        {measured && (
           <DocumentRow
-            icon={<Icons.Deviz aria-hidden />}
-            title={t("deviz.title")}
-            hint={t("deviz.hint")}
+            icon={<Icons.Survey aria-hidden />}
+            title={t("appendix.title")}
+            hint={t("appendix.hint")}
           >
             <div className="flex shrink-0 gap-2">
               {(["pdf", "xlsx"] as const).map((format) => (
@@ -74,11 +88,11 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  aria-label={t(`deviz.download.${format}`)}
-                  disabled={empty || downloading !== undefined}
-                  onClick={() => downloadDeviz(format)}
+                  aria-label={t(`appendix.download.${format}`)}
+                  disabled={downloading !== undefined}
+                  onClick={() => downloadAppendix(format)}
                 >
-                  {downloading === `DEVIZ:${format}` && (
+                  {downloading === `AM:${format}` && (
                     <Icons.Loader className="animate-spin" aria-hidden />
                   )}
                   {t(`deviz.formats.${format}`)}
@@ -86,66 +100,40 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
               ))}
             </div>
           </DocumentRow>
-          {measured && (
-            <DocumentRow
-              icon={<Icons.Survey aria-hidden />}
-              title={t("appendix.title")}
-              hint={t("appendix.hint")}
-            >
-              <div className="flex shrink-0 gap-2">
-                {(["pdf", "xlsx"] as const).map((format) => (
-                  <Button
-                    key={format}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    aria-label={t(`appendix.download.${format}`)}
-                    disabled={downloading !== undefined}
-                    onClick={() => downloadAppendix(format)}
-                  >
-                    {downloading === `AM:${format}` && (
-                      <Icons.Loader className="animate-spin" aria-hidden />
-                    )}
-                    {t(`deviz.formats.${format}`)}
-                  </Button>
-                ))}
-              </div>
-            </DocumentRow>
-          )}
+        )}
+        <DocumentRow
+          icon={<Icons.OfficialForms aria-hidden />}
+          title={t("forms.title")}
+          hint={t("forms.hint")}
+        >
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={empty}
+            onClick={() => setFormsOpen(true)}
+          >
+            {t("forms.open")}
+          </Button>
+        </DocumentRow>
+        {tender && (
           <DocumentRow
-            icon={<Icons.OfficialForms aria-hidden />}
-            title={t("forms.title")}
-            hint={t("forms.hint")}
+            icon={<Icons.Spreadsheet aria-hidden />}
+            title={t("list.title")}
+            hint={t("list.hint")}
           >
             <Button
               type="button"
               variant="outline"
               size="sm"
-              disabled={empty}
-              onClick={() => setFormsOpen(true)}
+              onClick={() => setListOpen(true)}
             >
-              {t("forms.open")}
+              {t("list.open")}
             </Button>
           </DocumentRow>
-          {tender && (
-            <DocumentRow
-              icon={<Icons.Spreadsheet aria-hidden />}
-              title={t("list.title")}
-              hint={t("list.hint")}
-            >
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setListOpen(true)}
-              >
-                {t("list.open")}
-              </Button>
-            </DocumentRow>
-          )}
-        </ul>
-        {empty && <p className="m-0 pt-1 text-meta text-ink-3">{t("empty")}</p>}
-      </CardContent>
+        )}
+      </ul>
+      {empty && <p className="m-0 pt-1 text-meta text-ink-3">{t("empty")}</p>}
       <FormsSheet
         estimate={estimate}
         open={formsOpen}
@@ -158,7 +146,7 @@ export function DocumentsCard({ estimate }: { estimate: Estimate }) {
           onClose={() => setListOpen(false)}
         />
       )}
-    </Card>
+    </FoldCard>
   );
 }
 

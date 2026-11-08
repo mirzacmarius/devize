@@ -11,11 +11,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
-import { TickBar } from "@devize/ui/meter";
+import { MeterBar } from "@devize/ui/meter";
 import {
   Table,
   TableBody,
@@ -154,7 +153,7 @@ function StatsContent({ stats }: { stats: Stats }) {
             />
           </div>
           <MonthsCard stats={stats} />
-          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8">
             <NormsCard stats={stats} />
             <CountiesCard stats={stats} />
           </div>
@@ -178,7 +177,7 @@ function StatTile({
   return (
     <Card className="grid content-start gap-1 p-5">
       <p className="m-0 text-meta text-ink-3">{label}</p>
-      <p className="m-0 text-kpi text-ink">{value}</p>
+      <p className="m-0 text-lead text-ink">{value}</p>
       <p className="m-0 text-meta text-ink-3">{hint}</p>
     </Card>
   );
@@ -209,8 +208,7 @@ function MonthsCard({ stats }: { stats: Stats }) {
           ]}
         />
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-4 pt-4">
+      <CardContent className="gap-4">
         {view === "chart" ? (
           <>
             <SegmentedControl
@@ -288,8 +286,7 @@ function NormsCard({ stats }: { stats: Stats }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {stats.norms.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (
@@ -319,7 +316,7 @@ function NormsCard({ stats }: { stats: Stats }) {
                       href={`/catalog/${norm._id}`}
                       className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className="font-mono text-code text-ink-3">
+                      <span className="tabular-nums text-ink-3">
                         {norm.code}
                       </span>
                       <span className="text-body font-medium text-ink group-hover:underline">
@@ -342,7 +339,7 @@ function NormsCard({ stats }: { stats: Stats }) {
                   <TableCell className="hidden whitespace-nowrap text-right tabular-nums text-ink-2 md:table-cell">
                     {norm.acceptedQuantity > 0
                       ? `${formatAmount(norm.acceptedQuantity, locale)} ${formatUnit(norm.unit, locale)}`
-                      : "—"}
+                      : "–"}
                   </TableCell>
                 </TableRow>
               ))}
@@ -393,8 +390,7 @@ function CountiesCard({ stats }: { stats: Stats }) {
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <ul className="m-0 grid list-none gap-4 p-0">
           {rows.map((row) => (
             <li key={row.key} className="grid gap-1.5">
@@ -406,8 +402,7 @@ function CountiesCard({ stats }: { stats: Stats }) {
                   {formatCount(row.added, locale)}
                 </span>
               </div>
-              <TickBar
-                thin
+              <MeterBar
                 value={(row.added / max) * 100}
                 label={`${row.name}: ${tMeasures("added")} ${formatCount(row.added, locale)}`}
               />
@@ -441,8 +436,7 @@ function ProductsCard({ stats }: { stats: Stats }) {
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {stats.products.length === 0 ? (
           <p className="m-0 text-body text-ink-3">{t("empty")}</p>
         ) : (

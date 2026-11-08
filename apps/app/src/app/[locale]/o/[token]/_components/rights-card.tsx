@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Download } from "lucide-react";
 import { useState } from "react";
@@ -55,8 +49,7 @@ export function RightsCard({
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="gap-3 pt-4">
+      <CardContent className="gap-3">
         {paragraphs.map((paragraph) => (
           <p key={paragraph} className="m-0 text-body text-ink-2">
             {paragraph}

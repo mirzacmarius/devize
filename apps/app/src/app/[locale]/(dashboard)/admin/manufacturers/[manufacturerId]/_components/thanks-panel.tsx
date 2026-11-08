@@ -64,9 +64,9 @@ export function ThanksPanel({
           contacts={contacts}
         />
       ) : manufacturer.claimStatus === "claimed" ? (
-        <p className="text-sm text-primary/60">{t("claimed")}</p>
+        <p className="text-body text-ink-3">{t("claimed")}</p>
       ) : manufacturer.status === "excluded" ? (
-        <p className="text-sm text-primary/60">{t("excluded")}</p>
+        <p className="text-body text-ink-3">{t("excluded")}</p>
       ) : (
         <ThanksForm
           manufacturer={manufacturer}

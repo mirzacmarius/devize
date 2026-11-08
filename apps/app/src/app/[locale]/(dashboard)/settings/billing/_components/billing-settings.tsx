@@ -45,7 +45,8 @@ type Settings = FunctionReturnType<typeof api.invoices.settings.get>;
 type Series = Settings["series"][number];
 
 // A settings card's footer: a hint on the left, the card's action on the right.
-const footer = "justify-between gap-4 border-t bg-sunken py-3";
+const footer =
+  "sticky bottom-0 z-10 justify-between lg:bottom-2 gap-4 border-t bg-card py-3 sm:mt-5";
 
 /**
  * How the Firmă invoices: the details every invoice prints, the series its
@@ -117,7 +118,7 @@ function DetailsForm({ settings }: { settings: Settings }) {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <form onSubmit={submit} noValidate>
         <CardHeader className="grid justify-stretch gap-1">
           <CardTitle>{t("detailsTitle")}</CardTitle>
@@ -135,7 +136,6 @@ function DetailsForm({ settings }: { settings: Settings }) {
                   value={iban}
                   onChange={(event) => setIban(event.target.value)}
                   placeholder={t("ibanPlaceholder")}
-                  className="font-mono"
                   maxLength={40}
                 />
               </Field>
@@ -237,7 +237,7 @@ function DetailsForm({ settings }: { settings: Settings }) {
           {settings.canEdit ? (
             <>
               <span />
-              <Button type="submit" size="sm" disabled={saving}>
+              <Button type="submit" disabled={saving}>
                 {saving && (
                   <Icons.Loader className="animate-spin" aria-hidden />
                 )}
@@ -288,7 +288,7 @@ function SeriesCard({ settings }: { settings: Settings }) {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <CardHeader className="grid justify-stretch gap-1">
         <CardTitle>{t("seriesTitle")}</CardTitle>
         <CardDescription>{t("seriesDescription")}</CardDescription>
@@ -387,11 +387,11 @@ function SeriesCard({ settings }: { settings: Settings }) {
         )}
       </CardContent>
       {settings.canEdit && (
-        <CardFooter className={footer}>
+        <CardFooter className="border-t py-4 sm:mt-5">
           <form
             onSubmit={add}
             noValidate
-            className="grid w-full gap-3 sm:grid-cols-[160px_160px_auto] sm:items-end"
+            className="grid w-full gap-3 sm:grid-cols-[minmax(0,160px)_minmax(0,160px)_auto] sm:justify-start"
           >
             <Field label={t("code")} htmlFor="series-code" hint={t("codeHint")}>
               <Input
@@ -417,12 +417,12 @@ function SeriesCard({ settings }: { settings: Settings }) {
                 className="text-right tabular-nums"
               />
             </Field>
+            {/* In line with the fields under their labels, whatever their hints. */}
             <Button
               type="submit"
-              size="sm"
               variant="outline"
               disabled={adding || !code.trim()}
-              className="mb-6 sm:mb-0"
+              className="justify-self-start sm:mt-[26px]"
             >
               <Plus aria-hidden />
               {t("addSeries")}

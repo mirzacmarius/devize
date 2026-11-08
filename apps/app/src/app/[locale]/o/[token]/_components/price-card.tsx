@@ -3,13 +3,7 @@
 import { roundLei } from "@devize/backend/convex/estimates/recap";
 import { stageAmount } from "@devize/backend/convex/offers/payments";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useState } from "react";
 import { EurAmount } from "@/components/eur-amount";
@@ -99,8 +93,7 @@ export function PriceCard({
           {details ? t("hideDetails") : t("showDetails")}
         </Button>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <dl
           aria-busy={updating}
           className={cn(
@@ -108,10 +101,13 @@ export function PriceCard({
             updating && "opacity-60",
           )}
         >
-          {lines.map((line) => (
+          {lines.map((line, index) => (
             <div
               key={line.label}
-              className="flex items-baseline justify-between gap-4 border-b border-border py-2.5"
+              className={cn(
+                "flex items-baseline justify-between gap-4 py-2.5",
+                index > 0 && "border-t border-border",
+              )}
             >
               <dt
                 className={cn(
@@ -131,12 +127,13 @@ export function PriceCard({
               </dd>
             </div>
           ))}
-          <div className="flex items-baseline justify-between gap-4 pt-3">
+          <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-rule pt-3">
             <dt className="text-body-lg font-medium text-ink">
               {hasVat ? t("total") : t("totalNoVat")}
             </dt>
-            <dd className="m-0 text-title-card tabular-nums text-ink">
-              {t("lei", { total: formatMoney(totals.total, locale) })}
+            <dd className="m-0 text-figure tabular-nums text-ink">
+              {formatMoney(totals.total, locale)}{" "}
+              <span className="text-meta text-ink-3">lei</span>
             </dd>
           </div>
         </dl>

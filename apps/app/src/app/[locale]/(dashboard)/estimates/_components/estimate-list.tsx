@@ -2,7 +2,6 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import { Card, CardContent, CardHeader, TickRule } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
@@ -23,6 +22,8 @@ import {
   EstimateStatusPill,
 } from "@/components/estimate-status";
 import { useFirm } from "@/components/firm-provider";
+import { FootAction } from "@/components/foot-action";
+import { ListToolbar } from "@/components/list-toolbar";
 import { SearchInput } from "@/components/search-input";
 import { SegmentedControl } from "@/components/segmented-control";
 import { estimateCode, formatDay, formatMoney } from "@/lib/format";
@@ -88,17 +89,30 @@ export function EstimateList() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
+        description={
+          rows && !search && !isEmpty && listed.status === "Exhausted"
+            ? `${t("count", { count: rows.length })} · ${t("allWithVatLower")}`
+            : t("allWithVat")
+        }
         actions={
           <>
-            <Button variant="outline" onClick={() => setBrowsing(true)}>
-              <LayoutTemplate aria-hidden />
-              {tt("open")}
-            </Button>
-            <Button onClick={startBlank}>
-              <Plus aria-hidden />
-              {t("new")}
-            </Button>
+            {/* On a phone they wait beside the search: here, the one main action. */}
+            {!isEmpty && (
+              <Button
+                variant="outline"
+                className="max-sm:hidden"
+                onClick={() => setBrowsing(true)}
+              >
+                <LayoutTemplate aria-hidden />
+                {tt("open")}
+              </Button>
+            )}
+            <FootAction>
+              <Button onClick={startBlank}>
+                <Plus aria-hidden />
+                {t("new")}
+              </Button>
+            </FootAction>
           </>
         }
       />
@@ -114,10 +128,30 @@ export function EstimateList() {
           }
         />
       ) : (
-        <Card>
-          <CardHeader className="flex-wrap">
+        <section className="grid min-w-0 gap-3">
+          {/* As on every list: the search first, where the table starts,
+              then what filters it. */}
+          <ListToolbar className="sm:justify-start">
+            <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
+              <SearchInput
+                quiet
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="w-full sm:w-80"
+              />
+              <Button
+                variant="outline"
+                className="h-11 shrink-0 sm:hidden"
+                onClick={() => setBrowsing(true)}
+              >
+                {tt("open")}
+              </Button>
+            </div>
             <SegmentedControl
               label={t("filterLabel")}
+              className="max-sm:w-full max-sm:[&>button]:flex-1 max-sm:[&>button]:justify-center sm:p-0.5"
               value={filter}
               onChange={(value) => {
                 setFilter(value);
@@ -128,93 +162,102 @@ export function EstimateList() {
                 label: t(`filters.${value}`),
               }))}
             />
-            <SearchInput
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="w-full max-w-xs"
-            />
-          </CardHeader>
-          <TickRule />
-          <CardContent className="pt-4">
-            <Table>
-              <TableHeader>
+          </ListToolbar>
+          <Table stack twoLine="below-xl">
+            <TableHeader>
+              <TableRow>
+                {/* Where there's room the number has a column, under no title. */}
+                <TableHead className="hidden w-24 xl:table-cell">
+                  {t("columns.code")}
+                </TableHead>
+                <TableHead className="md:max-xl:pl-0">
+                  {t("columns.estimate")}
+                </TableHead>
+                <TableHead className="hidden md:table-cell">
+                  {t("columns.client")}
+                </TableHead>
+                <TableHead>{t("columns.status")}</TableHead>
+                <TableHead className="text-right">
+                  {t("columns.total")}
+                </TableHead>
+                <TableHead className="hidden text-right md:table-cell">
+                  {t("columns.updated")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows === undefined && (
                 <TableRow>
-                  <TableHead>{t("columns.estimate")}</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    {t("columns.client")}
-                  </TableHead>
-                  <TableHead>{t("columns.status")}</TableHead>
-                  <TableHead className="text-right">
-                    {t("columns.total")}
-                  </TableHead>
-                  <TableHead className="hidden text-right sm:table-cell">
-                    {t("columns.updated")}
-                  </TableHead>
+                  <TableCell colSpan={6} className="text-ink-3">
+                    {tc("loading")}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows === undefined && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-ink-3">
-                      {tc("loading")}
-                    </TableCell>
-                  </TableRow>
-                )}
-                {rows?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-ink-3">
-                      {search
-                        ? t("noResults", { text: search })
-                        : t("noneHere")}
-                    </TableCell>
-                  </TableRow>
-                )}
-                {rows?.map((row) => (
-                  <TableRow key={row._id}>
-                    <TableCell>
-                      <Link
-                        href={`/estimates/${row._id}`}
-                        className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      >
-                        <span className="font-mono text-code text-ink-3">
-                          {estimateCode(row.number, row.revision)}
-                        </span>
-                        <span className="text-body font-medium text-ink group-hover:underline">
-                          {row.title}
-                        </span>
-                      </Link>
-                    </TableCell>
-                    <TableCell className="hidden text-ink-2 md:table-cell">
-                      {row.clientName ?? (
-                        <span className="text-ink-3">{t("noClient")}</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <EstimateStatusPill status={row.status} />
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatMoney(row.total, locale)}
-                    </TableCell>
-                    <TableCell className="hidden text-right text-ink-3 tabular-nums sm:table-cell">
-                      {formatDay(row.updatedAt, locale)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {!search && listed.status === "CanLoadMore" && (
-              <Button
-                variant="ghost"
-                className="justify-self-center"
-                onClick={() => listed.loadMore(25)}
-              >
-                {tc("loadMore")}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+              )}
+              {rows?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-ink-3">
+                    {search ? t("noResults", { text: search }) : t("noneHere")}
+                  </TableCell>
+                </TableRow>
+              )}
+              {rows?.map((row) => (
+                <TableRow key={row._id}>
+                  <TableCell className="hidden whitespace-nowrap xl:table-cell">
+                    <span className="text-meta tabular-nums text-ink-3">
+                      {estimateCode(row.number, row.revision)}
+                    </span>
+                  </TableCell>
+                  <TableCell data-stack="wide" className="md:max-xl:pl-0">
+                    <Link
+                      href={`/estimates/${row._id}`}
+                      className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <span className="text-body font-medium text-ink group-hover:underline max-md:text-body-lg">
+                        {row.title}
+                      </span>
+                      {/* Below xl the number has no column; on a phone it's
+                          on the state's line. */}
+                      <span className="truncate text-meta tabular-nums text-ink-3 max-md:hidden xl:hidden">
+                        {estimateCode(row.number, row.revision)}
+                      </span>
+                    </Link>
+                  </TableCell>
+                  <TableCell className="hidden text-meta text-ink-2 md:table-cell">
+                    {row.clientName ?? (
+                      <span className="text-ink-3">{t("noClient")}</span>
+                    )}
+                  </TableCell>
+                  {/* On a phone a row's second line: its state, number and
+                      client, with the total at its end. */}
+                  <TableCell className="max-md:flex max-md:min-w-0 max-md:items-baseline">
+                    <EstimateStatusPill status={row.status} />
+                    {/* The client in full; the number is on the Deviz. */}
+                    <span className="min-w-0 truncate text-meta text-ink-3 md:hidden">
+                      {"\u00a0· "}
+                      {row.clientName ?? t("noClient")}
+                    </span>
+                  </TableCell>
+                  {/* On a phone the amount is the row's second anchor, after its title. */}
+                  <TableCell className="text-right text-body tabular-nums text-ink max-md:font-medium">
+                    {formatMoney(row.total, locale)}
+                  </TableCell>
+                  <TableCell className="hidden text-right text-meta text-ink-3 tabular-nums md:table-cell">
+                    {formatDay(row.updatedAt, locale)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {!search && listed.status === "CanLoadMore" && (
+            <Button
+              variant="ghost"
+              className="justify-self-center"
+              onClick={() => listed.loadMore(25)}
+            >
+              {tc("loadMore")}
+            </Button>
+          )}
+        </section>
       )}
       <TemplatesSheet
         open={browsing}

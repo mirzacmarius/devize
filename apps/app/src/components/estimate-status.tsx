@@ -7,15 +7,34 @@ import { useScopedI18n } from "@/locales/client";
 export type EstimateStatus = Doc<"estimates">["status"];
 
 const tones: Record<EstimateStatus, StatusPillProps["tone"]> = {
-  draft: "neutral",
-  sent: "neutral",
+  draft: "draft",
+  sent: "active",
   accepted: "success",
-  rejected: "danger",
+  rejected: "declined",
   archived: "neutral",
 };
 
-/** Where a Deviz stands: Ciornă, Trimis clientului, Acceptat de client… */
-export function EstimateStatusPill({ status }: { status: EstimateStatus }) {
+/**
+ * Where a Deviz stands, in one word wherever it's listed: Ciornă, Trimis,
+ * Acceptat…; `long` in its own head: Trimis clientului, Acceptat de client…
+ */
+export function EstimateStatusPill({
+  status,
+  long = false,
+}: {
+  status: EstimateStatus;
+  long?: boolean;
+}) {
   const t = useScopedI18n("estimateStatus");
-  return <StatusPill tone={tones[status]}>{t(status)}</StatusPill>;
+  const tShort = useScopedI18n("estimateStatusShort");
+  const short = tShort(status);
+  const full = t(status);
+  return (
+    <StatusPill
+      tone={tones[status]}
+      title={!long && short !== full ? full : undefined}
+    >
+      {long ? full : short}
+    </StatusPill>
+  );
 }

@@ -5,7 +5,6 @@ import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { Button } from "@devize/ui/button";
@@ -13,6 +12,7 @@ import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
+import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouteParam } from "@/components/use-route-param";
@@ -33,6 +33,7 @@ export function MaterialsPage() {
   const estimateId = useRouteParam("estimateId") as Id<"estimates">;
   const t = useScopedI18n("materials");
   const tEstimate = useScopedI18n("estimate");
+  const tBasket = useScopedI18n("prices.basket");
   const tc = useScopedI18n("common");
   const list = useQuery(api.materials.list.forEstimate, { estimateId });
   const [editing, setEditing] = useState<ListRow | null>(null);
@@ -53,21 +54,25 @@ export function MaterialsPage() {
               <Link href="/estimates">{tEstimate("breadcrumbList")}</Link>
             </BreadcrumbLink>
             <BreadcrumbSeparator />
-            <BreadcrumbLink asChild>
-              <Link href={`/estimates/${estimate._id}`}>{code}</Link>
+            <BreadcrumbLink asChild className="min-w-0">
+              <Link href={`/estimates/${estimate._id}`}>
+                <span className="truncate">
+                  {code} · {estimate.title}
+                </span>
+              </Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("breadcrumb")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description", { code, title: estimate.title })}
         actions={
-          <Button variant="outline" asChild>
-            <Link href={`/estimates/${estimate._id}`}>
-              {t("backToEstimate")}
-            </Link>
-          </Button>
+          list.rows.length > 0 && (
+            <Button variant="outline" asChild>
+              <Link href={`/estimates/${estimate._id}/basket`}>
+                <ShoppingCart aria-hidden />
+                {tBasket("open")}
+              </Link>
+            </Button>
+          )
         }
       />
       {list.rows.length === 0 ? (
@@ -77,15 +82,12 @@ export function MaterialsPage() {
           description={t("emptyDescription")}
         />
       ) : (
-        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
+        <div className="grid min-w-0 gap-6">
+          <SummaryCard list={list} />
           <ShoppingListCard list={list} onEdit={setEditing} />
-          {/* The totals first on a phone, beside the list on a wide screen. */}
-          <div className="order-first grid min-w-0 gap-6 xl:order-none">
-            <SummaryCard list={list} />
-            {list.layouts.length > 0 && (
-              <LayoutCard layouts={list.layouts} locked={estimate.locked} />
-            )}
-          </div>
+          {list.layouts.length > 0 && (
+            <LayoutCard layouts={list.layouts} locked={estimate.locked} />
+          )}
         </div>
       )}
       <PackageDialog

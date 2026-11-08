@@ -3,19 +3,13 @@
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Finding } from "@devize/backend/convex/invoices/rules";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardHeader,
-  CardTitle,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { toast } from "@devize/ui/sonner";
 import { cn } from "@devize/ui/utils";
 import { useAction } from "convex/react";
-import { Check, CircleAlert, TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { Check, CircleAlert, ShieldCheck, TriangleAlert } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import { useRun } from "@/components/use-run";
 import { formatDay, formatTime } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -32,38 +26,38 @@ export function ChecksCard({ invoice }: { invoice: Invoice }) {
   const errors = invoice.findings.filter((f) => f.severity === "error").length;
   const warnings = invoice.findings.length - errors;
   return (
-    <CardFrame>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <span className="text-meta text-ink-3 tabular-nums">
-            {[
-              errors > 0 && t("errors", { count: errors }),
-              warnings > 0 && t("warnings", { count: warnings }),
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </span>
-        </CardHeader>
-        <CardContent>
-          {invoice.findings.length === 0 ? (
-            <FindingRow severity="ok" text={t("ok")} />
-          ) : (
-            <ul className="m-0 grid list-none gap-3 p-0">
-              {invoice.findings.map((finding) => (
-                <li key={`${finding.id}-${finding.line ?? ""}`}>
-                  <FindingRow
-                    severity={finding.severity}
-                    text={findingText(finding)}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <span className="text-meta text-ink-3 tabular-nums">
+          {[
+            errors > 0 && t("errors", { count: errors }),
+            warnings > 0 && t("warnings", { count: warnings }),
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        </span>
+      </CardHeader>
+      <CardContent>
+        {invoice.findings.length === 0 ? (
+          <FindingRow severity="ok" text={t("ok")} />
+        ) : (
+          <ul className="m-0 grid list-none gap-3 p-0">
+            {invoice.findings.map((finding) => (
+              <li key={`${finding.id}-${finding.line ?? ""}`}>
+                <FindingRow
+                  severity={finding.severity}
+                  text={findingText(finding)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="border-t border-border pt-3">
           <ValidateXml invoice={invoice} />
-        </CardContent>
-      </Card>
-    </CardFrame>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -113,7 +107,14 @@ export function useFindingText() {
 }
 
 /** Asks ANAF's public validator about the invoice's XML, and shows its last answer. */
-export function ValidateXml({ invoice }: { invoice: Invoice }) {
+export function ValidateXml({
+  invoice,
+  children,
+}: {
+  invoice: Invoice;
+  // What goes before the check on its row, for the place it sits in.
+  children?: ReactNode;
+}) {
   const t = useScopedI18n("invoices.checks");
   const locale = useCurrentLocale();
   const run = useRun();
@@ -144,7 +145,24 @@ export function ValidateXml({ invoice }: { invoice: Invoice }) {
   const shown = messages ?? last?.messages ?? [];
 
   return (
-    <div className="grid gap-2 border-t border-border pt-3">
+    <div className="grid gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {children}
+        <Button
+          type="button"
+          variant={children ? "ghost" : "outline"}
+          size="sm"
+          disabled={busy}
+          onClick={check}
+        >
+          {busy ? (
+            <Icons.Loader className="animate-spin" aria-hidden />
+          ) : (
+            <ShieldCheck aria-hidden />
+          )}
+          {t("validate")}
+        </Button>
+      </div>
       {last && (
         <p
           className={cn(
@@ -166,17 +184,6 @@ export function ValidateXml({ invoice }: { invoice: Invoice }) {
           ))}
         </ul>
       )}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="justify-self-start"
-        disabled={busy}
-        onClick={check}
-      >
-        {busy && <Icons.Loader className="animate-spin" aria-hidden />}
-        {t("validate")}
-      </Button>
     </div>
   );
 }

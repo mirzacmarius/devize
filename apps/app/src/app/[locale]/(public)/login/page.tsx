@@ -1,7 +1,10 @@
+import { Card } from "@devize/ui/card";
+import { cn } from "@devize/ui/utils";
 import type { Metadata } from "next";
 import { Wordmark } from "@/components/wordmark";
 import { env } from "@/env.mjs";
-import { getScopedI18n } from "@/locales/server";
+import { formatMoney } from "@/lib/format";
+import { getCurrentLocale, getScopedI18n } from "@/locales/server";
 import { legalLinks } from "../_components/legal-page";
 import { SignInOptions } from "./sign-in-options";
 
@@ -13,24 +16,86 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   const t = await getScopedI18n("login");
   const links = await legalLinks(
-    "underline underline-offset-2 hover:text-ink-2",
+    "underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current",
   );
   // Google sends people back to one fixed address, so on preview deployments,
   // each with its own address and backend, only the emailed code works.
   const withGoogle = env.VERCEL_ENV !== "preview";
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center px-6 py-12">
-      <div className="flex w-full max-w-sm flex-col items-center gap-6 text-center">
-        <Wordmark className="text-3xl" />
-        <div className="flex flex-col gap-2">
-          <h1 className="m-0 text-title-card text-ink">{t("title")}</h1>
-          <p className="m-0 text-body text-ink-2">{t("description")}</p>
+    // Both halves share the page's rows: the form stands level with the headline
+    // and the sample, in the middle of its panel.
+    <div className="grid min-h-screen w-full bg-shell xl:grid-cols-2 xl:grid-rows-[1fr_auto_1fr] xl:gap-y-8">
+      <aside className="hidden min-w-0 justify-items-center px-12 py-10 xl:row-span-3 xl:grid xl:grid-rows-subgrid">
+        <Wordmark className="w-full max-w-[520px] self-start text-xl" />
+        <div className="grid w-full max-w-[520px] gap-8">
+          <p className="m-0 text-display text-ink [text-wrap:balance]">
+            {t("brand.headline")}
+          </p>
+          <hr aria-hidden className="tick-rule m-0 border-0" />
+          <SampleEstimate />
         </div>
-        <SignInOptions withGoogle={withGoogle} />
-        <p className="m-0 text-meta text-ink-3">
-          {t("legal", { terms: links.terms, privacy: links.privacy })}
-        </p>
-      </div>
+      </aside>
+      <main className="flex min-w-0 flex-col items-center justify-center bg-panel px-4 py-12 xl:row-span-3 xl:py-10 xl:m-2 xl:ml-0 xl:grid xl:grid-rows-subgrid xl:justify-normal xl:justify-items-center xl:rounded-2xl xl:shadow-panel">
+        <div className="grid w-full max-w-[400px] gap-6 xl:row-start-2 xl:self-center">
+          <Wordmark className="text-xl xl:hidden" />
+          {/* A screen's title: the headline is the page's one display line. */}
+          <div className="grid gap-1.5">
+            <h1 className="m-0 text-title-screen text-ink">{t("heading")}</h1>
+            <p className="m-0 text-body text-ink-2">{t("description")}</p>
+          </div>
+          <SignInOptions withGoogle={withGoogle} />
+          {/* Right under the buttons it's about. */}
+          <p className="m-0 mt-2 text-meta text-ink-3">
+            {t("legal", { terms: links.terms, privacy: links.privacy })}
+          </p>
+        </div>
+      </main>
     </div>
+  );
+}
+
+/** What the product makes, shown as the app's own recap: rows that add up. */
+async function SampleEstimate() {
+  const t = await getScopedI18n("login.sample");
+  const locale = await getCurrentLocale();
+  const rows = [
+    { label: t("materials"), value: 21480.3 },
+    { label: t("labour"), value: 9204.26 },
+    { label: t("equipment"), value: 2304 },
+    { label: t("subtotal"), value: 32988.56, sum: true, rule: true },
+    { label: t("vat"), value: 6927.6, sum: true },
+  ];
+  return (
+    // On the app's paper, as its cards are, not on white.
+    <Card aria-hidden className="grid gap-5 bg-panel p-5">
+      <div className="grid gap-0.5">
+        <span className="text-title-card text-ink">{t("title")}</span>
+        <span className="text-meta text-ink-3">{t("meta")}</span>
+      </div>
+      <dl className="m-0 grid text-body">
+        {rows.map((row) => (
+          <div
+            key={row.label}
+            className={cn(
+              "flex justify-between gap-4 py-1.5",
+              row.rule && "border-t border-border",
+            )}
+          >
+            <dt className={row.sum ? "text-ink" : "text-ink-2"}>{row.label}</dt>
+            <dd className="m-0 tabular-nums text-ink">
+              {formatMoney(row.value, locale)}
+            </dd>
+          </div>
+        ))}
+        {/* The accountant's double rule, under what everything adds to. */}
+        <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-rule pt-2 font-medium text-ink">
+          <dt>{t("total")}</dt>
+          {/* In lei, as the card's line says, so its digits end with theirs. */}
+          <dd className="m-0 text-figure tabular-nums">
+            {formatMoney(39916.16, locale)}
+          </dd>
+        </div>
+      </dl>
+    </Card>
   );
 }

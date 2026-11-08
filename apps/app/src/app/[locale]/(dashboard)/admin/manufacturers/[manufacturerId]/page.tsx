@@ -40,10 +40,10 @@ export default function ManufacturerPage() {
   const { run, error, pending } = useRun();
 
   if (data === undefined) {
-    return <Loader2 className="h-5 w-5 animate-spin text-primary/40" />;
+    return <Loader2 className="h-5 w-5 animate-spin text-ink-3" />;
   }
   if (data === null) {
-    return <p className="text-sm text-primary/60">{t("notFound")}</p>;
+    return <p className="text-body text-ink-3">{t("notFound")}</p>;
   }
 
   const { manufacturer } = data;
@@ -66,7 +66,7 @@ export default function ManufacturerPage() {
     <div className="flex w-full flex-col gap-6">
       <Link
         href="/admin/manufacturers"
-        className="flex w-fit items-center gap-1 text-sm text-primary/60 hover:text-primary"
+        className="flex w-fit items-center gap-1 text-body text-ink-3 hover:text-ink"
       >
         <ArrowLeft className="h-4 w-4" />
         {t("back")}
@@ -74,10 +74,8 @@ export default function ManufacturerPage() {
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-medium text-primary/80">
-            {manufacturer.name}
-          </h1>
-          <div className="flex flex-wrap items-center gap-2 text-sm text-primary/60">
+          <h2 className="m-0 text-figure text-ink">{manufacturer.name}</h2>
+          <div className="flex flex-wrap items-center gap-2 text-body text-ink-3">
             <Pill tone={manufacturerTone[manufacturer.status]}>
               {tAdmin(`status.manufacturer.${manufacturer.status}`)}
             </Pill>

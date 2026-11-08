@@ -9,7 +9,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -24,7 +23,9 @@ import { toast } from "@devize/ui/sonner";
 import { Switch } from "@devize/ui/switch";
 import { useAction, useMutation } from "convex/react";
 import { type FormEvent, type ReactNode, useState } from "react";
+import { FactRows } from "@/components/fact-list";
 import { Field } from "@/components/field";
+import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import { counties } from "@/lib/counties";
 import { isValidCui } from "@/lib/validation";
@@ -76,34 +77,9 @@ function BuyerDetails({ buyer }: { buyer: Buyer }) {
     { label: t("phone"), value: buyer.phone },
   ];
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
-        <p className="m-0 text-body font-medium text-ink">
-          {buyer.name || (
-            <span className="font-normal text-ink-3">{tc("notSet")}</span>
-          )}
-        </p>
-        <dl className="m-0 grid gap-3">
-          {rows.map((row) => (
-            <div
-              key={row.label}
-              className="flex min-w-0 items-baseline justify-between gap-4"
-            >
-              <dt className="shrink-0 text-body text-ink-3">{row.label}</dt>
-              <dd className="m-0 min-w-0 text-right text-body text-ink [overflow-wrap:anywhere]">
-                {row.value || (
-                  <span className="text-ink-3">{tc("notSet")}</span>
-                )}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </CardContent>
-    </Card>
+    <FoldCard title={t("title")} lead={buyer.name || tc("notSet")}>
+      <FactRows rows={rows} />
+    </FoldCard>
   );
 }
 
@@ -237,8 +213,7 @@ function BuyerForm({ invoice }: { invoice: Invoice }) {
           <CardTitle>{t("title")}</CardTitle>
           <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
-        <TickRule />
-        <CardContent className="pt-4">
+        <CardContent>
           <fieldset
             disabled={busy !== null}
             className="m-0 grid gap-4 border-0 p-0"
@@ -280,7 +255,6 @@ function BuyerForm({ invoice }: { invoice: Invoice }) {
                   value={form.cui}
                   onChange={(event) => set("cui", event.target.value)}
                   inputMode="numeric"
-                  className="font-mono"
                   maxLength={20}
                   aria-invalid={errors.cui !== undefined}
                 />
@@ -298,7 +272,6 @@ function BuyerForm({ invoice }: { invoice: Invoice }) {
                     onChange={(event) =>
                       set("tradeRegister", event.target.value)
                     }
-                    className="font-mono"
                     maxLength={50}
                   />
                 </Field>

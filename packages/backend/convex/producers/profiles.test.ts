@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { api, internal } from "../_generated/api";
 import { firmOwner, setup, signIn, tilingResources } from "../test.helper";
-import { claimedProducer, publishedNorm } from "./test.helper";
+import { claimedProducer, publishedNorm, visibleProducer } from "./test.helper";
 
 const details = {
   about: "  Sisteme de termoizolație pentru fațade.  ",
@@ -206,5 +206,33 @@ describe("searching the catalog", () => {
     });
     expect(found.map((norm) => norm._id)).toEqual([confirmed, normId]);
     expect(found.map((norm) => norm.confirmed)).toEqual([true, false]);
+  });
+});
+
+describe("the list of producers", () => {
+  test("says what each one's norms are for, the most common first", async () => {
+    const t = setup();
+    const { admin, manufacturerId, normId } = await visibleProducer(t);
+    const categorized = async (code: string, category: string) => {
+      const id = await admin.as.mutation(api.catalog.norms.create, {
+        source: "manufacturer",
+        manufacturerId,
+        code,
+        title: `Normă ${code}`,
+        category,
+        unit: "mp",
+        resources: tilingResources,
+      });
+      await admin.as.mutation(api.catalog.norms.publish, { normId: id });
+    };
+    await categorized("TT-02", "Tencuieli");
+    await categorized("TT-03", "Termosisteme");
+    await categorized("TT-04", "Termosisteme");
+    expect(normId).toBeDefined();
+
+    const mihai = await firmOwner(t, "Mihai");
+    const [producer] = await mihai.as.query(api.producers.profiles.list);
+    expect(producer?.categories).toEqual(["Termosisteme", "Tencuieli"]);
+    expect(producer?.normCount).toBe(4);
   });
 });

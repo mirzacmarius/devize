@@ -1,13 +1,7 @@
 "use client";
 
 import { baseCategoryByName } from "@devize/backend/convex/catalog/baseCategories";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useNormSource } from "@/components/norm-source";
@@ -41,7 +35,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
     norm.visibility === "public" ? (
       <Link
         href={`/producers/${norm.manufacturerId}`}
-        className="rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {normSource(norm)}
       </Link>
@@ -54,7 +48,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
   const category = baseCategory ? (
     <Link
       href={`/catalog?category=${baseCategory.key}`}
-      className="rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {baseCategory.name}
     </Link>
@@ -83,7 +77,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
             value: (
               <Link
                 href={`/catalog/${norm.copiedFrom._id}`}
-                className="rounded-xs font-mono text-code underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-xs tabular-nums underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {norm.copiedFrom.code}
               </Link>
@@ -98,8 +92,7 @@ export function AboutCard({ norm }: { norm: Norm }) {
       <CardHeader>
         <CardTitle>{t("about.title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <dl className="m-0 grid gap-3">
           {rows.map((row) => (
             <div

@@ -9,20 +9,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@devize/ui/card";
+import { StatusPill } from "@devize/ui/status-pill";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { Pencil } from "lucide-react";
+import { Nil } from "@/components/nil";
 import {
   formatCount,
   formatInputNumber,
   formatMoney,
   formatPercent,
-  formatQuantity,
+  formatQuantityRounded,
   formatUnit,
+  keepUnits,
 } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { ListRow, ShoppingList } from "./types";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+// Over the number, not over the unit in its own slot after it.
+const UNIT_SLOT = "ml-2 inline-block w-7 text-left text-ink-3";
+// A count in a slot of its own, right-aligned under the head, and what it counts
+// after it as a unit is: "24 × pachet de 2,22 mp", "5 buc".
+const PACKAGE_LINE =
+  "grid grid-cols-[2rem_auto] justify-start gap-x-2 md:grid-cols-[3.5rem_auto] [&>:first-child]:text-right";
+// What's needed and what's left have columns from a tablet up, and a line under
+// the material on a phone.
+const ROOMY_HEAD = "hidden pr-[48px] text-right md:table-cell";
+const ROOMY_NUMBER =
+  "hidden whitespace-nowrap text-right align-top tabular-nums md:table-cell";
 
 /**
  * The Lista de cumpărături: each material of the whole Deviz, in the whole
@@ -41,30 +62,38 @@ export function ShoppingListCard({
   return (
     <Card>
       <CardHeader className="grid justify-items-start gap-1">
-        <CardTitle>{t("title")}</CardTitle>
+        <div className="flex items-baseline gap-2">
+          <CardTitle>{t("title")}</CardTitle>
+          <span className="ml-1 text-meta text-ink-3">{t("inLei")}</span>
+        </div>
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[44rem] border-collapse text-body">
-            <thead>
-              <tr>
-                <th className="pb-2 text-left text-label uppercase text-ink-3">
-                  {t("material")}
-                </th>
-                <th className={headClass}>{t("need")}</th>
-                <th className={headClass}>{t("buy")}</th>
-                <th className={headClass}>{t("leftover")}</th>
-                <th className={headClass}>{t("cost")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.rows.map((row) => (
+        <Table stack twoLine>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("material")}</TableHead>
+              <TableHead className={ROOMY_HEAD}>{t("need")}</TableHead>
+              {/* Over the counts' edge, as the others are over their figures. */}
+              <TableHead>
+                <span className="inline-block w-14 text-right">{t("buy")}</span>
+              </TableHead>
+              <TableHead className={ROOMY_HEAD}>{t("leftover")}</TableHead>
+              <TableHead className="hidden text-right xl:table-cell">
+                {t("leftoverValue")}
+              </TableHead>
+              <TableHead className="text-right">{t("cost")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {/* Biggest first, by what's actually paid for the packages. */}
+            {[...list.rows]
+              .sort((a, b) => b.boughtCost - a.boughtCost)
+              .map((row) => (
                 <MaterialRow key={row.key} row={row} onEdit={onEdit} />
               ))}
-            </tbody>
-          </table>
-        </div>
+          </TableBody>
+        </Table>
         {list.omitted > 0 && (
           <p className="m-0 text-meta text-ink-3">
             {t("omitted", { count: list.omitted })}
@@ -89,34 +118,39 @@ function MaterialRow({
   const unit = formatUnit(row.unit, locale);
   const pkg = row.package;
   const source = !pkg
-    ? tSources("none")
+    ? null
     : pkg.source === "store"
-      ? tSources("store", {
-          store: pkg.store ? tStores(pkg.store as Store) : "",
-        })
+      ? pkg.store
+        ? tStores(pkg.store as Store)
+        : tSources("storeUnknown")
       : tSources(pkg.source);
   const leftover = row.purchase?.leftover ?? 0;
+  // Half or more of what's paid for is left over: worth a second look.
+  const costly = row.leftoverCost > 0 && row.leftoverCost * 2 >= row.boughtCost;
 
   return (
-    <tr className="border-t border-border">
-      <td className="py-2 align-top">
-        <div className="grid justify-items-start">
-          <span className="text-ink">{row.name}</span>
-          <span className="flex items-center gap-1 text-meta">
-            <span
-              className={cn(
-                pkg?.source === "typical" ? "text-warning" : "text-ink-3",
-              )}
-              title={pkg?.label}
-            >
-              {source}
-            </span>
+    <TableRow className="group/row">
+      <TableCell data-stack="wide" className="align-top">
+        <div className="grid justify-items-start gap-0.5">
+          <span className="text-ink">{keepUnits(row.name)}</span>
+          <span className="flex min-h-[18px] items-center gap-1 text-meta">
+            {/* A package nobody has confirmed is one to check. */}
+            {pkg?.source === "typical" ? (
+              <StatusPill tone="warning" title={pkg.label}>
+                {source}
+              </StatusPill>
+            ) : (
+              <span className="text-ink-3" title={pkg?.label}>
+                {source ?? tSources("none")}
+              </span>
+            )}
             {pkg?.source !== "counted" && (
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="size-6 text-ink-3 [&_svg]:size-3.5"
+                // With a pointer it shows on the row it belongs to.
+                className="-my-1.5 size-7 text-ink-3 focus-visible:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0 [&_svg]:size-3.5"
                 aria-label={t("edit", { name: row.name })}
                 onClick={() => onEdit(row)}
               >
@@ -125,54 +159,76 @@ function MaterialRow({
             )}
           </span>
           {row.pooled.packages > 0 && (
-            <span className="text-meta text-success">
+            <span className="text-meta text-ink-3">
               {t("pooled", { count: row.pooled.packages })}
             </span>
           )}
+          <span className="text-meta tabular-nums text-ink-3 md:hidden">
+            {t("need")} {formatQuantityRounded(row.need, locale)} {unit}
+            {row.purchase &&
+              leftover > 0 &&
+              ` · ${t("leftover")} ${formatQuantityRounded(leftover, locale)} ${unit}`}
+          </span>
         </div>
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-        {formatQuantity(row.need, locale)}{" "}
-        <span className="text-ink-3">{unit}</span>
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
+      </TableCell>
+      <TableCell className={ROOMY_NUMBER}>
+        {formatQuantityRounded(row.need, locale)}
+        <span className={UNIT_SLOT}>{unit}</span>
+      </TableCell>
+      <TableCell className="whitespace-nowrap pl-8 align-top tabular-nums max-md:self-start max-md:whitespace-normal md:pl-3">
         <Packages row={row} />
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
+      </TableCell>
+      <TableCell
+        className={ROOMY_NUMBER}
+        title={
+          row.purchase && leftover > 0 && pkg?.source !== "counted"
+            ? t("share", {
+                percent: formatPercent(
+                  Math.round(row.purchase.leftoverShare * 100),
+                  locale,
+                ),
+              })
+            : undefined
+        }
+      >
         {row.purchase && leftover > 0 ? (
-          <div className="grid justify-items-end">
-            <span>
-              {formatQuantity(leftover, locale)}{" "}
-              <span className="text-ink-3">{unit}</span>
-            </span>
-            {pkg?.source !== "counted" && (
-              <span className="text-meta text-ink-3">
-                {t("share", {
-                  percent: formatPercent(
-                    Math.round(row.purchase.leftoverShare * 100),
-                    locale,
-                  ),
-                })}
-              </span>
-            )}
-          </div>
+          formatQuantityRounded(leftover, locale)
         ) : (
-          <span className="text-ink-3">—</span>
+          <Nil />
         )}
-      </td>
-      <td className="whitespace-nowrap py-2 pl-3 text-right align-top tabular-nums">
-        <div className="grid justify-items-end">
-          <span>{formatMoney(row.boughtCost, locale)}</span>
+        <span className={UNIT_SLOT}>
+          {row.purchase && leftover > 0 ? unit : null}
+        </span>
+      </TableCell>
+      <TableCell
+        className={cn(
+          "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell",
+          costly && "text-warning",
+        )}
+      >
+        {row.leftoverCost > 0 ? formatMoney(row.leftoverCost, locale) : <Nil />}
+      </TableCell>
+      <TableCell className="whitespace-nowrap text-right align-top tabular-nums max-md:self-start">
+        <div className="grid justify-items-end gap-0.5">
+          <span className="text-ink">
+            {formatMoney(row.boughtCost, locale)}
+          </span>
+          {/* Where there's room it has a column. */}
           {row.leftoverCost > 0 && (
-            <span className="text-meta text-ink-3">
+            <span
+              className={cn(
+                "text-meta text-ink-3 xl:hidden",
+                costly && "text-warning",
+              )}
+            >
               {t("leftoverCost", {
                 cost: formatMoney(row.leftoverCost, locale),
               })}
             </span>
           )}
         </div>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -184,26 +240,35 @@ function Packages({ row }: { row: ListRow }) {
   const unit = formatUnit(row.unit, locale);
   const { purchase } = row;
   if (!purchase || !row.package) {
-    return <span className="text-ink-3">{t("bulk")}</span>;
+    // Nothing to count: it starts where what's counted does, past the slot.
+    return <span className="block pl-10 text-ink-3 md:pl-16">{t("bulk")}</span>;
   }
-  if (row.package.source === "counted") {
+  // One piece at a time needs no package: "5 buc", not "5 × bucată de 1 buc".
+  if (
+    row.package.source === "counted" ||
+    (row.package.kind === "piece" &&
+      purchase.counts.every((entry) => entry.size === 1))
+  ) {
     return (
-      <span>
-        {t("pieces", { count: formatCount(purchase.packages, locale), unit })}
+      <span className={PACKAGE_LINE}>
+        <span>{formatCount(purchase.packages, locale)}</span>
+        <span className="text-ink-3">{unit}</span>
       </span>
     );
   }
   const kind = tKinds(row.package.kind);
   return (
-    <div className="grid justify-items-end">
+    <div className="grid">
       {purchase.counts.map((entry) => (
-        <span key={entry.size}>
-          {t("packageOf", {
-            count: formatCount(entry.count, locale),
-            kind,
-            size: formatInputNumber(entry.size, locale),
-            unit,
-          })}
+        <span key={entry.size} className={PACKAGE_LINE}>
+          <span>{formatCount(entry.count, locale)}</span>
+          <span className="text-ink-3">
+            {t("packageOf", {
+              kind,
+              size: formatInputNumber(entry.size, locale),
+              unit,
+            })}
+          </span>
         </span>
       ))}
     </div>

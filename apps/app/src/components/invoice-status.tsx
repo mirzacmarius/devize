@@ -8,10 +8,10 @@ export type InvoiceStatus = Doc<"invoices">["status"];
 export type EfacturaStatus = Doc<"invoices">["efactura"]["status"];
 
 const statusTones: Record<InvoiceStatus, StatusPillProps["tone"]> = {
-  draft: "neutral",
-  issued: "neutral",
+  draft: "draft",
+  issued: "active",
   paid: "success",
-  cancelled: "danger",
+  cancelled: "declined",
 };
 
 /**
@@ -35,25 +35,56 @@ export function InvoiceStatusPill({
 }
 
 const efacturaTones: Record<EfacturaStatus, StatusPillProps["tone"]> = {
-  not_sent: "neutral",
-  uploading: "neutral",
-  processing: "neutral",
+  not_sent: "draft",
+  uploading: "active",
+  processing: "active",
   accepted: "success",
   rejected: "danger",
   failed: "danger",
 };
 
-/** Where an invoice stands with ANAF; one still unsent after its deadline is flagged. */
+/**
+ * Where an invoice stands with ANAF; one still unsent after its deadline is
+ * flagged. Given the deadline, an unsent one says it instead of "not sent".
+ */
 export function EfacturaPill({
   status,
   late = false,
+  deadline,
+  named = false,
 }: {
   status: EfacturaStatus;
   late?: boolean;
+  deadline?: string;
+  // Away from a column that says it's about ANAF.
+  named?: boolean;
 }) {
   const t = useScopedI18n("invoices");
   if (status === "not_sent" && late) {
-    return <StatusPill tone="warning">{t("efacturaLate")}</StatusPill>;
+    const pill = (
+      <StatusPill tone="danger">
+        {named ? t("efacturaLateNamed") : t("efacturaLate")}
+      </StatusPill>
+    );
+    // The day after the word, on its line, a step back: the row stays one line.
+    return deadline ? (
+      <span className="inline-flex items-baseline whitespace-nowrap">
+        {pill}
+        <span className="text-meta tabular-nums text-ink-3">
+          {"\u00a0· "}
+          {deadline}
+        </span>
+      </span>
+    ) : (
+      pill
+    );
+  }
+  if (status === "not_sent" && deadline) {
+    return (
+      <StatusPill tone="draft">
+        {t("efacturaDue", { date: deadline })}
+      </StatusPill>
+    );
   }
   return (
     <StatusPill tone={efacturaTones[status]}>

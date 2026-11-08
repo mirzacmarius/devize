@@ -22,6 +22,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
 import { useRun } from "@/components/use-run";
+import { WarningNote } from "@/components/warning-note";
 import {
   formatInputNumber,
   formatMoney,
@@ -186,7 +187,7 @@ function ReadForm({
             href={read.listing.url}
             target="_blank"
             rel="noreferrer"
-            className="text-body font-medium text-ink underline-offset-[3px] hover:underline"
+            className="text-body font-medium text-ink underline-offset-[4px] hover:underline"
           >
             {read.listing.title}
           </a>
@@ -250,7 +251,7 @@ function ReadForm({
         href={searchUrl(store, material.name)}
         target="_blank"
         rel="noreferrer"
-        className="inline-flex w-fit items-center gap-1 text-meta text-ink-2 underline-offset-[3px] hover:underline"
+        className="inline-flex w-fit items-center gap-1 text-meta text-ink-2 underline-offset-[4px] hover:underline"
       >
         {t("search")}
         <ExternalLink className="size-3.5" aria-hidden />
@@ -265,9 +266,9 @@ function ReadForm({
         </p>
       )}
       {status && status !== "pending" && status !== "done" && (
-        <p role="alert" className="m-0 text-body text-warning">
+        <WarningNote role="alert" className="text-body text-ink">
           {t(`statuses.${status}`)}
-        </p>
+        </WarningNote>
       )}
       <DialogFooter className="gap-2 sm:justify-between">
         <Button type="button" variant="ghost" onClick={onTypePrice}>

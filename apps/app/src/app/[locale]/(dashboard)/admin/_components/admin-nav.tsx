@@ -33,9 +33,7 @@ export function AdminNav() {
           <Link href={link.href}>
             {link.label}
             {link.count !== undefined && link.count > 0 && (
-              <Count tone="warning" className="ml-2">
-                {link.count}
-              </Count>
+              <Count>{link.count}</Count>
             )}
           </Link>
         </TabsNavLink>

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { useScopedI18n } from "@/locales/client";
 import type { Norm } from "./types";
 
@@ -26,12 +20,11 @@ export function ScopeCard({ norm }: { norm: Norm }) {
       <CardHeader>
         <CardTitle>{t("scope.title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <dl className="m-0 grid gap-4">
           {notes.map((note) => (
             <div key={note.label} className="grid gap-1">
-              <dt className="text-label uppercase text-ink-3">{note.label}</dt>
+              <dt className="text-caption text-ink-3">{note.label}</dt>
               <dd className="m-0 whitespace-pre-line text-body text-ink-2">
                 {note.text}
               </dd>

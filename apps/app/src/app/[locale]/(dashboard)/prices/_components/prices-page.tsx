@@ -1,14 +1,12 @@
 "use client";
 
 import { api } from "@devize/backend/convex/_generated/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
 import { useFirm } from "@/components/firm-provider";
 import { useScopedI18n } from "@/locales/client";
 import { AlertsCard } from "./alerts-card";
 import { ProductsCard } from "./products-card";
-import { ThresholdCard } from "./threshold-card";
 
 /**
  * Prețuri: the sent devize today's prices change, the store products the firm
@@ -22,19 +20,9 @@ export function PricesPage() {
   return (
     <>
       <PageHeader title={t("title")} description={t("description")} />
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
-        <div className="grid min-w-0 gap-6">
-          <AlertsCard alerts={alerts} />
-          <ProductsCard />
-        </div>
-        <div className="grid min-w-0 gap-6">
-          <ThresholdCard
-            alertPercent={alerts?.alertPercent}
-            canEdit={firm.role !== "member"}
-          />
-          <HowCard />
-        </div>
-      </div>
+      <AlertsCard alerts={alerts} />
+      <ProductsCard />
+      <HowCard />
     </>
   );
 }
@@ -42,17 +30,13 @@ export function PricesPage() {
 function HowCard() {
   const t = useScopedI18n("prices.how");
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="m-0 grid list-disc gap-2 pl-5 text-body text-ink-2">
-          <li>{t("read")}</li>
-          <li>{t("check")}</li>
-          <li>{t("never")}</li>
-        </ul>
-      </CardContent>
-    </Card>
+    <details className="grid gap-2 text-meta">
+      <summary className="text-ink-2">{t("title")}</summary>
+      <ul className="m-0 mt-2 grid list-none gap-2 p-0 text-ink-3">
+        <li>{t("read")}</li>
+        <li>{t("check")}</li>
+        <li>{t("never")}</li>
+      </ul>
+    </details>
   );
 }

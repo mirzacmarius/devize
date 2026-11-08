@@ -5,14 +5,13 @@ import type { Id } from "@devize/backend/convex/_generated/dataModel";
 import {
   Breadcrumb,
   BreadcrumbLink,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@devize/ui/breadcrumb";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
 import { useQuery } from "convex/react";
-import { Lock } from "lucide-react";
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -70,54 +69,38 @@ export function TakeoffPage() {
               <Link href="/estimates">{tEstimate("breadcrumbList")}</Link>
             </BreadcrumbLink>
             <BreadcrumbSeparator />
-            <BreadcrumbLink asChild>
-              <Link href={`/estimates/${estimateId}`}>{code}</Link>
+            <BreadcrumbLink asChild className="min-w-0">
+              <Link href={`/estimates/${estimateId}`}>
+                <span className="truncate">
+                  {code} · {data.estimate.title}
+                </span>
+              </Link>
             </BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{t("breadcrumb")}</BreadcrumbPage>
           </Breadcrumb>
         }
         title={t("title")}
-        description={t("description", { code, title: data.estimate.title })}
         actions={
-          <>
-            {estimate && measured && <AppendixButtons estimate={estimate} />}
-            <Button variant="outline" asChild>
-              <Link href={`/estimates/${estimateId}`}>
-                {t("backToEstimate")}
-              </Link>
-            </Button>
-          </>
+          estimate && measured && <AppendixButtons estimate={estimate} />
         }
       />
-      {locked && (
-        <p className="m-0 flex items-center gap-2 rounded-md bg-sunken px-3 py-2 text-meta text-ink-2">
-          <Lock className="size-4 shrink-0" aria-hidden />
-          {t("locked")}
-        </p>
-      )}
-      <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
-        <div className="grid min-w-0 gap-6">
-          <RoomsCard
-            estimateId={estimateId}
-            rooms={data.rooms}
-            locked={locked}
-            onAdd={() => setPanel({ kind: "room", room: "new" })}
-            onEdit={(room) => setPanel({ kind: "room", room })}
-          />
-          <ItemsCard
-            sections={data.sections}
-            items={data.items}
-            orphans={data.orphans}
-            rooms={data.rooms}
-            locked={locked}
-            onRows={(target) => setPanel({ kind: "rows", target })}
-            onFromRooms={(target) => setPanel({ kind: "fromRooms", target })}
-          />
-        </div>
-        <div className="order-first grid min-w-0 gap-6 xl:order-none">
-          <SummaryCard data={data} />
-        </div>
+      <div className="grid min-w-0 gap-6">
+        <SummaryCard data={data} />
+        <RoomsCard
+          estimateId={estimateId}
+          rooms={data.rooms}
+          locked={locked}
+          onAdd={() => setPanel({ kind: "room", room: "new" })}
+          onEdit={(room) => setPanel({ kind: "room", room })}
+        />
+        <ItemsCard
+          sections={data.sections}
+          items={data.items}
+          orphans={data.orphans}
+          rooms={data.rooms}
+          locked={locked}
+          onRows={(target) => setPanel({ kind: "rows", target })}
+          onFromRooms={(target) => setPanel({ kind: "fromRooms", target })}
+        />
       </div>
       <RoomDialog
         estimateId={estimateId}
@@ -164,14 +147,14 @@ function AppendixButtons({
       {(["pdf", "xlsx"] as const).map((format) => (
         <Button
           key={format}
-          variant={format === "pdf" ? "secondary" : "ghost"}
+          variant="outline"
           disabled={downloading !== undefined}
           onClick={() => void save(format)}
         >
           {downloading === format ? (
             <Icons.Loader className="animate-spin" aria-hidden />
           ) : (
-            <Icons.Deviz aria-hidden />
+            <Download aria-hidden />
           )}
           {t(`download.${format}`)}
         </Button>

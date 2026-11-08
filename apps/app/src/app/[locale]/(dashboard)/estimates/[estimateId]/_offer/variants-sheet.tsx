@@ -48,10 +48,10 @@ export function OfferVariants({ estimate }: { estimate: Estimate }) {
   }
   const names = data.variants.map((variant) => variant.name);
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-md border border-border px-3 py-2.5">
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-border pt-3">
       <div className="grid min-w-0 gap-0.5">
-        <span className="text-body font-medium text-ink">{t("title")}</span>
-        <span className="text-meta text-ink-2">
+        <span className="text-body text-ink">{t("title")}</span>
+        <span className="text-meta text-ink-3">
           {names.length === 0
             ? t("none")
             : t("some", {
@@ -62,12 +62,7 @@ export function OfferVariants({ estimate }: { estimate: Estimate }) {
               })}
         </span>
       </div>
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        onClick={() => setOpen(true)}
-      >
+      <Button type="button" variant="link" onClick={() => setOpen(true)}>
         {!editable ? t("view") : names.length === 0 ? t("add") : t("edit")}
       </Button>
       <VariantsSheet

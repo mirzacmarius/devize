@@ -59,7 +59,7 @@ function ItemForm({ item, onDone }: { item: LineItem; onDone: () => void }) {
   const run = useRun();
   const own = item.origin !== "norm";
   const [title, setTitle] = useState(item.title);
-  const [code, setCode] = useState(item.code === "—" ? "" : item.code);
+  const [code, setCode] = useState(item.code === "–" ? "" : item.code);
   const [unit, setUnit] = useState(item.unit);
   const [quantity, setQuantity] = useState(() =>
     formatInputNumber(item.quantity, locale),
@@ -131,7 +131,6 @@ function ItemForm({ item, onDone }: { item: LineItem; onDone: () => void }) {
             value={code}
             onChange={(event) => setCode(event.target.value)}
             disabled={!own}
-            className="font-mono"
           />
         </Field>
         <Field

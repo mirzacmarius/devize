@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { estimateCode, formatMoney } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
@@ -25,7 +19,7 @@ type Key =
   | "vat"
   | "total";
 
-const headClass = "pb-2 pl-3 text-right text-label uppercase text-ink-3";
+const headClass = "pb-2 pl-3 text-right text-caption text-ink-3";
 
 /** Both revisions' Recapitulație side by side, with what each line moved. */
 export function RecapCompareCard({ comparison }: { comparison: Comparison }) {
@@ -55,8 +49,7 @@ export function RecapCompareCard({ comparison }: { comparison: Comparison }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[30rem] border-collapse text-body">
             <caption className="sr-only">{t("caption")}</caption>
@@ -64,14 +57,14 @@ export function RecapCompareCard({ comparison }: { comparison: Comparison }) {
               <tr>
                 <th
                   scope="col"
-                  className="pb-2 text-left text-label uppercase text-ink-3"
+                  className="pb-2 text-left text-caption text-ink-3"
                 >
                   {t("item")}
                 </th>
-                <th scope="col" className={cn(headClass, "font-mono")}>
+                <th scope="col" className={cn(headClass, "tabular-nums")}>
                   {estimateCode(number, before.revision)}
                 </th>
-                <th scope="col" className={cn(headClass, "font-mono")}>
+                <th scope="col" className={cn(headClass, "tabular-nums")}>
                   {estimateCode(number, after.revision)}
                 </th>
                 <th scope="col" className={headClass}>

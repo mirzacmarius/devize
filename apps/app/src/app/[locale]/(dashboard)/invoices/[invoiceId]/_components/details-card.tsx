@@ -9,7 +9,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { Icons } from "@devize/ui/icons";
 import { Input } from "@devize/ui/input";
@@ -18,10 +17,13 @@ import { useMutation } from "convex/react";
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useState } from "react";
 import { DecimalInput } from "@/components/decimal-input";
+import { FactRows } from "@/components/fact-list";
 import { Field } from "@/components/field";
+import { FoldCard } from "@/components/fold-card";
 import { useRun } from "@/components/use-run";
 import {
   formatCalendarDate,
+  formatCalendarDay,
   formatInputNumber,
   formatMoney,
   formatPercent,
@@ -46,7 +48,7 @@ function InvoiceRef({ target }: { target: NonNullable<Invoice["stornoOf"]> }) {
   return (
     <Link
       href={`/invoices/${target._id}`}
-      className="underline-offset-2 hover:underline"
+      className="underline-offset-[4px] hover:underline"
     >
       {target.code ?? t("draftCode")} ·{" "}
       {formatCalendarDate(target.issueDate, locale)}
@@ -66,7 +68,7 @@ function useReferenceRows(invoice: Invoice) {
       value: (
         <Link
           href={`/estimates/${invoice.estimate._id}`}
-          className="underline-offset-2 hover:underline"
+          className="underline-offset-[4px] hover:underline"
         >
           {invoice.estimate.code} · {invoice.estimate.title}
         </Link>
@@ -78,7 +80,7 @@ function useReferenceRows(invoice: Invoice) {
         value: (
           <Link
             href={`/estimates/${invoice.estimate._id}/progress`}
-            className="underline-offset-2 hover:underline"
+            className="underline-offset-[4px] hover:underline"
           >
             {t("details.statement")}
           </Link>
@@ -105,27 +107,6 @@ function useReferenceRows(invoice: Invoice) {
     });
   }
   return rows;
-}
-
-function Rows({ rows }: { rows: { label: string; value: ReactNode }[] }) {
-  const tc = useScopedI18n("common");
-  return (
-    <dl className="m-0 grid gap-3">
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="flex min-w-0 items-baseline justify-between gap-4"
-        >
-          <dt className="shrink-0 text-body text-ink-3">{row.label}</dt>
-          <dd className="m-0 min-w-0 text-right text-body font-medium text-ink [overflow-wrap:anywhere]">
-            {row.value || (
-              <span className="font-normal text-ink-3">{tc("notSet")}</span>
-            )}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
 }
 
 function Mentions({ invoice }: { invoice: Invoice }) {
@@ -178,21 +159,18 @@ function DetailsList({ invoice }: { invoice: Invoice }) {
     ...references.slice(1),
   ];
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
-        <Rows rows={rows} />
-        {invoice.notes && (
-          <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
-            {invoice.notes}
-          </p>
-        )}
-        <Mentions invoice={invoice} />
-      </CardContent>
-    </Card>
+    <FoldCard
+      title={t("title")}
+      lead={t("lead", { date: formatCalendarDay(invoice.dueDate, locale) })}
+    >
+      <FactRows rows={rows} />
+      {invoice.notes && (
+        <p className="m-0 whitespace-pre-line border-t border-border pt-3 text-body text-ink-2">
+          {invoice.notes}
+        </p>
+      )}
+      <Mentions invoice={invoice} />
+    </FoldCard>
   );
 }
 
@@ -263,9 +241,8 @@ function DetailsForm({ invoice }: { invoice: Invoice }) {
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
-        <TickRule />
-        <CardContent className="pt-4">
-          <Rows rows={references} />
+        <CardContent>
+          <FactRows rows={references} />
           <div className="grid gap-4 border-t border-border pt-4 sm:grid-cols-2">
             <Field
               label={t("issueDate")}

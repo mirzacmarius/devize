@@ -17,7 +17,7 @@ export function Logo({ width, height, className, ...args }: LogoProps) {
       width={width ?? 28}
       height={height ?? 28}
       xmlns="http://www.w3.org/2000/svg"
-      className={cn(className)}
+      className={cn("overflow-visible", className)}
       viewBox="0 0 28 28"
       fill="none"
       role="img"

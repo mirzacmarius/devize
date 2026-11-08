@@ -13,6 +13,7 @@ export type Updates = FunctionReturnType<
 /** The sheet or dialog open on a Deviz's page, if any. */
 export type Panel =
   | { kind: "details" }
+  | { kind: "offer" }
   | { kind: "markups" }
   | { kind: "target" }
   | { kind: "proposal" }

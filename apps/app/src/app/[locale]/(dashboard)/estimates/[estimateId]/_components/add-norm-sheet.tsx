@@ -7,10 +7,12 @@ import {
   baseCategoryByKey,
 } from "@devize/backend/convex/catalog/baseCategories";
 import { MAX_DESCRIPTION } from "@devize/backend/convex/catalog/lib/aiNorm";
+import { normalizeText } from "@devize/backend/convex/lib/text";
 import { AISuggestion } from "@devize/ui/ai-suggestion";
 import { Badge } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
 import { Icons } from "@devize/ui/icons";
+import { toolbarField } from "@devize/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -19,12 +21,15 @@ import {
   SheetTitle,
 } from "@devize/ui/sheet";
 import { toast } from "@devize/ui/sonner";
+import { StatusPill } from "@devize/ui/status-pill";
 import { Textarea } from "@devize/ui/textarea";
+import { cn } from "@devize/ui/utils";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, Plus } from "lucide-react";
 import Link from "next/link";
 import {
   type FormEvent,
+  Fragment,
   type ReactNode,
   useDeferredValue,
   useId,
@@ -32,7 +37,7 @@ import {
 } from "react";
 import { DecimalInput } from "@/components/decimal-input";
 import { Field } from "@/components/field";
-import { NormCategoryChips } from "@/components/norm-category-chips";
+import { NormCategorySelect } from "@/components/norm-category-select";
 import { useNormSource } from "@/components/norm-source";
 import { SearchInput } from "@/components/search-input";
 import { useErrorMessage } from "@/components/use-error-message";
@@ -40,8 +45,10 @@ import { useRun } from "@/components/use-run";
 import { appErrorOf } from "@/lib/errors";
 import {
   formatConsumption,
+  formatMoney,
   formatPercent,
   formatUnit,
+  keepUnits,
   parseDecimal,
 } from "@/lib/format";
 import { resourceKinds } from "@/lib/resource-values";
@@ -74,19 +81,36 @@ export function AddNormSheet({
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
       <SheetContent
         closeLabel={tc("close")}
-        className="w-full overflow-y-auto sm:max-w-xl"
+        // Over the +s, which end on the content's edge.
+        closeClassName="right-8"
+        className="w-full overflow-hidden sm:w-[calc(100vw-1rem)] sm:max-w-[720px]"
       >
         <SheetHeader>
           <SheetTitle>{t("addNorm.title")}</SheetTitle>
-          <SheetDescription>{t("addNorm.description")}</SheetDescription>
+          <SheetDescription className="text-meta">
+            {t("addNorm.description")}
+          </SheetDescription>
         </SheetHeader>
-        {open && (
-          <AddNorm
-            estimate={estimate}
-            initialSectionId={sectionId}
-            onCustom={onCustom}
-          />
-        )}
+        {/* The list scrolls; what's in the Deviz by now, and the way out, stay. */}
+        <div className="-mx-6 -my-1 -mb-4 min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-1">
+          {open && (
+            <AddNorm
+              estimate={estimate}
+              initialSectionId={sectionId}
+              onCustom={onCustom}
+            />
+          )}
+        </div>
+        <div className="-mx-6 -mb-6 flex items-center justify-between gap-4 border-t border-border px-6 py-3">
+          <span className="text-meta tabular-nums text-ink-3">
+            {t("addNorm.itemsInEstimate", {
+              count: estimate.lineItems.length,
+            })}
+          </span>
+          <Button type="button" onClick={onClose}>
+            {t("addNorm.done")}
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   );
@@ -139,6 +163,8 @@ function AddNorm({
     !search && category ? { category: category.key } : "skip",
   );
   const results = search ? found : category ? inCategory : undefined;
+  const words = normalizeText(search).split(" ").filter(Boolean);
+  const inEstimate = new Set(estimate.lineItems.map((item) => item.normId));
 
   const onAdded = () => {
     setAdded((count) => count + 1);
@@ -178,19 +204,24 @@ function AddNorm({
         />
       ) : (
         <>
-          <SearchInput
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            placeholder={t("addNorm.searchPlaceholder")}
-            aria-label={t("addNorm.searchPlaceholder")}
-            autoFocus
-          />
-          <NormCategoryChips
-            label={t("addNorm.categories")}
-            allLabel={t("addNorm.allCategories")}
-            value={categoryKey}
-            onChange={setCategoryKey}
-          />
+          {/* As on every list: the search first, then what narrows it. */}
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_14rem]">
+            <SearchInput
+              quiet
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              placeholder={t("addNorm.searchPlaceholder")}
+              aria-label={t("addNorm.searchPlaceholder")}
+              autoFocus
+            />
+            <NormCategorySelect
+              label={t("addNorm.categories")}
+              allLabel={t("addNorm.allCategories")}
+              value={categoryKey}
+              onChange={setCategoryKey}
+              className={toolbarField}
+            />
+          </div>
           {!search && !category ? (
             <p className="m-0 text-meta text-ink-3">{t("addNorm.hint")}</p>
           ) : results === undefined ? (
@@ -239,26 +270,68 @@ function AddNorm({
           ) : (
             <ul
               aria-label={t("addNorm.results")}
-              className="m-0 grid list-none gap-0.5 p-0"
+              className="m-0 grid list-none p-0"
             >
-              {results.map((norm) => (
-                <li key={norm._id}>
+              {ranked(results, words).map((norm) => (
+                <li
+                  key={norm._id}
+                  className="border-t border-border first:border-t-0"
+                >
+                  {/* The text starts under the search; only the fill hangs out. */}
                   <button
                     type="button"
                     onClick={() => setView({ kind: "norm", normId: norm._id })}
-                    className="grid w-full gap-0.5 rounded-md px-3 py-2.5 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group -mx-3 grid min-h-14 w-[calc(100%+1.5rem)] grid-cols-[minmax(0,1fr)_32px] items-start gap-x-4 gap-y-0.5 rounded-md px-3 py-2 text-left hover:bg-tile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_112px_32px]"
                   >
-                    <span className="flex items-baseline justify-between gap-3">
-                      <span className="font-mono text-code text-ink-2">
-                        {norm.code}
+                    <span className="grid min-w-0 gap-0.5">
+                      <span className="text-body text-ink [text-wrap:pretty]">
+                        <MatchedWords
+                          text={keepUnits(norm.title)}
+                          words={words}
+                        />
                       </span>
-                      <span className="shrink-0 text-meta text-ink-3">
-                        {formatUnit(norm.unit, locale)}
+                      <span className="flex min-w-0 items-baseline gap-2 text-meta text-ink-3">
+                        <span className="truncate">
+                          <span className="tabular-nums">{norm.code}</span>
+                          {norm.category && ` · ${norm.category}`}
+                          {norm.source !== "base" && ` · ${normSource(norm)}`}
+                        </span>
+                        {inEstimate.has(norm._id) && (
+                          <StatusPill tone="success" className="shrink-0">
+                            {t("addNorm.inEstimate")}
+                          </StatusPill>
+                        )}
                       </span>
                     </span>
-                    <span className="text-body text-ink">{norm.title}</span>
-                    <span className="text-meta text-ink-3">
-                      {normSource(norm)}
+                    <span className="col-start-1 row-start-2 whitespace-nowrap text-meta tabular-nums text-ink-3 sm:col-start-2 sm:row-start-1 sm:text-right">
+                      {norm.referenceCost === undefined
+                        ? formatUnit(norm.unit, locale)
+                        : t("items.pricePerUnit", {
+                            price: (
+                              <span className="text-body text-ink">
+                                {formatMoney(norm.referenceCost, locale)}
+                              </span>
+                            ),
+                            unit: formatUnit(norm.unit, locale),
+                          })}
+                    </span>
+                    {/* One square throughout: outlined at rest, so every row reads as
+                        one to add, filled when its row is reached for, green once
+                        the norm is in the Deviz. */}
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "col-start-2 row-span-2 row-start-1 -my-1.5 grid size-8 place-items-center rounded-md border transition-colors sm:col-start-3 sm:row-span-1",
+                        inEstimate.has(norm._id)
+                          ? "border-transparent bg-success-soft text-success"
+                          : "border-control text-ink-2 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground",
+                      )}
+                    >
+                      {inEstimate.has(norm._id) ? (
+                        <Check className="size-4" />
+                      ) : (
+                        <Plus className="size-4" />
+                      )}
                     </span>
                   </button>
                 </li>
@@ -301,6 +374,52 @@ function AddNorm({
       )}
     </div>
   );
+}
+
+/** A norm's name with the words searched for standing out, or all of it. */
+function MatchedWords({
+  text,
+  words,
+}: {
+  text: string;
+  words: readonly string[];
+}) {
+  if (words.length === 0) {
+    return text;
+  }
+  let offset = 0;
+  return text.split(/(\s+)/).map((part) => {
+    const key = offset;
+    offset += part.length;
+    const plain = normalizeText(part);
+    if (!plain || !words.some((word) => plain.includes(word))) {
+      return part;
+    }
+    // The word stands out, not the comma after it.
+    const word = part.match(/[\p{L}\p{N}](?:.*[\p{L}\p{N}])?/su)?.[0] ?? part;
+    const at = part.indexOf(word);
+    return (
+      <Fragment key={key}>
+        {part.slice(0, at)}
+        <span className="font-medium">{word}</span>
+        {part.slice(at + word.length)}
+      </Fragment>
+    );
+  });
+}
+
+/**
+ * What the search found, with the works that start with the first word typed
+ * ahead of those that only mention it. The firm's own norms stay on top.
+ */
+function ranked<T extends { source: string; title: string }>(
+  norms: readonly T[],
+  words: readonly string[],
+) {
+  const rank = (norm: T) =>
+    (norm.source === "organization" ? 0 : 2) +
+    (words[0] && normalizeText(norm.title).startsWith(words[0]) ? 0 : 1);
+  return [...norms].sort((a, b) => rank(a) - rank(b));
 }
 
 // Why a request failed, from the code its job stored, as the sheet explains it.
@@ -524,7 +643,7 @@ function AiNorm({
           <div className="grid gap-3">
             {request.assumptions.length > 0 && (
               <div className="grid gap-1">
-                <p className="m-0 text-label uppercase text-ink-3">
+                <p className="m-0 text-caption text-ink-3">
                   {t("addNorm.ai.assumptions")}
                 </p>
                 <ul className="m-0 grid list-disc gap-1 pl-4 text-ink-2">
@@ -535,7 +654,7 @@ function AiNorm({
               </div>
             )}
             <div className="grid gap-1">
-              <p className="m-0 text-label uppercase text-ink-3">
+              <p className="m-0 text-caption text-ink-3">
                 {t("addNorm.ai.checks")}
               </p>
               <ul className="m-0 grid list-disc gap-1 pl-4 text-ink-2">
@@ -673,9 +792,7 @@ function NormPreview({
           {notes}
           <div className="grid gap-1">
             <span className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-code text-ink-2">
-                {norm.code}
-              </span>
+              <span className="tabular-nums text-ink-2">{norm.code}</span>
               {norm.source === "manufacturer" && !norm.confirmedAt && (
                 <Badge>{tNorms("unconfirmed")}</Badge>
               )}
@@ -696,9 +813,7 @@ function NormPreview({
             <dl className="m-0 grid gap-2">
               {notesList.map((note) => (
                 <div key={note.label} className="grid gap-0.5">
-                  <dt className="text-label uppercase text-ink-3">
-                    {note.label}
-                  </dt>
+                  <dt className="text-caption text-ink-3">{note.label}</dt>
                   <dd className="m-0 whitespace-pre-line text-body text-ink-2">
                     {note.text}
                   </dd>
@@ -707,7 +822,7 @@ function NormPreview({
             </dl>
           )}
           <div className="grid gap-2 rounded-md border border-border bg-sunken px-4 py-3">
-            <p className="m-0 text-label uppercase text-ink-3">
+            <p className="m-0 text-caption text-ink-3">
               {t("addNorm.resources", { unit: formatUnit(norm.unit, locale) })}
             </p>
             <ul className="m-0 grid list-none gap-1.5 p-0">

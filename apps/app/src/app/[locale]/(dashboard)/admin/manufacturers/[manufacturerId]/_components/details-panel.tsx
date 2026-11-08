@@ -141,7 +141,7 @@ function DetailsForm({ manufacturer }: { manufacturer: Manufacturer }) {
           aria-describedby="details_notes_hint"
           onChange={(event) => setNotes(event.target.value)}
         />
-        <p id="details_notes_hint" className="text-xs text-primary/50">
+        <p id="details_notes_hint" className="text-meta text-ink-3">
           {t("notesHint")}
         </p>
       </Field>

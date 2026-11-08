@@ -2,16 +2,20 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
+import { Button } from "@devize/ui/button";
 import { Card, CardContent } from "@devize/ui/card";
+import { Icons } from "@devize/ui/icons";
 import { StatusPill } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
+import { Download } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import { useRouteParam } from "@/components/use-route-param";
+import { useScrolledPast } from "@/components/use-scrolled-past";
 import { estimateCode, formatCalendarDate, formatDay } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { AcceptDialog } from "./accept-dialog";
-import { AnswerCard, MobileAnswerBar } from "./answer-card";
+import { AnswerCard, MobileAnswerBar, TotalBlock } from "./answer-card";
 import { ClosedOffer, MissingOffer, OfferFrame } from "./closed-offer";
 import { DeclineDialog } from "./decline-dialog";
 import { OfferHeader } from "./offer-header";
@@ -140,6 +144,8 @@ export function OpenOffer({
   const [downloading, setDownloading] = useState(false);
   const downloadPdf = useOfferPdf(token);
   const open = offer.state === "open";
+  const heroTotal = useRef<HTMLDivElement>(null);
+  const pastTotal = useScrolledPast(heroTotal, open);
 
   const toggle = (itemId: Id<"lineItems">, included: boolean) => {
     const others = choice.excludedItemIds.filter((id) => id !== itemId);
@@ -155,61 +161,73 @@ export function OpenOffer({
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-shell max-sm:bg-panel">
       <OfferHeader firm={offer.firm} preview={offer.preview} />
-      <main className="mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 sm:px-6 lg:pb-16">
-        <OfferHero offer={offer} />
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]">
-          <div className="grid min-w-0 gap-6">
-            {offer.message && (
-              <MessageCard firm={offer.firm.name} message={offer.message} />
-            )}
-            {offer.variants.length > 0 && (
-              <VariantPicker
+      <div className="flex-1 bg-panel sm:mx-2 sm:mb-2 sm:rounded-2xl sm:shadow-panel">
+        <main className="offer-main mx-auto grid w-full max-w-6xl gap-8 px-4 pb-32 pt-8 max-sm:gap-4 max-sm:pt-5 sm:px-6 lg:pb-16">
+          <OfferHero
+            offer={offer}
+            updating={updating}
+            totalRef={heroTotal}
+            download={
+              open ? { busy: downloading, onClick: download } : undefined
+            }
+          />
+          <hr aria-hidden className="tick-rule m-0 border-0 max-sm:hidden" />
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] lg:gap-x-11">
+            <div className="grid min-w-0 gap-6">
+              {offer.message && (
+                <MessageCard firm={offer.firm.name} message={offer.message} />
+              )}
+              {offer.variants.length > 0 && (
+                <VariantPicker
+                  offer={offer}
+                  value={choice.variantId}
+                  disabled={!open}
+                  onChange={(variantId) => onChoose({ ...choice, variantId })}
+                />
+              )}
+              <WorksCard
                 offer={offer}
-                value={choice.variantId}
+                excluded={new Set(choice.excludedItemIds)}
                 disabled={!open}
-                onChange={(variantId) => onChoose({ ...choice, variantId })}
+                onToggle={toggle}
               />
-            )}
-            <WorksCard
-              offer={offer}
-              excluded={new Set(choice.excludedItemIds)}
-              disabled={!open}
-              onToggle={toggle}
-            />
-            <PriceCard offer={offer} updating={updating} />
-            {offer.consumer && <RightsCard token={token} offer={offer} />}
-            <QuestionsCard token={token} offer={offer} choice={choice} />
+              <PriceCard offer={offer} updating={updating} />
+              {offer.consumer && <RightsCard token={token} offer={offer} />}
+              <QuestionsCard token={token} offer={offer} choice={choice} />
+            </div>
+            <aside className="grid min-w-0 gap-6 lg:sticky lg:top-6">
+              <AnswerCard
+                offer={offer}
+                choice={choice}
+                updating={updating}
+                downloading={downloading}
+                onAccept={() => setDialog("accept")}
+                onDecline={() => setDialog("decline")}
+                onDownload={download}
+              />
+            </aside>
           </div>
-          <aside className="grid min-w-0 gap-6 lg:sticky lg:top-6">
-            <AnswerCard
-              offer={offer}
-              choice={choice}
-              updating={updating}
-              downloading={downloading}
-              onAccept={() => setDialog("accept")}
-              onDecline={() => setDialog("decline")}
-              onDownload={download}
-            />
-          </aside>
-        </div>
-        <p className="m-0 text-center text-meta text-ink-3">
-          {t("footer")} ·{" "}
-          <Link
-            href="/confidentialitate"
-            className="underline-offset-2 hover:text-ink-2 hover:underline"
-          >
-            {t("privacy")}
-          </Link>
-        </p>
-      </main>
+          <p className="m-0 text-center text-meta text-ink-3">
+            {t("footer")} ·{" "}
+            <Link
+              href="/confidentialitate"
+              className="underline-offset-[4px] hover:text-ink-2 hover:underline"
+            >
+              {t("privacy")}
+            </Link>
+          </p>
+        </main>
+      </div>
       {open && (
         <>
           <MobileAnswerBar
             offer={offer}
             updating={updating}
+            showTotal={pastTotal}
             onAccept={() => setDialog("accept")}
+            onDecline={() => setDialog("decline")}
           />
           <AcceptDialog
             token={token}
@@ -230,29 +248,80 @@ export function OpenOffer({
 }
 
 /** The Ofertă's title, for whom and where, and how long its prices hold. */
-function OfferHero({ offer }: { offer: OpenOfferView }) {
+function OfferHero({
+  offer,
+  updating,
+  totalRef,
+  download,
+}: {
+  offer: OpenOfferView;
+  updating: boolean;
+  totalRef: RefObject<HTMLDivElement | null>;
+  // Under the desktop width, where no answer card stands beside the works.
+  download?: { busy: boolean; onClick: () => void };
+}) {
   const t = useScopedI18n("offerPage");
   const locale = useCurrentLocale();
-  const site = [offer.siteAddress, offer.county].filter(Boolean).join(", ");
-  const meta = [
+  // An address often ends in its county already.
+  const site =
+    offer.county && !offer.siteAddress?.includes(offer.county)
+      ? [offer.siteAddress, offer.county].filter(Boolean).join(", ")
+      : offer.siteAddress;
+  const facts = [
     offer.client && t("forClient", { name: offer.client.name }),
     site,
-    t("pricesOf", { date: formatCalendarDate(offer.priceDate, locale) }),
-    offer.state === "open" &&
-      offer.expiresAt !== undefined &&
-      t("validUntil", { date: formatDay(offer.expiresAt, locale) }),
   ].filter(Boolean);
   return (
     <div className="grid gap-2">
-      <span className="text-label uppercase text-ink-3">
-        {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
-      </span>
-      <h1 className="m-0 text-title-page text-ink">{offer.title}</h1>
-      <p className="m-0 text-body text-ink-2">{meta.join(" · ")}</p>
+      <div className="flex min-w-0 items-center justify-between gap-3">
+        <span className="text-caption text-ink-3">
+          {t("eyebrow", { code: estimateCode(offer.number, offer.revision) })}
+        </span>
+        {download && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="-my-3 -mr-2 h-11 shrink-0 gap-1.5 px-2 text-meta text-ink-2 lg:hidden"
+            aria-label={t("decide.download")}
+            disabled={download.busy}
+            onClick={download.onClick}
+          >
+            {download.busy ? (
+              <Icons.Loader className="animate-spin" aria-hidden />
+            ) : (
+              <Download aria-hidden />
+            )}
+            {t("decide.pdfShort")}
+          </Button>
+        )}
+      </div>
+      <h1 className="m-0 text-title-screen text-ink [text-wrap:balance] max-sm:text-[22px] max-sm:leading-7 sm:text-title-page">
+        {offer.title}
+      </h1>
+      {/* A line each on a phone, a sentence where there's room. */}
+      <p className="m-0 text-body text-ink-2">
+        {facts.map((fact) => (
+          <span key={String(fact)} className="max-sm:block">
+            {fact}
+            <span className="max-sm:hidden"> · </span>
+          </span>
+        ))}
+        <span className="max-sm:block">
+          {t("pricesOf", { date: formatCalendarDate(offer.priceDate, locale) })}
+          {/* From the desktop width up, the answer card beside it says this. */}
+          {offer.state === "open" && offer.expiresAt !== undefined && (
+            <span className="lg:hidden">
+              {" · "}
+              {t("validUntil", { date: formatDay(offer.expiresAt, locale) })}
+            </span>
+          )}
+        </span>
+      </p>
       {/* On a phone the answer is at the bottom, so its outcome shows here too. */}
       {offer.state !== "open" && (
         <StatusPill
-          tone={offer.state === "accepted" ? "success" : "danger"}
+          tone={offer.state === "accepted" ? "success" : "declined"}
           className="justify-self-start lg:hidden"
         >
           {offer.state === "accepted"
@@ -265,6 +334,12 @@ function OfferHero({ offer }: { offer: OpenOfferView }) {
           {offer.description}
         </p>
       )}
+      {/* From the desktop width up, the answer card beside it says this. */}
+      {offer.state === "open" && (
+        <div ref={totalRef} className="pt-2 lg:hidden">
+          <TotalBlock offer={offer} updating={updating} />
+        </div>
+      )}
     </div>
   );
 }
@@ -274,11 +349,12 @@ function MessageCard({ firm, message }: { firm: string; message: string }) {
   const t = useScopedI18n("offerPage");
   return (
     <Card>
-      <CardContent className="gap-2 pt-5">
-        <span className="text-meta font-medium text-ink-3">
+      {/* On a phone the next section's hairline closes it, at the same distance. */}
+      <CardContent className="gap-1 max-sm:pb-0 max-sm:pt-3">
+        <span className="text-meta text-ink-3">
           {t("messageFrom", { firm })}
         </span>
-        <p className="m-0 whitespace-pre-line text-body-lg text-ink">
+        <p className="m-0 whitespace-pre-line text-body text-ink sm:text-body-lg">
           {message}
         </p>
       </CardContent>

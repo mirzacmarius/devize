@@ -11,7 +11,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import {
   DropdownMenu,
@@ -266,19 +265,16 @@ function SystemCard({
           </div>
         )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-3">
+      <CardContent>
         {system.norms.length > 0 && (
           <div className="grid gap-1.5">
-            <span className="text-label uppercase text-ink-3">
-              {t("norms")}
-            </span>
+            <span className="text-caption text-ink-3">{t("norms")}</span>
             <ul className="m-0 grid list-none gap-1 p-0">
               {system.norms.map((norm) => (
                 <li key={norm.lineageId} className="flex min-w-0 gap-2">
                   <Link
                     href={`/catalog/${norm.normId}`}
-                    className="shrink-0 font-mono text-code text-ink hover:underline"
+                    className="shrink-0 tabular-nums text-ink hover:underline"
                   >
                     {norm.code}
                   </Link>
@@ -302,9 +298,7 @@ function SystemCard({
         )}
         {system.products.length > 0 && (
           <div className="grid gap-1.5">
-            <span className="text-label uppercase text-ink-3">
-              {t("products")}
-            </span>
+            <span className="text-caption text-ink-3">{t("products")}</span>
             <ul className="m-0 grid list-none gap-1 p-0">
               {system.products.map((product) => (
                 <li key={product.productId} className="text-body text-ink-2">

@@ -2,13 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
 import { useQuery } from "convex/react";
 import { EurAmount } from "@/components/eur-amount";
@@ -80,9 +74,12 @@ export function RecapCard({
   ];
 
   return (
-    <Card>
+    <Card id="recap" className="scroll-mt-4">
       <CardHeader>
-        <CardTitle>{t("recap.title")}</CardTitle>
+        <div className="flex items-baseline gap-3">
+          <CardTitle>{t("recap.title")}</CardTitle>
+          <span className="text-meta text-ink-3">{t("items.inLei")}</span>
+        </div>
         {editable && (
           <div className="flex flex-wrap items-center gap-x-4">
             {estimate.lineItems.length > 0 && (
@@ -104,9 +101,8 @@ export function RecapCard({
           </div>
         )}
       </CardHeader>
-      <TickRule />
       {/* A size container: a narrow card puts each rate under its label. */}
-      <CardContent className="pt-2 [container-type:inline-size]">
+      <CardContent className="[container-type:inline-size]">
         <table className="w-full border-collapse text-body">
           <caption className="sr-only">{t("recap.caption")}</caption>
           <thead className="sr-only">
@@ -123,14 +119,16 @@ export function RecapCard({
               <tr
                 key={row.label}
                 className={cn(
-                  row.kind && "border-t border-border",
-                  row.kind === "total" && "border-ink",
+                  row.kind === "subtotal" && "border-t border-border",
+                  // The accountant's double rule, under what everything adds to.
+                  row.kind === "total" &&
+                    "border-t-[3px] border-double border-rule",
                 )}
               >
                 <th
                   scope="row"
                   className={cn(
-                    "py-2 pr-3 text-left font-normal",
+                    "py-1.5 pr-3 text-left font-normal",
                     row.kind ? "text-ink font-medium" : "text-ink-2",
                   )}
                 >
@@ -144,15 +142,18 @@ export function RecapCard({
                   )}
                 </th>
                 <td
-                  className={cn("py-2 pr-3 text-meta text-ink-3", RATE_COLUMN)}
+                  className={cn(
+                    "py-1.5 pr-3 text-meta text-ink-3",
+                    RATE_COLUMN,
+                  )}
                 >
                   {row.rate}
                 </td>
                 <td
                   className={cn(
-                    "py-2 text-right tabular-nums",
+                    "py-1.5 text-right tabular-nums",
                     row.kind === "total"
-                      ? "text-title-card font-light text-ink"
+                      ? "text-figure text-ink"
                       : row.kind
                         ? "font-medium text-ink"
                         : "text-ink",

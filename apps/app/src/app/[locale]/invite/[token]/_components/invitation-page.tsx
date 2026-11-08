@@ -216,7 +216,7 @@ export function InvitationPage() {
 
 function Frame({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto flex min-h-full w-full max-w-[520px] flex-col justify-center px-4 py-24">
+    <div className="mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center pb-24">
       {children}
     </div>
   );

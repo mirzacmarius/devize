@@ -2,13 +2,7 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,9 +13,11 @@ import {
 import { Icons } from "@devize/ui/icons";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
+import { Download } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRun } from "@/components/use-run";
+import { WarningNote } from "@/components/warning-note";
 import { formatCalendarDate } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ReceptionSheet } from "./reception-sheet";
@@ -59,8 +55,7 @@ export function ReceptionsCard({ works }: { works: Works }) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <ul className="m-0 grid list-none gap-3 p-0">
           {(["completion", "final"] as const).map((kind) => (
             <ReceptionRow
@@ -76,7 +71,7 @@ export function ReceptionsCard({ works }: { works: Works }) {
         {receptions.suggested.approvedStatements > 0 &&
           !receptions.suggested.allExecuted &&
           !completionConcluded && (
-            <p className="m-0 text-meta text-warning">{t("notAllExecuted")}</p>
+            <WarningNote>{t("notAllExecuted")}</WarningNote>
           )}
         <p className="m-0 text-meta text-ink-3">{t("hint")}</p>
       </CardContent>
@@ -191,8 +186,10 @@ function ReceptionRow({
               aria-label={t("downloadLabel", { name: t(kind) })}
               onClick={download}
             >
-              {downloading && (
+              {downloading ? (
                 <Icons.Loader className="animate-spin" aria-hidden />
+              ) : (
+                <Download aria-hidden />
               )}
               {t("download")}
             </Button>

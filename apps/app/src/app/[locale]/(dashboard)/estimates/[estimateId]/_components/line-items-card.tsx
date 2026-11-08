@@ -2,15 +2,9 @@
 
 import { api } from "@devize/backend/convex/_generated/api";
 import type { Id } from "@devize/backend/convex/_generated/dataModel";
-import { Badge, Count } from "@devize/ui/badge";
+import { Count } from "@devize/ui/badge";
 import { Button } from "@devize/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  TickRule,
-} from "@devize/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@devize/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,44 +17,82 @@ import {
 } from "@devize/ui/dropdown-menu";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
+import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
   TableCell,
+  TableGroupRow,
   TableHead,
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
 import { cn } from "@devize/ui/utils";
 import { useMutation } from "convex/react";
-import { ChevronRight, Lock, Plus } from "lucide-react";
-import { Fragment, useState } from "react";
+import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { Fragment, type ReactNode, useRef, useState } from "react";
 import { InlineNumber } from "@/components/inline-number";
 import { useNormSource } from "@/components/norm-source";
 import { useRun } from "@/components/use-run";
-import { formatMoney, formatQuantity, formatUnit } from "@/lib/format";
+import { useScrolledPast } from "@/components/use-scrolled-past";
+import {
+  formatMoney,
+  formatQuantity,
+  formatUnit,
+  keepUnits,
+} from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { groupLines, type NumberedItem, type SectionGroup } from "./groups";
+import { LockedNote } from "./locked-note";
 import { ResourceTable } from "./resource-table";
 import { orderedSections } from "./section-select";
 import type { Estimate, LineItem, OpenPanel, Section, Updates } from "./types";
 
 type Group = SectionGroup<Section, LineItem>;
 
-const COLUMNS = 6;
-
 // The card is a size container, so the columns follow its width, not the
 // screen's: beside the checks at 1280 px it's narrower than alone at 1024 px.
 // A narrow card drops the number and quantity columns, a mid-size one the
 // unit price, and the item's own lines then show what they held.
 const FROM_MID = "hidden [@container(min-width:38rem)]:table-cell";
-const FROM_WIDE = "hidden [@container(min-width:50rem)]:table-cell";
+const FROM_WIDE = "hidden [@container(min-width:44rem)]:table-cell";
 const NARROW_ONLY = "[@container(min-width:38rem)]:hidden";
+const MID_UP = "hidden [@container(min-width:38rem)]:block";
 const MID_ONLY =
-  "hidden [@container(min-width:38rem)]:inline [@container(min-width:50rem)]:hidden";
-// With no number column, the item column starts at the card's edge.
-const ITEM_CELL = "pl-0 [@container(min-width:38rem)]:pl-3";
-const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-6";
+  "hidden [@container(min-width:38rem)]:inline [@container(min-width:44rem)]:hidden";
+// The item column starts right after the number, or at the card's edge without it.
+const ITEM_CELL = "pl-0";
+const NESTED_ITEM_CELL = "pl-3 [@container(min-width:38rem)]:pl-4";
+// So heads and section names start where the titles do: past the number where
+// it's in the cell, at the cell's start where it has a column of its own.
+const TITLE_CELL = "pl-7 [@container(min-width:38rem)]:pl-0";
+const NESTED_TITLE_CELL = "pl-10 [@container(min-width:38rem)]:pl-4";
+
+/**
+ * A property of a row, on its quietest line: a dot and a word, both in the
+ * state's colour, as everywhere else.
+ */
+function RowTag({
+  tone,
+  children,
+}: {
+  tone: "danger" | "warning" | "ai";
+  children: ReactNode;
+}) {
+  return <StatusPill tone={tone}>{children}</StatusPill>;
+}
+
+/**
+ * A price the shops have changed since: the warning's dot beside it, its word
+ * for screen readers and under the pointer.
+ */
+function StaleMark({ label }: { label: string }) {
+  return (
+    <StatusPill tone="warning" title={label} className="mr-2">
+      <span className="sr-only">{label}</span>
+    </StatusPill>
+  );
+}
 
 /** Lei for one unit of a line item, all kinds of resources together. */
 function unitPrice(item: LineItem) {
@@ -89,6 +121,10 @@ export function LineItemsCard({
   const groups = groupLines(estimate.sections, estimate.lineItems);
   const count = estimate.lineItems.length;
   const isEmpty = count === 0 && estimate.sections.length === 0;
+  // The heads stick once the header has gone under the page's bar: its 44 px
+  // and the 6 px the heads rise into the header.
+  const header = useRef<HTMLDivElement>(null);
+  const stuck = useScrolledPast(header, !isEmpty, 50);
   const newNorms = new Set(updates?.normUpdates.map((u) => u.lineItemId));
   const newPrices = new Set(updates?.priceChanges.map((c) => c.lineItemId));
   // The last item of each section, so an item moved there goes to its end.
@@ -142,13 +178,15 @@ export function LineItemsCard({
         <TableRow className="hover:bg-transparent">
           <TableCell className={FROM_MID} />
           <TableCell
-            colSpan={COLUMNS - 1}
+            colSpan={4}
             className={cn(
               "text-meta text-ink-3",
               nested ? NESTED_ITEM_CELL : ITEM_CELL,
             )}
           >
-            <p className="m-0 pl-6">{t("sections.empty")}</p>
+            <p className="m-0 pl-7 [@container(min-width:38rem)]:pl-0">
+              {t("sections.empty")}
+            </p>
           </TableCell>
         </TableRow>
       )}
@@ -160,10 +198,14 @@ export function LineItemsCard({
 
   return (
     <Card>
-      <CardHeader className="flex-wrap">
-        <div className="flex items-center gap-2">
+      {/* The title, its count and what it's in on one baseline, and the
+          note or the buttons at the end on it too. The title stands where a
+          button's words would put it, with buttons or without. */}
+      <CardHeader ref={header} className="flex-wrap items-baseline">
+        <div className="flex items-baseline gap-2 pt-1">
           <CardTitle>{t("items.title")}</CardTitle>
           <Count tone="plain">{count}</Count>
+          <span className="ml-1 text-meta text-ink-3">{t("items.inLei")}</span>
         </div>
         {editable && (
           <div className="flex flex-wrap items-center gap-2">
@@ -171,37 +213,51 @@ export function LineItemsCard({
             {!isEmpty && (
               <>
                 <Button
-                  variant="ai"
+                  variant="outline"
                   size="sm"
+                  className="text-ai hover:text-ai"
                   onClick={() => open({ kind: "proposal" })}
                 >
                   <Icons.AI aria-hidden />
                   {tProposal("open")}
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   size="sm"
+                  className="rounded-r-none"
                   onClick={() => open({ kind: "addNorm" })}
                 >
                   <Plus aria-hidden />
                   {t("items.addNorm")}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => open({ kind: "custom" })}
-                >
-                  {t("items.addCustom")}
-                </Button>
               </>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  {t("items.addSection")}
-                </Button>
+                {isEmpty ? (
+                  <Button variant="outline" size="sm">
+                    {t("items.addSection")}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="-ml-[9px] w-8 rounded-l-none px-0"
+                    aria-label={t("items.addMore")}
+                  >
+                    <ChevronDown aria-hidden />
+                  </Button>
+                )}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                {!isEmpty && (
+                  <>
+                    <DropdownMenuItem onSelect={() => open({ kind: "custom" })}>
+                      {t("items.addCustom")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem
                   onSelect={() =>
                     open({ kind: "newSection", sectionKind: "chapter" })
@@ -220,15 +276,15 @@ export function LineItemsCard({
             </DropdownMenu>
           </div>
         )}
-      </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4 [container-type:inline-size]">
         {!editable && (
-          <p className="m-0 flex items-center gap-2 rounded-md bg-sunken px-3 py-2 text-meta text-ink-2">
-            <Lock className="size-4 shrink-0" aria-hidden />
-            {t("items.locked")}
-          </p>
+          <LockedNote
+            estimateId={estimate._id}
+            label={t("items.locked")}
+            className="max-sm:hidden"
+          />
         )}
+      </CardHeader>
+      <CardContent className="[container-type:inline-size]">
         {isEmpty ? (
           <EmptyState
             icon={<Icons.Articles />}
@@ -263,25 +319,26 @@ export function LineItemsCard({
             }
           />
         ) : (
-          <Table>
+          <Table bleed className="items-table" data-stuck={stuck || undefined}>
             <TableHeader>
               <TableRow>
-                <TableHead className={cn("w-10", FROM_MID)}>#</TableHead>
-                <TableHead className={ITEM_CELL}>
+                <TableHead className={cn("w-7 text-right", FROM_MID)}>
+                  #
+                </TableHead>
+                <TableHead className={TITLE_CELL}>
                   {t("items.columns.item")}
                 </TableHead>
-                <TableHead className={cn("text-right", FROM_MID)}>
+                {/* Over the numbers, not over the unit that follows them. */}
+                <TableHead
+                  className={cn("w-[104px] pr-9 text-right", FROM_MID)}
+                >
                   {t("items.columns.quantity")}
                 </TableHead>
-                <TableHead className={cn("text-right", FROM_WIDE)}>
+                <TableHead className={cn("w-[88px] text-right", FROM_WIDE)}>
                   {t("items.columns.unitPrice")}
                 </TableHead>
-                {/* A narrow card lets the head wrap, as its numbers are shorter. */}
-                <TableHead className="whitespace-normal text-right [@container(min-width:38rem)]:whitespace-nowrap">
+                <TableHead className="w-[100px] text-right">
                   {t("items.columns.value")}
-                </TableHead>
-                <TableHead className="w-10">
-                  <span className="sr-only">{t("items.columns.actions")}</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -313,6 +370,64 @@ function SectionRow({
 }) {
   const t = useScopedI18n("estimate");
   const locale = useCurrentLocale();
+  const { section } = group;
+
+  return (
+    // The same cells as an item row, since which columns show depends on the
+    // card's width and a span can't follow it.
+    <TableGroupRow className="items-band group/band">
+      <TableCell className={cn("band-start", FROM_MID)} />
+      <TableCell
+        className={cn(
+          "band-start",
+          nested ? NESTED_TITLE_CELL : TITLE_CELL,
+          editable && "relative",
+        )}
+      >
+        <div
+          className={cn(
+            "flex min-w-0 flex-wrap items-baseline gap-x-2",
+            editable && "pr-9",
+          )}
+        >
+          {section.kind === "object" && (
+            <span className="text-caption text-ink-3">
+              {t("sections.object")}
+            </span>
+          )}
+          {section.code && (
+            <span className="text-meta tabular-nums text-ink-3">
+              {section.code}
+            </span>
+          )}
+          <span className="text-body font-medium text-ink">{section.name}</span>
+        </div>
+        {editable && (
+          <div className="absolute right-1 top-1/2 -translate-y-1/2">
+            <SectionMenu group={group} siblings={siblings} open={open} />
+          </div>
+        )}
+      </TableCell>
+      <TableCell className={FROM_MID} />
+      <TableCell className={FROM_WIDE} />
+      <TableCell className="band-end whitespace-nowrap text-right font-medium tabular-nums">
+        {formatMoney(group.total, locale)}
+      </TableCell>
+    </TableGroupRow>
+  );
+}
+
+/** What can be done to an Obiect or a Capitol. */
+function SectionMenu({
+  group,
+  siblings,
+  open,
+}: {
+  group: Group;
+  siblings: Section[];
+  open: OpenPanel;
+}) {
+  const t = useScopedI18n("estimate");
   const move = useMutation(api.estimates.sections.move);
   const remove = useMutation(api.estimates.sections.remove);
   const run = useRun();
@@ -327,121 +442,83 @@ function SectionRow({
     run(() => move({ sectionId: section._id, afterId }));
 
   return (
-    // The same cells as an item row, since which columns show depends on the
-    // card's width and a span can't follow it.
-    <TableRow className="bg-sunken hover:bg-sunken">
-      <TableCell className={FROM_MID} />
-      <TableCell className={nested ? NESTED_ITEM_CELL : ITEM_CELL}>
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-          <span className="text-label uppercase text-ink-3">
-            {section.kind === "object"
-              ? t("sections.object")
-              : t("sections.chapter")}
-          </span>
-          {section.code && (
-            <span className="font-mono text-code text-ink-3">
-              {section.code}
-            </span>
-          )}
-          <span className="text-body font-medium text-ink">{section.name}</span>
-        </div>
-      </TableCell>
-      <TableCell className={FROM_MID} />
-      <TableCell className={FROM_WIDE} />
-      <TableCell className="text-right font-medium tabular-nums">
-        {formatMoney(group.total, locale)}
-      </TableCell>
-      <TableCell>
-        {editable && (
-          <DropdownMenu onOpenChange={(next) => !next && setConfirming(false)}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8"
-                aria-label={t("sections.menu", { name: section.name })}
-              >
-                <Icons.More aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-52">
-              <DropdownMenuItem
-                onSelect={() =>
-                  open({ kind: "addNorm", sectionId: section._id })
-                }
-              >
-                {t("sections.addNormHere")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() =>
-                  open({ kind: "custom", sectionId: section._id })
-                }
-              >
-                {t("sections.addCustomHere")}
-              </DropdownMenuItem>
-              {section.kind === "object" && (
-                <DropdownMenuItem
-                  onSelect={() =>
-                    open({
-                      kind: "newSection",
-                      sectionKind: "chapter",
-                      parentId: section._id,
-                    })
-                  }
-                >
-                  {t("sections.addChapterHere")}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() => open({ kind: "section", section })}
-              >
-                {t("sections.rename")}
-              </DropdownMenuItem>
-              {place > 0 && (
-                <DropdownMenuItem
-                  onSelect={() => moveTo(siblings[place - 2]?._id)}
-                >
-                  {t("moveUp")}
-                </DropdownMenuItem>
-              )}
-              {place < siblings.length - 1 && (
-                <DropdownMenuItem
-                  onSelect={() => moveTo(siblings[place + 1]?._id)}
-                >
-                  {t("moveDown")}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-danger focus:text-danger"
-                onSelect={(event) => {
-                  if (!confirming) {
-                    event.preventDefault();
-                    setConfirming(true);
-                    return;
-                  }
-                  void run(
-                    () =>
-                      remove({
-                        sectionId: section._id,
-                        withContents: !isEmpty,
-                      }),
-                    t("sections.deleted", { name: section.name }),
-                  );
-                }}
-              >
-                {confirming
-                  ? isEmpty
-                    ? t("confirmDelete")
-                    : t("sections.confirmDeleteAll")
-                  : t("sections.delete")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+    <DropdownMenu onOpenChange={(next) => !next && setConfirming(false)}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          // With a pointer it shows on the band it belongs to.
+          className="size-8 focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/band:opacity-100 [@media(hover:hover)]:opacity-0"
+          aria-label={t("sections.menu", { name: section.name })}
+        >
+          <Icons.More aria-hidden />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-52">
+        <DropdownMenuItem
+          onSelect={() => open({ kind: "addNorm", sectionId: section._id })}
+        >
+          {t("sections.addNormHere")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => open({ kind: "custom", sectionId: section._id })}
+        >
+          {t("sections.addCustomHere")}
+        </DropdownMenuItem>
+        {section.kind === "object" && (
+          <DropdownMenuItem
+            onSelect={() =>
+              open({
+                kind: "newSection",
+                sectionKind: "chapter",
+                parentId: section._id,
+              })
+            }
+          >
+            {t("sections.addChapterHere")}
+          </DropdownMenuItem>
         )}
-      </TableCell>
-    </TableRow>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => open({ kind: "section", section })}>
+          {t("sections.rename")}
+        </DropdownMenuItem>
+        {place > 0 && (
+          <DropdownMenuItem onSelect={() => moveTo(siblings[place - 2]?._id)}>
+            {t("moveUp")}
+          </DropdownMenuItem>
+        )}
+        {place < siblings.length - 1 && (
+          <DropdownMenuItem onSelect={() => moveTo(siblings[place + 1]?._id)}>
+            {t("moveDown")}
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="text-danger focus:text-danger"
+          onSelect={(event) => {
+            if (!confirming) {
+              event.preventDefault();
+              setConfirming(true);
+              return;
+            }
+            void run(
+              () =>
+                remove({
+                  sectionId: section._id,
+                  withContents: !isEmpty,
+                }),
+              t("sections.deleted", { name: section.name }),
+            );
+          }}
+        >
+          {confirming
+            ? isEmpty
+              ? t("confirmDelete")
+              : t("sections.confirmDeleteAll")
+            : t("sections.delete")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -483,24 +560,19 @@ function ItemRows({
   );
   const tags = [
     missingPrice && (
-      <Badge key="missing" tone="danger">
+      <RowTag key="missing" tone="danger">
         {t("tags.missingPrice")}
-      </Badge>
+      </RowTag>
     ),
     item.confidence !== undefined && (
-      <Badge key="ai" tone="ai">
+      <RowTag key="ai" tone="ai">
         {t("tags.ai")}
-      </Badge>
+      </RowTag>
     ),
-    newPrice && (
-      <Badge key="price" tone="warning">
-        {t("tags.oldPrice")}
-      </Badge>
-    ),
-    newNorm && (
-      <Badge key="norm" tone="warning">
+    editable && newNorm && (
+      <RowTag key="norm" tone="warning">
         {t("tags.newNorm")}
-      </Badge>
+      </RowTag>
     ),
   ]
     .filter(Boolean)
@@ -508,136 +580,199 @@ function ItemRows({
   const detailsId = `item-${item._id}`;
   const unit = formatUnit(item.unit, locale);
   const price = formatMoney(unitPrice(item), locale);
+  // A price the shops have changed since, while it can still be updated: a dot
+  // by the price and the price in the warning's colour, wherever it shows; the
+  // rail says it in words, once.
+  const stale = editable && newPrice && (
+    <StaleMark label={t("tags.oldPrice")} />
+  );
   // Own items without a code are stored with a dash, for the printed forms.
-  const code = item.code === "—" ? undefined : item.code;
+  const code = item.code === "–" ? undefined : item.code;
+  const source = useItemSource()(item);
+  const tenderPosition =
+    item.tenderRef &&
+    t("tenderRef.position", { position: item.tenderRef.position });
 
   return (
     <>
-      <TableRow>
+      <TableRow className="items-row group/row [&>td]:py-[11px] [@container(min-width:38rem)]:[&>td]:h-14 [@container(min-width:38rem)]:[&>td]:py-2">
         <TableCell
-          className={cn("align-top tabular-nums text-ink-3", FROM_MID)}
+          className={cn(
+            "text-right align-top tabular-nums text-ink-3",
+            FROM_MID,
+          )}
         >
-          {index}
+          {/* Gives way to the chevron where the row is reached for. */}
+          <span
+            className={cn(
+              "transition-opacity group-focus-within/row:opacity-0 group-hover/row:opacity-0",
+              expanded && "opacity-0",
+            )}
+          >
+            {index}
+          </span>
         </TableCell>
         <TableCell
-          className={cn("align-top", nested ? NESTED_ITEM_CELL : ITEM_CELL)}
+          className={cn(
+            "relative align-top",
+            nested ? NESTED_ITEM_CELL : ITEM_CELL,
+          )}
         >
           <button
             type="button"
             onClick={onToggle}
             aria-expanded={expanded}
             aria-controls={detailsId}
-            className="group grid w-full min-w-0 grid-cols-[1rem_minmax(0,1fr)] gap-x-2 gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+              "group relative grid w-full min-w-0 grid-cols-[1.75rem_minmax(0,1fr)] gap-y-0.5 rounded-xs text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@container(min-width:38rem)]:grid-cols-[minmax(0,1fr)]",
+              // Room for the row's menu where it's always shown; with a pointer
+              // it floats over the row's end, only while it's asked for.
+              editable && "[@media(hover:none)]:pr-9",
+            )}
           >
             <ChevronRight
               aria-hidden
               className={cn(
-                "mt-0.5 size-4 text-ink-3 transition-transform",
-                expanded && "rotate-90",
+                // In the number's column: 23 of them at rest would be 23 things
+                // to look past.
+                "absolute right-full top-0.5 mr-3 size-4 text-ink-3 opacity-0 transition-[opacity,transform] group-focus-within/row:opacity-100 group-hover/row:opacity-100",
+                MID_UP,
+                expanded && "rotate-90 opacity-100",
               )}
             />
-            {/* Tags after the title, or on their own line under a long one. */}
-            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-body text-ink">
-              <span>
-                <span className={cn("tabular-nums text-ink-3", NARROW_ONLY)}>
-                  {index}.{" "}
+            <span
+              className={cn(
+                "w-4 text-right tabular-nums text-ink-3",
+                NARROW_ONLY,
+              )}
+            >
+              {index}
+            </span>
+            <span className="text-body text-ink [text-wrap:pretty] group-hover:underline">
+              {keepUnits(item.title)}
+            </span>
+            {/* Every row the same, so the eye knows where to find it. */}
+            <span className="hidden text-meta tabular-nums text-ink-3 [@container(min-width:38rem)]:block">
+              {[tenderPosition, code, source]
+                .filter(Boolean)
+                .map((part, place) => (
+                  <Fragment key={part}>
+                    {place > 0 && " · "}
+                    <span className="whitespace-nowrap">{part}</span>
+                  </Fragment>
+                ))}
+              <span className={MID_ONLY}>
+                {" · "}
+                <span
+                  className={cn("whitespace-nowrap", stale && "text-warning")}
+                >
+                  {stale}
+                  {t("items.pricePerUnit", { price, unit })}
                 </span>
-                <span className="group-hover:underline">{item.title}</span>
               </span>
+              {tags.length > 0 && "\u2002"}
               {tags.length > 0 && (
-                <span className="inline-flex gap-1">{tags}</span>
+                <span className="inline-flex flex-wrap gap-x-2">{tags}</span>
               )}
             </span>
             <span
               className={cn(
-                "col-start-2 text-meta tabular-nums text-ink-2",
+                "col-start-2 flex items-baseline justify-between gap-3 text-meta tabular-nums text-ink-3",
                 NARROW_ONLY,
               )}
             >
-              {t("items.quantityTimesPrice", {
-                quantity: formatQuantity(item.quantity, locale),
-                unit,
-                price,
-              })}
-            </span>
-            <span className="col-start-2 text-meta text-ink-3">
-              {item.tenderRef && (
-                <>
-                  {t("tenderRef.position", {
-                    position: item.tenderRef.position,
-                  })}
-                  {" · "}
-                </>
-              )}
-              {code && (
-                <>
-                  <span className="font-mono text-code">{code}</span>
-                  {" · "}
-                </>
-              )}
-              <ItemSource item={item} />
-              <span className={MID_ONLY}>
-                {" · "}
-                <span className="whitespace-nowrap">
-                  {t("items.pricePerUnit", { price, unit })}
-                </span>
+              <span className={cn(stale && "text-warning")}>
+                {stale}
+                {t("items.quantityTimesPrice", {
+                  quantity: formatQuantity(item.quantity, locale),
+                  unit,
+                  price,
+                })}
+              </span>
+              <span className="whitespace-nowrap text-body text-ink">
+                {formatMoney(item.totals.total, locale)}
               </span>
             </span>
+            {/* A phone has what it needs in the title and the amounts. */}
+            {(tenderPosition || source || tags.length > 0) && (
+              <span
+                className={cn(
+                  "col-start-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-3",
+                  NARROW_ONLY,
+                )}
+              >
+                {(tenderPosition || source) && (
+                  <span>
+                    {[tenderPosition, source].filter(Boolean).join(" · ")}
+                  </span>
+                )}
+                {tags}
+              </span>
+            )}
           </button>
+          {editable && (
+            <div className="absolute right-1 top-1">
+              <ItemMenu
+                item={item}
+                siblings={siblings}
+                position={position}
+                sections={sections}
+                lastItems={lastItems}
+                newNorm={newNorm}
+                open={open}
+              />
+            </div>
+          )}
         </TableCell>
-        <TableCell
-          className={cn("whitespace-nowrap text-right align-top", FROM_MID)}
-        >
-          <InlineNumber
-            value={item.quantity}
-            format={(value) => formatQuantity(value, locale)}
-            label={t("quantityOf", { title: item.title })}
-            disabled={!editable}
-            // Up by the field's padding, level with the item's first line.
-            className="-my-1.5 w-24"
-            onCommit={(quantity) =>
-              run(() => update({ lineItemId: item._id, quantity }))
-            }
-          />
-          <span className="ml-1 inline-block min-w-8 text-left text-ink-3">
-            {unit}
-          </span>
+        <TableCell className={cn("whitespace-nowrap pr-0 align-top", FROM_MID)}>
+          {/* Held to the cell's end, so a long number grows to the left and
+              stays in line with the others. */}
+          <div className="flex items-baseline justify-end">
+            <InlineNumber
+              value={item.quantity}
+              format={(value) => formatQuantity(value, locale)}
+              label={t("quantityOf", { title: item.title })}
+              disabled={!editable}
+              // Up by the field's padding, level with the item's first line.
+              className="-my-1.5 group-hover/row:border-input group-hover/row:border-b-edge"
+              onCommit={(quantity) =>
+                run(() => update({ lineItemId: item._id, quantity }))
+              }
+            />
+            <span className="ml-2 min-w-7 text-left text-ink-3">{unit}</span>
+          </div>
         </TableCell>
         <TableCell
           className={cn(
             "text-right align-top tabular-nums text-ink-2",
             FROM_WIDE,
+            stale && "text-warning",
           )}
         >
+          {stale}
           {price}
         </TableCell>
-        <TableCell className="align-top text-right tabular-nums text-ink">
-          {formatMoney(item.totals.total, locale)}
-        </TableCell>
-        <TableCell className="align-top">
-          {editable && (
-            <ItemMenu
-              item={item}
-              siblings={siblings}
-              position={position}
-              sections={sections}
-              lastItems={lastItems}
-              newNorm={newNorm}
-              open={open}
-            />
+        <TableCell
+          className={cn(
+            // A row's figure in ink at the text's weight: the bands and the total
+            // carry the weight.
+            "align-top text-right tabular-nums text-ink",
+            FROM_MID,
           )}
+        >
+          {formatMoney(item.totals.total, locale)}
         </TableCell>
       </TableRow>
       {expanded && (
         <TableRow id={detailsId} className="hover:bg-transparent">
           <TableCell className={FROM_MID} />
           <TableCell
-            colSpan={COLUMNS - 1}
+            colSpan={4}
             className={cn("pt-0", nested ? NESTED_ITEM_CELL : ITEM_CELL)}
           >
             {/* No width of its own, so the wide resource table scrolls
                 inside the row instead of widening the whole table. */}
-            <div className="grid w-0 min-w-full gap-2 pl-6">
+            <div className="grid w-0 min-w-full gap-2 pl-7 [@container(min-width:38rem)]:pl-0">
               {item.tenderRef && <TenderRef item={item} />}
               {item.notes && (
                 <p className="m-0 whitespace-pre-line text-body text-ink-2">
@@ -667,9 +802,7 @@ function TenderRef({ item }: { item: LineItem }) {
   }
   return (
     <div className="grid gap-0.5 rounded-md bg-sunken px-3 py-2 text-meta">
-      <p className="m-0 text-label uppercase text-ink-3">
-        {t("tenderRef.title")}
-      </p>
+      <p className="m-0 text-caption text-ink-3">{t("tenderRef.title")}</p>
       <p className="m-0 text-ink-2">
         {[
           t("tenderRef.position", { position: ref.position }),
@@ -688,23 +821,28 @@ function TenderRef({ item }: { item: LineItem }) {
   );
 }
 
-/** Where a line item comes from: "normă ROCKWOOL · v2", "articol propriu". */
-function ItemSource({ item }: { item: LineItem }) {
+/**
+ * Where a line item comes from, when that's worth saying on its row: "normă
+ * ROCKWOOL · v2", "articol propriu". A first version of a base norm, the usual
+ * case, says nothing.
+ */
+function useItemSource() {
   const t = useScopedI18n("estimate");
   const normSource = useNormSource();
-  if (item.origin !== "norm") {
-    return <>{t(`origins.${item.origin}`)}</>;
-  }
-  const norm = item.norm;
-  if (!norm) {
-    return <>{t("origins.deletedNorm")}</>;
-  }
-  return (
-    <>
-      {normSource(norm)}
-      {norm.version > 1 && ` · v${norm.version}`}
-    </>
-  );
+  return (item: LineItem): string | undefined => {
+    if (item.origin !== "norm") {
+      return t(`origins.${item.origin}`);
+    }
+    const norm = item.norm;
+    if (!norm) {
+      return t("origins.deletedNorm");
+    }
+    if (norm.source === "base" && norm.version <= 1) {
+      return undefined;
+    }
+    const version = norm.version > 1 ? ` · v${norm.version}` : "";
+    return `${normSource(norm)}${version}`;
+  };
 }
 
 function ItemMenu({
@@ -753,7 +891,8 @@ function ItemMenu({
         <Button
           variant="ghost"
           size="icon"
-          className="size-8"
+          // With a pointer it shows on the row it belongs to.
+          className="size-8 bg-card focus-visible:opacity-100 data-[state=open]:opacity-100 group-hover/row:opacity-100 [@media(hover:hover)]:opacity-0"
           aria-label={t("items.menu", { title: item.title })}
         >
           <Icons.More aria-hidden />

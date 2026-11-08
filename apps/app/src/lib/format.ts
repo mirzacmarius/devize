@@ -22,6 +22,11 @@ export function formatQuantity(value: number, locale: Locale): string {
   return decimalFormat(locale, 2, 3).format(value);
 }
 
+/** A quantity in a column of them: always two decimals, so they line up. */
+export function formatQuantityRounded(value: number, locale: Locale): string {
+  return decimalFormat(locale, 2, 2).format(value);
+}
+
 /** What one unit of a norm consumes: 4,50 kg, or 0,035 kg. */
 export function formatConsumption(value: number, locale: Locale): string {
   return decimalFormat(locale, 2, 4).format(value);
@@ -84,6 +89,24 @@ export function formatCalendarDate(
   }).format(new Date(Date.UTC(year, month - 1, day)));
 }
 
+/** A calendar date, without the year when it is this year's: 21 oct., or 21 oct. 2027. */
+export function formatCalendarDay(
+  value: string,
+  locale: Locale,
+  now = new Date(),
+): string {
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) {
+    return value;
+  }
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    day: "numeric",
+    month: "short",
+    year: year === now.getFullYear() ? undefined : "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, day)));
+}
+
 /** A month stored as YYYY-MM: oct., or oct. 2026 with its year. */
 export function formatMonth(
   value: string,
@@ -126,8 +149,9 @@ export function formatTime(timestamp: number, locale: Locale): string {
 }
 
 const unitLabels: Record<Locale, Record<string, string>> = {
-  ro: { ora: "oră" },
-  en: { ora: "h", zi: "day", buc: "pcs" },
+  // A lone l beside a figure reads as a rule; L is the litre's other symbol.
+  ro: { ora: "oră", l: "L" },
+  en: { ora: "h", zi: "day", buc: "pcs", l: "L" },
 };
 
 /**
@@ -139,6 +163,18 @@ export function formatUnit(unit: string, locale: Locale): string {
 }
 
 /** Today's date as YYYY-MM-DD in the browser's time zone, for date inputs. */
+export function formatToday(locale: Locale, now = new Date()) {
+  const tag = intlLocale(locale);
+  const weekday = new Intl.DateTimeFormat(tag, { weekday: "long" }).format(now);
+  return {
+    weekday: weekday.charAt(0).toLocaleUpperCase(tag) + weekday.slice(1),
+    date: new Intl.DateTimeFormat(tag, {
+      day: "numeric",
+      month: "long",
+    }).format(now),
+  };
+}
+
 export function todayInput(now = new Date()): string {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
@@ -183,6 +219,17 @@ export function parseMoney(input: string): number | undefined {
     return Number(text.replace(/,/g, ""));
   }
   return parseDecimal(text);
+}
+
+// A number stays on one line with its unit, so a title never ends a line on "50"
+// and starts the next on "mm".
+const UNIT_AFTER_NUMBER =
+  /(\d) (mm²|cm²|m²|m³|mm|cm|mp|mc|kg|km|buc|m|l|t)(?![\p{L}\p{N}])/gu;
+
+export function keepUnits(text: string): string {
+  return text
+    .replace(/(\d) × (?=\d)/g, "$1\u00a0×\u00a0")
+    .replace(UNIT_AFTER_NUMBER, "$1\u00a0$2");
 }
 
 /** A Deviz's number as the design writes codes: DVZ-0142, and DVZ-0142-R2 for its second revision. */

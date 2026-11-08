@@ -105,9 +105,7 @@ export async function LegalPage({
           aria-label={t("documents")}
           className="flex flex-col gap-3 border-t border-border pt-6"
         >
-          <h2 className="m-0 text-label uppercase text-ink-3">
-            {t("documents")}
-          </h2>
+          <h2 className="m-0 text-caption text-ink-3">{t("documents")}</h2>
           <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0 text-body">
             {documents.map((other) => (
               <li key={other}>
@@ -118,7 +116,7 @@ export async function LegalPage({
                 ) : (
                   <Link
                     href={legalPaths[other]}
-                    className="text-ink-2 underline underline-offset-2 hover:text-ink"
+                    className="text-ink-2 underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current"
                   >
                     {t(other)}
                   </Link>
@@ -136,7 +134,7 @@ function ContentsLink({ section }: { section: LegalSection }) {
   return (
     <a
       href={`#${section.id}`}
-      className="underline-offset-2 hover:text-ink hover:underline"
+      className="underline-offset-[4px] hover:text-ink hover:underline"
     >
       {section.title}
     </a>
@@ -148,7 +146,7 @@ function ContentsLink({ section }: { section: LegalSection }) {
  * shows the agreement's name as a link.
  */
 export async function legalLinks(
-  className = "text-ink underline underline-offset-2",
+  className = "text-ink underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current",
 ): Promise<Record<LegalDocument, ReactNode>> {
   const t = await getScopedI18n("legal");
   const link = (document: LegalDocument) => (
@@ -258,7 +256,7 @@ async function OperatorDetails({
           <Detail label={t("email")}>
             <a
               href={`mailto:${operator.email}`}
-              className="text-ink underline underline-offset-2"
+              className="text-ink underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current"
             >
               {operator.email}
             </a>

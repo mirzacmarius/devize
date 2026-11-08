@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardFrame,
-  CardHeader,
-  CardTitle,
-} from "@devize/ui/card";
-import { formatCount, formatQuantity } from "@/lib/format";
+import { MeterBar } from "@devize/ui/meter";
+import { Figure, FigureStrip } from "@/components/figure-strip";
+import { formatCount, formatPercent, formatQuantity } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import type { TakeoffPageData } from "./types";
 
@@ -21,63 +16,84 @@ export function SummaryCard({ data }: { data: TakeoffPageData }) {
     ) / 100;
   const measured = data.items.filter((item) => item.takeoffs.length > 0);
   const differs = measured.filter((item) => item.differs).length;
-  const rows = [
-    { label: t("rooms"), value: formatCount(data.rooms.length, locale) },
-    {
-      label: t("floor"),
-      value: `${formatQuantity(
-        sum((room) => room.measures.floor),
-        locale,
-      )} mp`,
-    },
-    {
-      label: t("walls"),
-      value: `${formatQuantity(
-        sum((room) => room.measures.walls),
-        locale,
-      )} mp`,
-    },
-    {
-      label: t("perimeter"),
-      value: `${formatQuantity(
-        sum((room) => room.measures.perimeter),
-        locale,
-      )} m`,
-    },
-    {
-      label: t("measured"),
-      value: t("ofItems", {
-        measured: formatCount(measured.length, locale),
-        items: formatCount(data.items.length, locale),
-      }),
-    },
-    ...(differs > 0
-      ? [{ label: t("differs"), value: formatCount(differs, locale) }]
-      : []),
-  ];
+  const share =
+    data.items.length > 0
+      ? Math.round((measured.length / data.items.length) * 100)
+      : 0;
+  const shareLabel = t("measuredShare", {
+    percent: formatPercent(share, locale),
+  });
+  const measurable = data.estimate.locked
+    ? 0
+    : data.items.length - measured.length;
   return (
-    <CardFrame>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="m-0 grid gap-2">
-            {rows.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-baseline justify-between gap-3"
+    <FigureStrip>
+      <Figure
+        lead
+        label={t("measured")}
+        value={
+          <>
+            {formatCount(measured.length, locale)}
+            <span className="text-ink-3">
+              {" "}
+              {t("ofItems", {
+                items: formatCount(data.items.length, locale),
+              })}
+            </span>
+          </>
+        }
+      >
+        <MeterBar
+          ruled
+          className="mt-1.5"
+          value={share}
+          tone="action"
+          label={shareLabel}
+        />
+        {(measurable > 0 || differs > 0) && (
+          <p className="m-0 mt-1">
+            {/* Nothing to measure on a Deviz that has left. */}
+            {measurable > 0 && (
+              <a
+                href="#items"
+                className="rounded-xs underline decoration-ink-3/50 underline-offset-[4px] hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <dt className="text-body text-ink-2">{row.label}</dt>
-                <dd className="m-0 text-body font-medium tabular-nums text-ink">
-                  {row.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p className="m-0 text-meta text-ink-3">{t("hint")}</p>
-        </CardContent>
-      </Card>
-    </CardFrame>
+                {t("unmeasured", { left: formatCount(measurable, locale) })}
+              </a>
+            )}
+            {measurable > 0 && differs > 0 && " · "}
+            {differs > 0 && `${t("differs")}: ${formatCount(differs, locale)}`}
+          </p>
+        )}
+      </Figure>
+      <Figure
+        label={t("rooms")}
+        value={formatCount(data.rooms.length, locale)}
+      />
+      <Figure
+        label={t("floor")}
+        value={formatQuantity(
+          sum((room) => room.measures.floor),
+          locale,
+        )}
+        unit="mp"
+      />
+      <Figure
+        label={t("walls")}
+        value={formatQuantity(
+          sum((room) => room.measures.walls),
+          locale,
+        )}
+        unit="mp"
+      />
+      <Figure
+        label={t("perimeter")}
+        value={formatQuantity(
+          sum((room) => room.measures.perimeter),
+          locale,
+        )}
+        unit="m"
+      />
+    </FigureStrip>
   );
 }

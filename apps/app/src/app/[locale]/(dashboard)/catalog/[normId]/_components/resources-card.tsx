@@ -6,9 +6,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { cn } from "@devize/ui/utils";
+import { WarningNote } from "@/components/warning-note";
 import {
   formatConsumption,
   formatMoney,
@@ -78,8 +78,7 @@ export function ResourcesCard({ norm }: { norm: Norm }) {
         <CardTitle>{t("resources.title", { unit })}</CardTitle>
         <CardDescription>{t("resources.description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2 [container-type:inline-size]">
+      <CardContent className="[container-type:inline-size]">
         {rows.length === 0 ? (
           <p className="m-0 pt-2 text-body text-ink-3">{t("resources.none")}</p>
         ) : (
@@ -87,21 +86,21 @@ export function ResourcesCard({ norm }: { norm: Norm }) {
             <table className="w-full border-collapse text-body">
               <thead>
                 <tr>
-                  <th className="py-2 text-left text-label font-normal uppercase text-ink-3">
+                  <th className="py-2 text-left text-caption text-ink-3">
                     {t("resources.columns.resource")}
                   </th>
-                  <th className="py-2 pl-3 text-right text-label font-normal uppercase text-ink-3">
+                  <th className="py-2 pl-3 text-right text-caption text-ink-3">
                     {t("resources.columns.consumption")}
                   </th>
                   <th
                     className={cn(
-                      "py-2 pl-3 text-right text-label font-normal uppercase text-ink-3",
+                      "py-2 pl-3 text-right text-caption text-ink-3",
                       PRICE_COLUMN,
                     )}
                   >
                     {t("resources.columns.price")}
                   </th>
-                  <th className="py-2 pl-3 text-right text-label font-normal uppercase text-ink-3">
+                  <th className="py-2 pl-3 text-right text-caption text-ink-3">
                     {t("resources.columns.value")}
                   </th>
                 </tr>
@@ -180,11 +179,7 @@ export function ResourcesCard({ norm }: { norm: Norm }) {
                 </dd>
               </div>
             </dl>
-            {partial && (
-              <p className="m-0 text-meta text-warning">
-                {t("resources.partial")}
-              </p>
-            )}
+            {partial && <WarningNote>{t("resources.partial")}</WarningNote>}
           </>
         )}
       </CardContent>

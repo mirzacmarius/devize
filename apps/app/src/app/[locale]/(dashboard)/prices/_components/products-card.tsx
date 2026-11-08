@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import {
   Table,
@@ -47,14 +46,19 @@ export function ProductsCard() {
   const rows =
     products.status === "LoadingFirstPage" ? undefined : products.results;
 
+  // The column has nothing to say until a price has moved.
+  const anyMoved = rows?.some(
+    (row) =>
+      row.previous && priceMove(row.previous.price, row.listing.price) !== 0,
+  );
+
   return (
     <Card>
       <CardHeader className="grid justify-stretch gap-1">
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription className="m-0">{t("description")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         {rows?.length === 0 ? (
           <div className="grid gap-1 rounded-md bg-tile px-4 py-3">
             <p className="m-0 text-body font-medium text-ink">
@@ -63,14 +67,19 @@ export function ProductsCard() {
             <p className="m-0 text-meta text-ink-3">{t("emptyDescription")}</p>
           </div>
         ) : (
-          <Table>
+          <Table twoLine>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("product")}</TableHead>
-                <TableHead className="text-right">{t("price")}</TableHead>
-                <TableHead className="hidden text-right sm:table-cell">
-                  {t("change")}
+                <TableHead className="hidden w-36 lg:table-cell">
+                  {t("store")}
                 </TableHead>
+                <TableHead className="text-right">{t("price")}</TableHead>
+                {anyMoved && (
+                  <TableHead className="hidden text-right sm:table-cell">
+                    {t("change")}
+                  </TableHead>
+                )}
                 <TableHead className="hidden text-right md:table-cell">
                   {t("checked")}
                 </TableHead>
@@ -79,7 +88,7 @@ export function ProductsCard() {
             <TableBody>
               {rows === undefined && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-ink-3">
+                  <TableCell colSpan={5} className="text-ink-3">
                     {tc("loading")}
                   </TableCell>
                 </TableRow>
@@ -98,22 +107,25 @@ export function ProductsCard() {
                             href={listing.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded-xs text-body font-medium text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="group rounded-xs text-body text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             {listing.title}
                             <ExternalLink
                               aria-hidden
-                              className="ml-1.5 inline size-3.5 align-[-2px] text-ink-3"
+                              className="ml-1.5 inline size-3.5 align-[-2px] text-ink-3 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
                             />
                           </a>
                         ) : (
-                          <span className="text-body font-medium text-ink">
+                          <span className="text-body text-ink">
                             {listing.title}
                           </span>
                         )}
                         <span className="text-meta text-ink-3">
+                          <span className="lg:hidden">
+                            {tStores(row.store)}
+                            {" · "}
+                          </span>
                           {t("forMaterial", {
-                            store: tStores(row.store),
                             material:
                               row.material?.name ?? t("unknownMaterial"),
                           })}
@@ -134,6 +146,9 @@ export function ProductsCard() {
                         )}
                       </div>
                     </TableCell>
+                    <TableCell className="hidden text-ink-2 lg:table-cell">
+                      {tStores(row.store)}
+                    </TableCell>
                     <TableCell className="text-right align-top">
                       <div className="grid justify-items-end gap-0.5">
                         <span className="tabular-nums text-ink">
@@ -149,29 +164,31 @@ export function ProductsCard() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="hidden text-right align-top sm:table-cell">
-                      {row.previous ? (
-                        <div className="grid justify-items-end gap-0.5">
-                          <span
-                            className={cn(
-                              "tabular-nums",
-                              move > 0
-                                ? "text-warning"
-                                : move < 0
-                                  ? "text-success"
-                                  : "text-ink",
-                            )}
-                          >
-                            {signedPercent(move, locale)}
-                          </span>
-                          <span className="whitespace-nowrap text-meta tabular-nums text-ink-3">
-                            {t("before", { price: money(row.previous.price) })}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-ink-3">—</span>
-                      )}
-                    </TableCell>
+                    {anyMoved && (
+                      <TableCell className="hidden text-right align-top sm:table-cell">
+                        {row.previous ? (
+                          <div className="grid justify-items-end gap-0.5">
+                            <span
+                              className={cn(
+                                "tabular-nums",
+                                move > 0
+                                  ? "text-warning"
+                                  : move < 0
+                                    ? "text-success"
+                                    : "text-ink",
+                              )}
+                            >
+                              {signedPercent(move, locale)}
+                            </span>
+                            <span className="whitespace-nowrap text-meta tabular-nums text-ink-3">
+                              {t("before", {
+                                price: money(row.previous.price),
+                              })}
+                            </span>
+                          </div>
+                        ) : null}
+                      </TableCell>
+                    )}
                     <TableCell className="hidden whitespace-nowrap text-right align-top text-ink-3 tabular-nums md:table-cell">
                       {formatDay(listing.checkedAt, locale)}
                     </TableCell>

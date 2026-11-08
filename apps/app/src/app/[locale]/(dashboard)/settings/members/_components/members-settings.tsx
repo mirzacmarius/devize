@@ -10,7 +10,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import {
   Dialog,
@@ -38,6 +37,7 @@ import { toast } from "@devize/ui/sonner";
 import { StatusPill, type StatusPillProps } from "@devize/ui/status-pill";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
+import { Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -136,20 +136,14 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
     <Card>
       <CardHeader>
         <div className="grid gap-1">
-          <CardTitle>{t("title")}</CardTitle>
+          {/* The tab above already says it, until there's a column for titles. */}
+          <CardTitle className="sr-only xl:not-sr-only">{t("title")}</CardTitle>
           <CardDescription>
             {t("description", { firm: firm.name })}
           </CardDescription>
         </div>
-        {isAdmin && (
-          <Button size="sm" onClick={() => setInviting(true)}>
-            <Icons.Assign aria-hidden />
-            {t("invite")}
-          </Button>
-        )}
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         {members === undefined ? (
           <p className="m-0 py-2 text-body text-ink-3">{tc("loading")}</p>
         ) : (
@@ -163,7 +157,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
               return (
                 <li
                   key={member.userId}
-                  className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+                  className="grid min-h-14 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-2 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
                 >
                   <Avatar className="size-9">
                     {member.avatarUrl && (
@@ -172,7 +166,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                     <AvatarFallback>{initials(name)}</AvatarFallback>
                   </Avatar>
                   <div className="grid min-w-0">
-                    <span className="truncate text-body font-medium text-ink">
+                    <span className="truncate text-body text-ink">
                       {name}
                       {isMe && (
                         <span className="font-normal text-ink-3">
@@ -205,7 +199,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         }
                       >
                         <SelectTrigger
-                          className="h-8 w-36"
+                          className="h-8 w-36 gap-1.5 px-2.5 py-1"
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />
@@ -229,6 +223,8 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                           <Button
                             variant="ghost"
                             size="icon"
+                            // The dots end on the page's edge, not the button's.
+                            className="-mr-2.5"
                             aria-label={tc("actions")}
                           >
                             <Icons.More aria-hidden />
@@ -245,13 +241,25 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                       </DropdownMenu>
                     ) : (
                       // Keeps the roles lined up with the rows that have a menu.
-                      <span aria-hidden className="size-9 shrink-0" />
+                      <span aria-hidden className="-mr-2.5 size-9 shrink-0" />
                     )}
                   </div>
                 </li>
               );
             })}
           </ul>
+        )}
+        {/* The list comes to this: one more person. */}
+        {isAdmin && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="justify-self-start"
+            onClick={() => setInviting(true)}
+          >
+            <Icons.Assign aria-hidden />
+            {t("invite")}
+          </Button>
         )}
       </CardContent>
       <ConfirmDialog
@@ -295,43 +303,63 @@ function InvitationsCard() {
         <CardTitle>{t("invitationsTitle")}</CardTitle>
         <CardDescription>{t("invitationsDescription")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-2">
+      <CardContent>
         <ul className="m-0 grid list-none p-0">
           {invitations.map((invitation) => (
             <li
               key={invitation._id}
-              className="grid items-center gap-x-3 gap-y-2 border-t border-border py-3 first:border-t-0 sm:grid-cols-[minmax(0,1fr)_auto]"
+              className="grid min-h-14 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-t border-border py-2 first:border-t-0 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
             >
-              <div className="grid min-w-0 gap-1">
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="truncate text-body font-medium text-ink">
-                    {invitation.email}
-                  </span>
-                  <StatusPill tone={emailTones[invitation.emailStatus]}>
+              {/* A place kept among the members, until they accept. */}
+              <span
+                aria-hidden
+                className="grid size-9 shrink-0 place-items-center rounded-full border border-dashed border-control text-ink-3"
+              >
+                <Mail className="size-4" />
+              </span>
+              <div className="grid min-w-0">
+                <span className="truncate text-body text-ink">
+                  {invitation.email}
+                </span>
+                <span
+                  className="text-meta text-ink-3"
+                  title={
+                    invitation.invitedByName
+                      ? t("invitedBy", { name: invitation.invitedByName })
+                      : undefined
+                  }
+                >
+                  <StatusPill
+                    tone={emailTones[invitation.emailStatus]}
+                    title={
+                      invitation.emailStatus === "not_sent"
+                        ? t("inviteEmailHint.not_sent")
+                        : undefined
+                    }
+                  >
                     {t(`emailStatus.${invitation.emailStatus}`)}
                   </StatusPill>
+                  {invitation.emailStatus === "not_sent" &&
+                    ` · ${t("sendLinkHint")}`}
                 </span>
+                {/* What the invitation is, on a line of its own. */}
                 <span className="text-meta text-ink-3">
-                  {[
-                    tFirm(`roles.${invitation.role}`),
-                    invitation.invitedByName &&
-                      t("invitedBy", { name: invitation.invitedByName }),
-                    t("expires", {
-                      date: formatDay(invitation.expiresAt, locale),
-                    }),
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
+                  {tFirm(`roles.${invitation.role}`)}
+                  {" · "}
+                  {t("expires", {
+                    date: formatDay(invitation.expiresAt, locale),
+                  })}
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-1 sm:justify-end">
+              {/* In the column the members' menus are in. */}
+              <div className="col-start-2 flex items-center justify-between gap-1 sm:col-start-3 sm:justify-end">
                 <CopyLinkButton token={invitation.token} />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="-mr-2.5"
                       aria-label={tc("actions")}
                     >
                       <Icons.More aria-hidden />

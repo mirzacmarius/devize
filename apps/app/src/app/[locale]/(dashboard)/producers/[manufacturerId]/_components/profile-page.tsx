@@ -11,7 +11,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  TickRule,
 } from "@devize/ui/card";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
@@ -33,6 +32,7 @@ import { useFirm } from "@/components/firm-provider";
 import { NormStatusPill } from "@/components/norm-status";
 import { useRouteParam } from "@/components/use-route-param";
 import { useRun } from "@/components/use-run";
+import { WarningNote } from "@/components/warning-note";
 import { formatDay, formatUnit } from "@/lib/format";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { ClaimDialog } from "./claim-dialog";
@@ -153,7 +153,7 @@ export function ProfilePage() {
       <div
         className={
           profile.products.length > 0
-            ? "grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]"
+            ? "grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8"
             : "grid gap-6"
         }
       >
@@ -270,7 +270,7 @@ function ProfileNotices({ profile }: { profile: Profile }) {
 }
 
 const linkClass =
-  "rounded-xs underline-offset-[3px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "rounded-xs underline-offset-[4px] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
  * What the producer says about itself, and whom to ask technical questions.
@@ -344,13 +344,12 @@ function DetailsCard({
           </Button>
         )}
       </CardHeader>
-      <TickRule />
       <CardContent
         className={cn(
-          "grid gap-6 pt-4",
+          "grid gap-6",
           details?.about &&
             rows.length > 0 &&
-            "lg:grid-cols-[minmax(0,1fr)_theme(spacing.rail)]",
+            "xl:grid-cols-[minmax(0,1fr)_theme(spacing.rail)] xl:gap-x-8",
         )}
       >
         {!details && (
@@ -403,8 +402,7 @@ function DraftsCard({
         <CardTitle>{t("drafts")}</CardTitle>
         <CardDescription>{t("draftsHint")}</CardDescription>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
@@ -423,9 +421,6 @@ function DraftsCard({
                     href={`/catalog/${norm._id}`}
                     className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="font-mono text-code text-ink-3">
-                      {norm.code}
-                    </span>
                     <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="text-body font-medium text-ink group-hover:underline">
                         {norm.title}
@@ -437,10 +432,11 @@ function DraftsCard({
                         </Badge>
                       )}
                     </span>
+                    <span className="tabular-nums text-ink-3">{norm.code}</span>
                     {norm.reviewNote && (
-                      <span className="text-meta text-warning">
+                      <WarningNote>
                         {tNorm("notices.reviewNote", { note: norm.reviewNote })}
-                      </span>
+                      </WarningNote>
                     )}
                   </Link>
                 </TableCell>
@@ -562,8 +558,7 @@ function NormsCard({ profile }: { profile: Profile }) {
       <CardHeader>
         <CardTitle>{t("norms")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
@@ -586,9 +581,6 @@ function NormsCard({ profile }: { profile: Profile }) {
                     href={`/catalog/${norm._id}`}
                     className="group grid gap-0.5 rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="font-mono text-code text-ink-3">
-                      {norm.code}
-                    </span>
                     <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="text-body font-medium text-ink group-hover:underline">
                         {norm.title}
@@ -602,11 +594,10 @@ function NormsCard({ profile }: { profile: Profile }) {
                         <Badge>{tNorms("unconfirmed")}</Badge>
                       )}
                     </span>
-                    {norm.category && (
-                      <span className="text-meta text-ink-3">
-                        {norm.category}
-                      </span>
-                    )}
+                    <span className="text-meta text-ink-3">
+                      <span className="tabular-nums">{norm.code}</span>
+                      {norm.category && ` · ${norm.category}`}
+                    </span>
                   </Link>
                 </TableCell>
                 <TableCell className="text-ink-2">
@@ -632,8 +623,7 @@ function ProductsCard({ profile }: { profile: Profile }) {
       <CardHeader>
         <CardTitle>{t("products")}</CardTitle>
       </CardHeader>
-      <TickRule />
-      <CardContent className="pt-4">
+      <CardContent>
         <Table>
           <TableHeader>
             <TableRow>

@@ -73,16 +73,16 @@ export function ResourceTable({
         <table className="w-full min-w-[30rem] border-collapse text-body">
           <thead>
             <tr>
-              <th className="pb-2 text-left text-label uppercase text-ink-3">
+              <th className="pb-2 text-left text-caption text-ink-3">
                 {t("resourceColumns.resource")}
               </th>
-              <th className="pb-2 pl-3 text-right text-label uppercase text-ink-3">
+              <th className="pb-2 pl-3 text-right text-caption text-ink-3">
                 {t("resourceColumns.consumption")}
               </th>
-              <th className="pb-2 pl-3 text-right text-label uppercase text-ink-3">
+              <th className="pb-2 pl-3 text-right text-caption text-ink-3">
                 {t("resourceColumns.price")}
               </th>
-              <th className="pb-2 pl-3 text-right text-label uppercase text-ink-3">
+              <th className="pb-2 pl-3 text-right text-caption text-ink-3">
                 {t("resourceColumns.value", {
                   unit: formatUnit(item.unit, locale),
                 })}
