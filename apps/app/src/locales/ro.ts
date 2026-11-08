@@ -4279,6 +4279,7 @@ export default {
     receivable: {
       total: "De încasat",
       overdue: "Plăți restante",
+      noneOverdue: "Nicio plată restantă",
       toSend: "De transmis la ANAF",
       lateCount: "Termen depășit: {count}",
       "toSendUnit#one": "factură",

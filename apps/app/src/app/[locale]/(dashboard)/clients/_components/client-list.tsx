@@ -217,7 +217,7 @@ export function ClientList() {
                           {t("columns.owed")}
                         </span>
                         {going?.owed ? (
-                          <span className="font-medium">
+                          <span className="text-ink">
                             {formatMoney(going.owed, locale)}
                           </span>
                         ) : (

@@ -96,7 +96,8 @@ export function TotalBlock({
         )}
       >
         {formatMoney(total, locale)}{" "}
-        <span className="text-meta text-ink-3">lei</span>
+        {/* In proportion to the figure, as the Deviz's own total has it. */}
+        <span className="text-meta text-ink-3 sm:text-body-lg">lei</span>
       </span>
       <FactList className="empty:hidden">
         {deposit !== undefined && (

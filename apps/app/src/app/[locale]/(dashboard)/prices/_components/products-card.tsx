@@ -151,7 +151,7 @@ export function ProductsCard() {
                     </TableCell>
                     <TableCell className="text-right align-top">
                       <div className="grid justify-items-end gap-0.5">
-                        <span className="font-medium tabular-nums text-ink">
+                        <span className="tabular-nums text-ink">
                           {money(listing.price)}
                         </span>
                         {row.material && (

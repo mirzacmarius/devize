@@ -34,9 +34,10 @@ import type { AlertList, PriceAlert } from "./types";
 // the old figure a step back, the new one weighted.
 const TOTALS =
   "grid shrink-0 grid-cols-[7rem_7rem] items-baseline justify-items-end tabular-nums";
-// A price before and now, what it's per, and what the change does to the total.
+// A price before and now, and what the change does to the total; what the
+// prices are per goes with the name.
 const CHANGES =
-  "grid shrink-0 grid-cols-[5rem_5rem_3rem_6.5rem] items-baseline justify-items-end tabular-nums";
+  "grid shrink-0 grid-cols-[5rem_5rem_6.5rem] items-baseline justify-items-end tabular-nums";
 const ROW =
   "flex flex-wrap items-baseline justify-between gap-x-4 border-t border-border py-1.5 text-body";
 
@@ -199,7 +200,8 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
             <p className="m-0 text-meta text-ink-2">
               {profitChange < 0 ? t("profitDown") : t("profitUp")}
             </p>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+            {/* The heads at the foot of the line, level with the other half's. */}
+            <div className="flex flex-wrap items-end justify-between gap-x-4">
               <p className="m-0 flex items-baseline gap-x-1.5">
                 <span
                   className={cn(
@@ -249,7 +251,6 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               <span aria-hidden className={cn(CHANGES, "text-head text-ink-2")}>
                 <span>{t("before")}</span>
                 <span>{t("now")}</span>
-                <span />
                 <span>{t("impact")}</span>
               </span>
             </div>
@@ -258,14 +259,14 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 <div key={`${change.name}:${change.unit}`} className={ROW}>
                   <dt className="min-w-0 flex-1 basis-40 text-ink-2">
                     {change.name}
+                    <span className="whitespace-nowrap text-meta text-ink-3">
+                      {" · lei/"}
+                      {formatUnit(change.unit, locale)}
+                    </span>
                   </dt>
                   <dd className={cn(CHANGES, "m-0 ml-auto")}>
                     <span className="text-ink-3">{money(change.oldPrice)}</span>
                     <span className="text-ink-2">{money(change.newPrice)}</span>
-                    {/* What the prices are per, after the new one. */}
-                    <span className="justify-self-start pl-1.5 text-meta text-ink-3">
-                      /{formatUnit(change.unit, locale)}
-                    </span>
                     <span className="font-medium text-ink">
                       {signedMoney(change.impact, locale)}
                     </span>

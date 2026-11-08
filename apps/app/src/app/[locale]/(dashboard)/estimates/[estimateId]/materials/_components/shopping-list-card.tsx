@@ -202,7 +202,7 @@ function MaterialRow({
       </TableCell>
       <TableCell className="whitespace-nowrap text-right align-top tabular-nums max-md:self-start">
         <div className="grid justify-items-end gap-0.5">
-          <span className="font-medium">
+          <span className="text-ink">
             {formatMoney(row.boughtCost, locale)}
           </span>
           {/* Where there's room it has a column. */}

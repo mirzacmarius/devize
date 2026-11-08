@@ -77,11 +77,10 @@ function matches(norm: NormRow, words: readonly string[]) {
 const TABLET_ONLY = "hidden md:inline xl:hidden";
 
 // A cost and what it's per, "70,88 lei/mp": the unit in a slot of its own after
-// the figure, so the figures line up whatever they're per, and the head stands
-// over the figures.
+// the figure, so the figures line up whatever they're per, ending on the
+// table's edge as the head and "Fără preț" do.
 const PER_UNIT =
-  "ml-1.5 inline-block min-w-[3rem] text-left text-meta text-ink-3";
-const OVER_FIGURES = "last:pr-[54px]";
+  "ml-1.5 inline-block min-w-[3rem] text-right text-meta text-ink-3";
 
 /**
  * The catalog: the public norms (the producers', then Devize's base norms by
@@ -403,10 +402,7 @@ function NormsTable({
                 {t("columns.updated")}
               </TableHead>
             )}
-            <TableHead
-              className={cn("w-40 text-right", OVER_FIGURES)}
-              title={t("costNote")}
-            >
+            <TableHead className="w-40 text-right" title={t("costNote")}>
               {t("columns.cost")}
             </TableHead>
           </TableRow>
@@ -567,13 +563,11 @@ function NormsTable({
                   )}
                   <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top">
                     {norm.referenceCost === undefined ? (
-                      // Where the figures end, as the head does.
-                      <StatusPill tone="warning" className="mr-[54px]">
-                        {t("noCost")}
-                      </StatusPill>
+                      // On the edge, as the head and the units are.
+                      <StatusPill tone="warning">{t("noCost")}</StatusPill>
                     ) : (
                       <>
-                        <span className="font-medium">
+                        <span className="text-ink">
                           {formatMoney(norm.referenceCost, locale)}
                         </span>
                         <span className={PER_UNIT}>

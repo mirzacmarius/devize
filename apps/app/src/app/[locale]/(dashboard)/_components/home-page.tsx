@@ -459,11 +459,12 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   );
 }
 
+// One neutral tile for every line, in either theme; what can't wait colours
+// its mark, and its words say why.
 const todoTones = {
-  danger: "bg-danger-soft text-danger",
-  warning: "bg-warning-soft text-warning",
-  // Only what can't wait has a tile: the rest is its mark alone.
-  quiet: "text-ink-3",
+  danger: "bg-sunken text-danger",
+  warning: "bg-sunken text-warning",
+  quiet: "bg-sunken text-ink-3",
 };
 
 /**
@@ -601,7 +602,7 @@ function RecentCard({
                     <span className="min-w-0 text-body font-medium text-ink max-sm:text-body-lg sm:truncate">
                       {row.title}
                     </span>
-                    <span className="whitespace-nowrap text-right text-body font-medium tabular-nums text-ink max-sm:hidden">
+                    <span className="whitespace-nowrap text-right text-body tabular-nums text-ink max-sm:hidden">
                       {formatMoney(row.total, locale)}
                     </span>
                     <span className="min-w-0 truncate text-meta text-ink-3">
@@ -617,7 +618,7 @@ function RecentCard({
                     {/* On a phone, its own line: where it stands and how much. */}
                     <span className="flex items-baseline justify-between gap-4 sm:hidden">
                       <EstimateStatusPill status={row.status} />
-                      <span className="whitespace-nowrap text-body font-medium tabular-nums text-ink">
+                      <span className="whitespace-nowrap text-body tabular-nums text-ink">
                         {formatMoney(row.total, locale)}
                       </span>
                     </span>

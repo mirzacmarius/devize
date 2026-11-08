@@ -114,7 +114,7 @@
   --ink-2: 60 3.9% 70.2%; /* #b6b6b0 */
   --ink-3: 60 3.6% 62.2%; /* #a2a29b */
 
-  --action: 60 5.2% 77.3%; /* #c8c8c2: the one bright thing on the page, short of a glare */
+  --action: 60 9.4% 87.5%; /* #e2e2dc: the one bright thing on the page, plainly the main action */
   --on-action: 60 4.2% 9.4%; /* #191917 */
   --action-tonal: 60 2.6% 19%; /* #31312f */
 
@@ -619,13 +619,10 @@
       padding-bottom: 7rem;
     }
   }
-  /* A heading starts a group: the row before it needs no rule of its own, and
-     heads right above a filled band need none either. */
+  /* A heading starts a group: the row before it needs no rule of its own. The
+     heads keep theirs, over a band as over a row, so every table starts alike. */
   :is(tr, li):has(+ [data-group]) {
     border-bottom-width: 0;
-  }
-  table:has(> tbody > tr[data-band]:first-child) > thead > tr {
-    border-bottom-color: transparent;
   }
   /* A long list's heads stay in sight; their room above isn't a gap at rest. */
   @media (min-width: 768px) {
@@ -635,10 +632,6 @@
     .sticky-head {
       --head-rule: var(--rule);
       margin-top: -8px;
-    }
-    /* Over a band it needs no rule, until the rows pass under it. */
-    .sticky-head:not([data-stuck]):has(> tbody > tr[data-band]:first-child) {
-      --head-rule: 0 0% 0% / 0;
     }
     .sticky-head > thead > tr {
       border-bottom-width: 0;
@@ -698,10 +691,6 @@
     }
     .items-table {
       --head-rule: var(--rule);
-    }
-    /* Over a band it needs no rule, until the rows pass under it. */
-    .items-table:not([data-stuck]):has(> tbody > tr[data-band]:first-child) {
-      --head-rule: 0 0% 0% / 0;
     }
     .items-table > thead th {
       position: sticky;

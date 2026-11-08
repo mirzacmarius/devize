@@ -448,7 +448,8 @@ function OmissionsFix({
       aria-label={label}
       className={cn(
         "items-baseline text-meta [&_svg]:self-center",
-        check.status === "none" && "text-ai",
+        // A link in ink, as the card's others are; the mark says it's AI.
+        check.status === "none" && "[&_svg]:text-ai",
       )}
       disabled={starting}
       onClick={async () => {

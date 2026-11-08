@@ -619,7 +619,7 @@ function RowsTable({
                 </TableCell>
                 <TableCell
                   className={cn(
-                    "whitespace-nowrap text-right align-top font-medium tabular-nums",
+                    "whitespace-nowrap text-right align-top tabular-nums text-ink",
                     !fillable && row.quantity === 0 && "max-md:hidden",
                   )}
                 >

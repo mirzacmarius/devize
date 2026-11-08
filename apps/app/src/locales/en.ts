@@ -4281,6 +4281,7 @@ export default {
     receivable: {
       total: "To collect",
       overdue: "Overdue payments",
+      noneOverdue: "No overdue payments",
       toSend: "To send to ANAF",
       lateCount: "Deadline passed: {count}",
       "toSendUnit#one": "invoice",

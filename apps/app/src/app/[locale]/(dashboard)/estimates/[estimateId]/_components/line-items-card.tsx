@@ -753,7 +753,9 @@ function ItemRows({
         </TableCell>
         <TableCell
           className={cn(
-            "align-top text-right font-medium tabular-nums text-ink",
+            // A row's figure in ink at the text's weight: the bands and the total
+            // carry the weight.
+            "align-top text-right tabular-nums text-ink",
             FROM_MID,
           )}
         >

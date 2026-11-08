@@ -179,7 +179,6 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
             {firm.logoUrl && (
               <Button
                 type="button"
-                size="sm"
                 variant="ghost"
                 disabled={busy}
                 onClick={() =>
@@ -193,9 +192,9 @@ function LogoCard({ firm, canEdit }: { firm: FirmDetails; canEdit: boolean }) {
                 {t("removeLogo")}
               </Button>
             )}
+            {/* As tall as the form's fields. */}
             <Button
               type="button"
-              size="sm"
               variant="outline"
               disabled={busy}
               onClick={() => document.getElementById(inputId)?.click()}

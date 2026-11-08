@@ -137,15 +137,18 @@ export function InvoiceList() {
                 ) : receivable.overdue > 0 ? (
                   formatMoney(receivable.overdue, locale)
                 ) : (
-                  // Nothing late: a quiet dash, not a figure to read.
-                  <Nil />
+                  // Nothing late: a zero a step back, and the words for it.
+                  <span className="text-ink-3">0</span>
                 )
               }
-              unit={receivable && receivable.overdue > 0 ? "lei" : undefined}
+              unit="lei"
               note={
                 receivable &&
-                receivable.overdueCount > 0 &&
-                t("receivable.invoices", { count: receivable.overdueCount })
+                (receivable.overdueCount > 0
+                  ? t("receivable.invoices", {
+                      count: receivable.overdueCount,
+                    })
+                  : t("receivable.noneOverdue"))
               }
             />
             <Figure
@@ -274,7 +277,7 @@ export function InvoiceList() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums max-md:text-body-lg max-xl:font-medium xl:text-ink-2">
+                    <TableCell className="text-right tabular-nums text-ink max-md:text-body-lg xl:text-ink-2">
                       {formatMoney(row.total, locale)}
                       {/* Below this the column's gone, so a part-paid one says it here. */}
                       {owed !== undefined && row.paidAmount > 0 && (
@@ -286,7 +289,7 @@ export function InvoiceList() {
                     {/* What's still to come in is what this list is read for. */}
                     <TableCell className="hidden pl-8 text-right tabular-nums xl:table-cell">
                       {owed ? (
-                        <span className="font-medium">
+                        <span className="text-ink">
                           {formatMoney(owed, locale)}
                         </span>
                       ) : (

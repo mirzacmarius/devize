@@ -121,7 +121,7 @@ export default function ManufacturersPage() {
               onChange={(event) => setText(event.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
-              className="w-full sm:w-72"
+              className="w-full sm:w-80"
             />
             <label htmlFor="status_filter" className="sr-only">
               {t("columns.status")}
