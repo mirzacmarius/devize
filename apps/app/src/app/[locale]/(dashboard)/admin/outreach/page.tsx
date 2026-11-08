@@ -273,7 +273,7 @@ function MessageRow({
             {tAdmin(`status.message.${message.status}`)}
           </Pill>
           {message.confidence && (
-            <Confidence>
+            <Confidence level={message.confidence}>
               {tAdmin(`confidence.${message.confidence}`)}
             </Confidence>
           )}

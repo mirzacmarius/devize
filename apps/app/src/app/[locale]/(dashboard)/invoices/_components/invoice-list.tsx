@@ -5,6 +5,7 @@ import { Button } from "@devize/ui/button";
 import { EmptyState } from "@devize/ui/empty-state";
 import { Icons } from "@devize/ui/icons";
 import { PageHeader } from "@devize/ui/page-header";
+import { StatusPill } from "@devize/ui/status-pill";
 import {
   Table,
   TableBody,
@@ -148,12 +149,13 @@ export function InvoiceList() {
               label={t("receivable.toSend")}
               value={anaf ? formatCount(anaf.toSend, locale) : "–"}
               unit={anaf && t("receivable.toSendUnit", { count: anaf.toSend })}
-              // The count stays neutral; what's late says it, as on Home and the rows.
+              // The count stays neutral; what's late has the red dot, and the
+              // rows below say it in words.
               note={
                 anaf?.firstLate && (
-                  <span className="text-danger">
+                  <StatusPill tone="declined">
                     {t("receivable.lateCount", { count: anaf.late })}
-                  </span>
+                  </StatusPill>
                 )
               }
             />

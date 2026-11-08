@@ -77,7 +77,11 @@ export default {
     searching: "Searching…",
     nothing: "Nothing matches “{text}”.",
     count: "Results: {count}",
-    hints: "↑ ↓ to choose · Enter to open · Esc to close",
+    hints: {
+      choose: "to choose",
+      open: "to open",
+      close: "to close",
+    },
   },
   login: {
     title: "Sign in to Devize",
@@ -1999,8 +2003,6 @@ export default {
     unconfirmedState: "Not confirmed",
     parts: {
       producers: "Norms from producers",
-      producersNote: "Not confirmed yet",
-      producersNoteLong: "from their public documents",
       producersNoteFull:
         "Taken from their public documents; the producers haven't checked them yet.",
       base: "Base norms",
@@ -4311,6 +4313,7 @@ export default {
     efacturaLateNamed: "ANAF: deadline passed",
     efacturaDue: "By {date}",
     card: {
+      title: "Invoicing",
       invoiced: "Invoiced, without VAT",
       remaining: "To invoice",
       list: "Invoice list",

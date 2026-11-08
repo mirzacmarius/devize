@@ -59,6 +59,13 @@ const groups = [
 const BOX_CELL =
   "md:[@media(hover:hover)]:relative md:[@media(hover:hover)]:w-0 md:[@media(hover:hover)]:p-0";
 const AFTER_BOX = "md:[@media(hover:hover)]:pl-0";
+// How far a producer's norms got, in ink: what came from them reads darkest.
+const normsInk: Record<string, string> = {
+  received: "text-ink",
+  existing: "text-ink-2",
+  none_found: "text-ink-3",
+  unknown: "text-ink-3",
+};
 
 export default function ManufacturersPage() {
   const t = useScopedI18n("admin.manufacturers");
@@ -248,8 +255,8 @@ export default function ManufacturersPage() {
                         </TableCell>
                       )}
                       <TableCell>
-                        {/* Inline, it stands on the row's baseline with the name. */}
-                        <span className="inline-flex flex-wrap items-baseline gap-x-4 gap-y-0.5">
+                        {/* The email's state under the producer's, as a note to it. */}
+                        <span className="grid justify-items-start gap-0.5">
                           {row.activeJob ? (
                             <Pill tone="active" dot={false}>
                               <Loader2 className="size-3 animate-spin self-center" />
@@ -284,13 +291,15 @@ export default function ManufacturersPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-meta text-ink-2">
+                        <span
+                          className={cn("text-meta", normsInk[row.normsStatus])}
+                        >
                           {tAdmin(`status.norms.${row.normsStatus}`)}
                         </span>
                       </TableCell>
                       <TableCell>
                         {row.confidence ? (
-                          <Confidence>
+                          <Confidence level={row.confidence}>
                             {tAdmin(`confidenceLevel.${row.confidence}`)}
                           </Confidence>
                         ) : (

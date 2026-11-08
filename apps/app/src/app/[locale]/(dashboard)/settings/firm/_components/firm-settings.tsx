@@ -340,8 +340,9 @@ function DetailsForm({
                 />
               </Field>
             </div>
-            {/* The county after the address, on one line, as a postal line reads. */}
-            <div className="grid gap-5 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            {/* The county after the address, on one line, as a postal line
+                reads, on the halves the rows above stand on. */}
+            <div className="grid gap-5 sm:grid-cols-2">
               <Field label={t("address")} htmlFor="firm-address">
                 <Input
                   id="firm-address"

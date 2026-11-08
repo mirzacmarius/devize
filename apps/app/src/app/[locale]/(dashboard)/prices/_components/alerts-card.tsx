@@ -193,7 +193,8 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
               <span
                 className={cn(
                   "text-figure tabular-nums",
-                  profitChange < 0 ? "text-warning" : "text-success",
+                  // The tile says it's a warning; the figure stays in ink.
+                  profitChange < 0 ? "text-ink" : "text-success",
                 )}
               >
                 {/* The label over it says which way it went. */}
@@ -213,7 +214,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 {t("fromTo", {
                   from: money(alert.sentTotal),
                   to: (
-                    <span className="font-medium text-ink">
+                    <span className="text-ink">
                       {money(alert.currentTotal)}
                     </span>
                   ),
@@ -227,7 +228,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                 {t("fromTo", {
                   from: money(alert.sentDirect),
                   to: (
-                    <span className="font-medium text-ink">
+                    <span className="text-ink">
                       {money(alert.currentDirect)}
                     </span>
                   ),
@@ -242,10 +243,9 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   from: money(alert.sentProfit),
                   to: (
                     <span
-                      className={cn(
-                        "font-medium",
-                        alert.profitLeft < 0 ? "text-danger" : "text-ink",
-                      )}
+                      className={
+                        alert.profitLeft < 0 ? "text-danger" : "text-ink"
+                      }
                     >
                       {money(alert.profitLeft)}
                     </span>
@@ -280,7 +280,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                       unit: formatUnit(change.unit, locale),
                     })}
                   </dd>
-                  <dd className="col-start-2 row-start-1 m-0 whitespace-nowrap text-right tabular-nums text-ink sm:col-start-3">
+                  <dd className="col-start-2 row-start-1 m-0 whitespace-nowrap text-right font-medium tabular-nums text-ink sm:col-start-3">
                     <Lei value={signedMoney(change.impact, locale)} />
                   </dd>
                 </div>

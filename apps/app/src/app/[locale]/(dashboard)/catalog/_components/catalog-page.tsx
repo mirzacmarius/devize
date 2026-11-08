@@ -304,16 +304,12 @@ function PartTitle({
 }) {
   const t = useScopedI18n("catalog");
   return (
-    <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+    <div className="grid min-w-0 gap-1">
       <h2 className="m-0 text-title-card text-ink">{t(`parts.${part}`)}</h2>
+      {/* Under the title, as any section's description. */}
       {part === "producers" && allUnconfirmed && (
-        <p
-          className="m-0 text-meta text-ink-3"
-          title={t("parts.producersNoteFull")}
-        >
-          <StatusPill tone="draft">{t("parts.producersNote")}</StatusPill>
-          {" · "}
-          {t("parts.producersNoteLong")}
+        <p className="m-0 text-body text-ink-2">
+          {t("parts.producersNoteFull")}
         </p>
       )}
     </div>

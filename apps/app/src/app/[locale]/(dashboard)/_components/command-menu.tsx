@@ -174,6 +174,11 @@ export function CommandMenuProvider({
 
 const noSubscription = () => () => {};
 
+// A key as it's printed on the keyboard: a small cap, the same wherever a key
+// is named.
+const KEYCAP =
+  "inline-grid h-[18px] min-w-[18px] place-items-center rounded-[4px] border border-border px-1 font-sans text-[11px] leading-none text-ink-2";
+
 /** "⌘K" on a Mac, "Ctrl K" elsewhere; "Ctrl K" while rendering on the server. */
 export function useShortcutLabel() {
   const mac = useSyncExternalStore(
@@ -201,9 +206,7 @@ export function CommandMenuButton({ onOpen }: { onOpen?: () => void }) {
     >
       <Search aria-hidden className="mx-1.5 size-4 shrink-0" />
       <span className="min-w-0 flex-1 truncate">{t("button")}</span>
-      <kbd className="font-sans text-[11px] leading-5 text-ink-3 max-md:hidden">
-        {shortcut}
-      </kbd>
+      <kbd className={cn(KEYCAP, "text-ink-3 max-md:hidden")}>{shortcut}</kbd>
     </button>
   );
 }
@@ -637,8 +640,23 @@ function CommandSearch({
             ? t("nothing", { text: text.trim() })
             : t("searching")}
       </p>
-      <p className="m-0 hidden border-t border-border px-4 py-2 text-meta text-ink-3 sm:block">
-        {t("hints")}
+      <p className="m-0 hidden items-center gap-4 border-t border-border px-4 py-2 text-meta text-ink-3 sm:flex">
+        {(
+          [
+            [["↑", "↓"], t("hints.choose")],
+            [["Enter"], t("hints.open")],
+            [["Esc"], t("hints.close")],
+          ] as const
+        ).map(([keys, label]) => (
+          <span key={label} className="inline-flex items-center gap-1.5">
+            {keys.map((key) => (
+              <kbd key={key} className={KEYCAP}>
+                {key}
+              </kbd>
+            ))}
+            {label}
+          </span>
+        ))}
       </p>
     </div>
   );

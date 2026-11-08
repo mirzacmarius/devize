@@ -67,7 +67,7 @@ export function ItemsCard({
   const sectionName = (section: Section) =>
     section.code ? `${section.code} ${section.name}` : section.name;
   const measuredCount = (list: readonly { item: Grouped }[]) => (
-    <span className="shrink-0 whitespace-nowrap font-normal tabular-nums text-ink-2 md:pr-9">
+    <span className="shrink-0 whitespace-nowrap font-normal tabular-nums text-ink-2">
       {t("sectionCount", {
         measured: list.filter(({ item }) => item.takeoffs.length > 0).length,
         total: list.length,
@@ -113,7 +113,7 @@ export function ItemsCard({
               <span className="w-4 text-right">#</span>
               <span>{t("columnItem")}</span>
               <span>{t("columnState")}</span>
-              <span className="pr-9 text-right">{t("columnInEstimate")}</span>
+              <span className="text-right">{t("columnInEstimate")}</span>
             </li>
             {rows(groups.loose)}
             {groups.sections.map((group) => (
@@ -211,9 +211,8 @@ function ItemRow({
           <span className="hidden text-right text-body tabular-nums text-ink md:block">
             <span className="sr-only">{t("columnInEstimate")}: </span>
             {formatQuantity(item.quantity, locale)}
-            <span className="ml-2 inline-block w-7 text-left text-ink-3">
-              {unit}
-            </span>
+            {/* Last in the row, the unit ends it, on the table's edge. */}
+            <span className="ml-1 text-ink-3">{unit}</span>
           </span>
           <span className="col-start-2 flex flex-wrap items-center gap-2 text-meta text-ink-3">
             <span className="tabular-nums">

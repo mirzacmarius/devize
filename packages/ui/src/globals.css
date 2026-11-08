@@ -124,10 +124,10 @@
   --success-soft: 145.7 25.9% 15.9%; /* #1e3327 */
   --success-dot: 146 46.8% 56.5%; /* #5cc489 */
   --warning: 38.5 48.9% 63.1%; /* #cfae73 */
-  --warning-soft: 36 32.5% 15.1%; /* #33291a */
+  --warning-soft: 42.9 16.3% 16.9%; /* #322e24: the amber at 14% over the panel */
   --warning-dot: 36.8 74.9% 59.4%; /* #e5a94a */
   --danger: 9.4 63.1% 65.7%; /* #e0806f */
-  --danger-soft: 6.4 31.8% 17.3%; /* #3a211e */
+  --danger-soft: 13.3 20.5% 17.3%; /* #352723: the red at 14% over the panel */
   --danger-solid: 4.9 72.2% 63.3%; /* #e5695e */
   --on-danger-solid: 2.9 53.8% 7.6%; /* #1e0a09 */
   --danger-border: 7.3 28.7% 28%; /* #5c3833 */

@@ -79,9 +79,7 @@ async function SampleEstimate() {
               row.rule && "border-t border-border",
             )}
           >
-            <dt className={row.sum ? "text-ink-3" : "text-ink-2"}>
-              {row.label}
-            </dt>
+            <dt className={row.sum ? "text-ink" : "text-ink-2"}>{row.label}</dt>
             <dd className="m-0 tabular-nums text-ink">
               {formatMoney(row.value, locale)}
             </dd>

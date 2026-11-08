@@ -199,7 +199,7 @@ function MembersCard({ isAdmin }: { isAdmin: boolean }) {
                         }
                       >
                         <SelectTrigger
-                          className="h-8 w-auto gap-1.5 border-transparent bg-transparent px-2 text-ink-2 hover:text-ink data-[state=open]:border-edge max-sm:-ml-2"
+                          className="h-8 w-36 gap-1.5 px-2.5 py-1"
                           aria-label={t("roleOf", { name })}
                         >
                           <SelectValue />

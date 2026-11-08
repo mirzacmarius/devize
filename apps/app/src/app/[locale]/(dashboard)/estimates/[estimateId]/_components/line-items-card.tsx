@@ -82,6 +82,18 @@ function RowTag({
   return <StatusPill tone={tone}>{children}</StatusPill>;
 }
 
+/**
+ * A price the shops have changed since: the warning's dot beside it, its word
+ * for screen readers and under the pointer.
+ */
+function StaleMark({ label }: { label: string }) {
+  return (
+    <StatusPill tone="warning" title={label} className="mr-2">
+      <span className="sr-only">{label}</span>
+    </StatusPill>
+  );
+}
+
 /** Lei for one unit of a line item, all kinds of resources together. */
 function unitPrice(item: LineItem) {
   const { material, labor, equipment, transport } = item.unitCost;
@@ -554,12 +566,6 @@ function ItemRows({
         {t("tags.ai")}
       </RowTag>
     ),
-    // Worth a word only while it can still change.
-    editable && newPrice && (
-      <RowTag key="price" tone="warning">
-        {t("tags.oldPrice")}
-      </RowTag>
-    ),
     editable && newNorm && (
       <RowTag key="norm" tone="warning">
         {t("tags.newNorm")}
@@ -571,6 +577,11 @@ function ItemRows({
   const detailsId = `item-${item._id}`;
   const unit = formatUnit(item.unit, locale);
   const price = formatMoney(unitPrice(item), locale);
+  // A price the shops have changed since, while it can still be updated: a dot
+  // by the price, wherever it shows; the rail says it in words, once.
+  const stale = editable && newPrice && (
+    <StaleMark label={t("tags.oldPrice")} />
+  );
   // Own items without a code are stored with a dash, for the printed forms.
   const code = item.code === "–" ? undefined : item.code;
   const source = useItemSource()(item);
@@ -649,6 +660,7 @@ function ItemRows({
               <span className={MID_ONLY}>
                 {" · "}
                 <span className="whitespace-nowrap">
+                  {stale}
                   {t("items.pricePerUnit", { price, unit })}
                 </span>
               </span>
@@ -664,6 +676,7 @@ function ItemRows({
               )}
             >
               <span>
+                {stale}
                 {t("items.quantityTimesPrice", {
                   quantity: formatQuantity(item.quantity, locale),
                   unit,
@@ -729,6 +742,7 @@ function ItemRows({
             FROM_WIDE,
           )}
         >
+          {stale}
           {price}
         </TableCell>
         <TableCell

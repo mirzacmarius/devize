@@ -402,7 +402,7 @@ function RowsTable({
           <TableHead className={ROOMY_HEAD}>{t("contract")}</TableHead>
           <TableHead className={ROOMY_HEAD}>{t("previous")}</TableHead>
           {/* Over the numbers, not over the unit that follows them. */}
-          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.045] xl:pt-2.5">
+          <TableHead className="w-[140px] pr-[57px] text-right font-medium text-ink xl:bg-ink/[0.03] xl:pt-2.5">
             {t("quantity")}
           </TableHead>
           <TableHead className={ROOMY_HEAD}>{t("cumulative")}</TableHead>
@@ -529,7 +529,7 @@ function RowsTable({
                 {/* The column being filled in. */}
                 <TableCell
                   className={cn(
-                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.045]",
+                    "whitespace-nowrap pr-3 text-right align-top max-md:!pl-7 max-md:text-left xl:bg-ink/[0.03]",
                     // Nothing in it and nothing to put in it: a phone skips the line.
                     !fillable && row.quantity === 0 && "max-md:hidden",
                   )}

@@ -389,8 +389,9 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
   // What to do, on the left; how much or how soon, in the column on the right.
   let text: string;
   let figure: ReactNode;
-  let figureClass = "text-ink-2";
-  // What can't wait has its tile's colour, once; its figure stays in ink.
+  // Every figure answers its line, in one ink and weight; what can't wait
+  // has its tile's colour.
+  let figureClass = "font-medium text-ink";
   let tone: keyof typeof todoTones = "quiet";
   let note: string | undefined;
   switch (item.kind) {
@@ -432,7 +433,6 @@ function TodoRow({ item, phoneHidden }: { item: Todo; phoneHidden: boolean }) {
       break;
   }
   if ((item.kind === "deadline" || item.kind === "expiring") && isNow(item)) {
-    figureClass = "font-medium text-ink";
     tone = "warning";
   }
 

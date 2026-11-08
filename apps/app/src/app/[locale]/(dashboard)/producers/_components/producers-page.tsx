@@ -124,15 +124,16 @@ export function ProducersPage() {
                   <TableHead className="md:w-[18rem]">
                     {t("columns.name")}
                   </TableHead>
-                  <TableHead className="w-20 text-right">
-                    {t("columns.norms")}
+                  {/* Words, in the room the row has; the counts end it, on the
+                      edge where every list ends its figures. */}
+                  <TableHead className="hidden md:table-cell">
+                    {t("columns.categories")}
                   </TableHead>
                   <TableHead className="w-20 text-right">
                     {t("columns.edition")}
                   </TableHead>
-                  {/* Words, ending where they end: the row reads in one go. */}
-                  <TableHead className="hidden md:table-cell md:pl-10">
-                    {t("columns.categories")}
+                  <TableHead className="w-20 text-right">
+                    {t("columns.norms")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -176,17 +177,17 @@ export function ProducersPage() {
                       {" · "}
                       {t("edition", { edition: producer.edition })}
                     </TableCell>
-                    <TableCell className="hidden text-right tabular-nums md:table-cell">
-                      {producer.normCount}
-                      {producer.moreNorms && "+"}
+                    <TableCell className="hidden text-ink-2 md:table-cell md:max-w-0">
+                      <span className="block truncate">
+                        {producer.categories.join(" · ")}
+                      </span>
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums text-ink-2 md:table-cell">
                       {producer.edition}
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 md:table-cell md:max-w-0 md:pl-10">
-                      <span className="block truncate">
-                        {producer.categories.join(" · ")}
-                      </span>
+                    <TableCell className="hidden text-right tabular-nums md:table-cell">
+                      {producer.normCount}
+                      {producer.moreNorms && "+"}
                     </TableCell>
                   </TableRow>
                 ))}

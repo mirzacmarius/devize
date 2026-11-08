@@ -58,9 +58,36 @@ export type Tone = NonNullable<StatusPillProps["tone"]>;
 export const Pill = StatusPill;
 
 /** How much research trusts a finding: worth a glance, never an alarm. */
-export function Confidence({ children }: { children: ReactNode }) {
+export function Confidence({
+  level,
+  children,
+}: {
+  // With it, three bars say it at a glance, as a signal's do.
+  level?: "high" | "medium" | "low";
+  children: ReactNode;
+}) {
+  const bars = level === "high" ? 3 : level === "medium" ? 2 : 1;
   return (
-    <span className="whitespace-nowrap text-meta text-ink-2">{children}</span>
+    <span className="inline-flex items-baseline gap-2 whitespace-nowrap text-meta text-ink-2">
+      {level && (
+        <span
+          aria-hidden
+          className="inline-flex h-2.5 items-end gap-0.5 self-center"
+        >
+          {["h-1", "h-[7px]", "h-2.5"].map((height, step) => (
+            <span
+              key={height}
+              className={cn(
+                "w-[3px] rounded-[1px]",
+                height,
+                step < bars ? "bg-ink-2" : "bg-tick",
+              )}
+            />
+          ))}
+        </span>
+      )}
+      {children}
+    </span>
   );
 }
 

@@ -75,7 +75,11 @@ export default {
     searching: "Caut…",
     nothing: "Nimic nu se potrivește cu „{text}”.",
     count: "Rezultate: {count}",
-    hints: "↑ ↓ alegi · Enter deschizi · Esc închizi",
+    hints: {
+      choose: "alegi",
+      open: "deschizi",
+      close: "închizi",
+    },
   },
   login: {
     title: "Intră în Devize",
@@ -1997,8 +2001,6 @@ export default {
     unconfirmedState: "Neconfirmată",
     parts: {
       producers: "Norme de la producători",
-      producersNote: "Neconfirmate încă",
-      producersNoteLong: "din documentele lor publice",
       producersNoteFull:
         "Preluate din documentele lor publice; producătorii nu le-au verificat încă.",
       base: "Norme de bază",
@@ -4309,6 +4311,7 @@ export default {
     efacturaLateNamed: "ANAF: termen depășit",
     efacturaDue: "Până la {date}",
     card: {
+      title: "Facturare",
       invoiced: "Facturat, fără TVA",
       remaining: "De facturat",
       list: "Lista facturilor",

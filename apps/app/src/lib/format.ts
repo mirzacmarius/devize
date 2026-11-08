@@ -149,8 +149,9 @@ export function formatTime(timestamp: number, locale: Locale): string {
 }
 
 const unitLabels: Record<Locale, Record<string, string>> = {
-  ro: { ora: "oră" },
-  en: { ora: "h", zi: "day", buc: "pcs" },
+  // A lone l beside a figure reads as a rule; L is the litre's other symbol.
+  ro: { ora: "oră", l: "L" },
+  en: { ora: "h", zi: "day", buc: "pcs", l: "L" },
 };
 
 /**
