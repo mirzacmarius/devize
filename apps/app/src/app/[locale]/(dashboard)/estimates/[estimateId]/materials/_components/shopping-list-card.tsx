@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@devize/ui/table";
+import { cn } from "@devize/ui/utils";
 import { Pencil } from "lucide-react";
 import { Nil } from "@/components/nil";
 import {
@@ -124,6 +125,8 @@ function MaterialRow({
         : tSources("storeUnknown")
       : tSources(pkg.source);
   const leftover = row.purchase?.leftover ?? 0;
+  // Half or more of what's paid for is left over: worth a second look.
+  const costly = row.leftoverCost > 0 && row.leftoverCost * 2 >= row.boughtCost;
 
   return (
     <TableRow className="group/row">
@@ -197,7 +200,12 @@ function MaterialRow({
           {row.purchase && leftover > 0 ? unit : null}
         </span>
       </TableCell>
-      <TableCell className="hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell">
+      <TableCell
+        className={cn(
+          "hidden whitespace-nowrap text-right align-top tabular-nums text-ink-2 xl:table-cell",
+          costly && "text-warning",
+        )}
+      >
         {row.leftoverCost > 0 ? formatMoney(row.leftoverCost, locale) : <Nil />}
       </TableCell>
       <TableCell className="whitespace-nowrap text-right align-top tabular-nums max-md:self-start">
@@ -207,7 +215,12 @@ function MaterialRow({
           </span>
           {/* Where there's room it has a column. */}
           {row.leftoverCost > 0 && (
-            <span className="text-meta text-ink-3 xl:hidden">
+            <span
+              className={cn(
+                "text-meta text-ink-3 xl:hidden",
+                costly && "text-warning",
+              )}
+            >
               {t("leftoverCost", {
                 cost: formatMoney(row.leftoverCost, locale),
               })}

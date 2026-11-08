@@ -273,7 +273,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
                   <dd className={cn(CHANGES, "m-0 ml-auto")}>
                     <span className="text-ink-3">{money(change.oldPrice)}</span>
                     <span className="text-ink-2">{money(change.newPrice)}</span>
-                    <span className="font-medium text-ink">
+                    <span className="text-ink">
                       {signedMoney(change.impact, locale)}
                     </span>
                   </dd>
@@ -292,7 +292,7 @@ function AlertRow({ alert }: { alert: PriceAlert }) {
   );
 }
 
-/** A total before and now, the new one weighted. */
+/** A total before and now, the new one in ink. */
 function TotalRow({
   label,
   before,
@@ -309,9 +309,7 @@ function TotalRow({
       <dt className="min-w-0 flex-1 basis-40 text-ink-2">{label}</dt>
       <dd className={cn(TOTALS, "m-0 ml-auto")}>
         <span className="text-ink-3">{before}</span>
-        <span className={cn("font-medium text-ink", danger && "text-danger")}>
-          {now}
-        </span>
+        <span className={cn("text-ink", danger && "text-danger")}>{now}</span>
       </dd>
     </div>
   );

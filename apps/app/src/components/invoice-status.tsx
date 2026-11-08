@@ -68,9 +68,12 @@ export function EfacturaPill({
     );
     // The day after the word, on its line, a step back: the row stays one line.
     return deadline ? (
-      <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+      <span className="inline-flex items-baseline whitespace-nowrap">
         {pill}
-        <span className="text-meta tabular-nums text-ink-3">· {deadline}</span>
+        <span className="text-meta tabular-nums text-ink-3">
+          {"\u00a0· "}
+          {deadline}
+        </span>
       </span>
     ) : (
       pill

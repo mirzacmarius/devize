@@ -478,7 +478,7 @@ function RowsTable({
                       })}
                       {/* A state, as the takeoff says "Nemăsurat". */}
                       {row.remainingQuantity <= 0 && (
-                        <span className="text-success">
+                        <span>
                           {" · "}
                           {t("complete")}
                         </span>

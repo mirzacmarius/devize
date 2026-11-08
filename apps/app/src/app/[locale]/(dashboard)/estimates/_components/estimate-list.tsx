@@ -237,7 +237,8 @@ export function EstimateList() {
                       {row.clientName ?? t("noClient")}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right text-body tabular-nums text-ink">
+                  {/* On a phone the amount is the row's second anchor, after its title. */}
+                  <TableCell className="text-right text-body tabular-nums text-ink max-md:font-medium">
                     {formatMoney(row.total, locale)}
                   </TableCell>
                   <TableCell className="hidden text-right text-meta text-ink-3 tabular-nums md:table-cell">

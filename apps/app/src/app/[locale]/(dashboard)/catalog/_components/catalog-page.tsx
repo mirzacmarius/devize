@@ -77,8 +77,8 @@ function matches(norm: NormRow, words: readonly string[]) {
 const TABLET_ONLY = "hidden md:inline xl:hidden";
 
 // A cost and what it's per, "70,88 lei/mp": the unit in a slot of its own after
-// the figure, so the figures line up whatever they're per, ending on the
-// table's edge as the head and "Fără preț" do.
+// the figure, so the figures line up whatever they're per, and end under the
+// head as every table's figures do. "Fără preț" ends there too.
 const PER_UNIT =
   "ml-1.5 inline-block min-w-[3rem] text-right text-meta text-ink-3";
 
@@ -313,11 +313,11 @@ function PartTitle({
 }) {
   const t = useScopedI18n("catalog");
   return (
-    <div className="grid min-w-0 gap-1">
+    <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
       <h2 className="m-0 text-title-card text-ink">{t(`parts.${part}`)}</h2>
-      {/* Under the title, as any section's description. */}
+      {/* Beside the title, as a section's "sume în lei": a note, not a line. */}
       {part === "producers" && allUnconfirmed && (
-        <p className="m-0 text-body text-ink-2">
+        <p className="m-0 text-meta text-ink-3">
           {t("parts.producersNoteFull")}
         </p>
       )}
@@ -402,7 +402,10 @@ function NormsTable({
                 {t("columns.updated")}
               </TableHead>
             )}
-            <TableHead className="w-40 text-right" title={t("costNote")}>
+            <TableHead
+              className="w-40 text-right last:pr-[54px]"
+              title={t("costNote")}
+            >
               {t("columns.cost")}
             </TableHead>
           </TableRow>
@@ -563,8 +566,10 @@ function NormsTable({
                   )}
                   <TableCell className="whitespace-nowrap text-right tabular-nums max-md:align-top">
                     {norm.referenceCost === undefined ? (
-                      // On the edge, as the head and the units are.
-                      <StatusPill tone="warning">{t("noCost")}</StatusPill>
+                      // Under the head, where the figures end.
+                      <StatusPill tone="warning" className="mr-[54px]">
+                        {t("noCost")}
+                      </StatusPill>
                     ) : (
                       <>
                         <span className="text-ink">

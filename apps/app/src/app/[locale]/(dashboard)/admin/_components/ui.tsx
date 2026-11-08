@@ -86,7 +86,10 @@ export function Confidence({
           ))}
         </span>
       )}
-      {children}
+      {/* A slot as wide as the longest word, so the bars line up down a column. */}
+      <span className={cn(level && "min-w-[2.25rem] text-left")}>
+        {children}
+      </span>
     </span>
   );
 }
